@@ -1,0 +1,29 @@
+/* QuoteSection.css */
+
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans&display=swap');
+
+.quote-section {
+  background-color: #2c2c8f;
+  padding: 8rem 0rem 3rem 0rem; 
+  text-align: center;
+  color: #ffffff;
+  font-family: 'Josefin Sans', sans-serif;
+}
+
+.quote-text {
+  font-size: 1.7rem;
+  font-weight: 400;
+  line-height: 1.6;
+  max-width: 850px;
+  margin: 0 auto 1% auto;
+  font-style: normal;
+}
+
+.quote-author {
+    padding: 2rem 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin: 0 auto;
+}

@@ -1,0 +1,9 @@
+.separator {
+  width: 60px;
+  height: 2px;
+  background-color: #9398E9; /* Light purple */
+  margin: 20px auto;
+}
+body {
+  background-color: #2b2c8f; /* Deep blue */
+}

@@ -1,3 +1,7 @@
+body, #root, .App {
+  background-color: #2c2c8f !important; /* azul oscuro para todo */
+}
+
 .App {
   text-align: center;
 }

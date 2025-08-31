@@ -1,0 +1,41 @@
+/* LogosMarquee.css */
+
+.logos-marquee {
+  width: 100%;
+  overflow: hidden;
+  background: #161616;
+  padding: 2.3rem 0; /* más ancha la banda */
+  border-top: none;
+  position: relative;
+}
+
+.logos-track {
+  display: flex;
+  width: max-content;
+  animation: moveLogos 20s linear infinite;
+}
+
+/* Repite los logos suficientes veces en el JSX para que siempre haya logos en pantalla.
+   Por ejemplo, en LogosBand.js usa: {Array(6).fill(logos).flat().map(...)} */
+
+@keyframes moveLogos {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.logo-item {
+  display: flex;
+  align-items: center;
+  margin: 0 32px;
+}
+
+.logo-img {
+  max-height: 40px;
+  object-fit: contain;
+  user-select: none;
+  pointer-events: none;
+}

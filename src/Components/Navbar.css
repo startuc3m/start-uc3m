@@ -1,0 +1,67 @@
+
+@font-face {
+  font-family: 'Canicule Display';
+  src: url('../assets/fonts/CaniculeDisplay.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; 
+  padding: 24px 40px;
+  background: #2b3a91; 
+  color: white;
+  font-family: 'Canicule Display', 'Montserrat', Arial, sans-serif;
+}
+
+.navbar__logo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  
+}
+.navbar__logo-img {
+  max-height: 3.5rem;
+  width: auto;
+}
+
+
+.navbar__start {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  margin-bottom: 2px;
+}
+
+.navbar__subtitle {
+  font-size: 0.9rem;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  color: #cddaff;
+}
+
+.navbar__links {
+  display: flex;
+  gap: 34px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  justify-content: center;
+  align-items: center; 
+}
+
+.navbar__links a {
+  color: white;
+  text-decoration: none;
+  font-size: 1.33rem;
+  font-family: 'Canicule Display', 'Montserrat', Arial, sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  transition: color 0.2s;
+}
+
+.navbar__links a:hover {
+  color: #f6c700; /* example highlight color */
+}
