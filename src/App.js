@@ -9,6 +9,8 @@ import DividerOfSections from "./components/DividerOfSections.js";
 import QuienesSomos from "./components/AboutUs.js";
 import Quote2 from "./components/Quote2.js";
 import PodcastEmbed from "./components/Podcast.js";
+import Contact from "./components/Contacto.js"
+import Footer from "./components/Footer.js"
 
 function App() {
   return (
@@ -25,6 +27,8 @@ function App() {
       <DividerOfSections />
       <PodcastEmbed />
       <DividerOfSections />
+      <Contact />
+      <Footer />
     </div>
   );
     
