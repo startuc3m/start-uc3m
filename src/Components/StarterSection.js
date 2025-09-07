@@ -24,8 +24,12 @@ function StarterSection() {
               la sociedad y con el emprendimiento como forma de generar un impacto
               positivo, que quiere estar al día de lo que hacemos.
             </p>
+            <button className="StarterSection-cta">
+          Quiero convertirme en starter
+        </button>
           </div>
         </div>
+        
        
       </section>
     </>

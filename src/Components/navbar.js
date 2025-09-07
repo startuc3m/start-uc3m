@@ -8,9 +8,9 @@ function Navbar() {
         <img src={require("../assets/logohome.png")} alt="start_ EMPRENDEDORES | UC3M Logo" className="navbar__logo-img" />
       </div>
       <ul className="navbar__links">
-        <li><a href="#events">EVENTS</a></li>
-        <li><a href="#community">COMMUNITY</a></li>
-        <li><a href="#about">ABOUT US</a></li>
+        <li><a href="">EVENTOS</a></li>
+        <li><a href="#community">EQUIPO</a></li>
+        <li><a href="#quienes-somos">SOBRE NOSOTROS</a></li>
         <li><a href="#blog">BLOG</a></li>
       </ul>
     </nav>
