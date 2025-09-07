@@ -1,7 +1,7 @@
 // LogosMarquee.jsx
 
 import React from "react";
-import "./LogosBand.css";
+import "../styles/LogosBand.css";
 
 // Importa tus imágenes desde la carpeta assets
 import logo1 from "../assets/logo1.png";

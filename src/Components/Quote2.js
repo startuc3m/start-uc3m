@@ -1,7 +1,7 @@
 // QuoteSection.jsx
 
 import React from "react";
-import "./QuoteSection.css";
+import "../styles/QuoteSection.css";
 
 function QuoteSection() {
   return (

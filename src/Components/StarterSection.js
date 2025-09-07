@@ -1,7 +1,7 @@
 // StarterSection.jsx
 
 import React from "react";
-import "./StarterSection.css";
+import "../styles/StarterSection.css";
 import starterImage from "../assets/starter-image.jpg"; // Reemplaza con la ruta real de la imagen
 
 function StarterSection() {

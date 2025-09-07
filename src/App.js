@@ -1,14 +1,14 @@
 // src/App.js
 import React from "react";
-import Navbar from "./Components/navbar.js"
-import Hero from "./Components/Hero.js";
-import LogosBand from "./Components/LogosBand.js";  
-import QuoteSection from "./Components/Quote.js";
-import StarterSection from "./Components/StarterSection.js";
-import DividerOfSections from "./Components/DividerOfSections.js";
-import QuienesSomos from "./Components/AboutUs.js";
-import Quote2 from "./Components/Quote2.js";
-import PodcastEmbed from "./Components/Podcast.js";
+import Navbar from "./components/navbar.js"
+import Hero from "./components/Hero.js";
+import LogosBand from "./components/LogosBand.js";  
+import QuoteSection from "./components/Quote.js";
+import StarterSection from "./components/StarterSection.js";
+import DividerOfSections from "./components/DividerOfSections.js";
+import QuienesSomos from "./components/AboutUs.js";
+import Quote2 from "./components/Quote2.js";
+import PodcastEmbed from "./components/Podcast.js";
 
 function App() {
   return (

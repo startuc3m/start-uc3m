@@ -1,5 +1,5 @@
 import React from 'react';
-import './DividerOfSections.css'; 
+import '../styles/DividerOfSections.css'; 
 const DividerOfSections = () => {
   return <div className="separator" />;
 };
