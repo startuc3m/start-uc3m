@@ -10,9 +10,11 @@ function Hero() {
         <p className="hero-subtitle">
           Asociación de emprendedores de la Universidad Carlos III de Madrid
         </p>
-        <button className="hero-cta">
-          Quiero convertirme en starter
-        </button>
+        <a href="https://tally.so/r/wz9GQg" target="_blank" rel="noopener noreferrer">
+          <button className="hero-cta">
+            Quiero convertirme en starter
+          </button>
+        </a>
       </div>
     </section>
   );
