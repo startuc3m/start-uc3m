@@ -50,7 +50,10 @@ function Equipo() {
             <Navbar />
             <section className="team-section">
                 <h1>CONOCE A NUESTRO EQUIPO</h1>
-                <h3>Texto de prueba</h3>
+                <h3>Una asociación sin un equipo, no es nada.
+                    <br />
+                    Detrás de Start UC3M hay un grupo de personas con ganas de cambiar las cosas. ¡Conócelos!
+                </h3>
                 <div className="filtro-buttons">
                     {departments.map(department => (
                         <button key={department} className={`filtro-btn ${selectedDepartment === department ? 'active' : ''}`}
@@ -63,6 +66,7 @@ function Equipo() {
                             key={member.id}
                             nombre={member.nombre}
                             cargo={member.cargo}
+                            departamento={member.departamento}
                             foto={member.foto}
                             linkedin={member.linkedin}
                         />
