@@ -1,35 +1,15 @@
 // src/App.js
 import React from "react";
-import Navbar from "./components/navbar.js"
-import Hero from "./components/Hero.js";
-import LogosBand from "./components/LogosBand.js";  
-import QuoteSection from "./components/Quote.js";
-import StarterSection from "./components/StarterSection.js";
-import DividerOfSections from "./components/DividerOfSections.js";
-import QuienesSomos from "./components/AboutUs.js";
-import Quote2 from "./components/Quote2.js";
-import PodcastEmbed from "./components/Podcast.js";
-import Contact from "./components/Contacto.js"
-import Footer from "./components/Footer.js"
+import { Routes, Route} from "react-router-dom";
+import Home from "./pages/Home.js";
+import Equipo from "./pages/Equipo.js";
 
 function App() {
   return (
-       <div>
-      <Navbar />
-      <Hero />
-      <LogosBand />
-      <QuoteSection />
-      <DividerOfSections />
-      <StarterSection />
-      <DividerOfSections />
-      <Quote2 />
-      <QuienesSomos />
-      <DividerOfSections />
-      <PodcastEmbed />
-      <DividerOfSections />
-      <Contact />
-      <Footer />
-    </div>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/equipo" element={<Equipo />} />
+      </Routes>
   );
     
 }

@@ -24,9 +24,11 @@ function StarterSection() {
               la sociedad y con el emprendimiento como forma de generar un impacto
               positivo, que quiere estar al día de lo que hacemos.
             </p>
-            <button className="StarterSection-cta">
-          Quiero convertirme en starter
-        </button>
+            <a href='https://tally.so/r/wz9GQg' target="_blank" rel="noopener noreferrer">
+              <button className="StarterSection-cta">
+                Quiero convertirme en starter
+              </button>
+            </a>
           </div>
         </div>
         
