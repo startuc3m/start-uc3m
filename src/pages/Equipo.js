@@ -3,16 +3,24 @@ import Navbar from "../components/navbar";
 import Footer from "../components/Footer";
 import "../styles/Equipo.css";
 import perfil from "../assets/profile-pic.png"
+import Ioana from "../assets/members/ioana_nedelcu.jpg"
+import Carla from "../assets/members/carla_martinez.jpg"
+import Miguel from "../assets/members/miguel_arnaiz.jpg"
+import Sebastian from "../assets/members/sebatian_escobar.jpg"
+import Iñigo from "../assets/members/iñigo_estebaranz.jpeg"
+import Javier from "../assets/members/javier_fernandez.jpeg"
+import Pedro from "../assets/members/pedro_bueno.jpeg"
+import Marcos from "../assets/members/marcos_varez.jpeg"
 
 const teamMembers = [
-    {id: 1, nombre: "Iñigo Estebaranz", cargo: "Presidente", departamento: "Junta", foto: perfil, linkedin: "https://www.linkedin.com/in/inigo-estebaranz-rosillo-8a2520295/"},
-    {id: 2, nombre: "Miguel Arnáiz", cargo: "Vicepresidente", departamento: "Junta", foto: perfil, linkedin: "https://www.linkedin.com/in/miguel-arn%C3%A1iz/"},
-    {id: 3, nombre: "Ioana Nedelcu", cargo: "Responsable de IT", departamento: "IT", foto: perfil, linkedin: "https://www.linkedin.com/in/ioananedelcu/"},
-    {id: 4, nombre: "Carla Martínez", cargo: "Responsable de Marketing", departamento: "Marketing", foto: perfil, linkedin: "https://www.linkedin.com/in/carla-mart%C3%ADnez-s%C3%A1nchez-670442293?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app"},
-    {id: 5, nombre: "Javier Fernández", cargo: "Responsable de financiación", departamento: "Finanzas", foto: perfil, linkedin: "https://www.linkedin.com/in/javierfern%C3%A1ndezmu%C3%B1oz/"},
-    {id: 6, nombre: "Pedro Bueno", cargo: "Responsable de comunicaciones", departamento: "Comunicaciones", foto: perfil, linkedin: "https://www.linkedin.com/in/pedrobuenoruiz/"},
-    {id: 7, nombre: "Marcos Varez", cargo: "Responsable legal", departamento: "Legal", foto: perfil, linkedin: "https://www.linkedin.com/in/marcos-varez-s%C3%A1nchez-518410268/"},
-    {id: 8, nombre: "Sebastián Escobar", cargo: "Responsable de RRHH", departamento: "RRHH", foto: perfil, linkedin: "https://www.linkedin.com/in/sebastian-escobar-v/"}
+    {id: 1, nombre: "Iñigo Estebaranz", cargo: "Presidente", departamento: "Junta", foto: Iñigo, linkedin: "https://www.linkedin.com/in/inigo-estebaranz-rosillo-8a2520295/"},
+    {id: 2, nombre: "Miguel Arnáiz", cargo: "Vicepresidente", departamento: "Junta", foto: Miguel, linkedin: "https://www.linkedin.com/in/miguel-arn%C3%A1iz/"},
+    {id: 3, nombre: "Ioana Nedelcu", cargo: "Responsable de IT", departamento: "IT", foto: Ioana, linkedin: "https://www.linkedin.com/in/ioananedelcu/"},
+    {id: 4, nombre: "Carla Martínez", cargo: "Responsable de Marketing", departamento: "Marketing", foto: Carla, linkedin: "https://www.linkedin.com/in/carla-mart%C3%ADnez-s%C3%A1nchez-670442293?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app"},
+    {id: 5, nombre: "Javier Fernández", cargo: "Responsable de financiación", departamento: "Finanzas", foto: Javier, linkedin: "https://www.linkedin.com/in/javierfern%C3%A1ndezmu%C3%B1oz/"},
+    {id: 6, nombre: "Pedro Bueno", cargo: "Responsable de comunicaciones", departamento: "Comunicaciones", foto: Pedro, linkedin: "https://www.linkedin.com/in/pedrobuenoruiz/"},
+    {id: 7, nombre: "Marcos Varez", cargo: "Responsable legal", departamento: "Legal", foto: Marcos, linkedin: "https://www.linkedin.com/in/marcos-varez-s%C3%A1nchez-518410268/"},
+    {id: 8, nombre: "Sebastián Escobar", cargo: "Responsable de RRHH", departamento: "RRHH", foto: Sebastian, linkedin: "https://www.linkedin.com/in/sebastian-escobar-v/"}
 ];
 
 const MemberCard = ({nombre, cargo, departamento, foto, linkedin}) => {
