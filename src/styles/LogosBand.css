@@ -39,3 +39,37 @@
   user-select: none;
   pointer-events: none;
 }
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .logos-marquee {
+    padding: 1.5rem 0;
+  }
+
+  .logos-track {
+    animation: moveLogos 25s linear infinite;
+  }
+
+  .logo-item {
+    margin: 0 20px;
+  }
+
+  .logo-img {
+    max-height: 28px;
+  }
+}
+
+/* Tablet styles */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .logos-marquee {
+    padding: 2rem 0;
+  }
+
+  .logo-item {
+    margin: 0 28px;
+  }
+
+  .logo-img {
+    max-height: 35px;
+  }
+}

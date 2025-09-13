@@ -41,3 +41,62 @@
     width: 30px;
     margin: 0.5rem;
 }
+
+/* Mobile styles */
+@media (max-width: 768px) {
+    .footer {
+        flex-direction: column;
+        height: auto;
+        padding: 2rem 1rem;
+        gap: 1.5rem;
+    }
+
+    .footer-logo {
+        padding-left: 0;
+        justify-content: center;
+    }
+
+    .footer-img {
+        width: 50%;
+        max-width: 120px;
+    }
+
+    .footer-email {
+        text-align: center;
+        font-size: 0.9rem;
+    }
+
+    .footer-content {
+        padding-right: 0;
+        justify-content: center;
+    }
+
+    .footer-rrss {
+        width: 25px;
+        margin: 0.3rem;
+    }
+}
+
+/* Tablet styles */
+@media (max-width: 1024px) and (min-width: 769px) {
+    .footer {
+        height: 80pt;
+        padding: 0 1rem;
+    }
+
+    .footer-logo {
+        padding-left: 1rem;
+    }
+
+    .footer-img {
+        width: 35%;
+    }
+
+    .footer-content {
+        padding-right: 1rem;
+    }
+
+    .footer-rrss {
+        width: 28px;
+    }
+}

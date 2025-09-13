@@ -89,3 +89,111 @@
     gap: 2rem;
     padding: 2rem 5rem;
 }
+
+/* Mobile styles */
+@media (max-width: 768px) {
+    .team-section {
+        padding-bottom: 2rem;
+        padding-top: 1rem;
+    }
+
+    .team-section h1 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        padding: 0 1rem;
+        text-align: center;
+    }
+
+    .filtro-buttons {
+        gap: 0.5rem;
+        margin: 1.5rem 1rem;
+        justify-content: center;
+    }
+
+    .filtro-btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.9rem;
+        border-radius: 4px;
+    }
+
+    .team-container {
+        gap: 1rem;
+        padding: 1rem 0.5rem;
+    }
+
+    .member-card {
+        width: 140px;
+        height: 240px;
+        padding: 1rem;
+        margin: 0.5rem;
+    }
+
+    .member-photo {
+        height: 120px;
+        margin-bottom: 0.8rem;
+    }
+
+    .member-name {
+        font-size: 1rem;
+        margin: 0.3rem 0;
+    }
+
+    .member-position {
+        font-size: 0.85rem;
+        margin: 0.2rem 0;
+    }
+
+    .member-department {
+        font-size: 0.75rem;
+        margin: 0.2rem 0;
+    }
+}
+
+/* Tablet styles */
+@media (max-width: 1024px) and (min-width: 769px) {
+    .team-section h1 {
+        font-size: 2.5rem;
+    }
+
+    .filtro-buttons {
+        gap: 0.8rem;
+        margin: 2rem 2rem;
+    }
+
+    .filtro-btn {
+        padding: 0.45rem 0.9rem;
+        font-size: 0.95rem;
+    }
+
+    .team-container {
+        gap: 1.5rem;
+        padding: 2rem 2rem;
+    }
+
+    .member-card {
+        width: 160px;
+        height: 260px;
+        padding: 1.2rem;
+    }
+
+    .member-photo {
+        height: 140px;
+    }
+}
+
+/* Large desktop styles */
+@media (min-width: 1200px) {
+    .team-container {
+        padding: 2rem 8rem;
+        gap: 2.5rem;
+    }
+
+    .member-card {
+        width: 180px;
+        height: 280px;
+    }
+
+    .member-photo {
+        height: 160px;
+    }
+}

@@ -4,6 +4,24 @@
   background-color: #9398E9; /* Light purple */
   margin: 20px auto;
 }
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .separator {
+    width: 40px;
+    height: 1.5px;
+    margin: 15px auto;
+  }
+}
+
+/* Tablet styles */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .separator {
+    width: 50px;
+    margin: 18px auto;
+  }
+}
+
 body {
   background-color: #2b2c8f; /* Deep blue */
 }

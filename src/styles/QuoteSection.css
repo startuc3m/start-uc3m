@@ -27,3 +27,38 @@
   text-transform: uppercase;
   margin: 0 auto;
 }
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .quote-section {
+    padding: 4rem 1rem 2rem 1rem;
+  }
+
+  .quote-text {
+    font-size: 1.3rem;
+    line-height: 1.5;
+    max-width: 100%;
+    margin: 0 auto 1rem auto;
+  }
+
+  .quote-author {
+    padding: 1.5rem 0;
+    font-size: 0.8rem;
+  }
+}
+
+/* Tablet styles */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .quote-section {
+    padding: 6rem 2rem 2.5rem 2rem;
+  }
+
+  .quote-text {
+    font-size: 1.5rem;
+    max-width: 700px;
+  }
+
+  .quote-author {
+    font-size: 0.85rem;
+  }
+}
