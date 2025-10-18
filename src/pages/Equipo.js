@@ -13,14 +13,21 @@ import Pedro from "../assets/members/pedro_bueno.jpeg"
 import Marcos from "../assets/members/marcos_varez.jpeg"
 
 const teamMembers = [
-    {id: 1, nombre: "Iñigo Estebaranz", cargo: "Presidente", departamento: "Junta", foto: Iñigo, linkedin: "https://www.linkedin.com/in/inigo-estebaranz-rosillo-8a2520295/"},
-    {id: 2, nombre: "Miguel Arnáiz", cargo: "Vicepresidente", departamento: "Junta", foto: Miguel, linkedin: "https://www.linkedin.com/in/miguel-arn%C3%A1iz/"},
-    {id: 3, nombre: "Ioana Nedelcu", cargo: "Responsable de IT", departamento: "IT", foto: Ioana, linkedin: "https://www.linkedin.com/in/ioananedelcu/"},
-    {id: 4, nombre: "Carla Martínez", cargo: "Responsable de Marketing", departamento: "Marketing", foto: Carla, linkedin: "https://www.linkedin.com/in/carla-mart%C3%ADnez-s%C3%A1nchez-670442293?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app"},
-    {id: 5, nombre: "Javier Fernández", cargo: "Responsable de financiación", departamento: "Finanzas", foto: Javier, linkedin: "https://www.linkedin.com/in/javierfern%C3%A1ndezmu%C3%B1oz/"},
-    {id: 6, nombre: "Pedro Bueno", cargo: "Responsable de comunicaciones", departamento: "Comunicaciones", foto: Pedro, linkedin: "https://www.linkedin.com/in/pedrobuenoruiz/"},
-    {id: 7, nombre: "Marcos Varez", cargo: "Responsable legal", departamento: "Legal", foto: Marcos, linkedin: "https://www.linkedin.com/in/marcos-varez-s%C3%A1nchez-518410268/"},
-    {id: 8, nombre: "Sebastián Escobar", cargo: "Responsable de RRHH", departamento: "RRHH", foto: Sebastian, linkedin: "https://www.linkedin.com/in/sebastian-escobar-v/"}
+    {id: 1, nombre: "Iñigo Estebaranz", cargo: "Presidente", departamento: "Junta Directiva", foto: Iñigo, linkedin: "https://www.linkedin.com/in/inigo-estebaranz-rosillo-8a2520295/"},
+    {id: 2, nombre: "Miguel Arnáiz", cargo: "Vicepresidente", departamento: "Junta Directiva", foto: Miguel, linkedin: "https://www.linkedin.com/in/miguel-arn%C3%A1iz/"},
+    {id: 3, nombre: "Ioana Nedelcu", cargo: "Responsable", departamento: "IT", foto: Ioana, linkedin: "https://www.linkedin.com/in/ioananedelcu/"},
+    {id: 4, nombre: "Carla Martínez", cargo: "Responsable", departamento: "Marketing", foto: Carla, linkedin: "https://www.linkedin.com/in/carla-mart%C3%ADnez-s%C3%A1nchez-670442293?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app"},
+    {id: 5, nombre: "Javier Fernández", cargo: "Responsable", departamento: "Finanzas", foto: Javier, linkedin: "https://www.linkedin.com/in/javierfern%C3%A1ndezmu%C3%B1oz/"},
+    {id: 6, nombre: "Pedro Bueno", cargo: "Responsable", departamento: "Comunicaciones", foto: Pedro, linkedin: "https://www.linkedin.com/in/pedrobuenoruiz/"},
+    {id: 7, nombre: "Marcos Varez", cargo: "Responsable", departamento: "Legal", foto: Marcos, linkedin: "https://www.linkedin.com/in/marcos-varez-s%C3%A1nchez-518410268/"},
+    {id: 8, nombre: "Sebastián Escobar", cargo: "Responsable", departamento: "RRHH", foto: Sebastian, linkedin: "https://www.linkedin.com/in/sebastian-escobar-v/"},
+    {id: 9, nombre: "Gonzalo Renes", cargo: "Responsable", departamento: "Colaboraciones", foto: perfil, linkedin: "https://www.linkedin.com/in/gon-renes-sanchez/"},
+    {id: 10, nombre: "Ana Giménez", cargo: "Responsable", departamento: "Eventos", foto: perfil, linkedin: "http://www.linkedin.com/in/ana-gimenez-de-luis-93a528293"},
+    {id: 11, nombre: "Lucía Pan Zhu", cargo: "Asociada", departamento: "Marketing", foto: perfil, linkedin: "https://www.linkedin.com/in/lucia-pan-zhu-5013b328a/"},
+    {id: 12, nombre: "Juan García", cargo: "Asociado", departamento: "IT", foto: perfil, linkedin: "https://www.linkedin.com/in/juan-garc%C3%ADa-rodr%C3%ADguez-a088292b0/"},
+    {id: 13, nombre: "Alejandro Ausina", cargo: "Asociado", departamento: "IT", foto: perfil, linkedin: "https://www.linkedin.com/in/alejandro-ausina/"},
+    {id: 14, nombre: "Henry Ringstmeyer", cargo: "Asociado", departamento: "Marketing", foto: perfil, linkedin: "https://www.linkedin.com/in/henry-ringstmeyer-404b70311"},
+
 ];
 
 const MemberCard = ({nombre, cargo, departamento, foto, linkedin}) => {
