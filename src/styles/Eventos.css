@@ -31,19 +31,29 @@
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    background-attachment: fixed;
     opacity: 1;
-    transform: translateX(100%); /* Las nuevas imágenes empiezan desde la derecha */
+    transform: translateX(100%); /* Por defecto, fuera de pantalla a la derecha */
     transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform; /* Optimización para transiciones */
 }
 
 /* Slide activo - está en el centro */
 .slide.active {
     transform: translateX(0%);
+    z-index: 2; /* Asegura que esté encima */
 }
 
 /* Slide que está saliendo - se va hacia la izquierda */
 .slide.exiting {
     transform: translateX(-100%);
+    z-index: 1; /* Debajo del slide entrante */
+}
+
+/* Los slides inactivos permanecen fuera de pantalla */
+.slide:not(.active):not(.exiting) {
+    transform: translateX(100%);
+    z-index: 0;
 }
 
 

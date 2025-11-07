@@ -13,7 +13,8 @@ function Eventos() {
     });
 
     const [currentSlide, setCurrentSlide] = useState(0);
-    const [previousSlide, setPreviousSlide] = useState(null);
+    const [nextSlide, setNextSlide] = useState(1);
+    const [isTransitioning, setIsTransitioning] = useState(false);
 
     const backgroundImages = [
         'startcamp_bg.jpg',
@@ -48,11 +49,19 @@ function Eventos() {
     // Efecto para el slideshow automático
     useEffect(() => {
         const slideInterval = setInterval(() => {
-            setPreviousSlide(currentSlide);
-            setCurrentSlide((prevSlide) => 
-                prevSlide === backgroundImages.length - 1 ? 0 : prevSlide + 1
-            );
-        }, 6000); // Cambia cada 6 segundos
+            setIsTransitioning(true);
+            
+            // Calcular el siguiente slide
+            const next = (currentSlide + 1) % backgroundImages.length;
+            setNextSlide(next);
+            
+            // Después de un pequeño delay, actualizar el slide actual
+            setTimeout(() => {
+                setCurrentSlide(next);
+                setIsTransitioning(false);
+            }, 1000); // Duración de la transición CSS
+            
+        }, 5000); // Cambia cada 5 segundos
 
         return () => clearInterval(slideInterval);
     }, [currentSlide, backgroundImages.length]);
@@ -66,13 +75,17 @@ function Eventos() {
                     {backgroundImages.map((image, index) => {
                         let slideClass = 'slide';
                         
-                        if (index === currentSlide) {
+                        if (index === currentSlide && !isTransitioning) {
+                            // Slide actual visible
                             slideClass += ' active';
-                        } else if (index === previousSlide) {
+                        } else if (index === currentSlide && isTransitioning) {
+                            // Slide actual saliendo
                             slideClass += ' exiting';
-                        } else {
-                            slideClass += ' entering';
+                        } else if (index === nextSlide && isTransitioning) {
+                            // Slide entrando
+                            slideClass += ' active';
                         }
+                        // Todos los demás slides permanecen con la clase base (fuera de pantalla)
                         
                         return (
                             <div
