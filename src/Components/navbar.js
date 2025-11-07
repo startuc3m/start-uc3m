@@ -55,10 +55,10 @@ function Navbar() {
         </button>
 
         <ul className={`navbar__links ${isMenuOpen ? 'navbar__links--active' : ''}`}>
-          <li><a href="" onClick={closeMenu}>EVENTOS</a></li>
+          <li><Link to="/eventos" onClick={closeMenu}>EVENTOS</Link></li>
           <li><Link to="/equipo" onClick={closeMenu}>EQUIPO</Link></li>
-          <li><a href="#quienes-somos" onClick={closeMenu}>SOBRE NOSOTROS</a></li>
-          <li><a href="#blog" onClick={closeMenu}>BLOG</a></li>
+          <li><Link to="#quienes-somos" onClick={closeMenu}>SOBRE NOSOTROS</Link></li>
+          <li><Link to="#blog" onClick={closeMenu}>BLOG</Link></li>
         </ul>
       </nav>
       

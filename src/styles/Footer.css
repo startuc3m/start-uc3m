@@ -7,6 +7,11 @@
     justify-content: center;
 }
 
+.footer a {
+    text-decoration: none;
+    color: inherit;
+}
+
 .footer-email {
     flex: 1;
     display: flex;
