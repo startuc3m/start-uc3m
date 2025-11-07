@@ -4,20 +4,86 @@
     align-items: center;
     color: #fff;
     font-family: 'Josefin Sans Regular', Arial, sans-serif;
-    padding-bottom: 1rem;
+    padding: 0;
     min-height: 100vh;
     justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Contenedor del slideshow */
+.slideshow-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+/* Cada slide individual */
+.slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 1;
+    transform: translateX(100%); /* Las nuevas imágenes empiezan desde la derecha */
+    transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Slide activo - está en el centro */
+.slide.active {
+    transform: translateX(0%);
+}
+
+/* Slide que está saliendo - se va hacia la izquierda */
+.slide.exiting {
+    transform: translateX(-100%);
+}
+
+
+
+/* Overlay oscuro para mejorar legibilidad del texto */
+.eventos-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1;
+}
+
+.eventos-header {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+    padding: 2rem;
 }
 
 .eventos-section h1 {
     margin-top: 5rem;
     font-size: 3rem;
     margin-bottom: 2rem;
+    position: relative;
+    z-index: 2;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
 }
 
 .countdown-container {
     text-align: center;
     margin-top: 2rem;
+    position: relative;
+    z-index: 2;
 }
 
 .countdown-subtitle {
@@ -75,6 +141,30 @@
     margin-top: 1rem;
     font-weight: 300;
     opacity: 0.8;
+}
+
+.register-startcamp {
+    background: #4267B2;
+  color: #fff;
+  font-size: 1.6rem;
+  font-family: 'Josefin Sans Regular', Arial, sans-serif;
+  font-weight: 600;
+  padding: 18px 80px; /* más largo el botón */
+  margin-top: 36px;
+  border: none;
+  border-radius: 40px;
+  cursor: pointer;
+  box-shadow: 0px 3px 40px rgba(22,33,90,0.28), 0 0 40px rgba(255,255,255,0.28);
+  transition: 
+    background 0.2s,
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+
+.register-startcamp:hover {
+  background: #5069f6;
+  transform: scale(1.08) translateY(-2px);
+  box-shadow: 0px 8px 60px rgba(80,105,246,0.28), 0 0 60px rgba(255,255,255,0.28); /* un pelín más opacidad en hover */
 }
 
 /* Responsive design */

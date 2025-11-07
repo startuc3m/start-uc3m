@@ -12,6 +12,16 @@ function Eventos() {
         seconds: 0
     });
 
+    const [currentSlide, setCurrentSlide] = useState(0);
+    const [previousSlide, setPreviousSlide] = useState(null);
+
+    const backgroundImages = [
+        'startcamp_bg.jpg',
+        'startcamp_bg_2.jpg',
+        'startcamp_bg_3.jpg',
+        'startcamp_bg_4.jpg'
+    ];
+
     useEffect(() => {
         const targetDate = new Date('2025-11-22T00:00:00').getTime();
 
@@ -35,31 +45,70 @@ function Eventos() {
         return () => clearInterval(timer);
     }, []);
 
+    // Efecto para el slideshow automático
+    useEffect(() => {
+        const slideInterval = setInterval(() => {
+            setPreviousSlide(currentSlide);
+            setCurrentSlide((prevSlide) => 
+                prevSlide === backgroundImages.length - 1 ? 0 : prevSlide + 1
+            );
+        }, 6000); // Cambia cada 6 segundos
+
+        return () => clearInterval(slideInterval);
+    }, [currentSlide, backgroundImages.length]);
+
     return (
         <div>
             <Navbar />
             <section className='eventos-section'>
-                <h1 className='eventos-title'>START CAMP 2025/26</h1>
-                <div className='countdown-container'>
-                    <div className='countdown-timer'>
-                        <div className='countdown-item'>
-                            <span className='countdown-number'>{timeLeft.days}</span>
-                            <span className='countdown-label'>Días</span>
+                {/* Slideshow de fondo */}
+                <div className='slideshow-container'>
+                    {backgroundImages.map((image, index) => {
+                        let slideClass = 'slide';
+                        
+                        if (index === currentSlide) {
+                            slideClass += ' active';
+                        } else if (index === previousSlide) {
+                            slideClass += ' exiting';
+                        } else {
+                            slideClass += ' entering';
+                        }
+                        
+                        return (
+                            <div
+                                key={index}
+                                className={slideClass}
+                                style={{
+                                    backgroundImage: `url(${require(`../assets/${image}`)})`
+                                }}
+                            />
+                        );
+                    })}
+                </div>
+                <div className='eventos-header'>
+                    <h1 className='eventos-title'>START CAMP 2025/26</h1>
+                    <div className='countdown-container'>
+                        <div className='countdown-timer'>
+                            <div className='countdown-item'>
+                                <span className='countdown-number'>{timeLeft.days}</span>
+                                <span className='countdown-label'>Días</span>
+                            </div>
+                            <div className='countdown-item'>
+                                <span className='countdown-number'>{timeLeft.hours}</span>
+                                <span className='countdown-label'>Horas</span>
+                            </div>
+                            <div className='countdown-item'>
+                                <span className='countdown-number'>{timeLeft.minutes}</span>
+                                <span className='countdown-label'>Minutos</span>
+                            </div>
+                            <div className='countdown-item'>
+                                <span className='countdown-number'>{timeLeft.seconds}</span>
+                                <span className='countdown-label'>Segundos</span>
+                            </div>
                         </div>
-                        <div className='countdown-item'>
-                            <span className='countdown-number'>{timeLeft.hours}</span>
-                            <span className='countdown-label'>Horas</span>
-                        </div>
-                        <div className='countdown-item'>
-                            <span className='countdown-number'>{timeLeft.minutes}</span>
-                            <span className='countdown-label'>Minutos</span>
-                        </div>
-                        <div className='countdown-item'>
-                            <span className='countdown-number'>{timeLeft.seconds}</span>
-                            <span className='countdown-label'>Segundos</span>
-                        </div>
+                        <p className='countdown-date'>22 y 23 de Noviembre de 2025</p>
+                        <button className='register-startcamp'>Apúntate ya</button>
                     </div>
-                    <p className='countdown-date'>22 y 23 de Noviembre de 2025</p>
                 </div>
             </section>
             <Footer />
