@@ -8,7 +8,7 @@ import Carla from "../assets/members/carla_martinez.jpg"
 import Miguel from "../assets/members/miguel_arnaiz.jpg"
 import Sebastian from "../assets/members/sebatian_escobar.jpg"
 import Iñigo from "../assets/members/iñigo_estebaranz.jpg"
-import Pedro from "../assets/members/pedro_bueno.jpeg"
+import Pedro from "../assets/members/pedro_bueno.jpg"
 import Marcos from "../assets/members/marcos_varez.jpeg"
 import Alejandro from "../assets/members/alejandro_ausina.jpg"
 import Pablo from "../assets/members/pablo_morales.jpg"
@@ -35,7 +35,11 @@ import Andres from "../assets/members/andres_delgado.jpg"
 import Ana from "../assets/members/ana_gimenez.jpg"
 import Irene from "../assets/members/irene_ibañez.jpeg"
 import Lidia from "../assets/members/lidia_wang.jpg"
-
+import Alicia from "../assets/members/alicia_gascon.jpg"
+import Adrian from "../assets/members/adrian_gonzalez.jpg"
+import Laura from "../assets/members/laura_navas.jpg"
+import Clara from "../assets/members/clara_mayoral.jpeg"
+import Juan_vicente from "../assets/members/juan_vicente.jpg"
 
 const teamMembers = [
     {id: 1, nombre: "Iñigo Estebaranz", cargo: "Presidente", departamento: "Junta Directiva", foto: Iñigo, linkedin: "https://www.linkedin.com/in/inigo-estebaranz-rosillo-8a2520295/"},
@@ -54,21 +58,21 @@ const teamMembers = [
     {id: 14, nombre: "Lidia Wang", cargo: "Asociada", departamento: "Marketing", foto: Lidia, linkedin: "http://www.linkedin.com/in/lidia-wang-058433389"},
     {id: 15, nombre: "Marina Sarti", cargo: "Asociada", departamento: "Marketing", foto: Marina, linkedin: "https://www.linkedin.com/in/marina-sarti-pineda-27211b29b/"},
     {id: 16, nombre: "Pablo Morales", cargo: "Asociado", departamento: "Marketing", foto: Pablo, linkedin: "https://www.linkedin.com/in/pablo-morales-de-lorenzo-290745258/"},
-    {id: 17, nombre: "Laura Navas", cargo: "Asociada", departamento: "RRHH", foto: perfil, linkedin: "https://www.linkedin.com/in/laura-mar%C3%ADa-navas-moreno-69a76b280/"},
+    {id: 17, nombre: "Laura Navas", cargo: "Asociada", departamento: "RRHH", foto: Laura, linkedin: "https://www.linkedin.com/in/laura-mar%C3%ADa-navas-moreno-69a76b280/"},
     {id: 18, nombre: "María Aguilar", cargo: "Asociada", departamento: "RRHH", foto: perfil, linkedin: ""},
-    {id: 19, nombre: "Adrián Gonzáles", cargo: "Asociado", departamento: "RRHH", foto: perfil, linkedin: ""},
+    {id: 19, nombre: "Adrián González", cargo: "Asociado", departamento: "RRHH", foto: Adrian, linkedin: ""},
     {id: 20, nombre: "Irene Ibáñez", cargo: "Asociada", departamento: "RRHH", foto: Irene, linkedin: "https://www.linkedin.com/in/ireneibanezcasao/"},
     {id: 21, nombre: "Gonzalo Torrijos", cargo: "Asociado", departamento: "Eventos", foto: perfil, linkedin: ""},
     {id: 22, nombre: "Carlos Pindado", cargo: "Asociado", departamento: "Eventos", foto: Carlos, linkedin: "https://www.linkedin.com/in/carlos-pindado-buend%C3%ADa-10445232b/"},
     {id: 23, nombre: "Elena Vidal", cargo: "Asociada", departamento: "Eventos", foto: Elena, linkedin: ""},
-    {id: 24, nombre: "Alicia Gascón", cargo: "Asociada", departamento: "Eventos", foto: perfil, linkedin: "https://www.linkedin.com/in/alicia-gasc%C3%B3n-valero-41a828387/"},
+    {id: 24, nombre: "Alicia Gascón", cargo: "Asociada", departamento: "Eventos", foto: Alicia, linkedin: "https://www.linkedin.com/in/alicia-gasc%C3%B3n-valero-41a828387/"},
     {id: 25, nombre: "Alejandro Verde", cargo: "Asociado", departamento: "Eventos", foto: Alejandro_v, linkedin: "https://www.linkedin.com/in/alejandro-verde-bethencourt-395838389/"},
     {id: 26, nombre: "Alberto Fernández", cargo: "Asociado", departamento: "Eventos", foto: Alberto, linkedin: ""},
     {id: 27, nombre: "Nicolas Sánchez", cargo: "Asociado", departamento: "Eventos", foto: Nicolas_s, linkedin: "https://www.linkedin.com/in/nicol%C3%A1s-s%C3%A1nchez-delgado-928258332/"},
     {id: 28, nombre: "Carlos Moreno", cargo: "Asociado", departamento: "IT", foto: perfil, linkedin: ""},
     {id: 29, nombre: "Pablo Presa", cargo: "Asociado", departamento: "IT", foto: Pablo_presa, linkedin: "https://www.linkedin.com/in/pablo-presa-carrera-422232280/"},
-    {id: 30, nombre: "Juan Vicente Zerpa", cargo: "Asociado", departamento: "IT", foto: perfil, linkedin: "https://www.linkedin.com/in/juan-vicente-zerpa/"},
-    {id: 31, nombre: "Clara Mayoral", cargo: "Asociada", departamento: "Comunicación", foto: perfil, linkedin: ""},
+    {id: 30, nombre: "Juan Vicente Zerpa", cargo: "Asociado", departamento: "IT", foto: Juan_vicente, linkedin: "https://www.linkedin.com/in/juan-vicente-zerpa/"},
+    {id: 31, nombre: "Clara Mayoral", cargo: "Asociada", departamento: "Comunicación", foto: Clara, linkedin: ""},
     {id: 32, nombre: "Uxio López", cargo: "Asociado", departamento: "Comunicación", foto: Uxio, linkedin: ""},
     {id: 33, nombre: "Nicholas Bergquist", cargo: "Asociado", departamento: "Comunicación", foto: Nicholas, linkedin: "https://www.linkedin.com/in/nicholas-bergquist-recio-148ab126a/"},
     {id: 34, nombre: "Andrea Sánchez", cargo: "Asociada", departamento: "Comunicación", foto: Andrea, linkedin: "https://www.linkedin.com/in/andrea-s%C3%A1nchez-galera-6a420b37b/"},
