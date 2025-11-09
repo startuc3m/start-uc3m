@@ -120,7 +120,9 @@ function Eventos() {
                             </div>
                         </div>
                         <p className='countdown-date'>22 y 23 de Noviembre de 2025</p>
-                        <button className='register-startcamp'>Apúntate ya</button>
+                        <a href="https://pci.jotform.com/form/253063919904058" target="_blank" rel="noopener noreferrer">
+                            <button className='register-startcamp'>¡Apúntate ya!</button>
+                        </a>
                     </div>
                 </div>
             </section>

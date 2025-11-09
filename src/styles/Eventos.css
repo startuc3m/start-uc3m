@@ -72,6 +72,7 @@
 
 .eventos-header {
     display: flex;
+    font-size: 4rem;
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -82,7 +83,7 @@
 
 .eventos-section h1 {
     margin-top: 5rem;
-    font-size: 3rem;
+    font-size: 5rem;
     margin-bottom: 2rem;
     position: relative;
     z-index: 2;
@@ -205,6 +206,16 @@
     
     .eventos-section h1 {
         font-size: 2.5rem;
+    }
+
+    .register-startcamp {
+    font-size: 1.2rem;
+    padding: 14px 40px;
+    margin-top: 20px;
+    }
+
+    .register-startcamp:hover {
+        transform: scale(1.05) translateY(-1px);
     }
 }
 
