@@ -187,7 +187,7 @@ function Eventos() {
                             </p>
                         </div>
                         <div className='what-image'>
-                            <img src={require('../assets/startcamp_info3.jpg')} alt='Ubicación La Nave Madrid' />
+                            <img src={require('../assets/startcamp_info3.png')} alt='Ubicación La Nave Madrid' />
                         </div>
                     </div>
                     <a href="https://pci.jotform.com/form/253063919904058" target="_blank" rel="noopener noreferrer">
