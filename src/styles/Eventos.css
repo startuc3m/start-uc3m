@@ -1,4 +1,4 @@
-.eventos-section {
+.camp-section {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -59,7 +59,7 @@
 
 
 /* Overlay oscuro para mejorar legibilidad del texto */
-.eventos-section::before {
+.camp-section::before {
     content: '';
     position: absolute;
     top: 0;
@@ -70,7 +70,7 @@
     z-index: 1;
 }
 
-.eventos-header {
+.camp-header {
     display: flex;
     font-size: 4rem;
     flex-direction: column;
@@ -81,7 +81,7 @@
     padding: 2rem;
 }
 
-.eventos-section h1 {
+.camp-section h1 {
     margin-top: 5rem;
     font-size: 5rem;
     margin-bottom: 2rem;
@@ -180,7 +180,7 @@
 
 /* Responsive design */
 @media (max-width: 768px) {
-    .eventos-section h1 {
+    .camp-section h1 {
         font-size: 2rem;
         margin-bottom: 1rem;
         padding: 0 1rem;
@@ -204,7 +204,7 @@
         font-size: 1.5rem;
     }
     
-    .eventos-section h1 {
+    .camp-section h1 {
         font-size: 2.5rem;
     }
 
@@ -232,8 +232,109 @@
     }
 }
 
+/* ------------------
+   What / Info section
+   ------------------ */
+ 
 @media (max-width: 1024px) and (min-width: 769px) {
-    .eventos-section h1 {
+    .camp-section h1 {
         font-size: 2.5rem;
+    }
+}
+
+.what-section {
+    padding: 4rem 2rem;
+    background: #2c2c8f; /* Fondo azul igual que el resto de la web */
+    color: #fff; /* Color de texto blanco como el resto de la web */
+    font-family: 'Josefin Sans Regular', Arial, sans-serif; /* Fuente igual que el resto */
+}
+
+.what-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2.5rem;
+}
+
+.what-row {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.what-row.reverse {
+    flex-direction: row-reverse;
+}
+
+.what-row.second-section {
+    background: #0E1A52; /* Azul más oscuro para la segunda sección */
+    padding: 2rem;
+    border-radius: 10px;
+    margin: 1rem 0;
+}
+
+.what-title {
+    width: 100%;
+    text-align: center;
+    font-size: 2rem;
+    margin: 0 auto 0.5rem;
+}
+
+.what-text {
+    flex: 1 1 55%;
+}
+
+.what-text h3 {
+    margin-top: 0;
+    color: #fff; /* Color blanco para los subtítulos */
+    font-family: 'Josefin Sans Regular', Arial, sans-serif;
+}
+
+.what-text p {
+    color: #fff; /* Asegura que los párrafos también sean blancos */
+    line-height: 1.6;
+}
+
+.what-image {
+    flex: 0 0 40%;
+    display: flex;
+    justify-content: center;
+}
+
+.what-image img {
+    width: 100%;
+    max-width: 420px;
+    height: auto;
+    border-radius: 10px;
+    object-fit: cover;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+}
+
+/* Responsive: stack rows on small screens */
+@media (max-width: 768px) {
+    .what-row, .what-row.reverse {
+        flex-direction: column;
+        text-align: left;
+    }
+
+    .what-image {
+        width: 100%;
+        order: 2;
+    }
+
+    .what-row.reverse .what-image {
+        order: 2;
+    }
+
+    .what-text {
+        order: 1;
+        width: 100%;
+    }
+
+    .what-title {
+        font-size: 1.6rem;
+        padding: 0 1rem;
     }
 }
