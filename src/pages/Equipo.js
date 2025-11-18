@@ -48,6 +48,7 @@ import Maria_m from "../assets/members/maria_martin.jpg"
 import Sonia from "../assets/members/sonia_garcia.jpg"
 import Andrea_s from "../assets/members/andrea_sanchez_galera.jpeg"
 import Gonzalo_t from "../assets/members/gonzalo_torrijos.jpeg"
+import Henry from "../assets/members/henry_ringstmeyer.jpg"
 
 const teamMembers = [
     {id: 1, nombre: "Iñigo Estebaranz", cargo: "Presidente", departamento: "Junta Directiva", foto: Iñigo, linkedin: "https://www.linkedin.com/in/inigo-estebaranz-rosillo-8a2520295/"},
@@ -62,7 +63,7 @@ const teamMembers = [
     {id: 10, nombre: "Lucía Pan Zhu", cargo: "Asociada", departamento: "Marketing", foto: Lucia_p, linkedin: "https://www.linkedin.com/in/lucia-pan-zhu-5013b328a/"},
     {id: 11, nombre: "Juan García", cargo: "Asociado", departamento: "IT", foto: Juan, linkedin: "https://www.linkedin.com/in/juan-garc%C3%ADa-rodr%C3%ADguez-a088292b0/"},
     {id: 12, nombre: "Alejandro Ausina", cargo: "Asociado", departamento: "IT", foto: Alejandro, linkedin: "https://www.linkedin.com/in/alejandro-ausina/"},
-    {id: 13, nombre: "Henry Ringstmeyer", cargo: "Asociado", departamento: "Marketing", foto: perfil, linkedin: "https://www.linkedin.com/in/henry-ringstmeyer-404b70311"},
+    {id: 13, nombre: "Henry Ringstmeyer", cargo: "Asociado", departamento: "Marketing", foto: Henry, linkedin: "https://www.linkedin.com/in/henry-ringstmeyer-404b70311"},
     {id: 14, nombre: "Lidia Wang", cargo: "Asociada", departamento: "Marketing", foto: Lidia, linkedin: "http://www.linkedin.com/in/lidia-wang-058433389"},
     {id: 15, nombre: "Marina Sarti", cargo: "Asociada", departamento: "Marketing", foto: Marina, linkedin: "https://www.linkedin.com/in/marina-sarti-pineda-27211b29b/"},
     {id: 16, nombre: "Pablo Morales", cargo: "Asociado", departamento: "Marketing", foto: Pablo, linkedin: "https://www.linkedin.com/in/pablo-morales-de-lorenzo-290745258/"},
@@ -91,16 +92,15 @@ const teamMembers = [
     {id: 39, nombre: "Pablo Juan", cargo: "Asociado", departamento: "Legal", foto: Pablo_juan, linkedin: "https://www.linkedin.com/in/pablo-juan-conde/"},
     {id: 40, nombre: "María Martin", cargo: "Asociada", departamento: "Legal", foto: Maria_m, linkedin: "https://www.linkedin.com/in/maria-martin-dominguez-9569332a6/"},
     {id: 41, nombre: "Sonia García", cargo: "Asociada", departamento: "Legal", foto: Sonia, linkedin: "https://www.linkedin.com/in/sonia-garcia-bellot-1371a0362/"},
-    {id: 42, nombre: "Gonzalo Renes", cargo: "Asociado", departamento: "Colaboraciones", foto: perfil, linkedin: "https://www.linkedin.com/in/gon-renes-sanchez/"},
-    {id: 43, nombre: "Ingrid Estrada", cargo: "Asociada", departamento: "Colaboraciones", foto: Ingrid, linkedin: "https://www.linkedin.com/in/ingrid-estrada1/"},
-    {id: 44, nombre: "Pedro Rodríguez", cargo: "Asociado", departamento: "Colaboraciones", foto: Pedro_r, linkedin: "https://www.linkedin.com/in/pedro-rodr%C3%ADguez-ramos-2bb75a292/"},
-    {id: 45, nombre: "Sophia Valbuena", cargo: "Asociada", departamento: "Colaboraciones", foto: Sophia, linkedin: "https://www.linkedin.com/in/sophia-v-a0474633b/"},
-    {id: 46, nombre: "Juan González", cargo: "Asociado", departamento: "Colaboraciones", foto: perfil, linkedin: "https://www.linkedin.com/in/juangonzaleztaboda/"},
-    {id: 47, nombre: "Javier Fernández", cargo: "Responsable", departamento: "Financiación", foto: perfil, linkedin: "https://www.linkedin.com/in/javierfern%C3%A1ndezmu%C3%B1oz/"},
-    {id: 48, nombre: "Andrea Sánchez", cargo: "Asociada", departamento: "Financiación", foto: Andrea_s, linkedin: ""},
-    {id: 49, nombre: "Mariia Deviatko", cargo: "Asociada", departamento: "Financiación", foto: Mariia, linkedin: "https://www.linkedin.com/in/mariia-deviatko/"},
-    {id: 50, nombre: "Patrizia Lleal", cargo: "Asociada", departamento: "Financiación", foto: perfil, linkedin: "https://www.linkedin.com/in/patrizia-l-898a1b2a0/"},
-    {id: 51, nombre: "Andrés Delgado", cargo: "Asociado", departamento: "Eventos", foto: Andres, linkedin: ""},
+    {id: 42, nombre: "Ingrid Estrada", cargo: "Asociada", departamento: "Colaboraciones", foto: Ingrid, linkedin: "https://www.linkedin.com/in/ingrid-estrada1/"},
+    {id: 43, nombre: "Pedro Rodríguez", cargo: "Asociado", departamento: "Colaboraciones", foto: Pedro_r, linkedin: "https://www.linkedin.com/in/pedro-rodr%C3%ADguez-ramos-2bb75a292/"},
+    {id: 44, nombre: "Sophia Valbuena", cargo: "Asociada", departamento: "Colaboraciones", foto: Sophia, linkedin: "https://www.linkedin.com/in/sophia-v-a0474633b/"},
+    {id: 45, nombre: "Juan González", cargo: "Asociado", departamento: "Colaboraciones", foto: perfil, linkedin: "https://www.linkedin.com/in/juangonzaleztaboda/"},
+    {id: 46, nombre: "Javier Fernández", cargo: "Responsable", departamento: "Financiación", foto: perfil, linkedin: "https://www.linkedin.com/in/javierfern%C3%A1ndezmu%C3%B1oz/"},
+    {id: 47, nombre: "Andrea Sánchez", cargo: "Asociada", departamento: "Financiación", foto: Andrea_s, linkedin: ""},
+    {id: 48, nombre: "Mariia Deviatko", cargo: "Asociada", departamento: "Financiación", foto: Mariia, linkedin: "https://www.linkedin.com/in/mariia-deviatko/"},
+    {id: 49, nombre: "Patrizia Lleal", cargo: "Asociada", departamento: "Financiación", foto: perfil, linkedin: "https://www.linkedin.com/in/patrizia-l-898a1b2a0/"},
+    {id: 50, nombre: "Andrés Delgado", cargo: "Asociado", departamento: "Eventos", foto: Andres, linkedin: ""},
 
 ];
 
