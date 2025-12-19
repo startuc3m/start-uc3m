@@ -78,7 +78,7 @@ const teamMembers = [
     {id: 25, nombre: "Alejandro Verde", cargo: "Asociado", departamento: "Eventos", foto: Alejandro_v, linkedin: "https://www.linkedin.com/in/alejandro-verde-bethencourt-395838389/"},
     {id: 26, nombre: "Alberto Fernández", cargo: "Asociado", departamento: "Eventos", foto: Alberto, linkedin: "https://www.linkedin.com/in/alberto-fern%C3%A1ndez-guzm%C3%A1n-50b284245/"},
     {id: 27, nombre: "Nicolas Sánchez", cargo: "Asociado", departamento: "Eventos", foto: Nicolas_s, linkedin: "https://www.linkedin.com/in/nicol%C3%A1s-s%C3%A1nchez-delgado-928258332/"},
-    {id: 28, nombre: "Carlos Moreno", cargo: "Asociado", departamento: "IT", foto: Carlos_m, linkedin: "https://www.linkedin.com/in/patrizia-l-898a1b2a0/"},
+    {id: 28, nombre: "Carlos Moreno", cargo: "Asociado", departamento: "IT", foto: Carlos_m, linkedin: ""},
     {id: 29, nombre: "Pablo Presa", cargo: "Asociado", departamento: "IT", foto: Pablo_presa, linkedin: "https://www.linkedin.com/in/pablo-presa-carrera-422232280/"},
     {id: 30, nombre: "Juan Vicente Zerpa", cargo: "Asociado", departamento: "IT", foto: Juan_vicente, linkedin: "https://www.linkedin.com/in/juan-vicente-zerpa/"},
     {id: 31, nombre: "Clara Mayoral", cargo: "Asociada", departamento: "Comunicación", foto: Clara, linkedin: "https://www.linkedin.com/in/clara-mayoral-ab6aba279/"},
@@ -99,8 +99,7 @@ const teamMembers = [
     {id: 46, nombre: "Javier Fernández", cargo: "Responsable", departamento: "Financiación", foto: perfil, linkedin: "https://www.linkedin.com/in/javierfern%C3%A1ndezmu%C3%B1oz/"},
     {id: 47, nombre: "Andrea Sánchez", cargo: "Asociada", departamento: "Financiación", foto: Andrea_s, linkedin: ""},
     {id: 48, nombre: "Mariia Deviatko", cargo: "Asociada", departamento: "Financiación", foto: Mariia, linkedin: "https://www.linkedin.com/in/mariia-deviatko/"},
-    {id: 49, nombre: "Patrizia Lleal", cargo: "Asociada", departamento: "Financiación", foto: perfil, linkedin: "https://www.linkedin.com/in/patrizia-l-898a1b2a0/"},
-    {id: 50, nombre: "Andrés Delgado", cargo: "Asociado", departamento: "Eventos", foto: Andres, linkedin: ""},
+    {id: 49, nombre: "Andrés Delgado", cargo: "Asociado", departamento: "Eventos", foto: Andres, linkedin: ""},
 
 ];
 
