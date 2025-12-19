@@ -101,28 +101,7 @@ function Eventos() {
                 <div className='camp-header'>
                     <h1 className='camp-title'>START CAMP 2025/26</h1>
                     <div className='countdown-container'>
-                        <div className='countdown-timer'>
-                            <div className='countdown-item'>
-                                <span className='countdown-number'>{timeLeft.days}</span>
-                                <span className='countdown-label'>Días</span>
-                            </div>
-                            <div className='countdown-item'>
-                                <span className='countdown-number'>{timeLeft.hours}</span>
-                                <span className='countdown-label'>Horas</span>
-                            </div>
-                            <div className='countdown-item'>
-                                <span className='countdown-number'>{timeLeft.minutes}</span>
-                                <span className='countdown-label'>Minutos</span>
-                            </div>
-                            <div className='countdown-item'>
-                                <span className='countdown-number'>{timeLeft.seconds}</span>
-                                <span className='countdown-label'>Segundos</span>
-                            </div>
-                        </div>
                         <p className='countdown-date'>22 y 23 de Noviembre de 2025</p>
-                        <a href="https://pci.jotform.com/form/253063919904058" target="_blank" rel="noopener noreferrer">
-                            <button className='register-startcamp'>¡Últimas entradas!</button>
-                        </a>
                     </div>
                 </div>
             </section>
@@ -190,9 +169,6 @@ function Eventos() {
                             <img src={require('../assets/startcamp_info3.png')} alt='Ubicación La Nave Madrid' />
                         </div>
                     </div>
-                    <a href="https://pci.jotform.com/form/253063919904058" target="_blank" rel="noopener noreferrer">
-                            <button className='register-startcamp'>¡No lo dejes pasar!</button>
-                    </a>
                 </div>
             </section>
 
