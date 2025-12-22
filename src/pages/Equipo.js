@@ -16,7 +16,6 @@ import Nicholas from "../assets/members/nicholas_bergquist.png"
 import Uxio from "../assets/members/uxio_lopez.png"
 import Juan from "../assets/members/juan_garcia.jpg"
 import Julen from "../assets/members/julen_sagasta.jpg"
-import Sophia from "../assets/members/sophia_valbuena.png"
 import Xabier from "../assets/members/xabier_perez.png"
 import Nicolas from "../assets/members/nicolas_lopez.jpg"
 import Pablo_presa from "../assets/members/pablo_presa.jpg"
@@ -94,7 +93,6 @@ const teamMembers = [
     {id: 41, nombre: "Sonia García", cargo: "Asociada", departamento: "Legal", foto: Sonia, linkedin: "https://www.linkedin.com/in/sonia-garcia-bellot-1371a0362/"},
     {id: 42, nombre: "Ingrid Estrada", cargo: "Asociada", departamento: "Colaboraciones", foto: Ingrid, linkedin: "https://www.linkedin.com/in/ingrid-estrada1/"},
     {id: 43, nombre: "Pedro Rodríguez", cargo: "Asociado", departamento: "Colaboraciones", foto: Pedro_r, linkedin: "https://www.linkedin.com/in/pedro-rodr%C3%ADguez-ramos-2bb75a292/"},
-    {id: 44, nombre: "Sophia Valbuena", cargo: "Asociada", departamento: "Colaboraciones", foto: Sophia, linkedin: "https://www.linkedin.com/in/sophia-v-a0474633b/"},
     {id: 45, nombre: "Juan González", cargo: "Asociado", departamento: "Colaboraciones", foto: perfil, linkedin: "https://www.linkedin.com/in/juangonzaleztaboda/"},
     {id: 46, nombre: "Javier Fernández", cargo: "Responsable", departamento: "Financiación", foto: perfil, linkedin: "https://www.linkedin.com/in/javierfern%C3%A1ndezmu%C3%B1oz/"},
     {id: 47, nombre: "Andrea Sánchez", cargo: "Asociada", departamento: "Financiación", foto: Andrea_s, linkedin: ""},
