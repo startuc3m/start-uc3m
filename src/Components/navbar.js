@@ -57,8 +57,8 @@ function Navbar() {
         <ul className={`navbar__links ${isMenuOpen ? 'navbar__links--active' : ''}`}>
           <li><Link to="/eventos" onClick={closeMenu}>EVENTOS</Link></li>
           <li><Link to="/equipo" onClick={closeMenu}>EQUIPO</Link></li>
-          <li><Link to="#quienes-somos" onClick={closeMenu}>SOBRE NOSOTROS</Link></li>
-          <li><Link to="#blog" onClick={closeMenu}>BLOG</Link></li>
+          <li><Link to="/patrocinadores" onClick={closeMenu}>PATROCINADORES</Link></li>
+          <li><Link to="/recursos" onClick={closeMenu}>RECURSOS</Link></li>
         </ul>
       </nav>
       

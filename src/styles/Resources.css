@@ -1,0 +1,8 @@
+.resources-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #fff;
+    font-family: 'Josefin Sans Regular', Arial, sans-serif;
+    padding-bottom: 1rem;
+}
