@@ -123,18 +123,138 @@ function Eventos() {
                         </div>
                     </div>
 
+                    <div className='what-row speakers-section'>
+                        <div className='what-text full-width'>
+                            <h1>Ponentes</h1>
+                            
+                            <div className='speakers-grid'>
+                                <div className='speaker-card'>
+                                    <div className='speaker-photo'>
+                                        <img src={require('../assets/profile-pic.png')} alt='Carlos Adams' />
+                                    </div>
+                                    <h4 className='speaker-name'>Carlos Adams</h4>
+                                    <p className='speaker-role'>CEO de Racks</p>
+                                </div>
+
+                                <div className='speaker-card'>
+                                    <div className='speaker-photo'>
+                                        <img src={require('../assets/profile-pic.png')} alt='Fernando Miralles' />
+                                    </div>
+                                    <h4 className='speaker-name'>Fernando Miralles</h4>
+                                    <p className='speaker-role'>Campeón de España en Oratoria</p>
+                                </div>
+
+                                <div className='speaker-card'>
+                                    <div className='speaker-photo'>
+                                        <img src={require('../assets/profile-pic.png')} alt='Borja Vázquez' />
+                                    </div>
+                                    <h4 className='speaker-name'>Borja Vázquez</h4>
+                                    <p className='speaker-role'>CEO de Scalpers</p>
+                                </div>
+
+                                <div className='speaker-card'>
+                                    <div className='speaker-photo'>
+                                        <img src={require('../assets/profile-pic.png')} alt='Pablo Recuenco' />
+                                    </div>
+                                    <h4 className='speaker-name'>Pablo Recuenco</h4>
+                                    <p className='speaker-role'>CEO Morrison Shoes</p>
+                                </div>
+
+                                <div className='speaker-card'>
+                                    <div className='speaker-photo'>
+                                        <img src={require('../assets/profile-pic.png')} alt='Martina Capel' />
+                                    </div>
+                                    <h4 className='speaker-name'>Martina Capel</h4>
+                                    <p className='speaker-role'>CEO One Dilema</p>
+                                </div>
+
+                                <div className='speaker-card'>
+                                    <div className='speaker-photo'>
+                                        <img src={require('../assets/profile-pic.png')} alt='Jorge Branger' />
+                                    </div>
+                                    <h4 className='speaker-name'>Jorge Branger</h4>
+                                    <p className='speaker-role'>Voz más joven de Linkedin</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div className='what-row second-section'>
                         <div className='what-text full-width'>
-                            <h3>¿Qué necesito?</h3>
-                            <p>
-                                Será necesario presentar tu entrada al llegar.
-                                El desayuno y la comida serán servidos los dos días, por lo que no será necesario que traigáis comida.
-                                Es recomendable traer ordenador o el dispositivo en el que más cómodos os sintáis trabajando.
-                                Tendréis materiales diversos para trabajar en el evento, como bolígrafos y blocs de notas. Aún así, sois bienvenidos a traer aquello que prefiráis a la hora de trabajar en equipo en el desarrollo de un proyecto.
-                            </p>
-                            <p>
-                                Por último, lo más importante es traer ilusión y ganas de trabajar.
-                            </p>
+                            <h3>Estructura del programa</h3>
+                            
+                            <div className='program-structure'>
+                                <div className='program-block'>
+                                    <div className='program-number'>01.</div>
+                                    <div className='program-content'>
+                                        <h4>Apertura institucional</h4>
+                                        <p>Intervención de responsable del ámbito universitario o emprendedor para la apertura del evento</p>
+                                        <ul>
+                                            <li>Angel Niño</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div className='program-block'>
+                                    <div className='program-number'>02.</div>
+                                    <div className='program-content'>
+                                        <h4>Bloque 1</h4>
+                                        <p>Ponencia sobre Inteligencia Artificial aplicada a Startups</p>
+                                        <ul>
+                                            <li>CEO de Racks: Carlos Adams</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div className='program-block'>
+                                    <div className='program-number'>03.</div>
+                                    <div className='program-content'>
+                                        <h4>Bloque 2</h4>
+                                        <p>Ponencia de oratoria y pitch</p>
+                                        <ul>
+                                            <li>Campeón de España en Oratoria: Fernando Miralles</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div className='program-block'>
+                                    <div className='program-number'>04.</div>
+                                    <div className='program-content'>
+                                        <h4>Bloque 3</h4>
+                                        <p>Mesa redonda con referentes del sector de moda</p>
+                                        <ul>
+                                            <li>CEO de Scalpers: Borja Vázquez</li>
+                                            <li>CEO Morrison Shoes: Pablo Recuenco</li>
+                                            <li>CEO One Dilema: Martina Capel</li>
+                                            <li>Yuxus, Scuffers, Nude project, eme studios</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div className='program-block'>
+                                    <div className='program-number'>05.</div>
+                                    <div className='program-content'>
+                                        <h4>Bloque 4</h4>
+                                        <p>Taller de Linkedin, comunicación o captación de clientes</p>
+                                        <ul>
+                                            <li>Voz más joven de Linkedin de habla hispana: Jorge Branger</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div className='program-block'>
+                                    <div className='program-number'>06.</div>
+                                    <div className='program-content'>
+                                        <h4>Cierre</h4>
+                                        <ul>
+                                            <li>Anuncio de los 5 proyectos más votados</li>
+                                            <li>Presentación final ante jurado/inversores</li>
+                                            <li>Feedback real y oportunidades posteriores</li>
+                                            <li>Agradecimientos</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
