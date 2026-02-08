@@ -70,7 +70,7 @@ function Eventos() {
             <section className='camp-section'>
                 <div className='camp-header'>
                     <h1 className='camp-title'>StartXperience</h1>
-                    <h2 className='camp-subtitle'>En colaboración con Racks (y otros partners)</h2>
+                    <h2 className='camp-subtitle'>En colaboración con Racks</h2>
                     <div className='countdown-container'>
                         <p className='countdown-date'>7 de marzo de 2026</p>
                         <div className='stats-container'>
@@ -129,49 +129,61 @@ function Eventos() {
                             
                             <div className='speakers-grid'>
                                 <div className='speaker-card'>
-                                    <div className='speaker-photo'>
-                                        <img src={require('../assets/profile-pic.png')} alt='Carlos Adams' />
-                                    </div>
+                                    <a href='https://www.linkedin.com/in/carlos-adams/' target='_blank' rel='noopener noreferrer' className='speaker-photo-link'>
+                                        <div className='speaker-photo'>
+                                            <img src={require('../assets/StartXperience/ponentes/carlos_adams.jpg')} alt='Carlos Adams' />
+                                        </div>
+                                    </a>
                                     <h4 className='speaker-name'>Carlos Adams</h4>
                                     <p className='speaker-role'>CEO de Racks</p>
                                 </div>
 
                                 <div className='speaker-card'>
-                                    <div className='speaker-photo'>
-                                        <img src={require('../assets/profile-pic.png')} alt='Fernando Miralles' />
-                                    </div>
+                                    <a href='https://www.linkedin.com/in/fernandomirallescoll/' target='_blank' rel='noopener noreferrer' className='speaker-photo-link'>
+                                        <div className='speaker-photo'>
+                                            <img src={require('../assets/StartXperience/ponentes/fer_miralles.jpg')} alt='Fernando Miralles' />
+                                        </div>
+                                    </a>
                                     <h4 className='speaker-name'>Fernando Miralles</h4>
                                     <p className='speaker-role'>Campeón de España en Oratoria</p>
                                 </div>
 
                                 <div className='speaker-card'>
-                                    <div className='speaker-photo'>
-                                        <img src={require('../assets/profile-pic.png')} alt='Borja Vázquez' />
-                                    </div>
+                                    <a href='https://www.linkedin.com/in/borja-vazquez-49a05b13/' target='_blank' rel='noopener noreferrer' className='speaker-photo-link'>
+                                        <div className='speaker-photo'>
+                                            <img src={require('../assets/StartXperience/ponentes/borja_vazquez.png')} alt='Borja Vázquez' />
+                                        </div>
+                                    </a>
                                     <h4 className='speaker-name'>Borja Vázquez</h4>
                                     <p className='speaker-role'>CEO de Scalpers</p>
                                 </div>
 
                                 <div className='speaker-card'>
-                                    <div className='speaker-photo'>
-                                        <img src={require('../assets/profile-pic.png')} alt='Pablo Recuenco' />
-                                    </div>
+                                    <a href='https://www.linkedin.com/in/pablo-recuenco-pizarro-36716b36/' target='_blank' rel='noopener noreferrer' className='speaker-photo-link'>
+                                        <div className='speaker-photo'>
+                                            <img src={require('../assets/StartXperience/ponentes/pablo_recuenco.jpg')} alt='Pablo Recuenco' />
+                                        </div>
+                                    </a>
                                     <h4 className='speaker-name'>Pablo Recuenco</h4>
                                     <p className='speaker-role'>CEO Morrison Shoes</p>
                                 </div>
 
                                 <div className='speaker-card'>
-                                    <div className='speaker-photo'>
-                                        <img src={require('../assets/profile-pic.png')} alt='Martina Capel' />
-                                    </div>
+                                    <a href='https://www.linkedin.com/in/martina-capel-mart%C3%ADnez-89649a224/' target='_blank' rel='noopener noreferrer' className='speaker-photo-link'>
+                                        <div className='speaker-photo'>
+                                            <img src={require('../assets/StartXperience/ponentes/martina_capel.jpg')} alt='Martina Capel' />
+                                        </div>
+                                    </a>
                                     <h4 className='speaker-name'>Martina Capel</h4>
                                     <p className='speaker-role'>CEO One Dilema</p>
                                 </div>
 
                                 <div className='speaker-card'>
-                                    <div className='speaker-photo'>
-                                        <img src={require('../assets/profile-pic.png')} alt='Jorge Branger' />
-                                    </div>
+                                    <a href='https://www.linkedin.com/in/jorgebranger/' target='_blank' rel='noopener noreferrer' className='speaker-photo-link'>
+                                        <div className='speaker-photo'>
+                                            <img src={require('../assets/StartXperience/ponentes/jorge_branger.jpg')} alt='Jorge Branger' />
+                                        </div>
+                                    </a>
                                     <h4 className='speaker-name'>Jorge Branger</h4>
                                     <p className='speaker-role'>Voz más joven de Linkedin</p>
                                 </div>
@@ -255,17 +267,6 @@ function Eventos() {
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-
-                    <div className='what-row'>
-                        <div className='what-text full-width'>
-                            <h3>¿Dónde está StartXperience?</h3>
-                            <p>
-                                La Nave. <br />
-                                Calle Cifuentes, 5, 28021, Madrid.<br />
-                                El metro más cercano es VILLAVERDE BAJO-CRUCE
-                            </p>
                         </div>
                     </div>
                 </div>

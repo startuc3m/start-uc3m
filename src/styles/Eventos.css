@@ -183,10 +183,15 @@
 /* Responsive design */
 @media (max-width: 768px) {
     .camp-section h1 {
-        font-size: 2rem;
+        font-size: 2.5rem;
         margin-bottom: 1rem;
         padding: 0 1rem;
         text-align: center;
+    }
+
+    .camp-section h2 {
+        font-size: 1.3rem;
+        padding: 0 1rem;
     }
 
     .countdown-timer {
@@ -205,15 +210,11 @@
     .countdown-subtitle {
         font-size: 1.5rem;
     }
-    
-    .camp-section h1 {
-        font-size: 2.5rem;
-    }
 
     .register-startcamp {
-    font-size: 1.2rem;
-    padding: 14px 40px;
-    margin-top: 20px;
+        font-size: 1.2rem;
+        padding: 14px 40px;
+        margin-top: 20px;
     }
 
     .register-startcamp:hover {
@@ -236,9 +237,34 @@
     .stat-label {
         font-size: 0.9rem;
     }
+
+    .what-section {
+        padding: 3rem 1.5rem;
+    }
+
+    .what-container {
+        gap: 2rem;
+    }
+
+    .what-row {
+        gap: 1.5rem;
+    }
+
+    .what-row.second-section {
+        padding: 1.5rem;
+    }
 }
 
 @media (max-width: 480px) {
+    .camp-section h1 {
+        font-size: 2rem;
+        margin-top: 3rem;
+    }
+
+    .camp-section h2 {
+        font-size: 1.1rem;
+    }
+
     .countdown-timer {
         grid-template-columns: repeat(2, 1fr);
         display: grid;
@@ -248,6 +274,15 @@
     
     .countdown-item {
         min-width: auto;
+        padding: 0.8rem;
+    }
+
+    .countdown-number {
+        font-size: 1.8rem;
+    }
+
+    .countdown-label {
+        font-size: 0.85rem;
     }
 
     .stats-container {
@@ -259,6 +294,143 @@
 
     .stat-item {
         width: 100%;
+        padding: 0.7rem 1rem;
+    }
+
+    .stat-number {
+        font-size: 1.8rem;
+    }
+
+    .stat-label {
+        font-size: 0.85rem;
+    }
+
+    .register-startcamp {
+        font-size: 1rem;
+        padding: 12px 30px;
+    }
+
+    .what-section {
+        padding: 2rem 1rem;
+    }
+
+    .what-container {
+        gap: 1.5rem;
+    }
+
+    .what-title {
+        font-size: 1.5rem;
+        padding: 0 0.5rem;
+    }
+
+    .what-row.second-section {
+        padding: 1rem;
+    }
+
+    .what-row.speakers-section .what-text.full-width h1 {
+        font-size: 1.8rem;
+    }
+
+    .what-row.second-section .what-text.full-width h3 {
+        font-size: 1.3rem;
+    }
+}
+
+/* Para dispositivos muy pequeños */
+@media (max-width: 380px) {
+    .camp-section h1 {
+        font-size: 1.7rem;
+        margin-top: 2rem;
+    }
+
+    .camp-section h2 {
+        font-size: 1rem;
+    }
+
+    .countdown-subtitle {
+        font-size: 1.3rem;
+    }
+
+    .countdown-number {
+        font-size: 1.5rem;
+    }
+
+    .countdown-item {
+        padding: 0.6rem;
+    }
+
+    .register-startcamp {
+        font-size: 0.9rem;
+        padding: 10px 25px;
+    }
+
+    .what-section {
+        padding: 1.5rem 0.5rem;
+    }
+
+    .what-title {
+        font-size: 1.3rem;
+    }
+
+    .objectives-title {
+        font-size: 1.1rem;
+    }
+
+    .objectives-list li {
+        font-size: 0.85rem;
+        padding: 0.6rem 0.8rem;
+    }
+
+    .speakers-grid {
+        gap: 1.5rem;
+        padding: 0 0.5rem;
+    }
+
+    .what-row.speakers-section .what-text.full-width h1 {
+        font-size: 1.5rem;
+    }
+
+    .what-row.second-section .what-text.full-width h3 {
+        font-size: 1.1rem;
+    }
+
+    .speaker-photo {
+        width: 120px;
+        height: 120px;
+    }
+
+    .speaker-name {
+        font-size: 1rem;
+    }
+
+    .speaker-role {
+        font-size: 0.85rem;
+        padding: 0.3rem 0.8rem;
+    }
+
+    .program-number {
+        font-size: 2rem;
+        min-width: 45px;
+    }
+
+    .program-content h4 {
+        font-size: 1.1rem;
+    }
+
+    .program-content p {
+        font-size: 0.85rem;
+    }
+
+    .program-content ul li {
+        font-size: 0.8rem;
+    }
+
+    .program-block {
+        gap: 0.6rem;
+    }
+
+    .program-structure {
+        gap: 1.2rem;
     }
 }
 
@@ -315,6 +487,18 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+.what-row.speakers-section .what-text.full-width h1 {
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.what-row.second-section .what-text.full-width h3 {
+    font-size: 1.8rem;
+    margin-top: 0;
+    margin-bottom: 1.5rem;
 }
 
 .what-row.speakers-section h3 {
@@ -506,6 +690,12 @@
     flex: 0 0 auto;
 }
 
+.speaker-photo-link {
+    display: block;
+    text-decoration: none;
+    position: relative;
+}
+
 .speaker-photo {
     width: 180px;
     height: 180px;
@@ -513,12 +703,44 @@
     overflow: hidden;
     border-radius: 10px;
     background: #ddd;
+    position: relative;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.speaker-photo::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.3) 0%, rgba(255, 215, 0, 0) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.speaker-photo:hover {
+    transform: scale(1.05) translateY(-5px);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4), 0 0 20px rgba(255, 215, 0, 0.2);
+}
+
+.speaker-photo:hover::before {
+    opacity: 1;
 }
 
 .speaker-photo img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.speaker-photo:hover img {
+    transform: scale(1.1);
 }
 
 .speaker-name {
@@ -548,7 +770,7 @@
 
     .objectives-row {
         flex-direction: column;
-        gap: 2rem;
+        gap: 1.5rem;
     }
 
     .objectives-column {
@@ -569,18 +791,31 @@
         width: 100%;
     }
 
+    .what-text.full-width {
+        padding: 0 0.5rem;
+    }
+
+    .what-text p {
+        font-size: 0.95rem;
+    }
+
     .what-title {
         font-size: 1.6rem;
-        padding: 0 1rem;
+        padding: 0 0.5rem;
     }
 
     .objectives-title {
-        font-size: 1.3rem;
+        font-size: 1.2rem;
+    }
+
+    .objectives-list {
+        padding: 0 0.5rem;
     }
 
     .objectives-list li {
-        font-size: 0.95rem;
+        font-size: 0.9rem;
         padding: 0.7rem 1rem;
+        margin-bottom: 0.8rem;
     }
 
     .program-structure {
@@ -589,9 +824,24 @@
         gap: 1.5rem;
     }
 
+    .program-block {
+        gap: 0.8rem;
+    }
+
     .speakers-grid {
         gap: 2rem;
         max-width: 100%;
+        padding: 0 1rem;
+    }
+
+    .what-row.speakers-section .what-text.full-width h1 {
+        font-size: 2rem;
+        padding: 0 1rem;
+    }
+
+    .what-row.second-section .what-text.full-width h3 {
+        font-size: 1.5rem;
+        padding: 0 1rem;
     }
 
     .speaker-photo {
@@ -619,6 +869,10 @@
 
     .program-content p {
         font-size: 0.9rem;
+    }
+
+    .program-content ul {
+        padding-left: 1rem;
     }
 
     .program-content ul li {
