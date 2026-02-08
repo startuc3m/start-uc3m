@@ -22,7 +22,7 @@ function Home() {
     });
 
     const [isClosed, setIsClosed] = useState(false);
-    const [isVisibleByScroll, setIsVisibleByScroll] = useState(true);
+    const [isNavbarVisible, setIsNavbarVisible] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
 
     useEffect(() => {
@@ -49,24 +49,24 @@ function Home() {
     }, []);
 
     useEffect(() => {
-        const controlBanner = () => {
+        const controlNavbarVisibility = () => {
             if (typeof window !== 'undefined') {
                 if (window.scrollY > lastScrollY && window.scrollY > 100) {
-                    // Scrolling down and past 100px
-                    setIsVisibleByScroll(false);
+                    // Scrolling down and past 100px - navbar is hidden
+                    setIsNavbarVisible(false);
                 } else {
-                    // Scrolling up
-                    setIsVisibleByScroll(true);
+                    // Scrolling up - navbar is visible
+                    setIsNavbarVisible(true);
                 }
                 setLastScrollY(window.scrollY);
             }
         };
 
         if (typeof window !== 'undefined') {
-            window.addEventListener('scroll', controlBanner);
+            window.addEventListener('scroll', controlNavbarVisibility);
 
             return () => {
-                window.removeEventListener('scroll', controlBanner);
+                window.removeEventListener('scroll', controlNavbarVisibility);
             };
         }
     }, [lastScrollY]);
@@ -75,14 +75,12 @@ function Home() {
         setIsClosed(true);
     };
 
-    const showBanner = !isClosed && isVisibleByScroll;
-
     return (
         <div>
             <Navbar />
-            <div className={`event-banner ${!showBanner ? 'event-banner--hidden' : ''}`}>
+            <div className={`event-banner ${isClosed ? 'event-banner--hidden' : ''} ${!isNavbarVisible ? 'event-banner--top' : ''}`}>
+                <button className="close-banner" onClick={closeBanner}>×</button>
                 <div className="banner-content">
-                    <button className="close-banner" onClick={closeBanner}>×</button>
                     <h2 className="banner-title">StartXperience</h2>
                     <div className="banner-countdown">
                         <div className="banner-countdown-item">
@@ -103,7 +101,7 @@ function Home() {
                         </div>
                     </div>
                     <Link to="/eventos" className="banner-cta">
-                        Más información →
+                        ¡Quiero saber más! →
                     </Link>
                 </div>
             </div>

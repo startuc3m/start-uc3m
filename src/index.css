@@ -48,8 +48,13 @@ code {
   padding: 1rem 2rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   transform: translateY(0);
-  transition: transform 0.3s ease-in-out;
+  transition: transform 0.3s ease-in-out, top 0.3s ease-in-out;
   animation: slideDown 0.5s ease-out;
+  pointer-events: auto;
+}
+
+.event-banner--top {
+  top: 0;
 }
 
 .event-banner--hidden {
@@ -75,13 +80,12 @@ code {
   align-items: center;
   justify-content: space-between;
   gap: 2rem;
-  position: relative;
 }
 
 .close-banner {
   position: absolute;
-  right: 0;
-  top: -0.5rem;
+  right: 1.5rem;
+  top: 1rem;
   background: transparent;
   border: none;
   color: #fff;
@@ -94,6 +98,7 @@ code {
   align-items: center;
   justify-content: center;
   transition: transform 0.2s;
+  z-index: 10;
 }
 
 .close-banner:hover {
@@ -169,10 +174,13 @@ code {
     padding: 1rem;
   }
 
+  .event-banner--top {
+    top: 0;
+  }
+
   .banner-content {
     flex-direction: column;
     gap: 1rem;
-    padding-right: 30px;
   }
 
   .banner-title {
@@ -203,8 +211,8 @@ code {
   }
 
   .close-banner {
-    top: -0.8rem;
-    right: -0.5rem;
+    right: 0.5rem;
+    top: 0.5rem;
   }
 }
 
