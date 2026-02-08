@@ -9,7 +9,7 @@
     justify-content: center;
     position: relative;
     overflow: hidden;
-    background-image: url('../assets/startcamp_bg.jpg');
+    background-image: url('../assets/StartXperience_1.jpeg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -120,6 +120,45 @@
     opacity: 0.8;
 }
 
+.stats-container {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: transform 0.3s ease;
+}
+
+.stat-item:hover {
+    transform: translateY(-3px);
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    font-size: 1rem;
+    color: #e0e0e0;
+    text-align: center;
+    font-weight: 300;
+}
+
 .register-startcamp {
     background: #4267B2;
   color: #fff;
@@ -183,6 +222,23 @@
     .register-startcamp:hover {
         transform: scale(1.05) translateY(-1px);
     }
+
+    .stats-container {
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    }
+
+    .stat-item {
+        padding: 0.8rem 1.5rem;
+    }
+
+    .stat-number {
+        font-size: 2rem;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+    }
 }
 
 @media (max-width: 480px) {
@@ -195,6 +251,17 @@
     
     .countdown-item {
         min-width: auto;
+    }
+
+    .stats-container {
+        flex-direction: column;
+        gap: 1rem;
+        width: 100%;
+        max-width: 280px;
+    }
+
+    .stat-item {
+        width: 100%;
     }
 }
 

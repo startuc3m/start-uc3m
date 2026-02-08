@@ -12,6 +12,9 @@ function Eventos() {
         seconds: 0
     });
 
+    const [students, setStudents] = useState(0);
+    const [projects, setProjects] = useState(0);
+
     useEffect(() => {
         const targetDate = new Date('2025-11-22T00:00:00').getTime();
 
@@ -35,6 +38,32 @@ function Eventos() {
         return () => clearInterval(timer);
     }, []);
 
+    // Animación de contadores
+    useEffect(() => {
+        const studentsTarget = 200;
+        const projectsTarget = 30;
+        const duration = 2000; // 2 segundos
+        const steps = 60;
+        const studentsIncrement = studentsTarget / steps;
+        const projectsIncrement = projectsTarget / steps;
+        let currentStep = 0;
+
+        const counterInterval = setInterval(() => {
+            currentStep++;
+            
+            if (currentStep <= steps) {
+                setStudents(Math.floor(studentsIncrement * currentStep));
+                setProjects(Math.floor(projectsIncrement * currentStep));
+            } else {
+                setStudents(studentsTarget);
+                setProjects(projectsTarget);
+                clearInterval(counterInterval);
+            }
+        }, duration / steps);
+
+        return () => clearInterval(counterInterval);
+    }, []);
+
     return (
         <div>
             <Navbar />
@@ -44,6 +73,16 @@ function Eventos() {
                     <h2 className='camp-subtitle'>En colaboración con Racks (y otros partners)</h2>
                     <div className='countdown-container'>
                         <p className='countdown-date'>7 de marzo de 2026</p>
+                        <div className='stats-container'>
+                            <div className='stat-item'>
+                                <span className='stat-number'>+{students}</span>
+                                <span className='stat-label'>Estudiantes estimados</span>
+                            </div>
+                            <div className='stat-item'>
+                                <span className='stat-number'>+{projects}</span>
+                                <span className='stat-label'>Proyectos expuestos en stands</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -53,16 +92,15 @@ function Eventos() {
                 <div className='what-container'>
                     {/* Título principal centrado */}
                     <div className='what-row'>
-                        <h2 className='what-title'>¿Qué es Startcamp?</h2>
+                        <h2 className='what-title'>¿Qué es StartXperience?</h2>
                     </div>
 
                     {/* Primera fila: texto izquierda, imagen derecha */}
                     <div className='what-row'>
                         <div className='what-text'>
                             <p>
-                                Startcamp es un hackathon de emprendimiento organizado por Start UC3M que cuenta con la colaboración de la UC3M. 
-                                Durante un fin de semana tendrás la oportunidad de diseñar una idea de negocio con un equipo, contar con la mentoría de expertos y ganar premios.
-                                Se trata de un espacio transformador en el que acercar a los jóvenes a sus sueños.
+                                StartXperience es un evento presencial de un día que reúne a startups universitarias, 
+                                estudiantes con ideas de negocio, empresas y profesionales del ecosistema emprendedor.
                             </p>
                             <p>
                                 Puedes traer tu propia idea y formar equipo o unirte al proyecto que más te guste de los disponibles.
