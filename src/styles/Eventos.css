@@ -9,7 +9,7 @@
     justify-content: center;
     position: relative;
     overflow: hidden;
-    background-image: url('../assets/StartXperience_1.jpeg');
+    background-image: url('../assets/StartXperience_2.jpeg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -277,9 +277,10 @@
 
 .what-section {
     padding: 4rem 2rem;
-    background: #2c2c8f; /* Fondo azul igual que el resto de la web */
-    color: #fff; /* Color de texto blanco como el resto de la web */
-    font-family: 'Josefin Sans Regular', Arial, sans-serif; /* Fuente igual que el resto */
+    background: #2c2c8f;
+    color: #fff;
+    font-family: 'Josefin Sans Regular', Arial, sans-serif;
+    background-image: url('../assets/StartXperience_1.jpeg');
 }
 
 .what-container {
@@ -330,6 +331,72 @@
     line-height: 1.6;
 }
 
+.what-text.full-width {
+    flex: 1 1 100%;
+    width: 100%;
+}
+
+/* Estilos para la sección de objetivos */
+.objectives-row {
+    display: flex;
+    gap: 3rem;
+    width: 100%;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.objectives-column {
+    flex: 1;
+    max-width: 500px;
+}
+
+.objectives-title {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    color: #fff;
+    font-family: 'Josefin Sans Regular', Arial, sans-serif;
+    font-weight: 600;
+}
+
+.objectives-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.objectives-list li {
+    margin-bottom: 1rem;
+    padding: 0.8rem 1.2rem;
+    color: #fff;
+    font-size: 1rem;
+    line-height: 1.5;
+    position: relative;
+}
+
+.objectives-list li::before {
+    content: '•';
+    margin-right: 0.8rem;
+    font-size: 1.2rem;
+    color: #fff;
+}
+
+/* Estilo resaltado con borde dorado para "Un espacio donde" */
+.objectives-list.highlighted li {
+    border: 2px solid #FFD700;
+    border-radius: 25px;
+    background: rgba(255, 215, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.objectives-list.highlighted li:hover {
+    background: rgba(255, 215, 0, 0.15);
+    transform: translateX(5px);
+}
+
+.objectives-list.highlighted li::before {
+    color: #FFD700;
+}
+
 .what-image {
     flex: 0 0 40%;
     display: flex;
@@ -352,6 +419,15 @@
         text-align: left;
     }
 
+    .objectives-row {
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .objectives-column {
+        max-width: 100%;
+    }
+
     .what-image {
         width: 100%;
         order: 2;
@@ -369,5 +445,14 @@
     .what-title {
         font-size: 1.6rem;
         padding: 0 1rem;
+    }
+
+    .objectives-title {
+        font-size: 1.3rem;
+    }
+
+    .objectives-list li {
+        font-size: 0.95rem;
+        padding: 0.7rem 1rem;
     }
 }

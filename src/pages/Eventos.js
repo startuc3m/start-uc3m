@@ -87,41 +87,44 @@ function Eventos() {
                 </div>
             </section>
 
-            {/* Sección informativa debajo del slideshow */}
             <section className='what-section'>
                 <div className='what-container'>
-                    {/* Título principal centrado */}
                     <div className='what-row'>
                         <h2 className='what-title'>¿Qué es StartXperience?</h2>
                     </div>
 
-                    {/* Primera fila: texto izquierda, imagen derecha */}
                     <div className='what-row'>
-                        <div className='what-text'>
+                        <div className='what-text full-width'>
                             <p>
                                 StartXperience es un evento presencial de un día que reúne a startups universitarias, 
                                 estudiantes con ideas de negocio, empresas y profesionales del ecosistema emprendedor.
                             </p>
-                            <p>
-                                Puedes traer tu propia idea y formar equipo o unirte al proyecto que más te guste de los disponibles.
-                                Ciertos profesionales de renombre también nos complacen con ponencias que hacen la experiencia todavía mejor si cabe.
-                                Estos dos intensos días están repletos de oportunidades de networking con otros jóvenes inquietos.
-                            </p>
-                            <p>
-                                Es una experiencia inolvidable en la que aprender y dar un paso más en el camino hacia tu futuro.
-                            </p>
-                        </div>
-                        <div className='what-image'>
-                            <img src={require('../assets/startcamp_info1.jpg')} alt='Startcamp evento' />
                         </div>
                     </div>
 
-                    {/* Segunda fila: texto izquierda, imagen derecha */}
-                    <div className='what-row second-section'>
-                        <div className='what-image'>
-                            <img src={require('../assets/startcamp_info2.jpg')} alt='Qué necesito para Startcamp' />
+                    <div className='what-row objectives-row'>
+                        <div className='objectives-column'>
+                            <h3 className='objectives-title'>Un espacio donde:</h3>
+                            <ul className='objectives-list highlighted'>
+                                <li>Los proyectos se exponen de forma real</li>
+                                <li>Los asistentes reciben formación práctica</li>
+                                <li>Profesionales conectan con talento joven</li>
+                                <li>Se genera comunidad, visibilidad y oportunidades</li>
+                            </ul>
                         </div>
-                        <div className='what-text'>
+                        <div className='objectives-column'>
+                            <h3 className='objectives-title'>Objetivo del evento:</h3>
+                            <ul className='objectives-list'>
+                                <li>Impulsar proyectos universitarios en fase temprana</li>
+                                <li>Dar visibilidad a ideas con potencial real</li>
+                                <li>Conectar estudiantes con empresas y referentes</li>
+                                <li>Crear un evento de referencia para emprendedores en madrid</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div className='what-row second-section'>
+                        <div className='what-text full-width'>
                             <h3>¿Qué necesito?</h3>
                             <p>
                                 Será necesario presentar tu entrada al llegar.
@@ -135,18 +138,14 @@ function Eventos() {
                         </div>
                     </div>
 
-                    {/* Tercera fila: texto izquierda, imagen derecha */}
                     <div className='what-row'>
-                        <div className='what-text'>
-                            <h3>¿Dónde está Startcamp?</h3>
+                        <div className='what-text full-width'>
+                            <h3>¿Dónde está StartXperience?</h3>
                             <p>
                                 La Nave. <br />
                                 Calle Cifuentes, 5, 28021, Madrid.<br />
                                 El metro más cercano es VILLAVERDE BAJO-CRUCE
                             </p>
-                        </div>
-                        <div className='what-image'>
-                            <img src={require('../assets/startcamp_info3.png')} alt='Ubicación La Nave Madrid' />
                         </div>
                     </div>
                 </div>
