@@ -9,54 +9,12 @@
     justify-content: center;
     position: relative;
     overflow: hidden;
-}
-
-/* Contenedor del slideshow */
-.slideshow-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-}
-
-/* Cada slide individual */
-.slide {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    background-image: url('../assets/startcamp_bg.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
-    opacity: 1;
-    transform: translateX(100%); /* Por defecto, fuera de pantalla a la derecha */
-    transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
-    will-change: transform; /* Optimización para transiciones */
 }
-
-/* Slide activo - está en el centro */
-.slide.active {
-    transform: translateX(0%);
-    z-index: 2; /* Asegura que esté encima */
-}
-
-/* Slide que está saliendo - se va hacia la izquierda */
-.slide.exiting {
-    transform: translateX(-100%);
-    z-index: 1; /* Debajo del slide entrante */
-}
-
-/* Los slides inactivos permanecen fuera de pantalla */
-.slide:not(.active):not(.exiting) {
-    transform: translateX(100%);
-    z-index: 0;
-}
-
-
 
 /* Overlay oscuro para mejorar legibilidad del texto */
 .camp-section::before {
@@ -88,6 +46,14 @@
     position: relative;
     z-index: 2;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+.camp-section h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 2;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .countdown-container {

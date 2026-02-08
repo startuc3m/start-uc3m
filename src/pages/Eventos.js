@@ -12,17 +12,6 @@ function Eventos() {
         seconds: 0
     });
 
-    const [currentSlide, setCurrentSlide] = useState(0);
-    const [nextSlide, setNextSlide] = useState(1);
-    const [isTransitioning, setIsTransitioning] = useState(false);
-
-    const backgroundImages = [
-        'startcamp_bg.jpg',
-        'startcamp_bg_2.jpg',
-        'startcamp_bg_3.jpg',
-        'startcamp_bg_4.jpg'
-    ];
-
     useEffect(() => {
         const targetDate = new Date('2025-11-22T00:00:00').getTime();
 
@@ -46,62 +35,15 @@ function Eventos() {
         return () => clearInterval(timer);
     }, []);
 
-    // Efecto para el slideshow automático
-    useEffect(() => {
-        const slideInterval = setInterval(() => {
-            setIsTransitioning(true);
-            
-            // Calcular el siguiente slide
-            const next = (currentSlide + 1) % backgroundImages.length;
-            setNextSlide(next);
-            
-            // Después de un pequeño delay, actualizar el slide actual
-            setTimeout(() => {
-                setCurrentSlide(next);
-                setIsTransitioning(false);
-            }, 1000); // Duración de la transición CSS
-            
-        }, 5000); // Cambia cada 5 segundos
-
-        return () => clearInterval(slideInterval);
-    }, [currentSlide, backgroundImages.length]);
-
     return (
         <div>
             <Navbar />
             <section className='camp-section'>
-                {/* Slideshow de fondo */}
-                <div className='slideshow-container'>
-                    {backgroundImages.map((image, index) => {
-                        let slideClass = 'slide';
-                        
-                        if (index === currentSlide && !isTransitioning) {
-                            // Slide actual visible
-                            slideClass += ' active';
-                        } else if (index === currentSlide && isTransitioning) {
-                            // Slide actual saliendo
-                            slideClass += ' exiting';
-                        } else if (index === nextSlide && isTransitioning) {
-                            // Slide entrando
-                            slideClass += ' active';
-                        }
-                        // Todos los demás slides permanecen con la clase base (fuera de pantalla)
-                        
-                        return (
-                            <div
-                                key={index}
-                                className={slideClass}
-                                style={{
-                                    backgroundImage: `url(${require(`../assets/${image}`)})`
-                                }}
-                            />
-                        );
-                    })}
-                </div>
                 <div className='camp-header'>
-                    <h1 className='camp-title'>START CAMP 2025/26</h1>
+                    <h1 className='camp-title'>StartXperience</h1>
+                    <h2 className='camp-subtitle'>En colaboración con Racks (y otros partners)</h2>
                     <div className='countdown-container'>
-                        <p className='countdown-date'>22 y 23 de Noviembre de 2025</p>
+                        <p className='countdown-date'>7 de marzo de 2026</p>
                     </div>
                 </div>
             </section>
