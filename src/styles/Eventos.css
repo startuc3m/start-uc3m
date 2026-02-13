@@ -34,11 +34,12 @@
     position: relative;
     z-index: 2;
     padding: 2rem;
+    --camp-title-size: 5rem;
 }
 
 .camp-section h1 {
     margin-top: 5rem;
-    font-size: 5rem;
+    font-size: var(--camp-title-size);
     margin-bottom: 2rem;
     position: relative;
     z-index: 2;
@@ -49,13 +50,14 @@
     font-size: 2rem;
     margin-bottom: 0.5rem;
     position: relative;
+    text-align: center;
     z-index: 2;
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .countdown-container {
     text-align: center;
-    margin-top: 2rem;
+    margin-top: 0.75rem;
     position: relative;
     z-index: 2;
 }
@@ -110,17 +112,23 @@
 }
 
 .countdown-date {
-    font-size: 1.5rem;
+    display: block;
+    font-size: calc(var(--camp-title-size) * 0.32);
     color: #fff;
-    margin-top: 0rem;
+    margin-top: 0.2rem;
+    margin-bottom: 0.1rem;
     font-weight: 300;
+    line-height: 1.15;
     opacity: 0.8;
 }
 
 .countdown-location {
-    font-size: 1.7rem;
-    margin-top: 0rem;
+    display: block;
+    font-size: calc(var(--camp-title-size) * 0.36);
+    margin-top: 0.1rem;
+    margin-bottom: 0.2rem;
     color: #ccc;
+    line-height: 1.15;
 }
 
 .stats-container {
@@ -186,10 +194,91 @@
   box-shadow: 0px 8px 60px rgba(80,105,246,0.28), 0 0 60px rgba(255,255,255,0.28); /* un pelín más opacidad en hover */
 }
 
+.event-location-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+    gap: 4rem;
+    width: 100%;
+    max-width: 1200px;
+    padding: 0 1rem;
+}
+
+.event-location {
+    width: 100%;
+    margin-top: 3rem;
+    padding: 3rem 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2.5rem;
+    background: linear-gradient(135deg, rgba(75, 0, 130, 0.5) 0%, rgba(26, 77, 94, 0.6) 100%);
+    border-radius: 14px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
+}
+
+.location-title {
+    font-size: 2.5rem;
+    margin: 0;
+    text-align: center;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    font-weight: 600;
+}
+
+.location-text {
+    text-align: left;
+    flex: 1;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.location-text p {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #ffffff;
+    line-height: 1.6;
+    font-weight: 400;
+}
+
+.location-text p:first-child {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #fff;
+}
+
+.location-photo {
+    width: clamp(300px, 40vw, 500px);
+    height: clamp(225px, 30vw, 375px);
+    border-radius: 16px;
+    background: #ddd;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+    flex: 0 0 auto;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.location-photo:hover {
+    transform: scale(1.02);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+}
+
+.location-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
+    .camp-header {
+        --camp-title-size: 2.5rem;
+    }
+
     .camp-section h1 {
-        font-size: 2.5rem;
         margin-bottom: 1rem;
         padding: 0 1rem;
         text-align: center;
@@ -259,11 +348,44 @@
     .what-row.second-section {
         padding: 1.5rem;
     }
+
+    .event-location {
+        padding: 2.5rem 1.5rem;
+    }
+
+    .event-location-content {
+        flex-direction: column;
+        gap: 2.5rem;
+        padding: 0;
+    }
+
+    .location-text {
+        text-align: center;
+        min-width: auto;
+        gap: 1rem;
+    }
+
+    .location-text p {
+        font-size: 1.1rem;
+    }
+
+    .location-text p:first-child {
+        font-size: 1.3rem;
+    }
+
+    .location-photo {
+        width: min(100%, 500px);
+        height: auto;
+        aspect-ratio: 4 / 3;
+    }
 }
 
 @media (max-width: 480px) {
+    .camp-header {
+        --camp-title-size: 2rem;
+    }
+
     .camp-section h1 {
-        font-size: 2rem;
         margin-top: 3rem;
     }
 
@@ -340,12 +462,19 @@
     .what-row.second-section .what-text.full-width h3 {
         font-size: 1.3rem;
     }
+
+    .location-title {
+        font-size: 1.8rem;
+    }
 }
 
 /* Para dispositivos muy pequeños */
 @media (max-width: 380px) {
+    .camp-header {
+        --camp-title-size: 1.7rem;
+    }
+
     .camp-section h1 {
-        font-size: 1.7rem;
         margin-top: 2rem;
     }
 

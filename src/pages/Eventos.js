@@ -3,6 +3,7 @@ import "../index.css";
 import Navbar from '../components/navbar';
 import Footer from '../components/Footer.js';
 import "../styles/Eventos.css";
+import location from '../assets/StartXperience/location.jpg';
 
 function Eventos() {
     const [timeLeft, setTimeLeft] = useState({
@@ -267,6 +268,19 @@ function Eventos() {
                                         </ul>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className='event-location'>
+                        <h1 className='location-title'>¿Dónde será?</h1>
+                        <div className='event-location-content'>
+                            <div className='location-text'>
+                                <p>TeamLabs/ Madrid</p>
+                                <p>Dirección: Plaza de San Martín, 1</p>
+                                <p>TeamLabs es un Laboratorio de Aprendizaje Radical referente por su metodología innovadora. Además, es un espacio para eventos en Madrid, abierto a personas y organizaciones que quieran impulsar la creación disruptiva transversal artística, cultural, científica, tecnológica, social y medioambiental, junto a nuestra comunidad emprendedora.</p>
+                            </div>
+                            <div className='location-photo'>
+                                <img src={location} alt="Location"></img>
                             </div>
                         </div>
                     </div>
