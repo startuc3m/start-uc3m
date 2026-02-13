@@ -26,7 +26,7 @@ function Home() {
     const [lastScrollY, setLastScrollY] = useState(0);
 
     useEffect(() => {
-        const targetDate = new Date('2026-03-07T00:00:00').getTime();
+        const targetDate = new Date('2026-03-12T00:00:00').getTime();
 
         const timer = setInterval(() => {
             const now = new Date().getTime();

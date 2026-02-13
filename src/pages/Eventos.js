@@ -72,7 +72,8 @@ function Eventos() {
                     <h1 className='camp-title'>StartXperience</h1>
                     <h2 className='camp-subtitle'>En colaboración con Racks</h2>
                     <div className='countdown-container'>
-                        <p className='countdown-date'>7 de marzo de 2026</p>
+                        <p className='countdown-date'>12 de marzo de 2026</p>
+                        <a href='https://www.google.com/maps/place/TeamLabs%2F+Madrid/@40.4182068,-3.7070443,1088m/data=!3m2!1e3!4b1!4m6!3m5!1s0xd42262860feda0b:0xa48c5345fe9381e6!8m2!3d40.4182068!4d-3.7070443!16s%2Fg%2F1q64fqg9_?entry=ttu&g_ep=EgoyMDI2MDIxMC4wIKXMDSoASAFQAw%3D%3D' target='_blank' rel='noopener noreferrer' className='countdown-location'>TeamLabs Madrid</a>
                         <div className='stats-container'>
                             <div className='stat-item'>
                                 <span className='stat-number'>+{students}</span>
