@@ -41,8 +41,8 @@ function Eventos() {
 
     // Animación de contadores
     useEffect(() => {
-        const studentsTarget = 200;
-        const projectsTarget = 30;
+        const studentsTarget = 150;
+        const projectsTarget = 20;
         const duration = 2000; // 2 segundos
         const steps = 60;
         const studentsIncrement = studentsTarget / steps;
@@ -98,8 +98,11 @@ function Eventos() {
                     <div className='what-row'>
                         <div className='what-text full-width'>
                             <p>
-                                StartXperience es un evento presencial de un día que reúne a startups universitarias, 
-                                estudiantes con ideas de negocio, empresas y profesionales del ecosistema emprendedor.
+                                StartXperience es un evento presencial de un día que reúne astartups en fase presseed, 
+                                empresas y profesionales delecosistema emprendedor. Además de contar con la presencia deinversores,
+                                lanzaderas, incubadoras, etc.  
+                                Se trata de un formatoinnovador que recoge todas las iniciativas relacionadas con elemprendimiento que
+                                se están desarrollando en Madrid.
                             </p>
                         </div>
                     </div>
@@ -127,7 +130,7 @@ function Eventos() {
 
                     <div className='what-row speakers-section'>
                         <div className='what-text full-width'>
-                            <h1>Ponentes</h1>
+                            <h1>Ponentes confirmados</h1>
                             
                             <div className='speakers-grid'>
                                 <div className='speaker-card'>
@@ -141,23 +144,33 @@ function Eventos() {
                                 </div>
 
                                 <div className='speaker-card'>
-                                    <a href='https://www.linkedin.com/in/fernandomirallescoll/' target='_blank' rel='noopener noreferrer' className='speaker-photo-link'>
+                                    <a href='https://www.linkedin.com/in/nacho-senda/' target='_blank' rel='noopener noreferrer' className='speaker-photo-link'>
                                         <div className='speaker-photo'>
-                                            <img src={require('../assets/StartXperience/ponentes/fer_miralles.jpg')} alt='Fernando Miralles' />
+                                            <img src={require('../assets/StartXperience/ponentes/Nacho_Senda.jpg')} alt='Nacho Sánchez' />
                                         </div>
                                     </a>
-                                    <h4 className='speaker-name'>Fernando Miralles</h4>
-                                    <p className='speaker-role'>Campeón de España en Oratoria</p>
+                                    <h4 className='speaker-name'>Nacho Sánchez</h4>
+                                    <p className='speaker-role'>Early-Stage Investor</p>
                                 </div>
 
                                 <div className='speaker-card'>
-                                    <a href='https://www.linkedin.com/in/borja-vazquez-49a05b13/' target='_blank' rel='noopener noreferrer' className='speaker-photo-link'>
+                                    <a href='https://www.linkedin.com/in/borjavv/' target='_blank' rel='noopener noreferrer' className='speaker-photo-link'>
                                         <div className='speaker-photo'>
-                                            <img src={require('../assets/StartXperience/ponentes/borja_vazquez.png')} alt='Borja Vázquez' />
+                                            <img src={require('../assets/StartXperience/ponentes/borja_vega.jpg')} alt='Borja Vega' />
                                         </div>
                                     </a>
-                                    <h4 className='speaker-name'>Borja Vázquez</h4>
-                                    <p className='speaker-role'>CEO de Scalpers</p>
+                                    <h4 className='speaker-name'>Borja Vega</h4>
+                                    <p className='speaker-role'>Mentor & Investor</p>
+                                </div>
+
+                                <div className='speaker-card'>
+                                    <a href='https://www.linkedin.com/in/joaquinwulin/' target='_blank' rel='noopener noreferrer' className='speaker-photo-link'>
+                                        <div className='speaker-photo'>
+                                            <img src={require('../assets/StartXperience/ponentes/joaquin_wu_ling.jpg')} alt='Joaquín Wu Ling' />
+                                        </div>
+                                    </a>
+                                    <h4 className='speaker-name'>Joaquín Wu Ling</h4>
+                                    <p className='speaker-role'>Community at Tetuan Valley</p>
                                 </div>
 
                                 <div className='speaker-card'>
@@ -181,13 +194,13 @@ function Eventos() {
                                 </div>
 
                                 <div className='speaker-card'>
-                                    <a href='https://www.linkedin.com/in/jorgebranger/' target='_blank' rel='noopener noreferrer' className='speaker-photo-link'>
+                                    <a href='https://www.linkedin.com/in/rociobotella/' target='_blank' rel='noopener noreferrer' className='speaker-photo-link'>
                                         <div className='speaker-photo'>
-                                            <img src={require('../assets/StartXperience/ponentes/jorge_branger.jpg')} alt='Jorge Branger' />
+                                            <img src={require('../assets/StartXperience/ponentes/Rocio-botella.jpg')} alt='Rocío Botella' />
                                         </div>
                                     </a>
-                                    <h4 className='speaker-name'>Jorge Branger</h4>
-                                    <p className='speaker-role'>Voz más joven de Linkedin</p>
+                                    <h4 className='speaker-name'>Rocío Botella</h4>
+                                    <p className='speaker-role'>Founder at THE-ARE</p>
                                 </div>
                             </div>
                         </div>
