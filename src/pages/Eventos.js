@@ -214,8 +214,8 @@ function Eventos() {
                                 <div className='program-block'>
                                     <div className='program-number'>01.</div>
                                     <div className='program-content'>
-                                        <h4>Apertura institucional</h4>
-                                        <p>Intervención de responsable del ámbito universitario o emprendedor para la apertura del evento</p>
+                                        <h4>10:30 - Apertura institucional</h4>
+                                        <p>Bienvenida por parte de la asociación, TeamLabs y discurso de inaguración</p>
                                         <ul>
                                             <li>Angel Niño</li>
                                         </ul>
@@ -225,7 +225,7 @@ function Eventos() {
                                 <div className='program-block'>
                                     <div className='program-number'>02.</div>
                                     <div className='program-content'>
-                                        <h4>Bloque 1</h4>
+                                        <h4>11:30</h4>
                                         <p>Ponencia sobre Inteligencia Artificial aplicada a Startups</p>
                                         <ul>
                                             <li>CEO de Racks: Carlos Adams</li>
@@ -236,10 +236,12 @@ function Eventos() {
                                 <div className='program-block'>
                                     <div className='program-number'>03.</div>
                                     <div className='program-content'>
-                                        <h4>Bloque 2</h4>
-                                        <p>Ponencia de oratoria y pitch</p>
+                                        <h4>13:30</h4>
+                                        <p>Mesa redonda retos actuales del emprendimiento</p>
                                         <ul>
-                                            <li>Campeón de España en Oratoria: Fernando Miralles</li>
+                                            <li>Nacho Sánchez (Early-Stage Investor)</li>
+                                            <li>Borja Vega (Mentor e Inversor)</li>
+                                            <li>Joaquín Wu Ling (Tetuán Valley)</li>
                                         </ul>
                                     </div>
                                 </div>
@@ -247,13 +249,12 @@ function Eventos() {
                                 <div className='program-block'>
                                     <div className='program-number'>04.</div>
                                     <div className='program-content'>
-                                        <h4>Bloque 3</h4>
+                                        <h4>16:30</h4>
                                         <p>Mesa redonda con referentes del sector de moda</p>
                                         <ul>
-                                            <li>CEO de Scalpers: Borja Vázquez</li>
-                                            <li>CEO Morrison Shoes: Pablo Recuenco</li>
-                                            <li>CEO One Dilema: Martina Capel</li>
-                                            <li>Yuxus, Scuffers, Nude project, eme studios</li>
+                                            <li>Pablo Recuenco (CEO de Morrison Shoes)</li>
+                                            <li>Martina Capel (CEO de One Dilema)</li>
+                                            <li>Rocío Botellas (Founder The-Are)</li>
                                         </ul>
                                     </div>
                                 </div>
@@ -261,10 +262,13 @@ function Eventos() {
                                 <div className='program-block'>
                                     <div className='program-number'>05.</div>
                                     <div className='program-content'>
-                                        <h4>Bloque 4</h4>
-                                        <p>Taller de Linkedin, comunicación o captación de clientes</p>
+                                        <h4>18:00</h4>
+                                        <p>Madrid Start-Ups Bar</p>
                                         <ul>
-                                            <li>Voz más joven de Linkedin de habla hispana: Jorge Branger</li>
+                                            <li>3-5 pitch decks de Start-Ups</li>
+                                            <li>Presentación final ante jurado/inversores</li>
+                                            <li>Feedback real y oportunidades posteriores</li>
+                                            <li>Agradecimientos</li>
                                         </ul>
                                     </div>
                                 </div>
@@ -272,12 +276,10 @@ function Eventos() {
                                 <div className='program-block'>
                                     <div className='program-number'>06.</div>
                                     <div className='program-content'>
-                                        <h4>Cierre</h4>
+                                        <h4>19:30 - Cierre</h4>
                                         <ul>
-                                            <li>Anuncio de los 5 proyectos más votados</li>
-                                            <li>Presentación final ante jurado/inversores</li>
-                                            <li>Feedback real y oportunidades posteriores</li>
-                                            <li>Agradecimientos</li>
+                                            <li>Networking final</li>
+                                            <li>Despedidas</li>
                                         </ul>
                                     </div>
                                 </div>
