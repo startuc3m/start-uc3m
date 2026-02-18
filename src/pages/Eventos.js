@@ -143,7 +143,7 @@ function Eventos() {
                                     <p className='speaker-role'>CEO de Racks</p>
                                 </div>
 
-                                <div className='speaker-card'>
+                                {/*<div className='speaker-card'>
                                     <a href='https://www.linkedin.com/in/nacho-senda/' target='_blank' rel='noopener noreferrer' className='speaker-photo-link'>
                                         <div className='speaker-photo'>
                                             <img src={require('../assets/StartXperience/ponentes/Nacho_Senda.jpg')} alt='Nacho Sánchez' />
@@ -151,7 +151,7 @@ function Eventos() {
                                     </a>
                                     <h4 className='speaker-name'>Nacho Sánchez</h4>
                                     <p className='speaker-role'>Early-Stage Investor</p>
-                                </div>
+                                </div>*/}
 
                                 <div className='speaker-card'>
                                     <a href='https://www.linkedin.com/in/borjavv/' target='_blank' rel='noopener noreferrer' className='speaker-photo-link'>
@@ -173,7 +173,7 @@ function Eventos() {
                                     <p className='speaker-role'>Community at Tetuan Valley</p>
                                 </div>
 
-                                <div className='speaker-card'>
+                                {/*<div className='speaker-card'>
                                     <a href='https://www.linkedin.com/in/pablo-recuenco-pizarro-36716b36/' target='_blank' rel='noopener noreferrer' className='speaker-photo-link'>
                                         <div className='speaker-photo'>
                                             <img src={require('../assets/StartXperience/ponentes/pablo_recuenco.jpg')} alt='Pablo Recuenco' />
@@ -181,9 +181,9 @@ function Eventos() {
                                     </a>
                                     <h4 className='speaker-name'>Pablo Recuenco</h4>
                                     <p className='speaker-role'>CEO Morrison Shoes</p>
-                                </div>
+                                </div>*/}
 
-                                <div className='speaker-card'>
+                                {/*<div className='speaker-card'>
                                     <a href='https://www.linkedin.com/in/martina-capel-mart%C3%ADnez-89649a224/' target='_blank' rel='noopener noreferrer' className='speaker-photo-link'>
                                         <div className='speaker-photo'>
                                             <img src={require('../assets/StartXperience/ponentes/martina_capel.jpg')} alt='Martina Capel' />
@@ -191,9 +191,9 @@ function Eventos() {
                                     </a>
                                     <h4 className='speaker-name'>Martina Capel</h4>
                                     <p className='speaker-role'>CEO One Dilema</p>
-                                </div>
+                                </div>*/}
 
-                                <div className='speaker-card'>
+                                {/*<div className='speaker-card'>
                                     <a href='https://www.linkedin.com/in/rociobotella/' target='_blank' rel='noopener noreferrer' className='speaker-photo-link'>
                                         <div className='speaker-photo'>
                                             <img src={require('../assets/StartXperience/ponentes/Rocio-botella.jpg')} alt='Rocío Botella' />
@@ -201,7 +201,7 @@ function Eventos() {
                                     </a>
                                     <h4 className='speaker-name'>Rocío Botella</h4>
                                     <p className='speaker-role'>Founder at THE-ARE</p>
-                                </div>
+                                </div>*/}
                             </div>
                         </div>
                     </div>
