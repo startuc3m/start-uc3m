@@ -169,8 +169,8 @@ function Eventos() {
                                             <img src={require('../assets/StartXperience/ponentes/joaquin_wu_ling.jpg')} alt='Joaquín Wu Ling' />
                                         </div>
                                     </a>
-                                    <h4 className='speaker-name'>Joaquín Wu Ling</h4>
-                                    <p className='speaker-role'>Community at Tetuan Valley</p>
+                                    <h4 className='speaker-name'>Joaquín Wu Lin</h4>
+                                    <p className='speaker-role'>Program Manager at Tetuan Valley</p>
                                 </div>
 
                                 {/*<div className='speaker-card'>
@@ -225,8 +225,8 @@ function Eventos() {
                                 <div className='program-block'>
                                     <div className='program-number'>02.</div>
                                     <div className='program-content'>
-                                        <h4>11:30</h4>
-                                        <p>Ponencia sobre Inteligencia Artificial aplicada a Startups</p>
+                                        <h4>11:00 - 1º Ponencia</h4>
+                                        <p>Inteligencia Artificial aplicada a Startups</p>
                                         <ul>
                                             <li>CEO de Racks: Carlos Adams</li>
                                         </ul>
@@ -236,12 +236,12 @@ function Eventos() {
                                 <div className='program-block'>
                                     <div className='program-number'>03.</div>
                                     <div className='program-content'>
-                                        <h4>13:30</h4>
-                                        <p>Mesa redonda retos actuales del emprendimiento</p>
+                                        <h4>13:30 - Mesa redonda</h4>
+                                        <p>Retos actuales del emprendimiento</p>
                                         <ul>
                                             <li>Nacho Sánchez (Early-Stage Investor)</li>
                                             <li>Borja Vega (Mentor e Inversor)</li>
-                                            <li>Joaquín Wu Ling (Tetuán Valley)</li>
+                                            <li>Joaquín Wu Lin (Program Manager at Tetuán Valley)</li>
                                         </ul>
                                     </div>
                                 </div>
@@ -249,8 +249,8 @@ function Eventos() {
                                 <div className='program-block'>
                                     <div className='program-number'>04.</div>
                                     <div className='program-content'>
-                                        <h4>16:30</h4>
-                                        <p>Mesa redonda con referentes del sector de moda</p>
+                                        <h4>16:30 - Mesa redonda</h4>
+                                        <p>Emprendimiento en el sector de la moda</p>
                                         <ul>
                                             <li>Pablo Recuenco (CEO de Morrison Shoes)</li>
                                             <li>Martina Capel (CEO de One Dilema)</li>
@@ -262,8 +262,7 @@ function Eventos() {
                                 <div className='program-block'>
                                     <div className='program-number'>05.</div>
                                     <div className='program-content'>
-                                        <h4>18:00</h4>
-                                        <p>Madrid Start-Ups Bar</p>
+                                        <h4>18:00 - Madrid Start-Up Bar</h4>
                                         <ul>
                                             <li>3-5 pitch decks de Start-Ups</li>
                                             <li>Presentación final ante jurado/inversores</li>
@@ -276,7 +275,7 @@ function Eventos() {
                                 <div className='program-block'>
                                     <div className='program-number'>06.</div>
                                     <div className='program-content'>
-                                        <h4>19:30 - Cierre</h4>
+                                        <h4>19:30 - Cierre Oficial</h4>
                                         <ul>
                                             <li>Networking final</li>
                                             <li>Despedidas</li>
