@@ -143,7 +143,7 @@ function Eventos() {
                                     <p className='speaker-role'>CEO de Racks</p>
                                 </div>
 
-                                {/*<div className='speaker-card'>
+                                <div className='speaker-card'>
                                     <a href='https://www.linkedin.com/in/nacho-senda/' target='_blank' rel='noopener noreferrer' className='speaker-photo-link'>
                                         <div className='speaker-photo'>
                                             <img src={require('../assets/StartXperience/ponentes/Nacho_Senda.jpg')} alt='Nacho Sánchez' />
@@ -151,7 +151,7 @@ function Eventos() {
                                     </a>
                                     <h4 className='speaker-name'>Nacho Sánchez</h4>
                                     <p className='speaker-role'>Early-Stage Investor</p>
-                                </div>*/}
+                                </div>
 
                                 <div className='speaker-card'>
                                     <a href='https://www.linkedin.com/in/borjavv/' target='_blank' rel='noopener noreferrer' className='speaker-photo-link'>
