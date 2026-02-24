@@ -107,8 +107,7 @@ function Home() {
             </div>
             <Hero />
             <LogosBand />
-            <QuoteSection />
-            <DividerOfSections />
+    
             <StarterSection />
             <DividerOfSections />
             <Quote2 />
@@ -117,6 +116,8 @@ function Home() {
             <PodcastEmbed />
             <DividerOfSections />
             <Contact />
+            <QuoteSection />
+            <DividerOfSections />
             <Footer />
         </div>
     );
