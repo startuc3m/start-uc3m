@@ -11,18 +11,23 @@ function StarterSection() {
   <section className="starter-section">
         <h2 className="starter-title">Qué es un starter?</h2>
         <div className="starter-content">
+          <div className="starter-text">
+            <p>Un starter no se nace, se hace</p>
+          </div>
           <div className="starter-image-container">
             <img src={starterImage} alt="Starter" className="starter-image" />
           </div>
           <div className="starter-text">
+            <p>Un starter no es solo alguien que forma parte de Start</p>
             <p>
-              Un starter es un miembro de la comunidad que comparte y respeta
-              nuestros valores, un embajador de nuestra marca.
+              Es una persona con iniciativa, curiosidad y ganas reales de implicarse. Alguien que aporta
+              ideas, energía y actitud a la comunidad, y que entiende que el valor de Start lo construimos
+              entre todos.
             </p>
             <p>
-              De mente inquieta, con ganas de cambiar las cosas, comprometido con
-              la sociedad y con el emprendimiento como forma de generar un impacto
-              positivo, que quiere estar al día de lo que hacemos.
+              En Start UC3M buscamos perfiles comprometidos, con mentalidad abierta y espíritu
+              colaborativo. La participación activa y la fidelidad a la asociación marcan la diferencia:
+              cuanto más aportas, más crece tu recorrido dentro, y fuera de Start.
             </p>
             <a href='https://tally.so/r/wz9GQg' target="_blank" rel="noopener noreferrer">
               <button className="StarterSection-cta">
