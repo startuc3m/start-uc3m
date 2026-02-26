@@ -172,6 +172,15 @@ function Eventos() {
                                     <h4 className='speaker-name'>Joaquín Wu Lin</h4>
                                     <p className='speaker-role'>Program Manager at Tetuan Valley</p>
                                 </div>
+                                <div className='speaker-card'>
+                                    <a href='https://www.linkedin.com/in/ivan-bayona-1a1ab717/' target='_blank' rel='noopener noreferrer' className='speaker-photo-link'>
+                                        <div className='speaker-photo'>
+                                            <img src={require('../assets/StartXperience/ponentes/ivan_bayona.jpg')} alt='Joaquín Wu Ling' />
+                                        </div>
+                                    </a>
+                                    <h4 className='speaker-name'>Iván Bayona</h4>
+                                    <p className='speaker-role'>CEO y Co-Founder de Xdoku</p>
+                                </div>
 
                                 {/*<div className='speaker-card'>
                                     <a href='https://www.linkedin.com/in/pablo-recuenco-pizarro-36716b36/' target='_blank' rel='noopener noreferrer' className='speaker-photo-link'>
