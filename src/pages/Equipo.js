@@ -48,6 +48,7 @@ import Sonia from "../assets/members/sonia_garcia.jpg"
 import Andrea_s from "../assets/members/andrea_sanchez_galera.jpeg"
 import Gonzalo_t from "../assets/members/gonzalo_torrijos.jpeg"
 import Henry from "../assets/members/henry_ringstmeyer.jpg"
+import TeamIntro from "../components/TeamIntro";
 
 const teamMembers = [
     {id: 1, nombre: "Iñigo Estebaranz", cargo: "Presidente", departamento: "Junta Directiva", foto: Iñigo, linkedin: "https://www.linkedin.com/in/inigo-estebaranz-rosillo-8a2520295/"},
@@ -123,12 +124,8 @@ function Equipo() {
     return (
         <div>
             <Navbar />
+            <TeamIntro />
             <section className="team-section">
-                <h1>CONOCE A NUESTRO EQUIPO</h1>
-                <h3>Una asociación sin un equipo, no es nada.
-                    <br />
-                    Detrás de Start UC3M hay un grupo de personas con ganas de cambiar las cosas. ¡Conócelos!
-                </h3>
                 <div className="filtro-buttons">
                     {departments.map(department => (
                         <button key={department} className={`filtro-btn ${selectedDepartment === department ? 'active' : ''}`}
