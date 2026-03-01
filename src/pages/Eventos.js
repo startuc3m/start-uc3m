@@ -142,6 +142,16 @@ function Eventos() {
                                     <h4 className='speaker-name'>Carlos Adams</h4>
                                     <p className='speaker-role'>CEO de Racks</p>
                                 </div>
+                                
+                                <div className='speaker-card'>
+                                    <a href='https://www.linkedin.com/in/clemente-cebri%C3%A1n-mosquera-96148b1a9/' target='_blank' rel='noopener noreferrer' className='speaker-photo-link'>
+                                        <div className='speaker-photo'>
+                                            <img src={require('../assets/StartXperience/ponentes/clemente_cebrian.jpeg')} alt='Clemente Cebrián' />
+                                        </div>
+                                    </a>
+                                    <h4 className='speaker-name'>Clemente Cebrián</h4>
+                                    <p className='speaker-role'>Co-founder de El Ganso</p>
+                                </div>
 
                                 <div className='speaker-card'>
                                     <a href='https://www.linkedin.com/in/nacho-senda/' target='_blank' rel='noopener noreferrer' className='speaker-photo-link'>
@@ -151,6 +161,15 @@ function Eventos() {
                                     </a>
                                     <h4 className='speaker-name'>Nacho Sánchez</h4>
                                     <p className='speaker-role'>Early-Stage Investor</p>
+                                </div>
+                                <div className='speaker-card'>
+                                    <a href='https://www.linkedin.com/in/lola-l%C3%B3pez-fern%C3%A1ndez-2a40bb23/' target='_blank' rel='noopener noreferrer' className='speaker-photo-link'>
+                                        <div className='speaker-photo'>
+                                            <img src={require('../assets/StartXperience/ponentes/lola_lopez.jpeg')} alt='Lola López' />
+                                        </div>
+                                    </a>
+                                    <h4 className='speaker-name'>Lola López</h4>
+                                    <p className='speaker-role'>Co-founder de Tintoremus</p>
                                 </div>
 
                                 <div className='speaker-card'>
