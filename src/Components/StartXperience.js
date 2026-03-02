@@ -95,6 +95,9 @@ function StartXperience() {
                             </ul>
                         </div>
                     </div>
+                    <a href="https://www.neonpass.es/event/07ad9698-1671-4258-84c0-f8355e4a9246" target="_blank">
+                        <button className="startx-button">Coge tu entrada ya (segunda oportunidad)</button>
+                    </a>
 
                     <div className='what-row speakers-section'>
                         <div className='what-text full-width'>
@@ -281,6 +284,9 @@ function StartXperience() {
                             </div>
                         </div>
                     </div>
+                    <a href="https://www.neonpass.es/event/07ad9698-1671-4258-84c0-f8355e4a9246" target="_blank">
+                        <button className="startx-button">¿Te vas a quedar sin venir?</button>
+                    </a>
                     <div className='event-location'>
                         <h1 className='location-title'>¿Dónde será?</h1>
                         <div className='event-location-content'>
