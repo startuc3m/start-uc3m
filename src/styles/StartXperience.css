@@ -58,6 +58,30 @@
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
 }
 
+.startx-button {
+    background: #9242b2;
+    color: #fff;
+    font-size: 1.6rem;
+    font-family: 'Josefin Sans Regular', Arial, sans-serif;
+    font-weight: 600;
+    padding: 18px 80px; /* más largo el botón */
+    margin-top: 36px;
+    border: none;
+    border-radius: 40px;
+    cursor: pointer;
+    box-shadow: 0px 3px 40px rgba(22,33,90,0.28), 0 0 40px rgba(255,255,255,0.28);
+    transition: 
+        background 0.2s,
+        transform 0.2s,
+        box-shadow 0.2s;
+}
+
+.startx-button:hover {
+  background: #ab50f6;
+  transform: scale(1.08) translateY(-2px);
+  box-shadow: 0px 8px 60px rgba(80,105,246,0.28), 0 0 60px rgba(255,255,255,0.28); /* un pelín más opacidad en hover */
+}
+
 /* =====================
    Countdown / Stats
    ===================== */

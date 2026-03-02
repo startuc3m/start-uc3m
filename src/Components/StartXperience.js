@@ -52,6 +52,9 @@ function StartXperience() {
                             </div>
                         </div>
                     </div>
+                    <a href="https://www.neonpass.es/event/07ad9698-1671-4258-84c0-f8355e4a9246" target="_blank">
+                        <button className="startx-button">Comprar entradas ya!</button>
+                    </a>
                 </div>
             </section>
             <section className='what-section'>
