@@ -4,8 +4,9 @@
   font-family: 'Josefin Sans', sans-serif;
   width: 100vw;           /* ocupa todo el ancho de la ventana */
   min-width: 100vw;       /* asegura que no queden espacios en blanco */
-  height: 60vh;
-  padding: 0;
+  min-height: 60vh;
+  height: auto;
+  padding: 4rem 2rem;
   margin: 0;
   display: flex;
   flex-direction: column;
@@ -29,10 +30,13 @@
 
 .starter-content {
   display: flex;
+  flex-direction: column;
   gap: 4rem;
-  align-items: flex-start; /* sube el texto a la altura donde empieza la imagen */
+  align-items: center;
   justify-content: center;
   flex-wrap: wrap;
+  width: 100%;
+  max-width: 1300px;
 }
 
 .starter-image-container {
@@ -64,9 +68,22 @@
 .starter-text {
   flex: 1 1 320px;
   font-size: 1.1rem;
+  justify-content: center;
+  align-items: center;
   line-height: 1.7;
   font-style: italic;
   max-width: 550px;
+  text-align: center;
+}
+
+.starter-content > .starter-text:first-child {
+  flex: 0 0 auto; /* don't grow — prevents large gap before image */
+}
+
+.starter-text a {
+  display: flex;
+  justify-content: center;
+  text-decoration: none;
 }
 
 

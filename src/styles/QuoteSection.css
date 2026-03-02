@@ -4,7 +4,7 @@
 
 .quote-section {
   background-color: #2c2c8f;
-  padding: 8rem 0rem 3rem 0rem; 
+  padding: 3rem 0rem 3rem 0rem;
   text-align: center;
   color: #ffffff;
   font-family: 'Josefin Sans', sans-serif;
@@ -31,7 +31,7 @@
 /* Mobile styles */
 @media (max-width: 768px) {
   .quote-section {
-    padding: 4rem 1rem 2rem 1rem;
+    padding: 2rem 1rem 2rem 1rem;
   }
 
   .quote-text {
@@ -50,7 +50,7 @@
 /* Tablet styles */
 @media (max-width: 1024px) and (min-width: 769px) {
   .quote-section {
-    padding: 6rem 2rem 2.5rem 2rem;
+    padding: 3rem 2rem 2.5rem 2rem;
   }
 
   .quote-text {
