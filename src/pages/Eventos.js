@@ -3,7 +3,6 @@ import "../index.css";
 import Navbar from '../components/navbar';
 import Footer from '../components/Footer.js';
 import "../styles/Eventos.css";
-import location from '../assets/StartXperience/location.jpg';
 import StartXperience from '../components/StartXperience.js';
 
 function Eventos() {
@@ -13,9 +12,6 @@ function Eventos() {
         minutes: 0,
         seconds: 0
     });
-
-    const [students, setStudents] = useState(0);
-    const [projects, setProjects] = useState(0);
 
     useEffect(() => {
         const targetDate = new Date('2025-11-22T00:00:00').getTime();
@@ -38,32 +34,6 @@ function Eventos() {
         }, 1000);
 
         return () => clearInterval(timer);
-    }, []);
-
-    // Animación de contadores
-    useEffect(() => {
-        const studentsTarget = 150;
-        const projectsTarget = 20;
-        const duration = 2000; // 2 segundos
-        const steps = 60;
-        const studentsIncrement = studentsTarget / steps;
-        const projectsIncrement = projectsTarget / steps;
-        let currentStep = 0;
-
-        const counterInterval = setInterval(() => {
-            currentStep++;
-            
-            if (currentStep <= steps) {
-                setStudents(Math.floor(studentsIncrement * currentStep));
-                setProjects(Math.floor(projectsIncrement * currentStep));
-            } else {
-                setStudents(studentsTarget);
-                setProjects(projectsTarget);
-                clearInterval(counterInterval);
-            }
-        }, duration / steps);
-
-        return () => clearInterval(counterInterval);
     }, []);
 
     return (
