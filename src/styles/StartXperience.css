@@ -957,3 +957,37 @@
         gap: 1.2rem;
     }
 }
+
+
+.program-number {
+  display: none;
+}
+
+.program-block.clean {
+  margin: 0.75rem 0;
+  padding: 0.75rem 1rem;
+  border-left: 3px solid rgba(255, 255, 255, 0.15);
+}
+
+.program-block.clean .program-content h4 {
+  margin: 0 0 0.2rem;
+}
+
+.program-block.clean .program-content p {
+  margin: 0;
+}
+
+.featured-talk {
+  border-left: 3px solid #ffd166;
+  background: rgba(255, 209, 102, 0.08);
+}
+
+.featured-speaker {
+  margin-top: 0.5rem !important;
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: #ffd166;
+  letter-spacing: 0.2px;
+}
+
+

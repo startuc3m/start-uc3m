@@ -209,79 +209,87 @@ function StartXperience() {
                         <div className='what-text full-width'>
                             <h3>Estructura del programa</h3>
                             
-                            <div className='program-structure'>
-                                <div className='program-block'>
-                                    <div className='program-number'>01.</div>
-                                    <div className='program-content'>
-                                        <h4>10:30 - Apertura institucional</h4>
-                                        <p>Bienvenida por parte de la asociación, TeamLabs y discurso de inaguración</p>
-                                        <ul>
-                                            <li>Angel Niño</li>
-                                        </ul>
+                                <div className='program-structure'>
+                                    <div className='program-block clean'>
+                                        <div className='program-content'>
+                                            <h4>10:00 - 10:30</h4>
+                                            <p>Recepción y acreditaciones</p>
+                                        </div>
+                                    </div>
+
+                                    <div className='program-block clean'>
+                                        <div className='program-content'>
+                                            <h4>10:30 - 11:00</h4>
+                                            <p>Inauguración institucional</p>
+                                        </div>
+                                    </div>
+
+                                    <div className='program-block clean featured-talk'>
+                                        <div className='program-content'>
+                                            <h4>11:00 - 12:00 | 1ª ponencia</h4>
+                                            <p>IA aplicada al emprendimiento</p>
+                                            <p className='featured-speaker'>Carlos Adams + Xdoku</p>
+                                        </div>
+                                    </div>
+
+                                    <div className='program-block clean'>
+                                        <div className='program-content'>
+                                            <h4>12:00 - 13:30</h4>
+                                            <p>Networking + visita stands</p>
+                                        </div>
+                                    </div>
+
+                                    <div className='program-block clean'>
+                                        <div className='program-content'>
+                                            <h4>13:30 - 14:20 | Mesa redonda</h4>
+                                            <p>Retos actuales del emprendimiento</p>
+                                        </div>
+                                    </div>
+
+                                    <div className='program-block clean'>
+                                        <div className='program-content'>
+                                            <h4>14:20 - 16:30</h4>
+                                            <p>Lunch break + networking</p>
+                                        </div>
+                                    </div>
+
+                                    <div className='program-block clean'>
+                                        <div className='program-content'>
+                                            <h4>16:30 - 17:20 | Mesa redonda</h4>
+                                            <p>Emprendimiento en la moda</p>
+                                        </div>
+                                    </div>
+
+                                    <div className='program-block clean'>
+                                        <div className='program-content'>
+                                            <h4>17:20 - 18:00</h4>
+                                            <p>Networking + últimas votaciones</p>
+                                        </div>
+                                    </div>
+
+                                    <div className='program-block clean'>
+                                        <div className='program-content'>
+                                            <h4>18:00 - 19:15</h4>
+                                            <p>Madrid Startup Bar</p>
+                                        </div>
+                                    </div>
+
+                                    <div className='program-block clean'>
+                                        <div className='program-content'>
+                                            <h4>19:15 - 19:30</h4>
+                                            <p>Cierre oficial</p>
+                                        </div>
+                                    </div>
+
+                                    <div className='program-block clean'>
+                                        <div className='program-content'>
+                                            <h4>19:30 - 20:00</h4>
+                                            <p>Networking final</p>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div className='program-block'>
-                                    <div className='program-number'>02.</div>
-                                    <div className='program-content'>
-                                        <h4>11:00 - 1º Ponencia</h4>
-                                        <p>Inteligencia Artificial aplicada a Startups</p>
-                                        <ul>
-                                            <li>CEO de Racks: Carlos Adams</li>
-                                        </ul>
-                                    </div>
-                                </div>
 
-                                <div className='program-block'>
-                                    <div className='program-number'>03.</div>
-                                    <div className='program-content'>
-                                        <h4>13:30 - Mesa redonda</h4>
-                                        <p>Retos actuales del emprendimiento</p>
-                                        <ul>
-                                            <li>Nacho Sánchez (Early-Stage Investor)</li>
-                                            <li>Borja Vega (Mentor e Inversor)</li>
-                                            <li>Joaquín Wu Lin (Program Manager at Tetuán Valley)</li>
-                                        </ul>
-                                    </div>
-                                </div>
-
-                                <div className='program-block'>
-                                    <div className='program-number'>04.</div>
-                                    <div className='program-content'>
-                                        <h4>16:30 - Mesa redonda</h4>
-                                        <p>Emprendimiento en el sector de la moda</p>
-                                        <ul>
-                                            <li>Pablo Recuenco (CEO de Morrison Shoes)</li>
-                                            <li>Martina Capel (CEO de One Dilema)</li>
-                                            <li>Rocío Botellas (Founder The-Are)</li>
-                                        </ul>
-                                    </div>
-                                </div>
-
-                                <div className='program-block'>
-                                    <div className='program-number'>05.</div>
-                                    <div className='program-content'>
-                                        <h4>18:00 - Madrid Start-Up Bar</h4>
-                                        <ul>
-                                            <li>3-5 pitch decks de Start-Ups</li>
-                                            <li>Presentación final ante jurado/inversores</li>
-                                            <li>Feedback real y oportunidades posteriores</li>
-                                            <li>Agradecimientos</li>
-                                        </ul>
-                                    </div>
-                                </div>
-
-                                <div className='program-block'>
-                                    <div className='program-number'>06.</div>
-                                    <div className='program-content'>
-                                        <h4>19:30 - Cierre Oficial</h4>
-                                        <ul>
-                                            <li>Networking final</li>
-                                            <li>Despedidas</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                     <a href="https://www.neonpass.es/event/07ad9698-1671-4258-84c0-f8355e4a9246" target="_blank">
