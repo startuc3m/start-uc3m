@@ -1,3 +1,7 @@
+.lovable-page {
+    background: #070b1a;
+}
+
 .lovable-hero {
     padding: 7rem 1.5rem 4rem;
     background:
@@ -10,6 +14,15 @@
 .lovable-hero-content {
     max-width: 1000px;
     margin: 0 auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.9fr);
+    gap: 2rem;
+    align-items: center;
+}
+
+.lovable-hero-copy {
+    display: flex;
+    flex-direction: column;
 }
 
 .lovable-kicker {
@@ -49,6 +62,62 @@
     font-size: 1.08rem;
 }
 
+.lovable-hero-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.lovable-hero-badges span {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.55rem 0.85rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.lovable-hero-panel {
+    display: grid;
+    gap: 1rem;
+}
+
+.lovable-panel-card {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 18px;
+    padding: 1.25rem;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
+}
+
+.lovable-panel-card.accent {
+    background: linear-gradient(135deg, rgba(255, 224, 102, 0.2), rgba(255, 107, 107, 0.18));
+}
+
+.panel-label {
+    display: inline-block;
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #ffe066;
+    margin-bottom: 0.5rem;
+}
+
+.lovable-panel-card strong {
+    display: block;
+    font-size: 1.2rem;
+    margin-bottom: 0.35rem;
+}
+
+.lovable-panel-card p {
+    margin: 0;
+    line-height: 1.6;
+}
+
 .lovable-cta {
     margin-top: 1.6rem;
     display: inline-block;
@@ -67,8 +136,27 @@
 }
 
 .lovable-info {
-    background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+    background: linear-gradient(180deg, #0b132b 0%, #111827 100%);
+    color: #ffffff;
     padding: 3rem 1.5rem 4rem;
+}
+
+.lovable-section-header {
+    max-width: 1000px;
+    margin: 0 auto 1.5rem;
+}
+
+.lovable-section-kicker {
+    margin: 0 0 0.4rem;
+    color: #ffe066;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 0.85rem;
+}
+
+.lovable-section-header h3 {
+    margin: 0;
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
 }
 
 .lovable-grid {
@@ -80,22 +168,70 @@
 }
 
 .lovable-card {
-    background: #ffffff;
+    background: rgba(255, 255, 255, 0.06);
     border-radius: 12px;
     padding: 1.25rem;
-    box-shadow: 0 8px 24px rgba(26, 34, 56, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
 }
 
 .lovable-card h3 {
     margin: 0 0 0.9rem;
-    color: #14213d;
+    color: #ffe066;
 }
 
 .lovable-card ul {
     margin: 0;
     padding-left: 1.1rem;
-    color: #2b2d42;
+    color: #f3f4f6;
     line-height: 1.65;
+}
+
+.lovable-highlight-band {
+    max-width: 1000px;
+    margin: 1.5rem auto 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.lovable-highlight-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.9rem;
+    padding: 1rem 1.1rem;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 224, 102, 0.08));
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.highlight-number {
+    flex: 0 0 auto;
+    display: inline-flex;
+    width: 2.2rem;
+    height: 2.2rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: #ffe066;
+    color: #0b132b;
+    font-weight: 800;
+}
+
+.lovable-highlight-item p {
+    margin: 0;
+    line-height: 1.5;
+    color: #f8fafc;
+}
+
+@media (max-width: 1024px) {
+    .lovable-hero-content {
+        grid-template-columns: 1fr;
+    }
+
+    .lovable-highlight-band {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (max-width: 900px) {
