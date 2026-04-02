@@ -1,0 +1,109 @@
+.lovable-hero {
+    padding: 7rem 1.5rem 4rem;
+    background:
+        radial-gradient(circle at 15% 20%, rgba(255, 206, 84, 0.4), transparent 35%),
+        radial-gradient(circle at 80% 10%, rgba(255, 107, 107, 0.35), transparent 30%),
+        linear-gradient(145deg, #0b132b 0%, #1c2541 40%, #3a506b 100%);
+    color: #ffffff;
+}
+
+.lovable-hero-content {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.lovable-kicker {
+    display: inline-block;
+    font-size: 0.95rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.45rem 0.85rem;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 999px;
+    margin-bottom: 1.2rem;
+}
+
+.lovable-hero h1 {
+    margin: 0;
+    font-size: clamp(2.2rem, 6vw, 4rem);
+    line-height: 1.05;
+}
+
+.lovable-hero h2 {
+    margin: 0.8rem 0 0;
+    font-size: clamp(1.1rem, 2.7vw, 1.75rem);
+    color: #ffe066;
+    font-weight: 600;
+}
+
+.lovable-date {
+    margin: 1.2rem 0 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.lovable-description {
+    margin: 1rem 0 0;
+    max-width: 800px;
+    line-height: 1.7;
+    font-size: 1.08rem;
+}
+
+.lovable-cta {
+    margin-top: 1.6rem;
+    display: inline-block;
+    padding: 0.9rem 1.4rem;
+    border-radius: 0.7rem;
+    background-color: #ffe066;
+    color: #0b132b;
+    font-weight: 700;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.lovable-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+}
+
+.lovable-info {
+    background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 3rem 1.5rem 4rem;
+}
+
+.lovable-grid {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.lovable-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: 0 8px 24px rgba(26, 34, 56, 0.12);
+}
+
+.lovable-card h3 {
+    margin: 0 0 0.9rem;
+    color: #14213d;
+}
+
+.lovable-card ul {
+    margin: 0;
+    padding-left: 1.1rem;
+    color: #2b2d42;
+    line-height: 1.65;
+}
+
+@media (max-width: 900px) {
+    .lovable-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .lovable-hero {
+        padding-top: 6rem;
+    }
+}

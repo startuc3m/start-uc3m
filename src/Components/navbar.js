@@ -55,7 +55,17 @@ function Navbar() {
         </button>
 
         <ul className={`navbar__links ${isMenuOpen ? 'navbar__links--active' : ''}`}>
-          <li><Link to="/eventos" onClick={closeMenu}>EVENTOS</Link></li>
+          <li className="navbar__events-item">
+            <Link to="/eventos" onClick={closeMenu}>EVENTOS</Link>
+            <ul className="navbar__events-menu">
+              <li>
+                <Link to="/eventos#startxperience" onClick={closeMenu}>StartXperience</Link>
+              </li>
+              <li>
+                <Link to="/eventos#lovable-hackathon" onClick={closeMenu}>Lovable Hackathon</Link>
+              </li>
+            </ul>
+          </li>
           <li><Link to="/equipo" onClick={closeMenu}>EQUIPO</Link></li>
           <li><Link to="/patrocinadores" onClick={closeMenu}>PATROCINADORES</Link></li>
           <li><Link to="/recursos" onClick={closeMenu}>RECURSOS</Link></li>

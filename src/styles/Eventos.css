@@ -1014,3 +1014,13 @@
         font-size: 0.85rem;
     }
 }
+
+.event-anchor-section {
+    scroll-margin-top: 110px;
+}
+
+@media (max-width: 768px) {
+    .event-anchor-section {
+        scroll-margin-top: 84px;
+    }
+}
