@@ -8,7 +8,13 @@ function LovableHackathon() {
             <section className='lovable-hero'>
                 <div className='lovable-hero-content'>
                     <div className='lovable-hero-copy'>
-                        <p className='lovable-kicker'>Nuevo evento</p>
+                        <p className='lovable-collaborators-title'>Colaboran</p>
+                        <div className='lovable-collaborators'>
+                            <img src='/Logos/AISC.png' alt='AISC' />
+                            <img src='/Logos/Innovai.png' alt='INNOVAI' />
+                            <img src='/Logos/Nomu_labs.png' alt='Beta Dash' />
+                            <img src='/Logos/Lovable.png' alt='Lovable' />
+                        </div>
                         <h1>Lovable Hackathon</h1>
                         <h2>Crea tu prototipo, app o web con IA, sin programar código</h2>
                         <p className='lovable-description'>

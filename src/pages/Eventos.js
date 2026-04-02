@@ -5,6 +5,7 @@ import Navbar from '../components/navbar';
 import Footer from '../components/Footer.js';
 import "../styles/Eventos.css";
 import StartXperience from '../components/StartXperience.js';
+import EventSectionDivider from '../components/EventSectionDivider.js';
 import LovableHackathon from '../components/LovableHackathon.js';
 
 function Eventos() {
@@ -29,6 +30,11 @@ function Eventos() {
             <section id='startxperience' className='event-anchor-section'>
                 <StartXperience />
             </section>
+            <EventSectionDivider
+                label='¡Nuevo evento!'
+                title='Lovable Hackathon'
+                subtitle=''
+            />
             <section id='lovable-hackathon' className='event-anchor-section'>
                 <LovableHackathon />
             </section>

@@ -1,13 +1,13 @@
 .lovable-page {
-    background: #070b1a;
+    background: #0b1026;
 }
 
 .lovable-hero {
     padding: 7rem 1.5rem 4rem;
     background:
-        radial-gradient(circle at 15% 20%, rgba(255, 206, 84, 0.4), transparent 35%),
-        radial-gradient(circle at 80% 10%, rgba(255, 107, 107, 0.35), transparent 30%),
-        linear-gradient(145deg, #0b132b 0%, #1c2541 40%, #3a506b 100%);
+        radial-gradient(circle at 12% 18%, rgba(255, 165, 0, 0.35), transparent 28%),
+        radial-gradient(circle at 84% 14%, rgba(255, 215, 0, 0.28), transparent 24%),
+        linear-gradient(145deg, #1b235b 0%, #2b3a91 45%, #0f1738 100%);
     color: #ffffff;
 }
 
@@ -25,15 +25,32 @@
     flex-direction: column;
 }
 
-.lovable-kicker {
-    display: inline-block;
-    font-size: 0.95rem;
-    letter-spacing: 0.12em;
+.lovable-collaborators-title {
+    margin: 0 0 0.55rem;
+    font-size: 0.78rem;
     text-transform: uppercase;
-    padding: 0.45rem 0.85rem;
-    border: 1px solid rgba(255, 255, 255, 0.6);
-    border-radius: 999px;
+    letter-spacing: 0.14em;
+    color: #ffd966;
+    font-weight: 700;
+}
+
+.lovable-collaborators {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.9rem;
     margin-bottom: 1.2rem;
+}
+
+.lovable-collaborators img {
+    height: 34px;
+    width: auto;
+    object-fit: contain;
+    padding: 0.35rem 0.6rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(255, 184, 77, 0.55);
+    box-shadow: 0 8px 14px rgba(0, 0, 0, 0.16);
 }
 
 .lovable-hero h1 {
@@ -45,7 +62,7 @@
 .lovable-hero h2 {
     margin: 0.8rem 0 0;
     font-size: clamp(1.1rem, 2.7vw, 1.75rem);
-    color: #ffe066;
+    color: #ffb84d;
     font-weight: 600;
 }
 
@@ -74,8 +91,8 @@
     align-items: center;
     padding: 0.55rem 0.85rem;
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.12);
-    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 184, 77, 0.25);
     font-size: 0.95rem;
     font-weight: 600;
 }
@@ -86,8 +103,8 @@
 }
 
 .lovable-panel-card {
-    background: rgba(255, 255, 255, 0.12);
-    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.08));
+    border: 1px solid rgba(255, 184, 77, 0.22);
     border-radius: 18px;
     padding: 1.25rem;
     backdrop-filter: blur(10px);
@@ -95,7 +112,8 @@
 }
 
 .lovable-panel-card.accent {
-    background: linear-gradient(135deg, rgba(255, 224, 102, 0.2), rgba(255, 107, 107, 0.18));
+    background: linear-gradient(135deg, rgba(255, 184, 77, 0.28), rgba(255, 215, 0, 0.18));
+    border-color: rgba(255, 215, 0, 0.4);
 }
 
 .panel-label {
@@ -103,7 +121,7 @@
     font-size: 0.8rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: #ffe066;
+    color: #ffb84d;
     margin-bottom: 0.5rem;
 }
 
@@ -123,20 +141,24 @@
     display: inline-block;
     padding: 0.9rem 1.4rem;
     border-radius: 0.7rem;
-    background-color: #ffe066;
-    color: #0b132b;
+    background: linear-gradient(135deg, #ff8a00 0%, #ffb84d 55%, #ffd966 100%);
+    color: #111827;
     font-weight: 700;
     text-decoration: none;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 12px 26px rgba(255, 138, 0, 0.28);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
 }
 
 .lovable-cta:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+    filter: brightness(1.03);
+    box-shadow: 0 16px 30px rgba(255, 138, 0, 0.34);
 }
 
 .lovable-info {
-    background: linear-gradient(180deg, #0b132b 0%, #111827 100%);
+    background:
+        radial-gradient(circle at 15% 0%, rgba(255, 184, 77, 0.16), transparent 30%),
+        linear-gradient(180deg, #0f1738 0%, #091124 100%);
     color: #ffffff;
     padding: 3rem 1.5rem 4rem;
 }
@@ -148,7 +170,7 @@
 
 .lovable-section-kicker {
     margin: 0 0 0.4rem;
-    color: #ffe066;
+    color: #ffb84d;
     text-transform: uppercase;
     letter-spacing: 0.12em;
     font-size: 0.85rem;
@@ -168,16 +190,16 @@
 }
 
 .lovable-card {
-    background: rgba(255, 255, 255, 0.06);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.05));
     border-radius: 12px;
     padding: 1.25rem;
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 184, 77, 0.18);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
 }
 
 .lovable-card h3 {
     margin: 0 0 0.9rem;
-    color: #ffe066;
+    color: #ffd966;
 }
 
 .lovable-card ul {
@@ -201,8 +223,8 @@
     gap: 0.9rem;
     padding: 1rem 1.1rem;
     border-radius: 16px;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 224, 102, 0.08));
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: linear-gradient(135deg, rgba(255, 138, 0, 0.12), rgba(255, 215, 0, 0.1));
+    border: 1px solid rgba(255, 184, 77, 0.2);
 }
 
 .highlight-number {
@@ -213,8 +235,8 @@
     align-items: center;
     justify-content: center;
     border-radius: 999px;
-    background: #ffe066;
-    color: #0b132b;
+    background: linear-gradient(135deg, #ff8a00, #ffd966);
+    color: #1b235b;
     font-weight: 800;
 }
 
@@ -241,5 +263,9 @@
 
     .lovable-hero {
         padding-top: 6rem;
+    }
+
+    .lovable-collaborators img {
+        height: 28px;
     }
 }
