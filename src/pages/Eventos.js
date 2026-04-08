@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom';
 import Navbar from '../components/navbar';
 import Footer from '../components/Footer.js';
 import "../styles/Eventos.css";
+import StartTech from '../components/StartTech.js';
 import StartXperience from '../components/StartXperience.js';
 import EventSectionDivider from '../components/EventSectionDivider.js';
 import LovableHackathon from '../components/LovableHackathon.js';
@@ -27,11 +28,19 @@ function Eventos() {
     return (
         <div>
             <Navbar />
+            <section id='start-tech' className='event-anchor-section'>
+                <StartTech />
+            </section>
+            <EventSectionDivider
+                label='Siguiente evento'
+                title='StartXperience'
+                subtitle=''
+            />
             <section id='startxperience' className='event-anchor-section'>
                 <StartXperience />
             </section>
             <EventSectionDivider
-                label='¡Nuevo evento!'
+                label='Siguiente evento'
                 title='Lovable Hackathon'
                 subtitle=''
             />

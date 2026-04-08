@@ -59,6 +59,9 @@ function Navbar() {
             <Link to="/eventos" onClick={closeMenu}>EVENTOS</Link>
             <ul className="navbar__events-menu">
               <li>
+                <Link to="/eventos#start-tech" onClick={closeMenu}>Start Tech</Link>
+              </li>
+              <li>
                 <Link to="/eventos#startxperience" onClick={closeMenu}>StartXperience</Link>
               </li>
               <li>

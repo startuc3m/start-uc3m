@@ -1,0 +1,353 @@
+.starttech-page {
+    background: #08112a;
+    color: #ffffff;
+    font-family: 'Josefin Sans Regular', Arial, sans-serif;
+}
+
+.starttech-hero {
+    padding: 7rem 1.5rem 4rem;
+    background:
+    radial-gradient(circle at 12% 18%, rgba(61, 255, 200, 0.24), transparent 28%),
+    radial-gradient(circle at 84% 14%, rgba(255, 184, 77, 0.24), transparent 22%),
+    radial-gradient(circle at 85% 15%, rgba(112, 177, 255, 0.18), transparent 24%),
+        linear-gradient(145deg, #10255b 0%, #0f3e66 50%, #08112a 100%);
+}
+
+.starttech-hero__content {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.9fr);
+    gap: 2rem;
+    align-items: center;
+}
+
+.starttech-kicker,
+.starttech-section-kicker {
+    margin: 0 0 0.55rem;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: #ffb84d;
+    font-weight: 700;
+}
+
+.starttech-hero__copy {
+    display: flex;
+    flex-direction: column;
+}
+
+.starttech-hero h1 {
+    margin: 0;
+    font-size: clamp(2.4rem, 6vw, 4.1rem);
+    line-height: 1.05;
+}
+
+.starttech-hero h2 {
+    margin: 0.8rem 0 0;
+    font-size: clamp(1.1rem, 2.8vw, 1.8rem);
+    color: #ffd966;
+    font-weight: 600;
+}
+
+.starttech-meta {
+    margin: 0.7rem 0 0;
+    font-size: 1rem;
+    color: rgba(255, 242, 214, 0.92);
+    font-weight: 600;
+}
+
+.starttech-description {
+    margin: 1rem 0 0;
+    max-width: 800px;
+    line-height: 1.75;
+    font-size: 1.05rem;
+    color: rgba(255, 255, 255, 0.92);
+}
+
+.starttech-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.starttech-badges span {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.55rem 0.85rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 184, 77, 0.26);
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.starttech-badges span:nth-child(2) {
+    background: rgba(255, 184, 77, 0.12);
+}
+
+.starttech-cta {
+    margin-top: 1.6rem;
+    display: inline-block;
+    width: fit-content;
+    padding: 0.9rem 1.4rem;
+    border-radius: 0.7rem;
+    background: linear-gradient(135deg, #ff8a00 0%, #ffb84d 52%, #ffd966 100%);
+    color: #08112a;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 12px 26px rgba(255, 184, 77, 0.24);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.starttech-cta:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.02);
+    box-shadow: 0 16px 30px rgba(255, 184, 77, 0.34);
+}
+
+.starttech-hero__panel {
+    display: grid;
+    gap: 1rem;
+}
+
+.starttech-panel-card {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.07));
+    border: 1px solid rgba(255, 184, 77, 0.18);
+    border-radius: 18px;
+    padding: 1.25rem;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.2);
+}
+
+.starttech-panel-card.accent {
+    background: linear-gradient(135deg, rgba(255, 184, 77, 0.2), rgba(61, 255, 200, 0.14));
+    border-color: rgba(255, 184, 77, 0.34);
+}
+
+.panel-label {
+    display: inline-block;
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #ffb84d;
+    margin-bottom: 0.5rem;
+}
+
+.starttech-panel-card strong {
+    display: block;
+    font-size: 1.18rem;
+    margin-bottom: 0.35rem;
+}
+
+.starttech-panel-card p {
+    margin: 0;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.starttech-info {
+    background:
+        radial-gradient(circle at 15% 0%, rgba(255, 184, 77, 0.12), transparent 30%),
+        linear-gradient(180deg, #08112a 0%, #091425 100%);
+    color: #ffffff;
+    padding: 3rem 1.5rem 4rem;
+}
+
+.starttech-section-header {
+    max-width: 1000px;
+    margin: 0 auto 1.5rem;
+}
+
+.starttech-section-header h3 {
+    margin: 0;
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+}
+
+.starttech-section-header--spaced {
+    margin-top: 2.5rem;
+}
+
+.starttech-feature-band,
+.starttech-schedule,
+.starttech-grid--two {
+    max-width: 1000px;
+    margin: 1rem auto 0;
+    display: grid;
+    gap: 1rem;
+}
+
+.starttech-feature-band {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.starttech-feature-card,
+.starttech-schedule-card {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.05));
+    border-radius: 14px;
+    padding: 1.25rem;
+    border: 1px solid rgba(255, 184, 77, 0.16);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+}
+
+.starttech-feature-card h3,
+.starttech-schedule-card h3 {
+    margin: 0 0 0.75rem;
+    color: #ffd966;
+}
+
+.starttech-feature-card p,
+.starttech-schedule-card ul,
+.starttech-cta-band p {
+    margin: 0;
+    line-height: 1.65;
+    color: #f3f4f6;
+}
+
+.starttech-grid--two {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.starttech-card--highlight {
+    border-color: rgba(255, 184, 77, 0.24);
+}
+
+.starttech-schedule {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.schedule-day {
+    display: inline-block;
+    margin-bottom: 0.8rem;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #ffb84d;
+    font-weight: 700;
+}
+
+.starttech-schedule-card.accent {
+    background: linear-gradient(135deg, rgba(255, 184, 77, 0.18), rgba(61, 255, 200, 0.08));
+}
+
+.starttech-cta-band {
+    max-width: 1000px;
+    margin: 2rem auto 0;
+    padding: 1.2rem 1.3rem;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 184, 77, 0.2);
+    background: linear-gradient(135deg, rgba(255, 184, 77, 0.12), rgba(61, 255, 200, 0.08));
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.starttech-cta--secondary {
+    margin-top: 0;
+}
+
+.starttech-grid {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.starttech-card {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.05));
+    border-radius: 12px;
+    padding: 1.25rem;
+    border: 1px solid rgba(126, 249, 212, 0.16);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+
+.starttech-card h3 {
+    margin: 0 0 0.9rem;
+    color: #ffd966;
+}
+
+.starttech-card ul {
+    margin: 0;
+    padding-left: 1.1rem;
+    color: #f3f4f6;
+    line-height: 1.65;
+}
+
+.starttech-highlights {
+    max-width: 1000px;
+    margin: 1.5rem auto 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.starttech-highlight-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.9rem;
+    padding: 1rem 1.1rem;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(255, 184, 77, 0.11), rgba(61, 255, 200, 0.08));
+    border: 1px solid rgba(255, 184, 77, 0.2);
+}
+
+.highlight-number {
+    flex: 0 0 auto;
+    display: inline-flex;
+    width: 2.2rem;
+    height: 2.2rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #ff8a00, #ffd966);
+    color: #111827;
+    font-weight: 800;
+}
+
+.starttech-highlight-item p {
+    margin: 0;
+    line-height: 1.5;
+    color: #f8fafc;
+}
+
+@media (max-width: 1024px) {
+    .starttech-hero__content {
+        grid-template-columns: 1fr;
+    }
+
+    .starttech-grid,
+    .starttech-highlights {
+        grid-template-columns: 1fr;
+    }
+
+    .starttech-feature-band,
+    .starttech-schedule,
+    .starttech-grid--two {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 900px) {
+    .starttech-hero {
+        padding-top: 6rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .starttech-hero,
+    .starttech-info {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .starttech-badges {
+        gap: 0.6rem;
+    }
+
+    .starttech-badges span {
+        font-size: 0.85rem;
+    }
+}

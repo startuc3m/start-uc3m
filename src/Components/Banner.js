@@ -16,7 +16,7 @@ function Banner() {
     const [lastScrollY, setLastScrollY] = useState(0);
 
     useEffect(() => {
-        const targetDate = new Date('2026-04-08T00:00:00').getTime();
+        const targetDate = new Date('2026-04-25T00:00:00').getTime();
 
         const timer = setInterval(() => {
             const now = new Date().getTime();
@@ -66,7 +66,7 @@ function Banner() {
         <div className={`event-banner ${isClosed ? 'event-banner--hidden' : ''} ${!isNavbarVisible ? 'event-banner--top' : ''}`}>
             <button className="close-banner" onClick={closeBanner}>×</button>
             <div className="banner-content">
-                <h2 className="banner-title">Lovable Hackathon</h2>
+                <h2 className="banner-title">Start Tech</h2>
                 <div className="banner-countdown">
                     <div className="banner-countdown-item">
                         <span className="banner-number">{timeLeft.days}</span>
@@ -85,7 +85,7 @@ function Banner() {
                         <span className="banner-label">Seg</span>
                     </div>
                 </div>
-                <Link to="/eventos#lovable-hackathon" className="banner-cta">
+                <Link to="/eventos#start-tech" className="banner-cta">
                     ¡Quiero saber más! →
                 </Link>
             </div>

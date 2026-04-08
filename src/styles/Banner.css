@@ -6,9 +6,10 @@
   right: 0;
   z-index: 999;
   background:
-    radial-gradient(circle at 15% 25%, rgba(255, 138, 0, 0.32), transparent 28%),
-    radial-gradient(circle at 85% 10%, rgba(255, 215, 0, 0.24), transparent 24%),
-    linear-gradient(145deg, #1b235b 0%, #2b3a91 50%, #0f1738 100%);
+    radial-gradient(circle at 15% 25%, rgba(61, 255, 200, 0.22), transparent 28%),
+    radial-gradient(circle at 84% 14%, rgba(255, 184, 77, 0.24), transparent 22%),
+    radial-gradient(circle at 85% 10%, rgba(118, 187, 255, 0.18), transparent 24%),
+    linear-gradient(145deg, #10255b 0%, #0f3e66 50%, #08112a 100%);
   padding: 1rem 2rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   transform: translateY(0);
@@ -52,7 +53,7 @@
   top: 1rem;
   background: transparent;
   border: none;
-  color: #ffd966;
+  color: #ffb84d;
   font-size: 2rem;
   cursor: pointer;
   padding: 0;
@@ -67,12 +68,12 @@
 
 .close-banner:hover {
   transform: scale(1.2);
-  color: #ffb84d;
+  color: #ffd966;
 }
 
 .banner-title {
   font-size: 1.8rem;
-  color: #ffd966;
+  color: #ffb84d;
   margin: 0;
   font-weight: bold;
   font-family: 'Josefin Sans Regular', Arial, sans-serif;
@@ -100,35 +101,35 @@
 .banner-number {
   font-size: 1.8rem;
   font-weight: bold;
-  color: #ffb84d;
+  color: #ffd966;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   line-height: 1;
 }
 
 .banner-label {
   font-size: 0.75rem;
-  color: #f6f2dc;
+  color: #fff2d6;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-top: 0.25rem;
 }
 
 .banner-cta {
-  background: linear-gradient(135deg, #ff8a00 0%, #ffb84d 55%, #ffd966 100%);
-  color: #111827;
+  background: linear-gradient(135deg, #ff8a00 0%, #ffb84d 52%, #ffd966 100%);
+  color: #08112a;
   padding: 0.75rem 2rem;
   border-radius: 25px;
   text-decoration: none;
   font-weight: bold;
   font-size: 1rem;
   transition: all 0.3s ease;
-  box-shadow: 0 8px 20px rgba(255, 138, 0, 0.35);
+  box-shadow: 0 8px 20px rgba(255, 184, 77, 0.32);
   white-space: nowrap;
 }
 
 .banner-cta:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(255, 138, 0, 0.45);
+  box-shadow: 0 10px 24px rgba(255, 184, 77, 0.42);
   filter: brightness(1.03);
 }
 
