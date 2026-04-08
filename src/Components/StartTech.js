@@ -18,9 +18,9 @@ function StartTech() {
                         </p>
 
                         <div className='starttech-badges'>
-                            <span>25 - 26 abril 2026</span>
                             <span>15€ entrada</span>
                             <span>30-40 participantes</span>
+                            <span>Comida y materiales incluidos</span>
                         </div>
 
                         <a className='starttech-cta' href='/StartTech_Slides.pdf' download='StartTech_Slides.pdf'>
@@ -143,7 +143,7 @@ function StartTech() {
                         <ul>
                             <li>Evalúa los pitches finales del domingo.</li>
                             <li>Cada equipo tiene 5 min de presentación + 3 min de preguntas.</li>
-                            <li>Buscamos perfiles técnicos que hayan dado el salto al emprendimiento.</li>
+                            <li>Participan perfiles técnicos que han dado el salto al emprendimiento.</li>
                         </ul>
                     </article>
                 </div>
@@ -187,26 +187,6 @@ function StartTech() {
                     <h3>Lo esencial del evento</h3>
                 </div>
 
-                <div className='starttech-grid starttech-grid--two'>
-                    <article className='starttech-card starttech-card--highlight'>
-                        <h3>Fechas y lugar</h3>
-                        <ul>
-                            <li>25 - 26 abril 2026</li>
-                            <li>Espacio: Oficinas de Zinco</li>
-                            <li>Calle de Espronceda, 40</li>
-                        </ul>
-                    </article>
-
-                    <article className='starttech-card starttech-card--highlight'>
-                        <h3>Entrada y formato</h3>
-                        <ul>
-                            <li>15€ entrada</li>
-                            <li>Incluye comidas y materiales</li>
-                            <li>30-40 participantes</li>
-                        </ul>
-                    </article>
-                </div>
-
                 <div className='starttech-highlights'>
                     <div className='starttech-highlight-item'>
                         <span className='highlight-number'>01</span>
@@ -218,15 +198,8 @@ function StartTech() {
                     </div>
                     <div className='starttech-highlight-item'>
                         <span className='highlight-number'>03</span>
-                        <p>Start Tech necesita empresas, mentores, ponentes y miembros de Start que crean que la ingeniería puede cambiar el mundo emprendiendo.</p>
+                        <p>Start Tech conecta universidad, tecnología y emprendimiento en un formato práctico y real.</p>
                     </div>
-                </div>
-
-                <div className='starttech-cta-band'>
-                    <p>Ya seas empresa, ponente, mentor o miembro de Start: este evento necesita gente que crea que los ingenieros pueden cambiar el mundo emprendiendo.</p>
-                    <a className='starttech-cta starttech-cta--secondary' href='mailto:info@startuc3m.org'>
-                        Quiero formar parte
-                    </a>
                 </div>
             </section>
         </div>
