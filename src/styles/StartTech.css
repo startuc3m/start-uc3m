@@ -65,6 +65,18 @@
     color: rgba(255, 255, 255, 0.92);
 }
 
+.starttech-dossier-link {
+    color: #ffd966;
+    font-weight: 700;
+    text-underline-offset: 0.2em;
+    text-decoration-thickness: 2px;
+    transition: color 0.2s ease;
+}
+
+.starttech-dossier-link:hover {
+    color: #ffb84d;
+}
+
 .starttech-badges {
     display: flex;
     flex-wrap: wrap;
@@ -246,6 +258,11 @@
 
 .starttech-cta--secondary {
     margin-top: 0;
+}
+
+.starttech-cta--center {
+    display: block;
+    margin: 2rem auto 0;
 }
 
 .starttech-grid {

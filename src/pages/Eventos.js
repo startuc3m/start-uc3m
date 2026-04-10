@@ -32,7 +32,7 @@ function Eventos() {
                 <StartTech />
             </section>
             <EventSectionDivider
-                label='Siguiente evento'
+                label= 'Evento anterior'
                 title='StartXperience'
                 subtitle=''
             />
@@ -40,7 +40,7 @@ function Eventos() {
                 <StartXperience />
             </section>
             <EventSectionDivider
-                label='Siguiente evento'
+                label='Evento anterior'
                 title='Lovable Hackathon'
                 subtitle=''
             />

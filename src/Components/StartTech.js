@@ -16,15 +16,18 @@ function StartTech() {
                             Mismo espíritu, nueva dimensión: un reto tech real, equipos multidisciplinares,
                             MVP funcional y pitch final ante jurado.
                         </p>
+                        <p className='starttech-description'>
+                            <a className='starttech-dossier-link' href='/StartTech_Slides.pdf' download='StartTech_Slides.pdf'>Descarga el dossier completo</a>
+                        </p>
 
                         <div className='starttech-badges'>
-                            <span>15€ entrada</span>
+                            <span>17€ entrada</span>
                             <span>30-40 participantes</span>
                             <span>Comida y materiales incluidos</span>
                         </div>
 
-                        <a className='starttech-cta' href='/StartTech_Slides.pdf' download='StartTech_Slides.pdf'>
-                            Descargar dossier
+                        <a className='starttech-cta' href='https://www.neonpass.es/event/39d6a31e-6944-45bd-aff4-78d5167cd51b' target='_blank' rel='noopener noreferrer'>
+                            Compra tu entrada ya
                         </a>
                     </div>
 
@@ -60,7 +63,7 @@ function StartTech() {
                     <article className='starttech-card'>
                         <h3>Reto real</h3>
                         <ul>
-                            <li>Un CEO o fundador presenta un problema vivido de verdad.</li>
+                            <li>Un representante de la empresa presenta un problema vivido de verdad.</li>
                             <li>Los equipos compiten para resolverlo.</li>
                             <li>La propuesta conecta ingeniería y negocio.</li>
                         </ul>
@@ -104,7 +107,7 @@ function StartTech() {
                         <span className='schedule-day'>Sábado 25 de abril</span>
                         <ul>
                             <li>Bienvenida</li>
-                            <li>Lanzamiento del reto por el CEO de la empresa partner</li>
+                            <li>Lanzamiento del reto por el representante de la empresa partner</li>
                             <li>Sesiones de trabajo con mentores asignados</li>
                             <li>Ponencias específicas al reto planteado</li>
                             <li>Construcción del MVP</li>
@@ -122,6 +125,9 @@ function StartTech() {
                         </ul>
                     </article>
                 </div>
+                <a className='starttech-cta starttech-cta--center' href='https://www.neonpass.es/event/39d6a31e-6944-45bd-aff4-78d5167cd51b' target='_blank' rel='noopener noreferrer'>
+                    ¿A qué estás esperando?
+                </a>
 
                 <div className='starttech-section-header starttech-section-header--spaced'>
                     <p className='starttech-section-kicker'>Mentores y jurado</p>
@@ -200,7 +206,10 @@ function StartTech() {
                         <span className='highlight-number'>03</span>
                         <p>Start Tech conecta universidad, tecnología y emprendimiento en un formato práctico y real.</p>
                     </div>
-                </div>
+                </div>                
+                <a className='starttech-cta starttech-cta--center' href='https://www.neonpass.es/event/39d6a31e-6944-45bd-aff4-78d5167cd51b' target='_blank' rel='noopener noreferrer'>
+                    ¡Última oportunidad!
+                </a>
             </section>
         </div>
     );
