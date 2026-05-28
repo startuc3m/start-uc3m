@@ -28,14 +28,14 @@ function Eventos() {
     return (
         <div>
             <Navbar />
-            <section id='start-tech' className='event-anchor-section'>
+            {/*<section id='start-tech' className='event-anchor-section'>
                 <StartTech />
             </section>
             <EventSectionDivider
                 label= 'Evento anterior'
                 title='StartXperience'
                 subtitle=''
-            />
+            />*/}
             <section id='startxperience' className='event-anchor-section'>
                 <StartXperience />
             </section>

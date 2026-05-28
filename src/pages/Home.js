@@ -17,7 +17,7 @@ function Home() {
     return (
         <div>
             <Navbar />
-            <Banner />
+            {/* <Banner /> */}
             <Hero />
             <LogosBand />
             <QuoteSection />
