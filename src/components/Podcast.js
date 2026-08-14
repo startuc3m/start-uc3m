@@ -17,9 +17,7 @@ export default function PodcastEmbed({
 
   const [baseIndex, setBaseIndex] = React.useState(startIndex);
 
-  const bg = theme === "light" ? "#f6f7fb" : "transparent";
-
-  const next = () => setBaseIndex((i) => i + visible);
+  const next =() => setBaseIndex((i) => i + visible);
   const prev = () => setBaseIndex((i) => Math.max(1, i - visible));
 
   const frameSrc = (idx) =>

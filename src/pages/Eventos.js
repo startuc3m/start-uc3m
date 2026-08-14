@@ -4,7 +4,6 @@ import { useLocation } from 'react-router-dom';
 import Navbar from '../components/navbar';
 import Footer from '../components/Footer.js';
 import "../styles/Eventos.css";
-import StartTech from '../components/StartTech.js';
 import StartXperience from '../components/StartXperience.js';
 import EventSectionDivider from '../components/EventSectionDivider.js';
 import LovableHackathon from '../components/LovableHackathon.js';
