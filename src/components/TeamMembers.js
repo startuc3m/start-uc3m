@@ -90,7 +90,6 @@ const teamMembers = [
     {id: 42, nombre: "Juan González", cargo: "Asociado", departamento: "Partnerships", foto: perfil, linkedin: "https://www.linkedin.com/in/juangonzaleztaboda/"},
     {id: 43, nombre: "Andrea Sánchez", cargo: "Asociada", departamento: "Partnerships", foto: Andrea_s, linkedin: ""},
     {id: 44, nombre: "Mariia Deviatko", cargo: "Asociada", departamento: "Partnerships", foto: Mariia, linkedin: "https://www.linkedin.com/in/mariia-deviatko/"},
-    {id: 45, nombre: "Andrés Delgado", cargo: "Asociado", departamento: "Eventos", foto: Andres, linkedin: ""},
 
 ];
 
