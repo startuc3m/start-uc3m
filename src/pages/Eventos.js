@@ -5,7 +5,7 @@ import Navbar from '../components/navbar';
 import Footer from '../components/Footer.js';
 import "../styles/Eventos.css";
 import StartXperience from '../components/StartXperience.js';
-import EventSectionDivider from '../components/EventSectionDivider.js';
+import CollapsibleEvent from '../components/CollapsibleEvent.js';
 import LovableHackathon from '../components/LovableHackathon.js';
 
 function Eventos() {
@@ -27,25 +27,24 @@ function Eventos() {
     return (
         <div>
             <Navbar />
-            {/*<section id='start-tech' className='event-anchor-section'>
+            {/*<CollapsibleEvent id='start-tech' label='Evento anterior' title='StartTech'>
                 <StartTech />
-            </section>
-            <EventSectionDivider
-                label= 'Evento anterior'
+            </CollapsibleEvent>*/}
+            <CollapsibleEvent
+                id='startxperience'
+                label='Evento anterior'
                 title='StartXperience'
-                subtitle=''
-            />*/}
-            <section id='startxperience' className='event-anchor-section'>
+                defaultOpen
+            >
                 <StartXperience />
-            </section>
-            <EventSectionDivider
+            </CollapsibleEvent>
+            <CollapsibleEvent
+                id='lovable-hackathon'
                 label='Evento anterior'
                 title='Lovable Hackathon'
-                subtitle=''
-            />
-            <section id='lovable-hackathon' className='event-anchor-section'>
+            >
                 <LovableHackathon />
-            </section>
+            </CollapsibleEvent>
             <Footer />
         </div>
     );

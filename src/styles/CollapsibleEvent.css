@@ -1,0 +1,103 @@
+/* Banner plegable para eventos anteriores.
+   Reutiliza el look de EventSectionDivider, pero como botón. */
+
+.collapsible-event {
+    background: linear-gradient(180deg, rgba(7, 11, 26, 0.98), rgba(11, 19, 43, 0.95));
+}
+
+.collapsible-event__toggle {
+    width: 100%;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    text-align: inherit;
+    transition: background 0.25s ease;
+}
+
+.collapsible-event__toggle:hover,
+.collapsible-event__toggle:focus-visible {
+    background: linear-gradient(180deg, rgba(13, 20, 43, 0.98), rgba(19, 30, 64, 0.95));
+}
+
+.collapsible-event__toggle:focus-visible {
+    outline: 2px solid #ffe066;
+    outline-offset: -4px;
+}
+
+.collapsible-event__toggle .event-divider__content {
+    transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease;
+}
+
+.collapsible-event__toggle:hover .event-divider__content {
+    background: rgba(255, 255, 255, 0.13);
+    border-color: rgba(255, 224, 102, 0.45);
+    transform: translateY(-2px);
+}
+
+/* El divider original usa h3/p; aquí son spans dentro del botón. */
+.collapsible-event__toggle .event-divider__title {
+    display: block;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.collapsible-event__toggle .event-divider__subtitle {
+    display: block;
+}
+
+.collapsible-event__hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-top: 0.35rem;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: rgba(255, 255, 255, 0.72);
+}
+
+.collapsible-event__chevron {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(45deg) translate(-2px, -2px);
+    transition: transform 0.3s ease;
+}
+
+.collapsible-event__toggle.is-open .collapsible-event__hint {
+    color: #ffe066;
+}
+
+.collapsible-event__toggle.is-open .collapsible-event__chevron {
+    transform: rotate(-135deg) translate(-2px, -2px);
+}
+
+.collapsible-event__panel {
+    animation: collapsible-event-reveal 0.45s ease both;
+}
+
+.collapsible-event__panel[hidden] {
+    display: none;
+}
+
+@keyframes collapsible-event-reveal {
+    from {
+        opacity: 0;
+        transform: translateY(-12px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .collapsible-event__panel,
+    .collapsible-event__chevron,
+    .collapsible-event__toggle,
+    .collapsible-event__toggle .event-divider__content {
+        animation: none;
+        transition: none;
+    }
+}
