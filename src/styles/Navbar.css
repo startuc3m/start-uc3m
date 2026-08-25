@@ -90,7 +90,20 @@
   visibility: hidden;
   pointer-events: none;
   transition: opacity 0.2s ease, visibility 0.2s ease;
+  /* Margen de gracia al salir: el menu no se cierra de golpe. */
+  transition-delay: 0.35s;
   z-index: 1200;
+}
+
+/* Puente invisible que cubre el hueco entre EVENTOS y el desplegable,
+   para que el puntero no pierda el :hover al bajar. */
+.navbar__events-menu::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  height: 16px;
 }
 
 .navbar__events-item:hover .navbar__events-menu,
@@ -98,6 +111,7 @@
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
+  transition-delay: 0s;
 }
 
 .navbar__events-menu li {
@@ -222,6 +236,11 @@
     background: rgba(255, 255, 255, 0.06);
     margin-top: 8px;
     padding: 6px 0;
+  }
+
+  /* En movil el submenu ya esta desplegado: el puente sobra. */
+  .navbar__events-menu::before {
+    display: none;
   }
 
   .navbar__events-menu a {
