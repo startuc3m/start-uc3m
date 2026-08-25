@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "../styles/Equipo.css";
+import departamentos from "../data/departamentos";
 import perfil from "../assets/profile-pic.png"
 import Ioana from "../assets/members/ioana_nedelcu.jpeg"
 import Carla from "../assets/members/carla_martinez.jpg"
@@ -111,7 +112,9 @@ function TeamMembers() {
         const [selectedDepartment, setSelectedDepartment] = useState("Todos");
         const filteredMembers = selectedDepartment === "Todos"
             ? teamMembers
-            : teamMembers.filter(member => member.departamento === selectedDepartment);
+            : selectedDepartment === "Junta Directiva"
+                ? teamMembers.filter(member => member.departamento === "Junta Directiva" || member.cargo === "Responsable")
+                : teamMembers.filter(member => member.departamento === selectedDepartment);
         const departments = ["Todos", ...new Set(teamMembers.map(member => member.departamento))];
 
         return (
@@ -122,6 +125,16 @@ function TeamMembers() {
                             onClick={() => setSelectedDepartment(department)}>{department}</button>
                     ))}
                 </div>
+                {selectedDepartment !== "Todos" && departamentos[selectedDepartment] && (
+                    <div
+                        className="department-description"
+                        data-testid="department-description"
+                        key={selectedDepartment}
+                    >
+                        <h2 className="department-description-title">{selectedDepartment}</h2>
+                        <p className="department-description-text">{departamentos[selectedDepartment]}</p>
+                    </div>
+                )}
                 <div className="team-container">
                     {filteredMembers.map(member => (
                         <MemberCard
