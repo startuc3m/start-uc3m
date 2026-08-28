@@ -14,7 +14,7 @@ export default function QuienesSomosSection({
   eyebrow = "Nuestra historia",
   title = "¿Quiénes somos?",
   intro = "Hace años nos dimos cuenta de que nos faltaba algo en la universidad...",
-  foundersHref = "https://startuc3m.com/equipo/viejas-glorias/",
+  foundersHref = "https://www.startuc3m.es/equipo/viejas-glorias/",
   foundersText =
     "Javier Sánchez, Pablo Lorenzo, Aníbal Vera, Alejandro Luengo, David Arnedo y Carlos Delgado",
   eventHref = "http://alternativaemprender.com/",
