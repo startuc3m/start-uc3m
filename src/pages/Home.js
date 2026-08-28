@@ -1,6 +1,7 @@
 import React from "react";
 import "../index.css";
 import Navbar from "../components/navbar";
+import Banner from "../components/Banner.js";
 import Hero from "../components/Hero";
 import LogosBand from "../components/LogosBand";
 import QuoteSection from "../components/Quote";
@@ -16,6 +17,7 @@ function Home() {
     return (
         <div>
             <Navbar />
+            <Banner />
             <Hero />
             <LogosBand />
             <QuoteSection />

@@ -6,10 +6,9 @@
   right: 0;
   z-index: 999;
   background:
-    radial-gradient(circle at 15% 25%, rgba(61, 255, 200, 0.22), transparent 28%),
-    radial-gradient(circle at 84% 14%, rgba(255, 184, 77, 0.24), transparent 22%),
-    radial-gradient(circle at 85% 10%, rgba(118, 187, 255, 0.18), transparent 24%),
-    linear-gradient(145deg, #10255b 0%, #0f3e66 50%, #08112a 100%);
+    radial-gradient(circle at 12% 25%, rgba(76, 201, 240, 0.3), transparent 28%),
+    radial-gradient(circle at 86% 12%, rgba(123, 97, 255, 0.28), transparent 24%),
+    linear-gradient(145deg, #152270 0%, #2b3a91 45%, #0b1233 100%);
   padding: 1rem 2rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   transform: translateY(0);
@@ -44,7 +43,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 2rem;
+  /* Con titulos largos la fila no cabe entre 768px y escritorio: que envuelva
+     en vez de desbordar. */
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
 }
 
 .close-banner {
@@ -53,7 +55,7 @@
   top: 1rem;
   background: transparent;
   border: none;
-  color: #ffb84d;
+  color: #7fdcff;
   font-size: 2rem;
   cursor: pointer;
   padding: 0;
@@ -68,12 +70,12 @@
 
 .close-banner:hover {
   transform: scale(1.2);
-  color: #ffd966;
+  color: #4cc9f0;
 }
 
 .banner-title {
   font-size: 1.8rem;
-  color: #ffb84d;
+  color: #4cc9f0;
   margin: 0;
   font-weight: bold;
   font-family: 'Josefin Sans Regular', Arial, sans-serif;
@@ -94,43 +96,43 @@
   border-radius: 8px;
   padding: 0.5rem 1rem;
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 184, 77, 0.28);
+  border: 1px solid rgba(76, 201, 240, 0.3);
   min-width: 60px;
 }
 
 .banner-number {
   font-size: 1.8rem;
   font-weight: bold;
-  color: #ffd966;
+  color: #7fdcff;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   line-height: 1;
 }
 
 .banner-label {
   font-size: 0.75rem;
-  color: #fff2d6;
+  color: #d9f2ff;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-top: 0.25rem;
 }
 
 .banner-cta {
-  background: linear-gradient(135deg, #ff8a00 0%, #ffb84d 52%, #ffd966 100%);
-  color: #08112a;
+  background: linear-gradient(135deg, #4cc9f0 0%, #5b8cff 55%, #7b61ff 100%);
+  color: #081026;
   padding: 0.75rem 2rem;
   border-radius: 25px;
   text-decoration: none;
   font-weight: bold;
   font-size: 1rem;
   transition: all 0.3s ease;
-  box-shadow: 0 8px 20px rgba(255, 184, 77, 0.32);
+  box-shadow: 0 8px 20px rgba(76, 201, 240, 0.32);
   white-space: nowrap;
 }
 
 .banner-cta:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(255, 184, 77, 0.42);
-  filter: brightness(1.03);
+  box-shadow: 0 10px 24px rgba(91, 140, 255, 0.42);
+  filter: brightness(1.05);
 }
 
 /* Responsive para el banner */

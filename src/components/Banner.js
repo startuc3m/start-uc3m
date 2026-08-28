@@ -2,37 +2,42 @@ import React, { useState, useEffect } from "react";
 import "../styles/Banner.css";
 import { Link } from "react-router-dom";
 
+// Evento que anuncia el banner. Al cambiar de evento basta con tocar esto.
+const EVENTO = {
+    titulo: "Buildathon Pitchless y NomuLabs",
+    fecha: "2026-09-17T18:00:00",
+    enlace: "/eventos#buildathon-welcome-start",
+};
+
+const FECHA_EVENTO = new Date(EVENTO.fecha).getTime();
+
+// Devuelve null cuando el evento ya ha pasado, para no dejar una cuenta atras a cero.
+function getTimeLeft() {
+    const difference = FECHA_EVENTO - Date.now();
+
+    if (difference <= 0) {
+        return null;
+    }
+
+    return {
+        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
+        seconds: Math.floor((difference % (1000 * 60)) / 1000),
+    };
+}
 
 function Banner() {
-    const [timeLeft, setTimeLeft] = useState({
-        days: 0,
-        hours: 0,
-        minutes: 0,
-        seconds: 0
-    });
+    // Se calcula ya en el primer render: si no, el banner parpadea con ceros un segundo.
+    const [timeLeft, setTimeLeft] = useState(getTimeLeft);
 
     const [isClosed, setIsClosed] = useState(false);
     const [isNavbarVisible, setIsNavbarVisible] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
 
     useEffect(() => {
-        const targetDate = new Date('2026-04-25T00:00:00').getTime();
-
         const timer = setInterval(() => {
-            const now = new Date().getTime();
-            const difference = targetDate - now;
-
-            if (difference > 0) {
-                const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-
-                setTimeLeft({ days, hours, minutes, seconds });
-            } else {
-                setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-                clearInterval(timer);
-            }
+            setTimeLeft(getTimeLeft());
         }, 1000);
 
         return () => clearInterval(timer);
@@ -62,11 +67,16 @@ function Banner() {
     const closeBanner = () => {
         setIsClosed(true);
     };
+
+    if (!timeLeft) {
+        return null;
+    }
+
     return (
         <div className={`event-banner ${isClosed ? 'event-banner--hidden' : ''} ${!isNavbarVisible ? 'event-banner--top' : ''}`}>
-            <button className="close-banner" onClick={closeBanner}>×</button>
+            <button className="close-banner" onClick={closeBanner} aria-label="Cerrar aviso del evento">×</button>
             <div className="banner-content">
-                <h2 className="banner-title">Start Tech</h2>
+                <h2 className="banner-title">{EVENTO.titulo}</h2>
                 <div className="banner-countdown">
                     <div className="banner-countdown-item">
                         <span className="banner-number">{timeLeft.days}</span>
@@ -85,7 +95,7 @@ function Banner() {
                         <span className="banner-label">Seg</span>
                     </div>
                 </div>
-                <Link to="/eventos#start-tech" className="banner-cta">
+                <Link to={EVENTO.enlace} className="banner-cta">
                     ¡Quiero saber más! →
                 </Link>
             </div>
