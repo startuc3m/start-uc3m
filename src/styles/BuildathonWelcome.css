@@ -1,0 +1,405 @@
+/* Buildathon Welcome Start — evento destacado de arranque de temporada.
+   Misma arquitectura que LovableHackathon pero con acento propio (cian/azul marca)
+   para que el evento vivo no se confunda con los anteriores. */
+
+.buildathon-page {
+    background: #070d22;
+}
+
+.buildathon-hero {
+    padding: 7rem 1.5rem 4rem;
+    background:
+        radial-gradient(circle at 10% 15%, rgba(76, 201, 240, 0.32), transparent 30%),
+        radial-gradient(circle at 88% 10%, rgba(123, 97, 255, 0.3), transparent 28%),
+        linear-gradient(145deg, #152270 0%, #2b3a91 45%, #0b1233 100%);
+    color: #ffffff;
+}
+
+.buildathon-hero-content {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.9fr);
+    gap: 2rem;
+    align-items: center;
+}
+
+.buildathon-hero-copy {
+    display: flex;
+    flex-direction: column;
+}
+
+.buildathon-kicker {
+    margin: 0 0 0.9rem;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: #4cc9f0;
+    font-weight: 700;
+}
+
+.buildathon-hero h1 {
+    margin: 0;
+    font-size: clamp(2.2rem, 6vw, 4rem);
+    line-height: 1.05;
+}
+
+.buildathon-hero h2 {
+    margin: 0.8rem 0 0;
+    font-size: clamp(1.1rem, 2.7vw, 1.75rem);
+    color: #7fdcff;
+    font-weight: 600;
+}
+
+.buildathon-description {
+    margin: 1rem 0 0;
+    max-width: 800px;
+    line-height: 1.7;
+    font-size: 1.08rem;
+}
+
+.buildathon-hero-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.buildathon-hero-badges span {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.55rem 0.85rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(76, 201, 240, 0.3);
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.buildathon-cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1.6rem;
+}
+
+.buildathon-cta {
+    display: inline-block;
+    padding: 0.9rem 1.4rem;
+    border-radius: 0.7rem;
+    background: linear-gradient(135deg, #4cc9f0 0%, #5b8cff 55%, #7b61ff 100%);
+    color: #081026;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 12px 26px rgba(76, 201, 240, 0.28);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.buildathon-cta:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.05);
+    box-shadow: 0 16px 30px rgba(91, 140, 255, 0.36);
+}
+
+.buildathon-cta-secondary {
+    display: inline-block;
+    padding: 0.85rem 1.3rem;
+    border-radius: 0.7rem;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    color: #ffffff;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.buildathon-cta-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #4cc9f0;
+    transform: translateY(-2px);
+}
+
+/* --- Patrocinadores --- */
+
+.buildathon-sponsors {
+    margin-top: 2rem;
+}
+
+.buildathon-sponsors-title {
+    margin: 0 0 0.6rem;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 700;
+}
+
+.buildathon-sponsors-logos {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.9rem;
+}
+
+.buildathon-sponsors-logos img {
+    box-sizing: border-box;
+    height: 44px;
+    width: auto;
+    object-fit: contain;
+    padding: 0.35rem 0.7rem;
+    /* Rectangulo redondeado, no pildora: hay logos cuadrados y otros apaisados. */
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(76, 201, 240, 0.5);
+    box-shadow: 0 8px 14px rgba(0, 0, 0, 0.16);
+}
+
+/* El logo ya trae su propio fondo: nada de chip blanco ni padding, que llene el alto. */
+.buildathon-sponsors-logos img.has-own-background {
+    padding: 0;
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.22);
+}
+
+/* Hueco reservado hasta que llegue el logo definitivo. */
+.buildathon-sponsor-slot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 140px;
+    height: 44px;
+    padding: 0 1rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px dashed rgba(76, 201, 240, 0.55);
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+/* --- Panel de agenda --- */
+
+.buildathon-hero-panel {
+    display: grid;
+    gap: 1rem;
+}
+
+.buildathon-panel-card {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.08));
+    border: 1px solid rgba(76, 201, 240, 0.22);
+    border-radius: 18px;
+    padding: 1.25rem;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
+}
+
+.buildathon-panel-card.accent {
+    background: linear-gradient(135deg, rgba(76, 201, 240, 0.28), rgba(123, 97, 255, 0.2));
+    border-color: rgba(127, 220, 255, 0.45);
+}
+
+.buildathon-panel-card .panel-label {
+    display: inline-block;
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #7fdcff;
+    margin-bottom: 0.5rem;
+}
+
+.buildathon-panel-card strong {
+    display: block;
+    font-size: 1.2rem;
+    margin-bottom: 0.35rem;
+}
+
+.buildathon-panel-card p {
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* --- Bloque de info --- */
+
+.buildathon-info {
+    background:
+        radial-gradient(circle at 15% 0%, rgba(76, 201, 240, 0.16), transparent 30%),
+        linear-gradient(180deg, #0b1233 0%, #070d22 100%);
+    color: #ffffff;
+    padding: 3rem 1.5rem 4rem;
+}
+
+.buildathon-section-header {
+    max-width: 1000px;
+    margin: 0 auto 1.5rem;
+}
+
+.buildathon-section-kicker {
+    margin: 0 0 0.4rem;
+    color: #4cc9f0;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 0.85rem;
+}
+
+.buildathon-section-header h3 {
+    margin: 0;
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+}
+
+.buildathon-grid {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.buildathon-card {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.05));
+    border-radius: 12px;
+    padding: 1.25rem;
+    border: 1px solid rgba(76, 201, 240, 0.18);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+
+.buildathon-card h3 {
+    margin: 0 0 0.9rem;
+    color: #7fdcff;
+}
+
+.buildathon-card ul {
+    margin: 0;
+    padding-left: 1.1rem;
+    color: #f3f4f6;
+    line-height: 1.65;
+}
+
+.buildathon-highlight-band {
+    max-width: 1000px;
+    margin: 1.5rem auto 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.buildathon-highlight-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.9rem;
+    padding: 1rem 1.1rem;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(76, 201, 240, 0.12), rgba(123, 97, 255, 0.12));
+    border: 1px solid rgba(76, 201, 240, 0.2);
+}
+
+.buildathon-highlight-item .highlight-number {
+    flex: 0 0 auto;
+    display: inline-flex;
+    width: 2.2rem;
+    height: 2.2rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #4cc9f0, #7b61ff);
+    color: #081026;
+    font-weight: 800;
+}
+
+.buildathon-highlight-item p {
+    margin: 0;
+    line-height: 1.5;
+    color: #f8fafc;
+}
+
+/* --- Reclutamiento --- */
+
+.buildathon-join {
+    scroll-margin-top: 110px;
+    padding: 3.5rem 1.5rem 4.5rem;
+    background:
+        radial-gradient(circle at 85% 10%, rgba(123, 97, 255, 0.22), transparent 35%),
+        linear-gradient(180deg, #070d22 0%, #101a4a 100%);
+    color: #ffffff;
+}
+
+.buildathon-join-content {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.buildathon-join-content h3 {
+    margin: 0 0 0.8rem;
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+}
+
+.buildathon-join-text {
+    margin: 0;
+    max-width: 800px;
+    line-height: 1.7;
+    font-size: 1.05rem;
+    color: #e8ecff;
+}
+
+.buildathon-join-steps {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    margin: 2rem 0;
+}
+
+.buildathon-join-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.9rem;
+    padding: 1.1rem 1.2rem;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.buildathon-join-step span {
+    flex: 0 0 auto;
+    display: inline-flex;
+    width: 2rem;
+    height: 2rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    border: 1px solid #4cc9f0;
+    color: #4cc9f0;
+    font-weight: 800;
+}
+
+.buildathon-join-step p {
+    margin: 0;
+    line-height: 1.5;
+}
+
+@media (max-width: 1024px) {
+    .buildathon-hero-content {
+        grid-template-columns: 1fr;
+    }
+
+    .buildathon-highlight-band,
+    .buildathon-join-steps {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 900px) {
+    .buildathon-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .buildathon-hero {
+        padding-top: 6rem;
+    }
+
+    .buildathon-sponsors-logos img {
+        height: 38px;
+    }
+
+    .buildathon-join {
+        scroll-margin-top: 84px;
+    }
+}

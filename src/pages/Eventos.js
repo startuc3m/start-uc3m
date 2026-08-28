@@ -6,6 +6,7 @@ import Footer from '../components/Footer.js';
 import "../styles/Eventos.css";
 import StartXperience from '../components/StartXperience.js';
 import CollapsibleEvent from '../components/CollapsibleEvent.js';
+import BuildathonWelcome from '../components/BuildathonWelcome.js';
 import LovableHackathon from '../components/LovableHackathon.js';
 
 function Eventos() {
@@ -27,6 +28,15 @@ function Eventos() {
     return (
         <div>
             <Navbar />
+            <CollapsibleEvent
+                id='buildathon-welcome-start'
+                label='Próximo evento'
+                title='Buildathon Pitchless y NomuLabs'
+                subtitle='Jueves 17 de septiembre · 18:00 · Puerta de Toledo'
+                defaultOpen
+            >
+                <BuildathonWelcome />
+            </CollapsibleEvent>
             {/*<CollapsibleEvent id='start-tech' label='Evento anterior' title='StartTech'>
                 <StartTech />
             </CollapsibleEvent>*/}
@@ -34,7 +44,6 @@ function Eventos() {
                 id='startxperience'
                 label='Evento anterior'
                 title='StartXperience'
-                defaultOpen
             >
                 <StartXperience />
             </CollapsibleEvent>
