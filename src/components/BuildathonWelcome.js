@@ -3,6 +3,7 @@ import '../index.css';
 import '../styles/BuildathonWelcome.css';
 
 const INSCRIPCION_URL = 'https://luma.com/csfo45ov';
+const START_URL = 'https://tally.so/r/5BAxX6';
 
 // Para añadir un logo: dejar el archivo en public/Logos/ y poner la ruta en `logo`.
 // Si `logo` es null se pinta un hueco reservado con el nombre.
@@ -47,7 +48,12 @@ function BuildathonWelcome() {
                             >
                                 Reservar plaza
                             </a>
-                            <a className='buildathon-cta-secondary' href='#buildathon-reclutamiento'>
+                            <a
+                                className='buildathon-cta-secondary'
+                                href={START_URL}
+                                target='_blank'
+                                rel='noopener noreferrer'
+                            >
                                 Quiero entrar en Start
                             </a>
                         </div>
@@ -168,18 +174,33 @@ function BuildathonWelcome() {
                         </div>
                         <div className='buildathon-join-step'>
                             <span>3</span>
-                            <p>Te abrimos el proceso de entrada de este curso</p>
+                            <p>Te apuntas al proceso de entrada, ya abierto</p>
                         </div>
                     </div>
 
-                    <a
-                        className='buildathon-cta'
-                        href={INSCRIPCION_URL}
-                        target='_blank'
-                        rel='noopener noreferrer'
-                    >
-                        Apuntarme al Buildathon
-                    </a>
+                    <p className='buildathon-join-badge'>
+                        <span className='buildathon-join-badge-dot' aria-hidden='true'></span>
+                        Inscripciones a Start abiertas
+                    </p>
+
+                    <div className='buildathon-cta-row'>
+                        <a
+                            className='buildathon-cta'
+                            href={START_URL}
+                            target='_blank'
+                            rel='noopener noreferrer'
+                        >
+                            Apuntarme a Start
+                        </a>
+                        <a
+                            className='buildathon-cta-secondary'
+                            href={INSCRIPCION_URL}
+                            target='_blank'
+                            rel='noopener noreferrer'
+                        >
+                            Apuntarme al Buildathon
+                        </a>
+                    </div>
                 </div>
             </section>
         </div>

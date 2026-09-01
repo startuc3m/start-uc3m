@@ -29,7 +29,11 @@ function StarterSection() {
               colaborativo. La participación activa y la fidelidad a la asociación marcan la diferencia:
               cuanto más aportas, más crece tu recorrido dentro, y fuera de Start.
             </p>
-            <a href='https://tally.so/r/wz9GQg' target="_blank" rel="noopener noreferrer">
+            <p className="starter-badge">
+              <span className="starter-badge-dot" aria-hidden="true"></span>
+              Inscripciones abiertas
+            </p>
+            <a href='https://tally.so/r/5BAxX6' target="_blank" rel="noopener noreferrer">
               <button className="StarterSection-cta">
                 Quiero convertirme en starter
               </button>

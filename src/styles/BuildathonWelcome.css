@@ -403,3 +403,41 @@
         scroll-margin-top: 84px;
     }
 }
+
+/* --- Aviso de inscripciones abiertas a Start --- */
+
+.buildathon-join-badge {
+    display: flex;
+    width: fit-content;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 0 0 1.1rem;
+    padding: 0.45rem 1.1rem;
+    border-radius: 40px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.1);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #ffffff;
+}
+
+.buildathon-join-badge-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #6cf09b;
+    box-shadow: 0 0 0 0 rgba(108, 240, 155, 0.7);
+    animation: buildathon-join-badge-pulse 2s infinite;
+}
+
+@keyframes buildathon-join-badge-pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(108, 240, 155, 0.7); }
+    70%  { box-shadow: 0 0 0 12px rgba(108, 240, 155, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(108, 240, 155, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .buildathon-join-badge-dot { animation: none; }
+}

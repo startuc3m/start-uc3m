@@ -10,11 +10,16 @@ function Hero() {
         <p className="hero-subtitle">
           Asociación de emprendedores de la Universidad Carlos III de Madrid
         </p>
-        <a href="https://tally.so/r/wz9GQg" target="_blank" rel="noopener noreferrer">
+        <p className="hero-badge">
+          <span className="hero-badge-dot" aria-hidden="true"></span>
+          Inscripciones abiertas · Curso 2026/27
+        </p>
+        <a href="https://tally.so/r/5BAxX6" target="_blank" rel="noopener noreferrer">
           <button className="hero-cta">
-            Quiero convertirme en starter
+            Apúntate ya
           </button>
         </a>
+        <p className="hero-cta-note">Plazas limitadas — únete a la comunidad Start</p>
       </div>
     </section>
   );

@@ -142,3 +142,62 @@
     padding: 16px 60px;
   }
 }
+
+/* Aviso de inscripciones abiertas sobre el CTA */
+.hero-badge {
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  gap: 10px;
+  margin: 0 auto;
+  padding: 8px 22px;
+  border: 1px solid rgba(255,255,255,0.45);
+  border-radius: 40px;
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(4px);
+  color: #fff;
+  font-family: 'Josefin Sans Regular', Arial, sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.hero-badge-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #6cf09b;
+  box-shadow: 0 0 0 0 rgba(108,240,155,0.7);
+  animation: hero-badge-pulse 2s infinite;
+}
+
+@keyframes hero-badge-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(108,240,155,0.7); }
+  70%  { box-shadow: 0 0 0 12px rgba(108,240,155,0); }
+  100% { box-shadow: 0 0 0 0 rgba(108,240,155,0); }
+}
+
+.hero-cta-note {
+  margin: 14px 0 0 0;
+  font-family: 'Josefin Sans Regular', Arial, sans-serif;
+  font-size: 0.95rem;
+  color: #cddaff;
+  letter-spacing: 0.05em;
+}
+
+/* Respeta a quien prefiere menos movimiento */
+@media (prefers-reduced-motion: reduce) {
+  .hero-badge-dot { animation: none; }
+}
+
+@media (max-width: 768px) {
+  .hero-badge {
+    font-size: 0.78rem;
+    padding: 7px 16px;
+    letter-spacing: 0.08em;
+  }
+
+  .hero-cta-note {
+    font-size: 0.85rem;
+  }
+}

@@ -201,3 +201,48 @@
     padding: 16px 60px;
   }
 }
+
+/* Aviso de inscripciones abiertas junto al CTA */
+.starter-badge {
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  gap: 10px;
+  margin: 28px auto 0 auto;
+  padding: 7px 20px;
+  border: 1px solid rgba(255,255,255,0.45);
+  border-radius: 40px;
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  font-family: 'Josefin Sans Regular', Arial, sans-serif;
+  font-size: 0.95rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.starter-badge-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #6cf09b;
+  box-shadow: 0 0 0 0 rgba(108,240,155,0.7);
+  animation: starter-badge-pulse 2s infinite;
+}
+
+@keyframes starter-badge-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(108,240,155,0.7); }
+  70%  { box-shadow: 0 0 0 12px rgba(108,240,155,0); }
+  100% { box-shadow: 0 0 0 0 rgba(108,240,155,0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .starter-badge-dot { animation: none; }
+}
+
+@media (max-width: 768px) {
+  .starter-badge {
+    font-size: 0.78rem;
+    padding: 6px 14px;
+    letter-spacing: 0.08em;
+  }
+}
