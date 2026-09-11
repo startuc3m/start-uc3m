@@ -6,13 +6,11 @@ import Ioana from "../assets/members/ioana_nedelcu.jpeg"
 import Alejandro from "../assets/members/alejandro_ausina.jpg"
 import Uxio from "../assets/members/uxio_lopez.png"
 import Pedro_r from "../assets/members/pedro_rodriguez.jpg"
-import Ingrid from "../assets/members/ingrid_estrada.jpg"
 import Ana from "../assets/members/ana_gimenez.jpg"
 import Irene from "../assets/members/irene_ibañez.jpeg"
 import Lidia from "../assets/members/lidia_wang.jpg"
 import Alicia from "../assets/members/alicia_gascon.jpg"
 import Juan_vicente from "../assets/members/juan_vicente.jpg"
-import Carlos_m from "../assets/members/carlos_moreno.jpg"
 import Pablo_juan from "../assets/members/pablo_juan.jpg"
 import Maria_m from "../assets/members/maria_martin.jpg"
 import Gonzalo_t from "../assets/members/gonzalo_torrijos.jpeg"
@@ -24,7 +22,6 @@ const teamMembers = [
     {id: 4, nombre: "Lidia Wang", cargo: "Responsable", departamento: "Marketing", foto: Lidia, linkedin: "http://www.linkedin.com/in/lidia-wang-058433389"},
     {id: 5, nombre: "Irene Ibáñez", cargo: "Responsable", departamento: "RRHH", foto: Irene, linkedin: "https://www.linkedin.com/in/ireneibanezcasao/"},
     {id: 6, nombre: "Alicia Gascón", cargo: "Responsable", departamento: "Eventos", foto: Alicia, linkedin: "https://www.linkedin.com/in/alicia-gasc%C3%B3n-valero-41a828387/"},
-    {id: 7, nombre: "Carlos Moreno", cargo: "Asociado", departamento: "IT", foto: Carlos_m, linkedin: ""},
     {id: 8, nombre: "Juan Vicente Zerpa", cargo: "Asociado", departamento: "IT", foto: Juan_vicente, linkedin: "https://www.linkedin.com/in/juan-vicente-zerpa/"},
     {id: 9, nombre: "Uxio López", cargo: "Responsable", departamento: "Comunicación", foto: Uxio, linkedin: "https://www.linkedin.com/in/uxio-lopez-0b6a09386/"},
     {id: 10, nombre: "María Martin", cargo: "Responsable", departamento: "Legal", foto: Maria_m, linkedin: "https://www.linkedin.com/in/maria-martin-dominguez-9569332a6/"},
@@ -32,7 +29,6 @@ const teamMembers = [
     {id: 12, nombre: "María Aguilar", cargo: "Asociada", departamento: "RRHH", foto: perfil, linkedin: ""},
     {id: 13, nombre: "Gonzalo Torrijos", cargo: "Asociado", departamento: "Eventos", foto: Gonzalo_t, linkedin: "https://www.linkedin.com/in/gonzalo-torrijos/"},
     {id: 14, nombre: "Pablo Juan", cargo: "Asociado", departamento: "Legal", foto: Pablo_juan, linkedin: "https://www.linkedin.com/in/pablo-juan-conde/"},
-    {id: 15, nombre: "Ingrid Estrada", cargo: "Asociada", departamento: "Partnerships", foto: Ingrid, linkedin: "https://www.linkedin.com/in/ingrid-estrada1/"},
 
 ];
 
