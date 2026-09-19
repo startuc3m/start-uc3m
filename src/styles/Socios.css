@@ -1,0 +1,365 @@
+.socios {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 3rem 1.25rem 5rem;
+  font-family: 'Josefin Sans Regular', Arial, sans-serif;
+  color: #0e1a52;
+}
+
+.socios__intro {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.socios__eyebrow {
+  margin: 0 0 0.75rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #2b3a91;
+}
+
+.socios__title {
+  margin: 0 0 1rem;
+  font-size: clamp(2rem, 7vw, 3rem);
+  line-height: 1.1;
+  color: #0e1a52;
+}
+
+.socios__title span {
+  background: linear-gradient(120deg, #4cc9f0, #2b3a91);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.socios__lead {
+  margin: 0 auto;
+  max-width: 34rem;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: #3f4a78;
+}
+
+/* ---------------------------------------------------------------- */
+/* Formulario                                                        */
+/* ---------------------------------------------------------------- */
+
+.socios__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.socios__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.socios__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.socios__field label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: #0e1a52;
+}
+
+.socios__field input {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  font-size: 1rem;
+  font-family: inherit;
+  color: #0e1a52;
+  background: #fff;
+  border: 1.5px solid #d6dbee;
+  border-radius: 10px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.socios__field input:focus {
+  outline: none;
+  border-color: #4cc9f0;
+  box-shadow: 0 0 0 3px rgba(76, 201, 240, 0.25);
+}
+
+.socios__hint {
+  margin: 0;
+  min-height: 1.2em;
+  font-size: 0.82rem;
+  color: #6b75a0;
+}
+
+/* ---------------------------------------------------------------- */
+/* Modalidades                                                       */
+/* ---------------------------------------------------------------- */
+
+.socios__modalidades {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.socios__modalidades legend {
+  padding: 0;
+  margin-bottom: 0.9rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: #0e1a52;
+}
+
+.socios__cargando {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #6b75a0;
+}
+
+.socios__opcion {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 1rem 1.1rem;
+  background: #fff;
+  border: 1.5px solid #d6dbee;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.socios__opcion:hover:not(.socios__opcion--bloqueada) {
+  border-color: #4cc9f0;
+}
+
+.socios__opcion--activa {
+  border-color: #2b3a91;
+  background: #f6f8ff;
+  box-shadow: 0 0 0 3px rgba(43, 58, 145, 0.12);
+}
+
+.socios__opcion--bloqueada {
+  cursor: not-allowed;
+  background: #f7f8fb;
+  border-color: #e6e9f2;
+  color: #9aa2c0;
+}
+
+.socios__opcion input {
+  flex: none;
+  width: 1.15rem;
+  height: 1.15rem;
+  accent-color: #2b3a91;
+}
+
+.socios__opcion-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.socios__opcion-titulo {
+  font-size: 0.98rem;
+  font-weight: 600;
+}
+
+.socios__opcion-nota {
+  font-size: 0.82rem;
+  color: #6b75a0;
+}
+
+.socios__opcion--bloqueada .socios__opcion-nota {
+  color: #9aa2c0;
+}
+
+.socios__opcion-precio {
+  flex: none;
+  font-size: 1.15rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.socios__opcion-precio--tachado {
+  text-decoration: line-through;
+  color: #9aa2c0;
+}
+
+/* ---------------------------------------------------------------- */
+/* RGPD, avisos y boton                                              */
+/* ---------------------------------------------------------------- */
+
+.socios__rgpd {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: #3f4a78;
+  cursor: pointer;
+}
+
+.socios__rgpd input {
+  flex: none;
+  margin-top: 0.15rem;
+  width: 1.05rem;
+  height: 1.05rem;
+  accent-color: #2b3a91;
+}
+
+.socios__rgpd a {
+  color: #2b3a91;
+  text-decoration: underline;
+}
+
+.socios__error {
+  margin: 0;
+  padding: 0.85rem 1rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: #8a1c2b;
+  background: #fdf0f1;
+  border: 1.5px solid #f3c6cb;
+  border-radius: 10px;
+}
+
+.socios__aviso {
+  padding: 1rem 1.1rem;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: #7a4a00;
+  background: #fff8e8;
+  border: 1.5px solid #ffd966;
+  border-radius: 12px;
+}
+
+.socios__aviso p {
+  margin: 0 0 0.9rem;
+}
+
+.socios__aviso-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.socios__boton {
+  padding: 0.95rem 1.5rem;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: #fff;
+  background: #0e1a52;
+  border: 0;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.socios__boton:hover:not(:disabled) {
+  background: #2b3a91;
+}
+
+.socios__boton:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.socios__boton:disabled {
+  background: #b9c0d8;
+  cursor: not-allowed;
+}
+
+.socios__boton--secundario {
+  color: #0e1a52;
+  background: transparent;
+  border: 1.5px solid #d6dbee;
+}
+
+.socios__boton--secundario:hover:not(:disabled) {
+  background: #f1f3fa;
+}
+
+.socios__legal {
+  margin: 0;
+  text-align: center;
+  font-size: 0.8rem;
+  color: #8891b5;
+}
+
+/* ---------------------------------------------------------------- */
+/* Pagina de gracias                                                 */
+/* ---------------------------------------------------------------- */
+
+.socios-gracias {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 4rem 1.25rem 6rem;
+  text-align: center;
+  font-family: 'Josefin Sans Regular', Arial, sans-serif;
+  color: #0e1a52;
+}
+
+.socios-gracias__icono {
+  width: 68px;
+  height: 68px;
+  margin: 0 auto 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: #fff;
+  background: linear-gradient(135deg, #4cc9f0, #2b3a91);
+  border-radius: 50%;
+}
+
+.socios-gracias h1 {
+  margin: 0 0 1rem;
+  font-size: clamp(1.8rem, 6vw, 2.5rem);
+  line-height: 1.15;
+}
+
+.socios-gracias p {
+  margin: 0 0 1rem;
+  font-size: 1.02rem;
+  line-height: 1.6;
+  color: #3f4a78;
+}
+
+.socios-gracias__volver {
+  display: inline-block;
+  margin-top: 1.5rem;
+  padding: 0.85rem 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  background: #0e1a52;
+  border-radius: 10px;
+  text-decoration: none;
+}
+
+.socios-gracias__volver:hover {
+  background: #2b3a91;
+}
+
+@media (max-width: 480px) {
+  .socios {
+    padding: 2rem 1rem 4rem;
+  }
+
+  .socios__opcion {
+    padding: 0.9rem;
+    gap: 0.7rem;
+  }
+
+  .socios__opcion-precio {
+    font-size: 1.05rem;
+  }
+}

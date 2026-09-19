@@ -346,6 +346,46 @@ async function testAvailability() {
 }
 
 // -------------------------------------------------------------------
+// Rate limiting del endpoint de elegibilidad premium
+// -------------------------------------------------------------------
+async function testRateLimit() {
+  async function hit(bucket, limit, windowSeconds) {
+    const { rows } = await pool.query('select rate_limit_hit($1, $2, $3) as allowed', [
+      bucket,
+      limit,
+      windowSeconds,
+    ]);
+    return rows[0].allowed;
+  }
+
+  await test('rate limit - permite hasta el limite y despues corta', async () => {
+    await pool.query('delete from rate_limits');
+    for (let i = 1; i <= 5; i += 1) {
+      assertEqual(await hit('ip:1.2.3.4', 5, 60), true, 'peticion ' + i);
+    }
+    assertEqual(await hit('ip:1.2.3.4', 5, 60), false, 'peticion 6 debe cortarse');
+  });
+
+  await test('rate limit - la ventana se reinicia al expirar', async () => {
+    await pool.query('delete from rate_limits');
+    for (let i = 1; i <= 5; i += 1) await hit('ip:5.6.7.8', 5, 60);
+    assertEqual(await hit('ip:5.6.7.8', 5, 60), false, 'agotado');
+
+    await pool.query(
+      "update rate_limits set window_start = now() - interval '2 minutes' where bucket = 'ip:5.6.7.8'"
+    );
+    assertEqual(await hit('ip:5.6.7.8', 5, 60), true, 'tras la ventana vuelve a permitir');
+  });
+
+  await test('rate limit - los buckets son independientes', async () => {
+    await pool.query('delete from rate_limits');
+    for (let i = 1; i <= 5; i += 1) await hit('ip:1.1.1.1', 5, 60);
+    assertEqual(await hit('ip:1.1.1.1', 5, 60), false, 'bucket agotado');
+    assertEqual(await hit('ip:2.2.2.2', 5, 60), true, 'otro bucket sigue libre');
+  });
+}
+
+// -------------------------------------------------------------------
 
 async function loadSchema() {
   const sql = fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8');
@@ -371,6 +411,8 @@ async function main() {
   await testMemberNumbers();
   console.log('\nDisponibilidad (formulario)');
   await testAvailability();
+  console.log('\nRate limiting');
+  await testRateLimit();
 
   await pool.end();
 

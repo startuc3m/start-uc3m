@@ -254,6 +254,42 @@ end;
 $fn$;
 
 -- ---------------------------------------------------------------------
+-- Rate limiting. Vive en la BD y no en memoria porque cada instancia
+-- serverless tendria su propio contador, que es justo lo que no sirve
+-- para impedir que alguien sondee quien esta invitado al premium.
+-- ---------------------------------------------------------------------
+create table if not exists rate_limits (
+  bucket       text primary key,
+  window_start timestamptz not null default now(),
+  hits         int         not null default 0
+);
+
+-- Devuelve true si la peticion se permite, false si excede el limite.
+create or replace function rate_limit_hit(
+  p_bucket         text,
+  p_limit          int,
+  p_window_seconds int
+) returns boolean
+language plpgsql as $fn$
+declare
+  v_hits int;
+begin
+  insert into rate_limits (bucket, window_start, hits)
+  values (p_bucket, now(), 1)
+  on conflict (bucket) do update
+    set window_start = case
+          when rate_limits.window_start < now() - make_interval(secs => p_window_seconds)
+          then now() else rate_limits.window_start end,
+        hits = case
+          when rate_limits.window_start < now() - make_interval(secs => p_window_seconds)
+          then 1 else rate_limits.hits + 1 end
+  returning hits into v_hits;
+
+  return v_hits <= p_limit;
+end;
+$fn$;
+
+-- ---------------------------------------------------------------------
 -- Libera la plaza de una reserva concreta (checkout.session.expired).
 -- ---------------------------------------------------------------------
 create or replace function expire_membership(p_membership_id uuid) returns boolean

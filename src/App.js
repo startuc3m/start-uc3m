@@ -6,6 +6,8 @@ import Equipo from "./pages/Equipo.js";
 import Eventos from "./pages/Eventos.js";
 import Sponsors from "./pages/Sponsors.js";
 import Resources from "./pages/Resources.js";
+import Socios from "./pages/Socios.js";
+import SociosGracias from "./pages/SociosGracias.js";
 
 function App() {
   return (
@@ -15,6 +17,8 @@ function App() {
         <Route path="/equipo" element={<Equipo />} />
         <Route path="/patrocinadores" element={<Sponsors />} />
         <Route path="/recursos" element={<Resources />} />
+        <Route path="/socios" element={<Socios />} />
+        <Route path="/socios/gracias" element={<SociosGracias />} />
       </Routes>
   );
     
