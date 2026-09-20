@@ -16,6 +16,13 @@ if (!DATABASE_URL) {
   console.error('Falta DATABASE_URL');
   process.exit(2);
 }
+// Estos tests vacian las tablas. Contra la base de Start eso borraria a los
+// socios, asi que hay que pedirlo a proposito.
+if (/neon\.tech|prod/i.test(DATABASE_URL) && !process.env.ALLOW_REMOTE_TEST_DB) {
+  console.error('DATABASE_URL apunta a una base remota y estos tests la VACIAN.');
+  console.error('Si es una rama de pruebas, exporta ALLOW_REMOTE_TEST_DB=1.');
+  process.exit(2);
+}
 
 process.env.STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || 'sk_test_no_usado';
 process.env.STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || 'whsec_no_usado';
