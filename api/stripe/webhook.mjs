@@ -31,15 +31,44 @@ export default async function handler(req, res) {
 
   try {
     if (event.type === 'checkout.session.completed') {
-      await handleCompleted(event.data.object);
+      await handleCompleted(await sesionCompleta(stripe, event.data.object));
     } else if (event.type === 'checkout.session.expired') {
-      await handleExpired(event.data.object);
+      await handleExpired(await sesionCompleta(stripe, event.data.object));
     }
     return sendJson(res, 200, { received: true });
   } catch (err) {
     // Fallo de BD: devolvemos 500 a proposito para que Stripe reintente.
     console.error('[webhook] error procesando ' + event.type, err);
     return sendJson(res, 500, { error: 'SERVER_ERROR' });
+  }
+}
+
+/**
+ * Devuelve la sesion con todos sus datos.
+ *
+ * Stripe permite configurar el destino de eventos para que mande el
+ * objeto completo o solo una referencia minima. Con la forma reducida,
+ * `payment_status` y `metadata` no vienen, y el alta no se haria: el
+ * socio habria pagado y no constaria en ningun sitio.
+ *
+ * Si detectamos que falta lo que necesitamos, la pedimos a Stripe. En el
+ * caso normal no hay llamada extra.
+ */
+async function sesionCompleta(stripe, session) {
+  if (!session || !session.id) return session;
+
+  const tieneLoNecesario =
+    session.payment_status !== undefined &&
+    (session.metadata || session.client_reference_id);
+
+  if (tieneLoNecesario) return session;
+
+  console.log('[webhook] evento sin los datos completos, pidiendo la sesion', session.id);
+  try {
+    return await stripe.checkout.sessions.retrieve(session.id);
+  } catch (err) {
+    console.error('[webhook] no se pudo recuperar la sesion ' + session.id, err);
+    throw err; // 500: que Stripe reintente, mejor que perder el alta
   }
 }
 
