@@ -1,0 +1,145 @@
+/* Mismo fondo oscuro que el resto de paginas (ver Socios.css). */
+.privacidad {
+  background-color: #0e1a52;
+  padding: 3rem 1.25rem 5rem;
+  font-family: 'Josefin Sans Regular', Arial, sans-serif;
+  color: #ffffff;
+}
+
+.privacidad__intro,
+.privacidad section,
+.privacidad__aviso,
+.privacidad__volver {
+  max-width: 44rem;
+  margin-inline: auto;
+}
+
+.privacidad__intro {
+  margin-bottom: 2.5rem;
+}
+
+.privacidad h1 {
+  margin: 0 0 0.5rem;
+  font-size: clamp(1.9rem, 6vw, 2.6rem);
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+.privacidad__fecha {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #93a0cd;
+}
+
+.privacidad section {
+  margin-bottom: 2.25rem;
+}
+
+.privacidad h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.15rem;
+  letter-spacing: 0.01em;
+  color: #4cc9f0;
+}
+
+.privacidad p,
+.privacidad li {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: #bcc7ea;
+}
+
+.privacidad p {
+  margin: 0 0 0.9rem;
+}
+
+.privacidad ul {
+  margin: 0 0 0.9rem;
+  padding-left: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.privacidad strong {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.privacidad a {
+  color: #4cc9f0;
+  text-underline-offset: 2px;
+}
+
+.privacidad code {
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 0.9em;
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+
+/* Aviso de borrador: tiene que cantar, para que nadie lo publique asi. */
+.privacidad__aviso {
+  margin-bottom: 2.5rem;
+  padding: 1rem 1.1rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #ffeec2;
+  background: rgba(255, 217, 102, 0.16);
+  border: 2px solid #ffd966;
+  border-radius: 12px;
+}
+
+.privacidad__aviso strong {
+  color: #ffd966;
+}
+
+.privacidad__pendiente {
+  padding: 0.05em 0.4em;
+  border-radius: 4px;
+  background: #ffd966;
+  color: #4a3400;
+  font-weight: 700;
+  font-size: 0.85em;
+  letter-spacing: 0.04em;
+}
+
+.privacidad__tabla-envoltorio {
+  margin: 0 0 0.9rem;
+  overflow-x: auto;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 10px;
+}
+
+.privacidad__tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+.privacidad__tabla th,
+.privacidad__tabla td {
+  padding: 0.6rem 0.8rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  color: #bcc7ea;
+}
+
+.privacidad__tabla th {
+  background: rgba(255, 255, 255, 0.07);
+  color: #ffffff;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.privacidad__tabla tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.privacidad__volver {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}

@@ -9,18 +9,30 @@
     "@testing-library/user-event": "^13.5.0",
     "framer-motion": "^12.23.12",
     "lucide-react": "^0.542.0",
+    "pg": "^8.23.0",
     "postcss": "^8.5.6",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.8.2",
     "react-scripts": "5.0.1",
+    "resend": "^6.28.1",
+    "stripe": "^22.6.2",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "test:db": "node db/test-schema.js",
+    "test:api": "node db/test-api.js",
+    "test:socios": "node db/test-schema.js && node db/test-api.js",
+    "test:notion": "node db/test-notion.js",
+    "db:load": "node db/load-schema.js",
+    "test:email": "node db/test-email.js",
+    "test:stripe": "node db/test-stripe.js",
+    "dev:api": "node db/dev-api.js",
+    "test:e2e": "node db/test-e2e.js"
   },
   "eslintConfig": {
     "extends": [
@@ -39,5 +51,11 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "^react-router-dom$": "<rootDir>/node_modules/react-router-dom/dist/index.js",
+      "^react-router/dom$": "<rootDir>/node_modules/react-router/dist/development/dom-export.js"
+    }
   }
 }

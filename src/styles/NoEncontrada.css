@@ -1,0 +1,75 @@
+/* Mismo fondo oscuro que el resto de paginas (ver Socios.css). */
+.no-encontrada {
+  background-color: #0e1a52;
+  padding: 4.5rem 1.25rem 6rem;
+  text-align: center;
+  font-family: 'Josefin Sans Regular', Arial, sans-serif;
+  color: #ffffff;
+}
+
+/* Selector con el elemento incluido: `.no-encontrada p` tiene mas
+   especificidad que una sola clase y, si no, le pisa tamano y color. */
+.no-encontrada p.no-encontrada__codigo {
+  margin: 0 0 0.5rem;
+  font-size: clamp(3rem, 14vw, 5rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  color: #4cc9f0;
+}
+
+.no-encontrada h1 {
+  margin: 0 auto 1rem;
+  max-width: 18ch;
+  font-size: clamp(1.6rem, 6vw, 2.2rem);
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+.no-encontrada p {
+  margin: 0 auto;
+  max-width: 34rem;
+  font-size: 1.02rem;
+  line-height: 1.6;
+  color: #bcc7ea;
+}
+
+.no-encontrada__acciones {
+  margin-top: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.no-encontrada__boton {
+  display: inline-block;
+  padding: 0.85rem 1.5rem;
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: 10px;
+  color: #0a1338;
+  background: #4cc9f0;
+  border: 1.5px solid #4cc9f0;
+}
+
+.no-encontrada__boton:hover {
+  background: #7fdcff;
+  border-color: #7fdcff;
+}
+
+.no-encontrada__boton--secundario {
+  color: #ffffff;
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.no-encontrada__boton--secundario:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.no-encontrada__boton:focus-visible {
+  outline: 2px solid #4cc9f0;
+  outline-offset: 3px;
+}
