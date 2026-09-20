@@ -30,7 +30,9 @@
     "test:notion": "node db/test-notion.js",
     "db:load": "node db/load-schema.js",
     "test:email": "node db/test-email.js",
-    "test:stripe": "node db/test-stripe.js"
+    "test:stripe": "node db/test-stripe.js",
+    "dev:api": "node db/dev-api.js",
+    "test:e2e": "node db/test-e2e.js"
   },
   "eslintConfig": {
     "extends": [
@@ -55,5 +57,6 @@
       "^react-router-dom$": "<rootDir>/node_modules/react-router-dom/dist/index.js",
       "^react-router/dom$": "<rootDir>/node_modules/react-router/dist/development/dom-export.js"
     }
-  }
+  },
+  "proxy": "http://localhost:3001"
 }
