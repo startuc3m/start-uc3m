@@ -19,11 +19,11 @@ import '../styles/Privacidad.css';
  * consentimiento apoyandose en un texto incompleto.
  */
 
-// Rellenar antes de publicar. Si queda algun null, la pagina avisa.
+// Datos facilitados por la junta. Si algo queda en null, la pagina avisa.
 const ENTIDAD = {
-  nombre: null, // p. ej. "Asociacion de Emprendedores de la UC3M (Start UC3M)"
-  cif: null, // NIF/CIF de la asociacion
-  direccion: null, // domicilio social
+  nombre: 'Start UC3M Emprendedores',
+  nif: 'G86907300',
+  direccion: 'Calle Madrid 126, despacho 6.0.01, 28903 Getafe',
   email: 'startuc3m@gmail.com',
 };
 
@@ -58,8 +58,8 @@ export default function Privacidad() {
         <section>
           <h2>Quién trata tus datos</h2>
           <p>
-            El responsable del tratamiento es <Dato>{ENTIDAD.nombre}</Dato>, con CIF{' '}
-            <Dato>{ENTIDAD.cif}</Dato> y domicilio en <Dato>{ENTIDAD.direccion}</Dato>.
+            El responsable del tratamiento es <Dato>{ENTIDAD.nombre}</Dato>, con NIF{' '}
+            <Dato>{ENTIDAD.nif}</Dato> y domicilio en <Dato>{ENTIDAD.direccion}</Dato>.
             Puedes escribirnos en cualquier momento a{' '}
             <a href={'mailto:' + ENTIDAD.email}>{ENTIDAD.email}</a>.
           </p>
