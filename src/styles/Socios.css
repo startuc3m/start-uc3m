@@ -1,14 +1,45 @@
+/*
+ * La web tiene un `body { background-color: #2b2c8f }` global
+ * (DividerOfSections.css) y las paginas ponen su propio fondo oscuro
+ * encima: Equipo usa #0E1A52. Esta pagina hace lo mismo, en vez de
+ * depender de lo que herede del body.
+ *
+ * De ahi el reparto: texto claro sobre el azul, y tarjetas blancas con
+ * texto oscuro para los campos y las modalidades, que es donde hace
+ * falta la maxima legibilidad.
+ */
+
+.socios,
+.socios-gracias {
+  --ground: #0e1a52;
+  --on-ground: #ffffff;
+  --on-ground-soft: #bcc7ea;
+  --on-ground-faint: #93a0cd;
+
+  --card: #ffffff;
+  --card-ink: #0e1a52;
+  --card-soft: #5a648f;
+  --card-faint: #98a0c0;
+  --card-line: #d6dbee;
+  --card-line-strong: #b9c1de;
+  --card-sunk: #f2f4fc;
+
+  --accent: #4cc9f0;
+  --accent-ink: #0a1338;
+  --amarillo: #ffd966;
+}
+
 .socios {
-  max-width: 640px;
-  margin: 0 auto;
+  background-color: var(--ground);
   padding: 3rem 1.25rem 5rem;
   font-family: 'Josefin Sans Regular', Arial, sans-serif;
-  color: #0e1a52;
+  color: var(--on-ground);
 }
 
 .socios__intro {
+  max-width: 34rem;
+  margin: 0 auto 2.5rem;
   text-align: center;
-  margin-bottom: 2.5rem;
 }
 
 .socios__eyebrow {
@@ -16,29 +47,26 @@
   font-size: 0.8rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #2b3a91;
+  color: var(--accent);
 }
 
 .socios__title {
   margin: 0 0 1rem;
   font-size: clamp(2rem, 7vw, 3rem);
   line-height: 1.1;
-  color: #0e1a52;
+  text-wrap: balance;
+  color: var(--on-ground);
 }
 
 .socios__title span {
-  background: linear-gradient(120deg, #4cc9f0, #2b3a91);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--accent);
 }
 
 .socios__lead {
-  margin: 0 auto;
-  max-width: 34rem;
-  font-size: 1.05rem;
+  margin: 0;
+  font-size: 1.02rem;
   line-height: 1.6;
-  color: #3f4a78;
+  color: var(--on-ground-soft);
 }
 
 /* ---------------------------------------------------------------- */
@@ -46,6 +74,8 @@
 /* ---------------------------------------------------------------- */
 
 .socios__form {
+  max-width: 34rem;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 1.75rem;
@@ -64,10 +94,10 @@
 }
 
 .socios__field label {
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   font-weight: 600;
   letter-spacing: 0.03em;
-  color: #0e1a52;
+  color: var(--on-ground);
 }
 
 .socios__field input {
@@ -75,24 +105,28 @@
   padding: 0.85rem 1rem;
   font-size: 1rem;
   font-family: inherit;
-  color: #0e1a52;
-  background: #fff;
-  border: 1.5px solid #d6dbee;
+  color: var(--card-ink);
+  background: var(--card);
+  border: 1.5px solid transparent;
   border-radius: 10px;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
+.socios__field input::placeholder {
+  color: var(--card-faint);
+}
+
 .socios__field input:focus {
   outline: none;
-  border-color: #4cc9f0;
-  box-shadow: 0 0 0 3px rgba(76, 201, 240, 0.25);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(76, 201, 240, 0.35);
 }
 
 .socios__hint {
   margin: 0;
   min-height: 1.2em;
-  font-size: 0.82rem;
-  color: #6b75a0;
+  font-size: 0.85rem;
+  color: var(--on-ground-faint);
 }
 
 /* ---------------------------------------------------------------- */
@@ -111,16 +145,16 @@
 .socios__modalidades legend {
   padding: 0;
   margin-bottom: 0.9rem;
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   font-weight: 600;
   letter-spacing: 0.03em;
-  color: #0e1a52;
+  color: var(--on-ground);
 }
 
 .socios__cargando {
   margin: 0;
   font-size: 0.9rem;
-  color: #6b75a0;
+  color: var(--on-ground-faint);
 }
 
 .socios__opcion {
@@ -128,28 +162,28 @@
   align-items: center;
   gap: 0.9rem;
   padding: 1rem 1.1rem;
-  background: #fff;
-  border: 1.5px solid #d6dbee;
+  background: var(--card);
+  color: var(--card-ink);
+  border: 2px solid transparent;
   border-radius: 12px;
   cursor: pointer;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
 }
 
 .socios__opcion:hover:not(.socios__opcion--bloqueada) {
-  border-color: #4cc9f0;
+  border-color: var(--accent);
 }
 
 .socios__opcion--activa {
-  border-color: #2b3a91;
-  background: #f6f8ff;
-  box-shadow: 0 0 0 3px rgba(43, 58, 145, 0.12);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(76, 201, 240, 0.25);
 }
 
+/* Bloqueada: se apaga, pero sin bajar de contraste legible. */
 .socios__opcion--bloqueada {
   cursor: not-allowed;
-  background: #f7f8fb;
-  border-color: #e6e9f2;
-  color: #9aa2c0;
+  background: #e8eaf4;
+  color: var(--card-soft);
 }
 
 .socios__opcion input {
@@ -169,16 +203,12 @@
 
 .socios__opcion-titulo {
   font-size: 0.98rem;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .socios__opcion-nota {
-  font-size: 0.82rem;
-  color: #6b75a0;
-}
-
-.socios__opcion--bloqueada .socios__opcion-nota {
-  color: #9aa2c0;
+  font-size: 0.84rem;
+  color: var(--card-soft);
 }
 
 .socios__opcion-precio {
@@ -190,7 +220,7 @@
 
 .socios__opcion-precio--tachado {
   text-decoration: line-through;
-  color: #9aa2c0;
+  color: var(--card-faint);
 }
 
 /* ---------------------------------------------------------------- */
@@ -201,9 +231,9 @@
   display: flex;
   align-items: flex-start;
   gap: 0.65rem;
-  font-size: 0.88rem;
-  line-height: 1.5;
-  color: #3f4a78;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--on-ground-soft);
   cursor: pointer;
 }
 
@@ -212,37 +242,41 @@
   margin-top: 0.15rem;
   width: 1.05rem;
   height: 1.05rem;
-  accent-color: #2b3a91;
+  accent-color: var(--accent);
 }
 
 .socios__rgpd a {
-  color: #2b3a91;
+  color: var(--accent);
   text-decoration: underline;
 }
 
 .socios__error {
   margin: 0;
   padding: 0.85rem 1rem;
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   line-height: 1.5;
-  color: #8a1c2b;
-  background: #fdf0f1;
-  border: 1.5px solid #f3c6cb;
+  color: #ffd7d7;
+  background: rgba(190, 40, 60, 0.22);
+  border: 1.5px solid #e8798c;
   border-radius: 10px;
 }
 
 .socios__aviso {
   padding: 1rem 1.1rem;
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   line-height: 1.55;
-  color: #7a4a00;
-  background: #fff8e8;
-  border: 1.5px solid #ffd966;
+  color: #ffeec2;
+  background: rgba(255, 217, 102, 0.14);
+  border: 1.5px solid var(--amarillo);
   border-radius: 12px;
 }
 
 .socios__aviso p {
   margin: 0 0 0.9rem;
+}
+
+.socios__aviso strong {
+  color: var(--amarillo);
 }
 
 .socios__aviso-acciones {
@@ -251,14 +285,16 @@
   gap: 0.6rem;
 }
 
+/* El boton principal lleva el cian de la marca: sobre el azul oscuro un
+   boton navy desapareceria. */
 .socios__boton {
   padding: 0.95rem 1.5rem;
   font-family: inherit;
-  font-size: 1rem;
+  font-size: 1.02rem;
   font-weight: 700;
   letter-spacing: 0.03em;
-  color: #fff;
-  background: #0e1a52;
+  color: var(--accent-ink);
+  background: var(--accent);
   border: 0;
   border-radius: 10px;
   cursor: pointer;
@@ -266,7 +302,7 @@
 }
 
 .socios__boton:hover:not(:disabled) {
-  background: #2b3a91;
+  background: #7fdcff;
 }
 
 .socios__boton:active:not(:disabled) {
@@ -274,25 +310,33 @@
 }
 
 .socios__boton:disabled {
-  background: #b9c0d8;
+  color: rgba(255, 255, 255, 0.55);
+  background: rgba(255, 255, 255, 0.14);
   cursor: not-allowed;
 }
 
 .socios__boton--secundario {
-  color: #0e1a52;
+  color: var(--on-ground);
   background: transparent;
-  border: 1.5px solid #d6dbee;
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
 }
 
 .socios__boton--secundario:hover:not(:disabled) {
-  background: #f1f3fa;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.socios__boton:focus-visible,
+.socios__opcion input:focus-visible,
+.socios__rgpd input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
 }
 
 .socios__legal {
   margin: 0;
   text-align: center;
-  font-size: 0.8rem;
-  color: #8891b5;
+  font-size: 0.84rem;
+  color: var(--on-ground-faint);
 }
 
 /* ---------------------------------------------------------------- */
@@ -300,12 +344,11 @@
 /* ---------------------------------------------------------------- */
 
 .socios-gracias {
-  max-width: 560px;
-  margin: 0 auto;
+  background-color: var(--ground);
   padding: 4rem 1.25rem 6rem;
   text-align: center;
   font-family: 'Josefin Sans Regular', Arial, sans-serif;
-  color: #0e1a52;
+  color: var(--on-ground);
 }
 
 .socios-gracias__icono {
@@ -316,22 +359,29 @@
   align-items: center;
   justify-content: center;
   font-size: 2rem;
-  color: #fff;
-  background: linear-gradient(135deg, #4cc9f0, #2b3a91);
+  color: var(--accent-ink);
+  background: var(--accent);
   border-radius: 50%;
 }
 
 .socios-gracias h1 {
-  margin: 0 0 1rem;
+  margin: 0 auto 1rem;
+  max-width: 20ch;
   font-size: clamp(1.8rem, 6vw, 2.5rem);
   line-height: 1.15;
+  text-wrap: balance;
 }
 
 .socios-gracias p {
-  margin: 0 0 1rem;
+  margin: 0 auto 1rem;
+  max-width: 34rem;
   font-size: 1.02rem;
   line-height: 1.6;
-  color: #3f4a78;
+  color: var(--on-ground-soft);
+}
+
+.socios-gracias strong {
+  color: var(--on-ground);
 }
 
 .socios-gracias__volver {
@@ -339,14 +389,14 @@
   margin-top: 1.5rem;
   padding: 0.85rem 1.5rem;
   font-weight: 700;
-  color: #fff;
-  background: #0e1a52;
+  color: var(--accent-ink);
+  background: var(--accent);
   border-radius: 10px;
   text-decoration: none;
 }
 
 .socios-gracias__volver:hover {
-  background: #2b3a91;
+  background: #7fdcff;
 }
 
 @media (max-width: 480px) {
