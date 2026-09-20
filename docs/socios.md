@@ -56,21 +56,32 @@ SQL. Vercel inyecta `DATABASE_URL` automáticamente al conectar la integración.
 
 La base vive en el Notion **de Start**, no en una cuenta personal.
 
-1. Crear una base de datos llamada *Socios Start UC3M* con exactamente estas
-   propiedades (los nombres deben coincidir, se usan literalmente en
-   `api/_lib/notion.mjs`):
+1. Crear una base de datos llamada *Socios Start UC3M*. El código **no exige** un
+   esquema concreto: lee las propiedades que tenga la base y rellena solo las que
+   reconoce, así que renombrar o quitar una columna no rompe el alta, solo deja
+   ese dato fuera de Notion.
 
-   | Propiedad | Tipo |
-   |---|---|
-   | `Nombre` | Título |
-   | `Nº socio` | Número |
-   | `ID socio` | Texto |
-   | `Email` | Email |
-   | `Modalidad` | Selección — `Estándar`, `Premium` |
-   | `Tramo` | Selección — `Tramo 1`, `Tramo 2`, `Tramo 3`, `Premium` |
-   | `Importe` | Número (formato euro) |
-   | `Fecha de pago` | Fecha |
-   | `Stripe payment intent` | Texto |
+   | Propiedad | Tipo | Estado |
+   |---|---|---|
+   | *(la de título, se llame como se llame)* | Título | recibe el nombre del socio |
+   | `Nº socio` | Número | **en uso** |
+   | `Email` | Email | **en uso** |
+   | `Modalidad` | Selección — `Estándar`, `Premium` | **en uso** |
+   | `Importe` | Número (formato euro) | **en uso** |
+   | `Fecha de pago` | Fecha | **en uso** |
+   | `Stripe payment intent` | Texto | **en uso** |
+   | `Tramo` | Selección — `Tramo 1`…`Tramo 3`, `Premium` | opcional, se deduce del importe |
+   | `ID socio` | Texto | opcional, es `Nº socio` con ceros delante |
+
+   La propiedad de título se localiza **por tipo**, no por nombre: da igual que se
+   llame `Nombre`, `Socio` o `Name`.
+
+   Para comprobar que la base y el código encajan, sin esperar a un pago real:
+
+   ```bash
+   npm run test:notion            # contrasta el esquema
+   node db/test-notion.js --alta  # además crea una ficha de prueba y la archiva
+   ```
 
 2. Crear una integración interna en <https://www.notion.so/my-integrations>
    (workspace de Start), con permiso de *Insert content*.

@@ -26,7 +26,8 @@
     "eject": "react-scripts eject",
     "test:db": "node db/test-schema.js",
     "test:api": "node db/test-api.js",
-    "test:socios": "node db/test-schema.js && node db/test-api.js"
+    "test:socios": "node db/test-schema.js && node db/test-api.js",
+    "test:notion": "node db/test-notion.js"
   },
   "eslintConfig": {
     "extends": [
