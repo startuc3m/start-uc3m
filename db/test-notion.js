@@ -83,12 +83,67 @@ async function main() {
   }
 
   {
+    // La tabla real de Start, tal y como la creo RRHH.
+    const schema = {
+      Socios: 'title',
+      'Número socio': 'number',
+      Email: 'email',
+      Modalidad: 'select',
+      Importe: 'number',
+      'Fecha de pago': 'date',
+      'Stripe payment intent': 'rich_text',
+    };
+    const { properties } = buildProperties(SOCIO_EJEMPLO, schema);
+
+    const comprobaciones = [
+      ['Socios', properties.Socios && properties.Socios.title[0].text.content === SOCIO_EJEMPLO.full_name],
+      ['Número socio', properties['Número socio'] && properties['Número socio'].number === 9999],
+      ['Email', properties.Email && properties.Email.email === SOCIO_EJEMPLO.email],
+      ['Modalidad', properties.Modalidad && properties.Modalidad.select.name === 'Estándar'],
+      ['Importe', properties.Importe && properties.Importe.number === 7.99],
+      ['Fecha de pago', Boolean(properties['Fecha de pago'])],
+      ['Stripe payment intent', Boolean(properties['Stripe payment intent'])],
+    ];
+
+    const malas = comprobaciones.filter(([, bien]) => !bien).map(([n]) => n);
+    if (malas.length === 0) {
+      ok('la tabla real de Start se rellena entera (7 columnas)');
+    } else {
+      fail('no se rellenarian: ' + malas.join(', '));
+    }
+  }
+
+  {
+    // "Número socio" e "Importe" son las dos number: no deben confundirse.
+    const schema = { Nombre: 'title', 'Número socio': 'number', Importe: 'number' };
+    const { properties } = buildProperties(SOCIO_EJEMPLO, schema);
+    if (properties['Número socio'].number === 9999 && properties.Importe.number === 7.99) {
+      ok('distingue dos columnas numericas por el nombre');
+    } else {
+      fail('confundio el numero de socio con el importe');
+    }
+  }
+
+  {
+    // El mismo dato, escrito de varias formas.
+    ['Nº socio', 'Numero de socio', 'Num. socio', 'NÚMERO SOCIO', 'ID miembro'].forEach((nombre) => {
+      const schema = { Nombre: 'title', [nombre]: 'number' };
+      const { properties } = buildProperties(SOCIO_EJEMPLO, schema);
+      if (properties[nombre] && properties[nombre].number === 9999) {
+        ok('reconoce la columna "' + nombre + '"');
+      } else {
+        fail('no reconocio la columna "' + nombre + '"');
+      }
+    });
+  }
+
+  {
     const schema = { Nombre: 'title', Importe: 'rich_text' };
     const { properties, omitidas } = buildProperties(SOCIO_EJEMPLO, schema);
-    if (!properties.Importe && omitidas.some((o) => o.startsWith('Importe'))) {
-      ok('omite una propiedad cuyo tipo no coincide, en vez de romper el alta');
+    if (!properties.Importe && omitidas.some((o) => o.startsWith('importe'))) {
+      ok('omite un dato cuando ninguna columna encaja, en vez de romper el alta');
     } else {
-      fail('no detecto el desajuste de tipo en Importe');
+      fail('no detecto que Importe no es una columna numerica');
     }
   }
 
@@ -210,12 +265,15 @@ function resumen() {
   console.log('\n' + '-'.repeat(60));
   if (fallos) {
     console.log(fallos + ' comprobacion(es) fallida(s)');
-    process.exit(1);
+    // exitCode en vez de exit(): con exit(), node en Windows aborta con un
+    // assert de libuv si quedan sockets de fetch sin cerrar.
+    process.exitCode = 1;
+    return;
   }
   console.log('Todo correcto.');
 }
 
 main().catch((err) => {
   console.error(err);
-  process.exit(1);
+  process.exitCode = 1;
 });

@@ -4,82 +4,149 @@ const NOTION_VERSION = '2022-06-28';
 // alta sin dejarlo fijo para siempre: una instancia nueva lo relee.
 let schemaCache = null;
 
-/**
- * Propiedades que sabemos rellenar, por nombre.
- *
- * Solo se envian las que existan de verdad en la base y con el tipo que
- * esperamos. Notion rechaza el alta entera si mandas una propiedad que no
- * existe, asi que si RRHH renombra o borra una columna preferimos crear la
- * ficha sin ese dato antes que perder el alta.
- */
-function candidateProperties(member) {
-  const tramo = member.plan === 'premium' ? 'Premium' : 'Tramo ' + member.tier;
-
-  return {
-    'Nº socio': { number: member.member_number },
-    'N.º socio': { number: member.member_number },
-    'Numero de socio': { number: member.member_number },
-    Email: { email: member.email },
-    Modalidad: { select: { name: member.plan === 'premium' ? 'Premium' : 'Estándar' } },
-    Tramo: { select: { name: tramo } },
-    Importe: { number: member.price_cents / 100 },
-    'Fecha de pago': { date: { start: new Date(member.paid_at || Date.now()).toISOString() } },
-    'ID socio': { rich_text: [{ text: { content: padMemberNumber(member.member_number) } }] },
-    'Stripe payment intent': {
-      rich_text: [{ text: { content: member.stripe_payment_intent || '' } }],
-    },
-  };
-}
-
 function padMemberNumber(n) {
   return String(n).padStart(4, '0');
 }
 
-/** El tipo de valor que estamos construyendo, para contrastarlo con Notion. */
-function valueType(value) {
-  return Object.keys(value)[0];
+/** Minusculas, sin tildes y sin puntuacion, para comparar nombres de columna. */
+function normalize(name) {
+  return String(name)
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
 }
 
 /**
- * Cruza lo que sabemos rellenar con lo que la base tiene de verdad.
+ * Los datos que sabemos escribir, cada uno emparejado por TIPO mas palabras
+ * clave del nombre, no por un nombre exacto.
+ *
+ * Es deliberado: la columna puede llamarse "Nº socio", "Numero socio" o
+ * "Num. de socio" y sigue siendo la misma. Casar por nombre literal hacia
+ * que un dato se dejase de escribir en silencio al renombrar una columna.
+ *
+ * `excluye` desempata entre columnas del mismo tipo (Importe tambien es
+ * number). El orden importa: el primer campo que reclama una columna se
+ * la queda.
+ */
+function fieldSpecs(member) {
+  return [
+    {
+      clave: 'numero de socio',
+      tipo: 'number',
+      incluye: ['socio', 'miembro', 'member'],
+      excluye: ['importe', 'precio', 'cuota', 'euro'],
+      valor: () => ({ number: member.member_number }),
+    },
+    {
+      clave: 'importe',
+      tipo: 'number',
+      incluye: ['importe', 'precio', 'cuota', 'euro', 'pagado'],
+      valor: () => ({ number: member.price_cents / 100 }),
+    },
+    {
+      clave: 'email',
+      tipo: 'email',
+      incluye: [],
+      valor: () => ({ email: member.email }),
+    },
+    {
+      clave: 'modalidad',
+      tipo: 'select',
+      incluye: ['modalidad', 'plan', 'tipo'],
+      excluye: ['tramo'],
+      valor: () => ({ select: { name: member.plan === 'premium' ? 'Premium' : 'Estándar' } }),
+    },
+    {
+      clave: 'tramo',
+      tipo: 'select',
+      incluye: ['tramo'],
+      valor: () => ({
+        select: { name: member.plan === 'premium' ? 'Premium' : 'Tramo ' + member.tier },
+      }),
+    },
+    {
+      clave: 'fecha de pago',
+      tipo: 'date',
+      incluye: [],
+      valor: () => ({ date: { start: new Date(member.paid_at || Date.now()).toISOString() } }),
+    },
+    {
+      clave: 'referencia de stripe',
+      tipo: 'rich_text',
+      incluye: ['stripe', 'intent', 'pago'],
+      valor: () => ({
+        rich_text: [{ text: { content: member.stripe_payment_intent || '' } }],
+      }),
+    },
+    {
+      clave: 'id de socio',
+      tipo: 'rich_text',
+      incluye: ['id', 'codigo', 'carne'],
+      excluye: ['stripe', 'intent'],
+      valor: () => ({
+        rich_text: [{ text: { content: padMemberNumber(member.member_number) } }],
+      }),
+    },
+  ];
+}
+
+/**
+ * Cruza lo que sabemos escribir con lo que la base tiene de verdad.
  *
  * `schema` es {nombre: tipo} tal y como lo devuelve Notion. La propiedad de
- * titulo se localiza por tipo, no por nombre, asi que da igual si se llama
- * "Nombre", "Socio" o "Name".
+ * titulo se localiza por tipo, asi que da igual si se llama "Nombre",
+ * "Socio" o "Name".
  *
  * Exportada para poder probarla sin tocar la red (db/test-notion.js).
  */
 export function buildProperties(member, schema) {
   const properties = {};
   const omitidas = [];
+  const usadas = new Set();
 
   const titleProp = Object.keys(schema).find((name) => schema[name] === 'title');
   if (titleProp) {
     properties[titleProp] = { title: [{ text: { content: member.full_name } }] };
+    usadas.add(titleProp);
   } else {
-    omitidas.push('(ninguna propiedad de tipo titulo)');
+    omitidas.push('(la base no tiene propiedad de titulo)');
   }
 
-  const candidatas = candidateProperties(member);
-  const yaPuestas = new Set();
+  const columnas = Object.keys(schema).map((name) => ({ name, norm: normalize(name) }));
 
-  Object.keys(candidatas).forEach((name) => {
-    if (name === titleProp) return;
-    if (!(name in schema)) return;
+  fieldSpecs(member).forEach((spec) => {
+    const candidatas = columnas.filter(
+      (c) => !usadas.has(c.name) && schema[c.name] === spec.tipo
+    );
 
-    const esperado = valueType(candidatas[name]);
-    if (schema[name] !== esperado) {
-      omitidas.push(name + ' (es ' + schema[name] + ', esperabamos ' + esperado + ')');
+    const excluye = spec.excluye || [];
+    const permitidas = candidatas.filter(
+      (c) => !excluye.some((palabra) => c.norm.includes(palabra))
+    );
+
+    // Con palabras clave, exigimos que el nombre encaje. Sin ellas (email,
+    // fecha) el tipo ya identifica el dato, y basta con que quede una sola
+    // columna de ese tipo.
+    //
+    // Sin esta distincion, un dato sin columna propia se colaria en la
+    // unica columna libre de su tipo: la referencia de Stripe acabaria
+    // escrita dentro de una columna llamada "Importe".
+    let elegida = spec.incluye.length
+      ? permitidas.find((c) => spec.incluye.some((palabra) => c.norm.includes(palabra)))
+      : null;
+    if (!elegida && spec.incluye.length === 0 && permitidas.length === 1) {
+      elegida = permitidas[0];
+    }
+
+    if (!elegida) {
+      omitidas.push(spec.clave + ' (ninguna columna ' + spec.tipo + ' encaja)');
       return;
     }
 
-    // Varios alias apuntan al mismo dato (p. ej. "Nº socio" / "N.º socio"):
-    // con que exista uno basta.
-    const clave = esperado + ':' + JSON.stringify(candidatas[name]);
-    if (yaPuestas.has(clave)) return;
-    yaPuestas.add(clave);
-
-    properties[name] = candidatas[name];
+    usadas.add(elegida.name);
+    properties[elegida.name] = spec.valor();
   });
 
   return { properties, omitidas };
