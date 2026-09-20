@@ -28,7 +28,8 @@
     "test:api": "node db/test-api.js",
     "test:socios": "node db/test-schema.js && node db/test-api.js",
     "test:notion": "node db/test-notion.js",
-    "db:load": "node db/load-schema.js"
+    "db:load": "node db/load-schema.js",
+    "test:email": "node db/test-email.js"
   },
   "eslintConfig": {
     "extends": [
