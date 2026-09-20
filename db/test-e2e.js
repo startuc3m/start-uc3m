@@ -250,8 +250,68 @@ async function main() {
     fail('deberia rechazar a un socio existente: ' + JSON.stringify(repetido.body));
   }
 
+  // ---------------------------------------------------------------
+  // 7. Limpieza en Notion
+  //
+  // NOTION_API_KEY apunta a la base real de Start, asi que el alta de
+  // prueba crea una ficha de verdad. Si no la archivamos, cada ejecucion
+  // deja un socio inventado mezclado con los reales.
+  // ---------------------------------------------------------------
+  console.log('\n7. Limpieza de Notion');
+  await limpiarNotion();
+
   await pool.end();
   return resumen();
+}
+
+async function limpiarNotion() {
+  const token = process.env.NOTION_API_KEY;
+  const databaseId = process.env.NOTION_SOCIOS_DATABASE_ID;
+
+  if (!token || !databaseId) {
+    aviso('sin configurar, no hay nada que limpiar');
+    return;
+  }
+
+  const headers = {
+    Authorization: 'Bearer ' + token,
+    'Notion-Version': '2022-06-28',
+    'Content-Type': 'application/json',
+  };
+
+  try {
+    const res = await fetch('https://api.notion.com/v1/databases/' + databaseId + '/query', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ page_size: 50 }),
+    });
+    const { results = [] } = await res.json();
+
+    let archivadas = 0;
+    for (const page of results) {
+      // Las altas de esta prueba llevan siempre un payment intent 'pi_prueba_...'.
+      const pi = (page.properties['Stripe payment intent']?.rich_text || [])
+        .map((x) => x.plain_text)
+        .join('');
+      if (!pi.startsWith('pi_prueba')) continue;
+
+      await fetch('https://api.notion.com/v1/pages/' + page.id, {
+        method: 'PATCH',
+        headers,
+        body: JSON.stringify({ archived: true }),
+      });
+      archivadas += 1;
+    }
+
+    if (archivadas) ok(archivadas + ' ficha(s) de prueba archivadas');
+    else aviso('no se creo ninguna ficha (Notion pudo fallar, revisa los logs de arriba)');
+  } catch (err) {
+    fail('no se pudo limpiar Notion: ' + err.message + ' — archivala a mano');
+  }
+}
+
+function aviso(m) {
+  console.log('  ~    ' + m);
 }
 
 function resumen() {
