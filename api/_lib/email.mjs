@@ -41,7 +41,7 @@ export async function sendWelcomeEmail(member) {
   }
 }
 
-function welcomeText({ name, memberId, modalidad, priceCents }) {
+export function welcomeText({ name, memberId, modalidad, priceCents }) {
   return [
     'Hola ' + name + ',',
     '',
@@ -61,63 +61,134 @@ function welcomeText({ name, memberId, modalidad, priceCents }) {
   ].join('\n');
 }
 
-function welcomeHtml({ name, memberId, modalidad, priceCents }) {
+// URL fija en public/, no del bundle: el hash del build cambiaria en cada
+// despliegue y romperia la imagen de los correos ya enviados.
+const SITE = (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.startuc3m.es').replace(/\/$/, '');
+const LOGO = SITE + '/logo-email.png';
+
+/**
+ * Plantilla con la identidad de Start: el azul #0e1a52 de la web y el
+ * cian #4cc9f0 del acento.
+ *
+ * Escrita con las restricciones del correo, no de la web: tablas en vez
+ * de flex, estilos en linea, `bgcolor` ademas del CSS (Outlook usa el
+ * motor de Word y se salta muchas reglas), y nada de fuentes web, que
+ * Gmail elimina. Por eso el tipo de letra no es Josefin Sans como en la
+ * web: no sobreviviria al envio.
+ *
+ * El numero de socio va en texto, nunca en una imagen: muchos clientes
+ * bloquean las imagenes por defecto y es el dato que importa.
+ */
+export function welcomeHtml({ name, memberId, modalidad, priceCents }) {
   return `<!doctype html>
 <html lang="es">
-  <body style="margin:0;padding:0;background:#f4f4f5;">
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f5;padding:32px 12px;">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>Bienvenido a Start UC3M</title>
+  </head>
+  <body style="margin:0;padding:0;background-color:#0a1338;">
+    <!-- Resumen que algunos clientes muestran junto al asunto -->
+    <div style="display:none;max-height:0;overflow:hidden;opacity:0;">
+      Tu n&uacute;mero de socio es el ${memberId}. Gu&aacute;rdalo: te identifica en nuestros eventos.
+    </div>
+
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#0a1338" style="background-color:#0a1338;padding:32px 12px;">
       <tr>
         <td align="center">
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border-radius:12px;overflow:hidden;font-family:Helvetica,Arial,sans-serif;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:520px;font-family:Helvetica,Arial,sans-serif;">
+
+            <!-- Logotipo -->
             <tr>
-              <td style="padding:32px 32px 8px 32px;">
-                <p style="margin:0 0 16px 0;font-size:16px;line-height:1.5;color:#18181b;">Hola ${escapeHtml(name)},</p>
-                <p style="margin:0 0 24px 0;font-size:16px;line-height:1.5;color:#18181b;">
-                  Ya eres socio de <strong>Start UC3M</strong>. Este es tu carn&eacute;:
-                </p>
+              <td align="center" style="padding:0 0 24px 0;">
+                <!-- El texto alternativo va estilado: si el cliente bloquea
+                     las imagenes, "Start UC3M" tiene que leerse igual sobre
+                     el fondo oscuro, no quedar en negro invisible. -->
+                <img src="${LOGO}" width="150" alt="Start UC3M"
+                     style="display:block;width:150px;max-width:60%;height:auto;border:0;color:#ffffff;font-family:Helvetica,Arial,sans-serif;font-size:20px;font-weight:bold;letter-spacing:.04em;" />
               </td>
             </tr>
+
+            <!-- Tarjeta -->
             <tr>
-              <td style="padding:0 32px;">
-                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#fafafa;border:1px solid #e4e4e7;border-radius:10px;">
+              <td bgcolor="#0e1a52" style="background-color:#0e1a52;border-radius:14px;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+
                   <tr>
-                    <td style="padding:20px 24px;text-align:center;">
-                      <p style="margin:0 0 4px 0;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#71717a;">N&uacute;mero de socio</p>
-                      <p style="margin:0;font-size:40px;font-weight:bold;letter-spacing:.06em;color:#18181b;">${memberId}</p>
+                    <td style="padding:34px 32px 0 32px;">
+                      <p style="margin:0 0 14px 0;font-size:16px;line-height:1.5;color:#ffffff;">
+                        Hola ${escapeHtml(name)},
+                      </p>
+                      <p style="margin:0 0 26px 0;font-size:16px;line-height:1.6;color:#bcc7ea;">
+                        Ya eres socio de <span style="color:#ffffff;font-weight:bold;">Start UC3M</span>.
+                        Este es tu carn&eacute;:
+                      </p>
                     </td>
                   </tr>
+
+                  <!-- Numero de socio -->
                   <tr>
-                    <td style="padding:0 24px 20px 24px;">
-                      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size:14px;color:#3f3f46;">
+                    <td style="padding:0 32px;">
+                      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#0a1338" style="background-color:#0a1338;border-radius:12px;">
                         <tr>
-                          <td style="padding:6px 0;color:#71717a;">Modalidad</td>
-                          <td style="padding:6px 0;text-align:right;">${escapeHtml(modalidad)}</td>
+                          <td align="center" style="padding:26px 24px 20px 24px;">
+                            <p style="margin:0 0 8px 0;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#4cc9f0;">
+                              N&uacute;mero de socio
+                            </p>
+                            <p style="margin:0;font-size:52px;line-height:1;font-weight:bold;letter-spacing:.08em;color:#4cc9f0;">
+                              ${memberId}
+                            </p>
+                          </td>
                         </tr>
                         <tr>
-                          <td style="padding:6px 0;color:#71717a;">Importe</td>
-                          <td style="padding:6px 0;text-align:right;">${formatEuros(priceCents)}</td>
+                          <td style="padding:0 24px 22px 24px;">
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="font-size:14px;">
+                              <tr>
+                                <td style="padding:9px 0;border-top:1px solid #1d2a63;color:#93a0cd;">Modalidad</td>
+                                <td align="right" style="padding:9px 0;border-top:1px solid #1d2a63;color:#ffffff;">${escapeHtml(modalidad)}</td>
+                              </tr>
+                              <tr>
+                                <td style="padding:9px 0;border-top:1px solid #1d2a63;color:#93a0cd;">Importe</td>
+                                <td align="right" style="padding:9px 0;border-top:1px solid #1d2a63;color:#ffffff;">${formatEuros(priceCents)}</td>
+                              </tr>
+                            </table>
+                          </td>
                         </tr>
                       </table>
                     </td>
                   </tr>
+
+                  <tr>
+                    <td style="padding:26px 32px 34px 32px;">
+                      <p style="margin:0 0 16px 0;font-size:14px;line-height:1.65;color:#bcc7ea;">
+                        Gu&aacute;rdalo: es el n&uacute;mero que te identifica en nuestros eventos.
+                        El recibo del pago te llega aparte, de Stripe.
+                      </p>
+                      <p style="margin:0;font-size:14px;line-height:1.65;color:#bcc7ea;">
+                        Cualquier cosa, escr&iacute;benos a
+                        <a href="mailto:${CONTACT_EMAIL}" style="color:#4cc9f0;text-decoration:underline;">${CONTACT_EMAIL}</a>.
+                      </p>
+                    </td>
+                  </tr>
+
                 </table>
               </td>
             </tr>
+
+            <!-- Pie -->
             <tr>
-              <td style="padding:24px 32px 32px 32px;">
-                <p style="margin:0 0 16px 0;font-size:14px;line-height:1.6;color:#3f3f46;">
-                  Guarda este n&uacute;mero: es el que te identifica en nuestros eventos.
-                  El recibo del pago te llega aparte, de Stripe.
+              <td align="center" style="padding:26px 24px 8px 24px;">
+                <p style="margin:0 0 6px 0;font-size:14px;line-height:1.6;color:#ffffff;">
+                  Nos vemos pronto
                 </p>
-                <p style="margin:0 0 24px 0;font-size:14px;line-height:1.6;color:#3f3f46;">
-                  Cualquier cosa, escr&iacute;benos a
-                  <a href="mailto:${CONTACT_EMAIL}" style="color:#2563eb;">${CONTACT_EMAIL}</a>.
-                </p>
-                <p style="margin:0;font-size:14px;line-height:1.6;color:#71717a;">
-                  Nos vemos pronto,<br />El equipo de Start UC3M
+                <p style="margin:0;font-size:13px;line-height:1.6;color:#6f7cae;">
+                  El equipo de Start UC3M &middot;
+                  <a href="${SITE}" style="color:#6f7cae;text-decoration:underline;">startuc3m.es</a>
                 </p>
               </td>
             </tr>
+
           </table>
         </td>
       </tr>
