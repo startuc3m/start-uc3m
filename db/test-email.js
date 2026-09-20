@@ -59,9 +59,21 @@ async function main() {
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(direccion)) {
       fail('EMAIL_FROM no contiene una direccion valida: ' + from);
     } else {
-      ok('EMAIL_FROM: ' + from);
-      if (!/<.+>/.test(from)) {
-        aviso('sin nombre visible. Mejor: Start UC3M <' + direccion + '>');
+      const dominio = direccion.split('@')[1].toLowerCase();
+      const GRATUITOS = ['gmail.com', 'googlemail.com', 'hotmail.com', 'outlook.com', 'outlook.es', 'yahoo.com', 'yahoo.es', 'icloud.com', 'live.com'];
+
+      if (GRATUITOS.includes(dominio)) {
+        // Error facil de cometer y que no da la cara hasta el primer envio.
+        fail('EMAIL_FROM usa "' + dominio + '", y desde ahi no se puede enviar');
+        console.log('       Resend solo envia desde dominios que verificas, y ' + dominio);
+        console.log('       no es vuestro. Usa una direccion de startuc3m.es, o bien');
+        console.log('       onboarding@resend.dev mientras el dominio no este verificado.');
+        console.log('       (startuc3m@gmail.com si vale para CONTACT_EMAIL.)');
+      } else {
+        ok('EMAIL_FROM: ' + from);
+        if (!/<.+>/.test(from)) {
+          aviso('sin nombre visible. Mejor: Start UC3M <' + direccion + '>');
+        }
       }
     }
   }
@@ -85,7 +97,15 @@ async function main() {
     });
 
     if (!res.ok) {
-      fail('no se pudo consultar los dominios: HTTP ' + res.status + ' ' + (await res.text()).slice(0, 200));
+      const detalle = await res.text();
+      if (detalle.includes('restricted_api_key')) {
+        // Una clave de solo envio no puede listar dominios. Es lo correcto
+        // para produccion, asi que no lo tratamos como un problema.
+        aviso('la clave es de solo envio, asi que no puedo comprobar el dominio desde aqui');
+        aviso('miralo en resend.com/domains: tiene que poner "verified"');
+        return enviarPrueba();
+      }
+      fail('no se pudo consultar los dominios: HTTP ' + res.status + ' ' + detalle.slice(0, 200));
       return resumen();
     }
 
@@ -114,9 +134,13 @@ async function main() {
     }
   }
 
-  // ---------------------------------------------------------------
-  // Envio real, con el codigo del webhook
-  // ---------------------------------------------------------------
+  return enviarPrueba();
+}
+
+// ---------------------------------------------------------------
+// Envio real, con el codigo del webhook
+// ---------------------------------------------------------------
+async function enviarPrueba() {
   if (!DESTINO) {
     console.log('\n  (pasa una direccion para enviar un correo de prueba:');
     console.log('   node db/test-email.js tu@email.com)');

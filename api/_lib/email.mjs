@@ -23,6 +23,11 @@ export async function sendWelcomeEmail(member) {
     const resend = new Resend(apiKey);
     const { error } = await resend.emails.send({
       from,
+      // El remitente puede ser una direccion que solo envia (para Resend
+      // basta con tener el dominio verificado, no hace falta buzon). Sin
+      // esto, quien conteste al correo de bienvenida escribiria a un buzon
+      // inexistente y su respuesta se perderia.
+      replyTo: CONTACT_EMAIL,
       to: member.email,
       subject: 'Bienvenido a Start — socio nº ' + memberId,
       html: welcomeHtml({ name: member.full_name, memberId, modalidad, priceCents: member.price_cents }),
