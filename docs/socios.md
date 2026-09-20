@@ -66,11 +66,11 @@ La base vive en el Notion **de Start**, no en una cuenta personal.
    | *(la de título, se llame como se llame)* | Título | recibe el nombre del socio |
    | `Nº socio` | Número | **en uso** |
    | `Email` | Email | **en uso** |
-   | `Modalidad` | Selección — `Estándar`, `Premium` | **en uso** |
+   | `Modalidad` | Selección — `Estándar`, `Starter` | **en uso** |
    | `Importe` | Número (formato euro) | **en uso** |
    | `Fecha de pago` | Fecha | **en uso** |
    | `Stripe payment intent` | Texto | **en uso** |
-   | `Tramo` | Selección — `Tramo 1`…`Tramo 3`, `Premium` | opcional, se deduce del importe |
+   | `Tramo` | Selección — `Tramo 1`…`Tramo 3`, `Starter` | opcional, se deduce del importe |
    | `ID socio` | Texto | opcional, es `Nº socio` con ceros delante |
 
    La propiedad de título se localiza **por tipo**, no por nombre: da igual que se

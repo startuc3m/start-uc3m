@@ -17,7 +17,7 @@ export async function sendWelcomeEmail(member) {
   }
 
   const memberId = formatMemberNumber(member.member_number);
-  const modalidad = member.plan === 'premium' ? 'Premium' : 'Estándar (tramo ' + member.tier + ')';
+  const modalidad = member.plan === 'premium' ? 'Starter' : 'Estándar (tramo ' + member.tier + ')';
 
   try {
     const resend = new Resend(apiKey);

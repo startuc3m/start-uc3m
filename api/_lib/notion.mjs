@@ -56,14 +56,14 @@ function fieldSpecs(member) {
       tipo: 'select',
       incluye: ['modalidad', 'plan', 'tipo'],
       excluye: ['tramo'],
-      valor: () => ({ select: { name: member.plan === 'premium' ? 'Premium' : 'Estándar' } }),
+      valor: () => ({ select: { name: member.plan === 'premium' ? 'Starter' : 'Estándar' } }),
     },
     {
       clave: 'tramo',
       tipo: 'select',
       incluye: ['tramo'],
       valor: () => ({
-        select: { name: member.plan === 'premium' ? 'Premium' : 'Tramo ' + member.tier },
+        select: { name: member.plan === 'premium' ? 'Starter' : 'Tramo ' + member.tier },
       }),
     },
     {

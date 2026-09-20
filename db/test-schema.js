@@ -210,7 +210,7 @@ async function testPremium() {
     await pool.query("insert into premium_invites (email, note) values ('vip@uc3m.es', 'junta')");
 
     const m = await reserveAndPay('vip@uc3m.es', 'premium');
-    assertEqual(m.price_cents, 2000, 'precio premium');
+    assertEqual(m.price_cents, 2500, 'precio starter');
     assertEqual(m.plan, 'premium', 'modalidad');
 
     const { rows } = await pool.query("select used_at from premium_invites where email = 'vip@uc3m.es'");

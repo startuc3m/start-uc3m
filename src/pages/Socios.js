@@ -27,7 +27,7 @@ function optionKey(option) {
 }
 
 function optionTitle(option) {
-  if (option.plan === 'premium') return 'Socio Premium';
+  if (option.plan === 'premium') return 'Socio Starter';
   if (option.tier === 1) return 'Socio · plazas 1 a 10';
   if (option.tier === 2) return 'Socio · plazas 11 a 30';
   return 'Socio · plaza 31 en adelante';

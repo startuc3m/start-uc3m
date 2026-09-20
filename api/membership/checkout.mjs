@@ -19,7 +19,7 @@ const RATE_LIMIT = 8;
 const RATE_WINDOW_SECONDS = 60;
 
 const PLAN_LABEL = {
-  premium: 'Socio Premium de Start UC3M',
+  premium: 'Socio Starter de Start UC3M',
   standard: 'Socio de Start UC3M',
 };
 

@@ -145,7 +145,7 @@ async function main() {
 
     const premium = res.body.options.find((o) => o.plan === 'premium');
     assertEqual(premium.state, 'invite_only', 'estado premium');
-    assertEqual(premium.priceCents, 2000, 'precio premium');
+    assertEqual(premium.priceCents, 2500, 'precio starter');
   });
 
   await test('solo expone remaining del tramo vigente', async () => {

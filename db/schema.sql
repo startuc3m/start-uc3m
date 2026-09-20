@@ -19,7 +19,7 @@ create table if not exists membership_settings (
   tier1_price_cents   int     not null default 799,
   tier2_price_cents   int     not null default 899,
   tier3_price_cents   int     not null default 999,
-  premium_price_cents int     not null default 2000,
+  premium_price_cents int     not null default 2500,
   premium_open        boolean not null default true,
   reservation_minutes int     not null default 45
 );

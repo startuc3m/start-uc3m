@@ -18,7 +18,7 @@ function availabilityPayload({ occupied = 0, premiumOpen = true } = {}) {
       { plan: 'standard', tier: 1, priceCents: 799, state: state(1), remaining: Math.max(10 - occupied, 0) },
       { plan: 'standard', tier: 2, priceCents: 899, state: state(2), remaining: Math.max(30 - occupied, 0) },
       { plan: 'standard', tier: 3, priceCents: 999, state: state(3), remaining: null },
-      { plan: 'premium', tier: null, priceCents: 2000, state: premiumOpen ? 'invite_only' : 'closed', remaining: null },
+      { plan: 'premium', tier: null, priceCents: 2500, state: premiumOpen ? 'invite_only' : 'closed', remaining: null },
     ],
   };
 }
@@ -78,7 +78,7 @@ describe('criterio 10 - estados de las modalidades', () => {
     const tramo3 = optionRow('9,99 €');
     expect(within(tramo3).getByRole('radio')).toBeDisabled();
 
-    const premium = optionRow('20,00 €');
+    const premium = optionRow('25,00 €');
     expect(within(premium).getByRole('radio')).toBeDisabled();
     expect(within(premium).getByText('Solo por invitación de Start')).toBeInTheDocument();
   });
@@ -111,8 +111,8 @@ describe('criterio 10 - estados de las modalidades', () => {
     global.fetch = mockFetch({ availability: availabilityPayload({ premiumOpen: false }) });
     renderSocios();
 
-    await waitFor(() => expect(screen.getByText('20,00 €')).toBeInTheDocument());
-    const premium = optionRow('20,00 €');
+    await waitFor(() => expect(screen.getByText('25,00 €')).toBeInTheDocument());
+    const premium = optionRow('25,00 €');
     expect(within(premium).getByRole('radio')).toBeDisabled();
     expect(within(premium).getByText('No disponible ahora mismo')).toBeInTheDocument();
   });
@@ -123,13 +123,13 @@ describe('elegibilidad premium', () => {
     global.fetch = mockFetch({ availability: availabilityPayload(), eligible: true });
     renderSocios();
 
-    await waitFor(() => expect(screen.getByText('20,00 €')).toBeInTheDocument());
-    expect(within(optionRow('20,00 €')).getByRole('radio')).toBeDisabled();
+    await waitFor(() => expect(screen.getByText('25,00 €')).toBeInTheDocument());
+    expect(within(optionRow('25,00 €')).getByRole('radio')).toBeDisabled();
 
     userEvent.type(screen.getByLabelText('Email'), 'vip@uc3m.es');
 
     await waitFor(
-      () => expect(within(optionRow('20,00 €')).getByRole('radio')).toBeEnabled(),
+      () => expect(within(optionRow('25,00 €')).getByRole('radio')).toBeEnabled(),
       { timeout: 3000 }
     );
     expect(screen.getByText('Tienes invitación para la modalidad premium.')).toBeInTheDocument();
@@ -139,11 +139,11 @@ describe('elegibilidad premium', () => {
     global.fetch = mockFetch({ availability: availabilityPayload(), eligible: false });
     renderSocios();
 
-    await waitFor(() => expect(screen.getByText('20,00 €')).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText('25,00 €')).toBeInTheDocument());
     userEvent.type(screen.getByLabelText('Email'), 'cualquiera@gmail.com');
 
     await waitFor(() => expect(screen.getByText('Te enviaremos aquí tu número de socio.')).toBeInTheDocument());
-    expect(within(optionRow('20,00 €')).getByRole('radio')).toBeDisabled();
+    expect(within(optionRow('25,00 €')).getByRole('radio')).toBeDisabled();
   });
 
   test('no se consulta la elegibilidad con un email incompleto', async () => {
@@ -151,7 +151,7 @@ describe('elegibilidad premium', () => {
     global.fetch = fetchMock;
     renderSocios();
 
-    await waitFor(() => expect(screen.getByText('20,00 €')).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText('25,00 €')).toBeInTheDocument());
     userEvent.type(screen.getByLabelText('Email'), 'aun-no');
 
     const llamadas = fetchMock.mock.calls.filter((c) =>
