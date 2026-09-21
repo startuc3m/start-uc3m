@@ -33,7 +33,8 @@
     "test:stripe": "node db/test-stripe.js",
     "dev:api": "node db/dev-api.js",
     "test:e2e": "node db/test-e2e.js",
-    "invitar": "node db/invitar.js"
+    "invitar": "node db/invitar.js",
+    "corregir-email": "node db/corregir-email.js"
   },
   "eslintConfig": {
     "extends": [
