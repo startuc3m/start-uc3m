@@ -441,3 +441,25 @@
 @media (prefers-reduced-motion: reduce) {
     .buildathon-join-badge-dot { animation: none; }
 }
+
+/* --- Inscripciones a Start cerradas --- */
+
+.buildathon-cta.is-closed,
+.buildathon-cta.is-closed:hover,
+.buildathon-cta-secondary.is-closed,
+.buildathon-cta-secondary.is-closed:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    color: rgba(255, 255, 255, 0.75);
+    font-weight: 600;
+    cursor: default;
+    transform: none;
+    filter: none;
+    box-shadow: none;
+}
+
+.buildathon-join-badge.is-closed .buildathon-join-badge-dot {
+    background: #f0b86c;
+    box-shadow: none;
+    animation: none;
+}

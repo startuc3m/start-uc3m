@@ -246,3 +246,39 @@
     letter-spacing: 0.08em;
   }
 }
+
+/* --- Inscripciones cerradas --- */
+
+.starter-badge--closed {
+  border-color: rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.08);
+}
+
+.starter-badge--closed .starter-badge-dot {
+  background: #f0b86c;
+  box-shadow: none;
+  animation: none;
+}
+
+.StarterSection-cta--closed,
+.StarterSection-cta--closed:hover {
+  background: rgba(255,255,255,0.14);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.35);
+  cursor: default;
+  transform: none;
+  box-shadow: none;
+}
+
+.starter-closed-note {
+  margin: 14px 0 0 0;
+  font-family: 'Josefin Sans Regular', Arial, sans-serif;
+  font-size: 0.95rem;
+  color: #cddaff;
+}
+
+@media (max-width: 768px) {
+  .starter-closed-note {
+    font-size: 0.85rem;
+  }
+}

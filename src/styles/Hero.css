@@ -201,3 +201,27 @@
     font-size: 0.85rem;
   }
 }
+
+/* --- Inscripciones cerradas --- */
+
+.hero-badge--closed {
+  border-color: rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.08);
+  color: #e8ecff;
+}
+
+.hero-badge--closed .hero-badge-dot {
+  background: #f0b86c;
+  box-shadow: none;
+  animation: none;
+}
+
+.hero-cta--closed,
+.hero-cta--closed:hover {
+  background: rgba(255,255,255,0.14);
+  color: #e8ecff;
+  border: 1px solid rgba(255,255,255,0.35);
+  cursor: default;
+  transform: none;
+  box-shadow: none;
+}

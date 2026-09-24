@@ -29,15 +29,16 @@ function StarterSection() {
               colaborativo. La participación activa y la fidelidad a la asociación marcan la diferencia:
               cuanto más aportas, más crece tu recorrido dentro, y fuera de Start.
             </p>
-            <p className="starter-badge">
+            <p className="starter-badge starter-badge--closed">
               <span className="starter-badge-dot" aria-hidden="true"></span>
-              Inscripciones abiertas
+              Inscripciones cerradas
             </p>
-            <a href='https://tally.so/r/5BAxX6' target="_blank" rel="noopener noreferrer">
-              <button className="StarterSection-cta">
-                Quiero convertirme en starter
-              </button>
-            </a>
+            <button className="StarterSection-cta StarterSection-cta--closed" type="button" disabled>
+              Plazas completas
+            </button>
+            <p className="starter-closed-note">
+              El proceso de entrada de este curso ya está cerrado. Abriremos de nuevo en la próxima convocatoria.
+            </p>
           </div>
         </div>
         
