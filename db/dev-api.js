@@ -37,6 +37,16 @@ if (fs.existsSync(envFile)) {
 
 const PORT = Number(process.env.DEV_API_PORT || 3001);
 
+// Notion no tiene entorno de pruebas: la clave apunta siempre a la base
+// real de Start. Y los numeros de socio de la base de pruebas empiezan
+// tambien en 1, asi que una prueba en local escribiria sobre la ficha de
+// un socio de verdad. Si no estamos contra produccion, se desactiva.
+const contraProduccion = /\/neondb(\?|$)/.test(process.env.DATABASE_URL || '');
+if (!contraProduccion && process.env.NOTION_API_KEY) {
+  delete process.env.NOTION_API_KEY;
+  process.env.DEV_NOTION_DESACTIVADO = '1';
+}
+
 function describeDb(url) {
   try {
     const u = new URL(url);
@@ -51,6 +61,7 @@ async function main() {
     '/api/membership/availability': (await import('../api/membership/availability.mjs')).default,
     '/api/membership/premium-eligibility': (await import('../api/membership/premium-eligibility.mjs')).default,
     '/api/membership/checkout': (await import('../api/membership/checkout.mjs')).default,
+    '/api/membership/telefono': (await import('../api/membership/telefono.mjs')).default,
     '/api/stripe/webhook': (await import('../api/stripe/webhook.mjs')).default,
   };
 
@@ -89,7 +100,14 @@ async function main() {
     console.log('  Stripe          ' + (process.env.STRIPE_SECRET_KEY || '').slice(0, 8) + '...');
     console.log('  webhook secret  ' + (process.env.STRIPE_WEBHOOK_SECRET ? 'puesto' : 'FALTA'));
     console.log('  remitente       ' + (process.env.EMAIL_FROM || '(sin EMAIL_FROM)'));
-    console.log('  Notion          ' + (process.env.NOTION_API_KEY ? 'configurado' : 'sin configurar'));
+    console.log(
+      '  Notion          ' +
+        (process.env.DEV_NOTION_DESACTIVADO
+          ? 'DESACTIVADO (base de pruebas: escribiria sobre socios reales)'
+          : process.env.NOTION_API_KEY
+          ? 'configurado'
+          : 'sin configurar')
+    );
 
     if (/\/neondb(\?|$)/.test(process.env.DATABASE_URL || '')) {
       console.log('\n  AVISO: estas apuntando a neondb, la base de PRODUCCION.');

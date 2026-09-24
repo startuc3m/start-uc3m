@@ -124,6 +124,7 @@ async function main() {
     name: 'Socio de Prueba',
     email: DESTINO,
     plan: 'standard',
+    phone: '666123456',
     acceptedPrivacy: true,
   });
 
@@ -229,6 +230,7 @@ async function main() {
     name: 'Segundo Socio',
     email: 'segundo-prueba@startuc3m.es',
     plan: 'standard',
+    phone: '666123456',
     acceptedPrivacy: true,
   });
 
@@ -242,6 +244,7 @@ async function main() {
     name: 'Socio de Prueba',
     email: DESTINO,
     plan: 'standard',
+    phone: '666123456',
     acceptedPrivacy: true,
   });
   if (repetido.status === 409 && repetido.body.error === 'ALREADY_MEMBER') {

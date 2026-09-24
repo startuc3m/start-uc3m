@@ -56,11 +56,12 @@ function assertEqual(actual, expected, msg) {
   }
 }
 
-async function reserve(email, name, plan) {
-  const { rows } = await pool.query('select * from reserve_membership($1, $2, $3)', [
+async function reserve(email, name, plan, phone) {
+  const { rows } = await pool.query('select * from reserve_membership($1, $2, $3, $4)', [
     email,
     name || 'Socio de Prueba',
     plan || 'standard',
+    phone === undefined ? '666123456' : phone,
   ]);
   return rows[0];
 }
@@ -346,6 +347,95 @@ async function testAvailability() {
 }
 
 // -------------------------------------------------------------------
+// Telefono
+// -------------------------------------------------------------------
+async function testTelefono() {
+  await test('el telefono es obligatorio para darse de alta', async () => {
+    await expectError(() => reserve('sinmovil@uc3m.es', 'Sin Movil', 'standard', null), 'INVALID_PHONE');
+    await expectError(() => reserve('sinmovil@uc3m.es', 'Sin Movil', 'standard', ''), 'INVALID_PHONE');
+    await expectError(() => reserve('sinmovil@uc3m.es', 'Sin Movil', 'standard', '12345'), 'INVALID_PHONE');
+
+    const { rows } = await pool.query('select count(*)::int as n from memberships');
+    assertEqual(rows[0].n, 0, 'no debe crearse ninguna reserva');
+  });
+
+  await test('el telefono se guarda normalizado', async () => {
+    const m = await reserve('conmovil@uc3m.es', 'Con Movil', 'standard', '  666 12 34 56 ');
+    assertEqual(m.phone, '+34666123456', 'telefono guardado');
+  });
+
+  await test('cada socio pagado recibe un enlace personal unico', async () => {
+    for (let i = 1; i <= 3; i += 1) await reserveAndPay('socio' + i + '@uc3m.es', 'standard');
+
+    const creados = (await pool.query('select ensure_phone_tokens() as n')).rows[0].n;
+    assertEqual(creados, 3, 'tokens creados');
+
+    const { rows } = await pool.query(
+      "select phone_token from memberships where status = 'paid'"
+    );
+    const tokens = rows.map((r) => r.phone_token);
+    assert(tokens.every((t) => t && t.length === 32), 'todos tienen token de 32 caracteres');
+    assertEqual(new Set(tokens).size, 3, 'los tokens no se repiten');
+
+    // Volver a ejecutarlo no reescribe los que ya tenian.
+    const otra = (await pool.query('select ensure_phone_tokens() as n')).rows[0].n;
+    assertEqual(otra, 0, 'no reescribe los tokens existentes');
+  });
+
+  await test('el enlace personal identifica al socio sin que escriba su email', async () => {
+    const m = await reserveAndPay('marta@uc3m.es', 'standard');
+    await pool.query('select ensure_phone_tokens()');
+    const { rows } = await pool.query('select phone_token from memberships where id = $1', [m.id]);
+    const token = rows[0].phone_token;
+
+    const quien = await pool.query('select * from membership_by_phone_token($1)', [token]);
+    assertEqual(quien.rows[0].email, 'marta@uc3m.es', 'identifica al socio');
+    assertEqual(quien.rows[0].member_number, 1, 'con su numero');
+  });
+
+  await test('se guarda el telefono desde el enlace personal', async () => {
+    const m = await reserveAndPay('marta@uc3m.es', 'standard');
+    await pool.query('select ensure_phone_tokens()');
+    const token = (await pool.query('select phone_token from memberships where id = $1', [m.id]))
+      .rows[0].phone_token;
+
+    const r = await pool.query('select * from set_phone_by_token($1, $2)', [token, '699 88 77 66']);
+    assertEqual(r.rows[0].phone, '+34699887766', 'telefono normalizado y guardado');
+    assert(r.rows[0].phone_updated_at !== null, 'queda la fecha de actualizacion');
+  });
+
+  await test('un token inventado no guarda nada', async () => {
+    await reserveAndPay('marta@uc3m.es', 'standard');
+    await expectError(
+      () => pool.query('select * from set_phone_by_token($1, $2)', ['tokenfalso', '666123456']),
+      'INVALID_TOKEN'
+    );
+  });
+
+  await test('un telefono mal escrito no borra el que ya habia', async () => {
+    const m = await reserveAndPay('marta@uc3m.es', 'standard');
+    await pool.query('select ensure_phone_tokens()');
+    const token = (await pool.query('select phone_token from memberships where id = $1', [m.id]))
+      .rows[0].phone_token;
+
+    await pool.query('select set_phone_by_token($1, $2)', [token, '666123456']);
+    await expectError(
+      () => pool.query('select set_phone_by_token($1, $2)', [token, 'esto no vale']),
+      'INVALID_PHONE'
+    );
+
+    const { rows } = await pool.query('select phone from memberships where id = $1', [m.id]);
+    assertEqual(rows[0].phone, '+34666123456', 'el telefono anterior sigue ahi');
+  });
+
+  await test('una reserva sin pagar no tiene enlace personal', async () => {
+    await reserve('reservado@uc3m.es', 'Reservado', 'standard');
+    const creados = (await pool.query('select ensure_phone_tokens() as n')).rows[0].n;
+    assertEqual(creados, 0, 'solo los socios pagados reciben enlace');
+  });
+}
+
+// -------------------------------------------------------------------
 // Rate limiting del endpoint de elegibilidad premium
 // -------------------------------------------------------------------
 async function testRateLimit() {
@@ -411,6 +501,8 @@ async function main() {
   await testMemberNumbers();
   console.log('\nDisponibilidad (formulario)');
   await testAvailability();
+  console.log('\nTelefono');
+  await testTelefono();
   console.log('\nRate limiting');
   await testRateLimit();
 

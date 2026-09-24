@@ -51,6 +51,15 @@ create table if not exists memberships (
   )
 );
 
+-- Telefono. Se pide en el alta desde septiembre de 2026; los socios
+-- anteriores lo rellenan por su enlace personal (phone_token).
+alter table memberships add column if not exists phone text;
+alter table memberships add column if not exists phone_token text;
+alter table memberships add column if not exists phone_updated_at timestamptz;
+
+create unique index if not exists memberships_phone_token_uniq
+  on memberships (phone_token) where phone_token is not null;
+
 -- Un email = un socio.
 create unique index if not exists memberships_paid_email_uniq
   on memberships (email) where status = 'paid';
@@ -136,19 +145,121 @@ select t.plan, t.tier, t.price_cents, t.state, t.remaining, o.n as occupied
  where s.id;
 
 -- ---------------------------------------------------------------------
+-- Normaliza un telefono a formato internacional.
+--
+-- La gente lo escribe de mil formas: "666 12 34 56", "+34 666123456",
+-- "0034666123456". Se guardan todos igual para poder cruzarlos con
+-- WhatsApp y para no tener duplicados que en realidad son el mismo.
+--
+-- Devuelve null si no parece un telefono valido.
+-- ---------------------------------------------------------------------
+create or replace function normalize_phone(p_phone text) returns text
+language plpgsql immutable as $fn$
+declare
+  v text;
+begin
+  if p_phone is null then
+    return null;
+  end if;
+
+  -- Solo digitos, conservando el + inicial si lo hubiera.
+  v := regexp_replace(trim(p_phone), '[^0-9+]', '', 'g');
+  v := regexp_replace(v, '(.)\+', '\1', 'g');   -- + que no sea el primero
+
+  if v like '00%' then
+    v := '+' || substring(v from 3);
+  end if;
+
+  -- Nueve digitos sueltos que empiezan por 6, 7, 8 o 9: numero espanol.
+  if v ~ '^[6789][0-9]{8}$' then
+    v := '+34' || v;
+  end if;
+
+  if v !~ '^\+[0-9]{8,15}$' then
+    return null;
+  end if;
+
+  return v;
+end;
+$fn$;
+
+-- ---------------------------------------------------------------------
+-- Enlace personal para que un socio ya dado de alta deje su telefono.
+--
+-- El token identifica al socio, asi que no tiene que volver a escribir su
+-- email ni puede rellenar por error el de otra persona.
+-- ---------------------------------------------------------------------
+create or replace function ensure_phone_tokens() returns int
+language plpgsql as $fn$
+declare
+  n int;
+begin
+  update memberships
+     set phone_token = encode(gen_random_bytes(16), 'hex')
+   where status = 'paid' and phone_token is null;
+  get diagnostics n = row_count;
+  return n;
+end;
+$fn$;
+
+-- Quien es el duenyo de un token. Devuelve null si no existe.
+create or replace function membership_by_phone_token(p_token text)
+returns memberships
+language sql stable as $fn$
+  select * from memberships
+   where phone_token = p_token and status = 'paid';
+$fn$;
+
+-- Guarda el telefono desde el enlace personal.
+-- Excepciones: INVALID_PHONE, INVALID_TOKEN
+create or replace function set_phone_by_token(p_token text, p_phone text)
+returns memberships
+language plpgsql as $fn$
+declare
+  v_phone text := normalize_phone(p_phone);
+  v_row   memberships;
+begin
+  if v_phone is null then
+    raise exception 'INVALID_PHONE';
+  end if;
+
+  update memberships
+     set phone = v_phone, phone_updated_at = now()
+   where phone_token = p_token and status = 'paid'
+  returning * into v_row;
+
+  if not found then
+    raise exception 'INVALID_TOKEN';
+  end if;
+
+  return v_row;
+end;
+$fn$;
+
+-- ---------------------------------------------------------------------
 -- Reserva de plaza. El precio lo decide SIEMPRE esta funcion; lo que
 -- muestre el formulario es meramente informativo.
 --
 -- Excepciones: ALREADY_MEMBER, PREMIUM_CLOSED, PREMIUM_NOT_INVITED,
 --              INVALID_PLAN, INVALID_EMAIL, INVALID_NAME
 -- ---------------------------------------------------------------------
-create or replace function reserve_membership(p_email text, p_name text, p_plan text)
+-- Firma antigua de 3 argumentos: se retira para que no queden dos
+-- versiones y el servidor pueda llamar a la equivocada sin darse cuenta.
+drop function if exists reserve_membership(text, text, text);
+
+create or replace function reserve_membership(
+  p_email text,
+  p_name  text,
+  p_plan  text,
+  p_phone text
+)
 returns memberships
 language plpgsql as $fn$
 declare
   s       membership_settings;
   v_email text := lower(trim(p_email));
   v_name  text := trim(p_name);
+  v_phone text := normalize_phone(p_phone);
   v_occ   int;
   v_tier  int;
   v_price int;
@@ -162,6 +273,9 @@ begin
   end if;
   if v_name is null or length(v_name) < 2 then
     raise exception 'INVALID_NAME';
+  end if;
+  if v_phone is null then
+    raise exception 'INVALID_PHONE';
   end if;
 
   -- Serializa la asignacion de plaza: dos reservas simultaneas para la
@@ -206,9 +320,9 @@ begin
     end if;
   end if;
 
-  insert into memberships (email, full_name, plan, tier, price_cents, status, reserved_until)
+  insert into memberships (email, full_name, plan, tier, price_cents, status, reserved_until, phone)
   values (v_email, v_name, p_plan, v_tier, v_price, 'reserved',
-          now() + make_interval(mins => s.reservation_minutes))
+          now() + make_interval(mins => s.reservation_minutes), v_phone)
   returning * into v_row;
 
   return v_row;

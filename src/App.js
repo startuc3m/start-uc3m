@@ -10,6 +10,7 @@ import Socios from "./pages/Socios.js";
 import SociosGracias from "./pages/SociosGracias.js";
 import NoEncontrada from "./pages/NoEncontrada.js";
 import Privacidad from "./pages/Privacidad.js";
+import SociosTelefono from "./pages/SociosTelefono.js";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="/socios" element={<Socios />} />
         <Route path="/socios/gracias" element={<SociosGracias />} />
         <Route path="/privacidad" element={<Privacidad />} />
+        <Route path="/socios/telefono" element={<SociosTelefono />} />
         {/* Cualquier otra URL: sin esto no se pinta nada y queda a la
             vista el fondo del body, una pantalla morada vacia. */}
         <Route path="*" element={<NoEncontrada />} />

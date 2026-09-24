@@ -69,10 +69,13 @@ async function startServer() {
   const checkout = (await import('../api/membership/checkout.mjs')).default;
   const webhook = (await import('../api/stripe/webhook.mjs')).default;
 
+  const telefono = (await import('../api/membership/telefono.mjs')).default;
+
   const routes = {
     '/api/membership/availability': availability,
     '/api/membership/premium-eligibility': eligibility,
     '/api/membership/checkout': checkout,
+    '/api/membership/telefono': telefono,
     '/api/stripe/webhook': webhook,
   };
 
@@ -222,6 +225,7 @@ async function main() {
       name: 'Intruso Listo',
       email: 'intruso@uc3m.es',
       plan: 'premium',
+      phone: '666123456',
       acceptedPrivacy: true,
     });
     assertEqual(res.status, 409, 'status');
@@ -238,6 +242,7 @@ async function main() {
       name: 'Socio VIP',
       email: 'vip@uc3m.es',
       plan: 'premium',
+      phone: '666123456',
       acceptedPrivacy: true,
     });
     assertEqual(res.status, 409, 'status');
@@ -245,13 +250,14 @@ async function main() {
   });
 
   await test('criterio 9 - la API rechaza a quien ya es socio', async () => {
-    const r = await pool.query("select * from reserve_membership('socio@uc3m.es', 'Socio Uno', 'standard')");
+    const r = await pool.query("select * from reserve_membership('socio@uc3m.es', 'Socio Uno', 'standard', '666123456')");
     await pool.query('select confirm_membership_payment($1, $2)', [r.rows[0].id, 'pi_x']);
 
     const res = await call('POST', '/api/membership/checkout', {
       name: 'Socio Uno',
       email: 'socio@uc3m.es',
       plan: 'standard',
+      phone: '666123456',
       acceptedPrivacy: true,
     });
     assertEqual(res.status, 409, 'status');
@@ -263,6 +269,7 @@ async function main() {
       name: 'Ana Garcia',
       email: 'ana@uc3m.es',
       plan: 'standard',
+      phone: '666123456',
       acceptedPrivacy: false,
     });
     assertEqual(res.status, 400, 'status');
@@ -274,6 +281,7 @@ async function main() {
       name: 'Ana Garcia',
       email: 'esto-no-es-un-email',
       plan: 'standard',
+      phone: '666123456',
       acceptedPrivacy: true,
     });
     assertEqual(malEmail.body.error, 'INVALID_EMAIL', 'email invalido');
@@ -282,12 +290,105 @@ async function main() {
       name: 'A',
       email: 'ana@uc3m.es',
       plan: 'standard',
+      phone: '666123456',
       acceptedPrivacy: true,
     });
     assertEqual(malNombre.body.error, 'INVALID_NAME', 'nombre invalido');
 
     const { rows } = await pool.query('select count(*)::int as n from memberships');
     assertEqual(rows[0].n, 0, 'no debe crearse ninguna reserva');
+  });
+
+  console.log('\n/api/membership/telefono  (enlace personal)');
+
+  /** Da de alta un socio y devuelve su token personal. */
+  async function socioConToken(email) {
+    const r = await pool.query(
+      "select * from reserve_membership($1, 'Socia De Prueba', 'standard', '666000000')",
+      [email]
+    );
+    await pool.query('select confirm_membership_payment($1, $2)', [r.rows[0].id, 'pi_x']);
+    await pool.query('select ensure_phone_tokens()');
+    const t = await pool.query('select phone_token from memberships where id = $1', [r.rows[0].id]);
+    return t.rows[0].phone_token;
+  }
+
+  await test('el enlace dice de quien es sin pedir el email', async () => {
+    const token = await socioConToken('marta@uc3m.es');
+    const res = await call('GET', '/api/membership/telefono?t=' + token);
+    assertEqual(res.status, 200, 'status');
+    assertEqual(res.body.name, 'Socia De Prueba', 'nombre');
+    assertEqual(res.body.memberNumber, '0001', 'numero de socio con ceros');
+  });
+
+  await test('un token inventado no dice nada de nadie', async () => {
+    await socioConToken('marta@uc3m.es');
+    const res = await call('GET', '/api/membership/telefono?t=noexiste');
+    assertEqual(res.status, 404, 'status');
+    assertEqual(res.body.error, 'INVALID_TOKEN', 'error');
+    assert(!res.text.includes('marta'), 'no debe filtrar ningun dato');
+  });
+
+  await test('sin token no devuelve nada', async () => {
+    const res = await call('GET', '/api/membership/telefono');
+    assertEqual(res.status, 400, 'status');
+  });
+
+  await test('guarda el telefono normalizado', async () => {
+    const token = await socioConToken('marta@uc3m.es');
+    const res = await call('POST', '/api/membership/telefono', { token, phone: '699 88 77 66' });
+    assertEqual(res.status, 200, 'status');
+    assertEqual(res.body.phone, '+34699887766', 'telefono normalizado');
+
+    const { rows } = await pool.query("select phone from memberships where email = 'marta@uc3m.es'");
+    assertEqual(rows[0].phone, '+34699887766', 'guardado en la base');
+  });
+
+  await test('un telefono mal escrito se rechaza', async () => {
+    const token = await socioConToken('marta@uc3m.es');
+    const res = await call('POST', '/api/membership/telefono', { token, phone: '123' });
+    assertEqual(res.status, 400, 'status');
+    assertEqual(res.body.error, 'INVALID_PHONE', 'error');
+  });
+
+  await test('no se puede guardar con un token de otro', async () => {
+    await socioConToken('marta@uc3m.es');
+    const res = await call('POST', '/api/membership/telefono', {
+      token: 'tokeninventado',
+      phone: '666123456',
+    });
+    assertEqual(res.status, 404, 'status');
+
+    const { rows } = await pool.query("select phone from memberships where email = 'marta@uc3m.es'");
+    assertEqual(rows[0].phone, '+34666000000', 'el telefono de la socia no cambia');
+  });
+
+  console.log('\nPOST /api/membership/checkout  (telefono obligatorio)');
+
+  await test('sin telefono no deja pagar', async () => {
+    const res = await call('POST', '/api/membership/checkout', {
+      name: 'Ana Garcia',
+      email: 'ana@uc3m.es',
+      plan: 'standard',
+      acceptedPrivacy: true,
+    });
+    assertEqual(res.status, 400, 'status');
+    assertEqual(res.body.error, 'INVALID_PHONE', 'error');
+
+    const { rows } = await pool.query('select count(*)::int as n from memberships');
+    assertEqual(rows[0].n, 0, 'no debe crearse ninguna reserva');
+  });
+
+  await test('con un telefono invalido tampoco', async () => {
+    const res = await call('POST', '/api/membership/checkout', {
+      name: 'Ana Garcia',
+      email: 'ana@uc3m.es',
+      plan: 'standard',
+      phone: '123',
+      acceptedPrivacy: true,
+    });
+    assertEqual(res.status, 409, 'status');
+    assertEqual(res.body.error, 'INVALID_PHONE', 'error');
   });
 
   console.log('\nPOST /api/stripe/webhook');

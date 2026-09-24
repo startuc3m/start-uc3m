@@ -44,7 +44,7 @@ export default function Privacidad() {
       <main className="privacidad">
         <header className="privacidad__intro">
           <h1>Política de privacidad</h1>
-          <p className="privacidad__fecha">Última actualización: septiembre de 2026</p>
+          <p className="privacidad__fecha">Última actualización: 24 de septiembre de 2026</p>
         </header>
 
         {PENDIENTES.length > 0 && (
@@ -76,6 +76,10 @@ export default function Privacidad() {
               <strong>Dirección de correo electrónico</strong>, para enviarte tu número de
               socio y las comunicaciones de la asociación.
             </li>
+            <li>
+              <strong>Número de teléfono</strong>, para añadirte al grupo de WhatsApp de
+              socios y avisarte de las actividades.
+            </li>
           </ul>
           <p>
             Además guardamos la <strong>fecha y el importe</strong> de tu cuota y una
@@ -95,6 +99,12 @@ export default function Privacidad() {
             <li>
               <strong>Enviarte información sobre las actividades de Start.</strong> La base
               legal es tu consentimiento, que puedes retirar cuando quieras.
+            </li>
+            <li>
+              <strong>Añadirte al grupo de WhatsApp de socios.</strong> La base legal es tu
+              consentimiento. Ten en cuenta que, al entrar en un grupo, el resto de
+              participantes verá tu número: si prefieres no aparecer, no nos lo facilites o
+              dinos que te demos de baja del grupo.
             </li>
             <li>
               <strong>Cumplir nuestras obligaciones contables.</strong> La base legal es el

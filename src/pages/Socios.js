@@ -14,6 +14,7 @@ const ERROR_MESSAGES = {
   PRIVACY_NOT_ACCEPTED: 'Tienes que aceptar la política de privacidad para continuar.',
   INVALID_EMAIL: 'Revisa el email: no parece una dirección válida.',
   INVALID_NAME: 'Escribe tu nombre completo.',
+  INVALID_PHONE: 'Revisa el teléfono: escribe 9 cifras, o el número con su prefijo si es de fuera de España.',
   RATE_LIMITED: 'Demasiados intentos seguidos. Espera un minuto y vuelve a probar.',
   SERVER_ERROR: 'No hemos podido abrir el pago. Inténtalo de nuevo en un momento.',
 };
@@ -60,6 +61,7 @@ export default function Socios() {
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [acceptedPrivacy, setAcceptedPrivacy] = useState(false);
   const [selected, setSelected] = useState(null);
 
@@ -153,6 +155,7 @@ export default function Socios() {
         body: JSON.stringify({
           name: name.trim(),
           email: email.trim().toLowerCase(),
+          phone: phone.trim(),
           plan: selected === 'premium' ? 'premium' : 'standard',
           acceptedPrivacy,
         }),
@@ -200,8 +203,17 @@ export default function Socios() {
     startCheckout();
   }
 
+  // Basta con que haya cifras suficientes: la validacion de verdad la
+  // hace el servidor, que es quien normaliza el numero.
+  const phoneParece = phone.replace(/[^0-9]/g, '').length >= 9;
+
   const canSubmit =
-    !submitting && name.trim().length >= 2 && email.trim().length > 3 && selected && acceptedPrivacy;
+    !submitting &&
+    name.trim().length >= 2 &&
+    email.trim().length > 3 &&
+    phoneParece &&
+    selected &&
+    acceptedPrivacy;
 
   return (
     <div>
@@ -259,6 +271,28 @@ export default function Socios() {
                   : premiumEligible
                   ? 'Tienes invitación para la modalidad premium.'
                   : 'Te enviaremos aquí tu número de socio.'}
+              </p>
+            </div>
+
+            <div className="socios__field">
+              <label htmlFor="socios-telefono">Teléfono</label>
+              <input
+                id="socios-telefono"
+                name="phone"
+                type="tel"
+                inputMode="tel"
+                autoComplete="tel"
+                required
+                value={phone}
+                onChange={(e) => {
+                  setPhone(e.target.value);
+                  setError(null);
+                }}
+                placeholder="666 12 34 56"
+                aria-describedby="socios-telefono-ayuda"
+              />
+              <p id="socios-telefono-ayuda" className="socios__hint">
+                Para el grupo de WhatsApp de socios.
               </p>
             </div>
           </div>

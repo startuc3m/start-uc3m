@@ -165,10 +165,11 @@ describe('envio del formulario', () => {
   function rellenar() {
     userEvent.type(screen.getByLabelText('Nombre completo'), 'Ana García');
     userEvent.type(screen.getByLabelText('Email'), 'ana@uc3m.es');
+    userEvent.type(screen.getByLabelText('Teléfono'), '666123456');
     userEvent.click(screen.getByRole('checkbox'));
   }
 
-  test('el boton esta deshabilitado hasta aceptar la privacidad', async () => {
+  test('el boton exige nombre, email, telefono y privacidad', async () => {
     global.fetch = mockFetch({ availability: availabilityPayload() });
     renderSocios();
 
@@ -181,7 +182,23 @@ describe('envio del formulario', () => {
     expect(boton).toBeDisabled();
 
     userEvent.click(screen.getByRole('checkbox'));
+    expect(boton).toBeDisabled();
+
+    userEvent.type(screen.getByLabelText('Teléfono'), '666123456');
     expect(boton).toBeEnabled();
+  });
+
+  test('un telefono demasiado corto no deja pagar', async () => {
+    global.fetch = mockFetch({ availability: availabilityPayload() });
+    renderSocios();
+
+    await waitFor(() => expect(screen.getByText('7,99 €')).toBeInTheDocument());
+    userEvent.type(screen.getByLabelText('Nombre completo'), 'Ana García');
+    userEvent.type(screen.getByLabelText('Email'), 'ana@uc3m.es');
+    userEvent.click(screen.getByRole('checkbox'));
+    userEvent.type(screen.getByLabelText('Teléfono'), '66612');
+
+    expect(screen.getByRole('button', { name: 'Pagar y hacerme socio' })).toBeDisabled();
   });
 
   test('un email que ya es socio muestra el error en castellano', async () => {

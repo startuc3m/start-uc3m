@@ -69,6 +69,22 @@
   color: var(--on-ground-soft);
 }
 
+.socios__lead + .socios__lead {
+  margin-top: 0.9rem;
+}
+
+/* Sin esto el enlace hereda el azul por defecto del navegador y queda
+   ilegible sobre el fondo oscuro. */
+.socios__lead a,
+.socios__legal a {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.socios__intro strong {
+  color: var(--on-ground);
+}
+
 /* ---------------------------------------------------------------- */
 /* Formulario                                                        */
 /* ---------------------------------------------------------------- */
@@ -412,4 +428,14 @@
   .socios__opcion-precio {
     font-size: 1.05rem;
   }
+}
+
+/* Paginas cortas como el enlace del telefono: sin esto la pagina queda
+   demasiado suelta entre el navbar y el pie. */
+.socios--estrecho {
+  min-height: 60vh;
+}
+
+.socios--estrecho .socios__form {
+  max-width: 26rem;
 }

@@ -34,10 +34,12 @@ export default async function handler(req, res) {
     const body = (await readJsonBody(req)) || {};
     const email = normalizeEmail(body.email);
     const name = typeof body.name === 'string' ? body.name.trim() : '';
+    const phone = typeof body.phone === 'string' ? body.phone.trim() : '';
     const plan = body.plan === 'premium' ? 'premium' : 'standard';
 
     if (!isValidEmail(email)) return sendJson(res, 400, { error: 'INVALID_EMAIL' });
     if (name.length < 2) return sendJson(res, 400, { error: 'INVALID_NAME' });
+    if (!phone) return sendJson(res, 400, { error: 'INVALID_PHONE' });
     if (body.acceptedPrivacy !== true) return sendJson(res, 400, { error: 'PRIVACY_NOT_ACCEPTED' });
 
     const allowed = await rateLimit('checkout:' + clientIp(req), RATE_LIMIT, RATE_WINDOW_SECONDS);
@@ -47,10 +49,11 @@ export default async function handler(req, res) {
     // lo que mande el cliente influye en cuanto se cobra.
     let membership;
     try {
-      const { rows } = await query('select * from reserve_membership($1, $2, $3)', [
+      const { rows } = await query('select * from reserve_membership($1, $2, $3, $4)', [
         email,
         name,
         plan,
+        phone,
       ]);
       membership = rows[0];
     } catch (err) {

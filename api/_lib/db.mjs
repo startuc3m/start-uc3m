@@ -42,6 +42,8 @@ const CODES = [
   'INVALID_PLAN',
   'INVALID_EMAIL',
   'INVALID_NAME',
+  'INVALID_PHONE',
+  'INVALID_TOKEN',
 ];
 
 export function pgErrorCode(err) {

@@ -52,6 +52,12 @@ function fieldSpecs(member) {
       valor: () => ({ email: member.email }),
     },
     {
+      clave: 'telefono',
+      tipo: 'phone_number',
+      incluye: [],
+      valor: () => ({ phone_number: member.phone || null }),
+    },
+    {
       clave: 'modalidad',
       tipo: 'select',
       incluye: ['modalidad', 'plan', 'tipo'],
@@ -150,6 +156,55 @@ export function buildProperties(member, schema) {
   });
 
   return { properties, omitidas };
+}
+
+/**
+ * Escribe el telefono en la ficha de un socio que ya existe en Notion.
+ *
+ * Lo usa el enlace personal con el que los socios antiguos dejan su
+ * numero. Nunca lanza: Notion es un espejo de Postgres.
+ */
+export async function updateNotionPhone(memberNumber, phone) {
+  const token = process.env.NOTION_API_KEY;
+  const databaseId = process.env.NOTION_SOCIOS_DATABASE_ID;
+
+  if (!token || !databaseId) {
+    return { ok: false, skipped: true, error: 'NOTION_NOT_CONFIGURED' };
+  }
+
+  try {
+    const res = await notionFetch(token, '/databases/' + databaseId + '/query', {
+      method: 'POST',
+      body: JSON.stringify({ page_size: 100 }),
+    });
+    if (!res.ok) return { ok: false, error: 'HTTP ' + res.status };
+
+    const { results = [] } = await res.json();
+
+    const page = results.find((p) => {
+      const props = p.properties || {};
+      const campo = Object.keys(props).find(
+        (k) => props[k].type === 'number' && /socio|miembro|member/i.test(k)
+      );
+      return campo && props[campo].number === memberNumber;
+    });
+    if (!page) return { ok: false, error: 'FICHA_NO_ENCONTRADA' };
+
+    const campoTelefono = Object.keys(page.properties).find(
+      (k) => page.properties[k].type === 'phone_number'
+    );
+    if (!campoTelefono) return { ok: false, error: 'SIN_COLUMNA_TELEFONO' };
+
+    const upd = await notionFetch(token, '/pages/' + page.id, {
+      method: 'PATCH',
+      body: JSON.stringify({ properties: { [campoTelefono]: { phone_number: phone } } }),
+    });
+
+    if (!upd.ok) return { ok: false, error: 'HTTP ' + upd.status };
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: String((err && err.message) || err) };
+  }
 }
 
 async function notionFetch(token, path, options) {
