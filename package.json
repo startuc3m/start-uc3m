@@ -34,7 +34,8 @@
     "dev:api": "node db/dev-api.js",
     "test:e2e": "node db/test-e2e.js",
     "invitar": "node db/invitar.js",
-    "corregir-email": "node db/corregir-email.js"
+    "corregir-email": "node db/corregir-email.js",
+    "pedir-telefonos": "node db/pedir-telefonos.js"
   },
   "eslintConfig": {
     "extends": [
