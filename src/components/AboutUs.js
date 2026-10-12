@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { Sprout, Users2, Rocket } from "lucide-react";
 import "../styles/AboutUs.css";
 
@@ -19,7 +20,7 @@ export default function QuienesSomosSection({
     "Javier Sánchez, Pablo Lorenzo, Aníbal Vera, Alejandro Luengo, David Arnedo y Carlos Delgado",
   eventHref = "http://alternativaemprender.com/",
   eventName = "Alternativa Emprender",
-  ctaHref = "#starter-cta",
+  ctaHref = "/equipo",
   ctaText = "Conoce nuestra comunidad",
   dateLabel = "Primavera de 2013",
   highlightTitle = "La semilla de Start UC3M",
@@ -108,9 +109,9 @@ export default function QuienesSomosSection({
             </p>
 
             <div className="qs-cta-wrap">
-              <a href={ctaHref} className="StarterSection-cta">
+              <Link to={ctaHref} className="StarterSection-cta">
                 {ctaText}
-              </a>
+              </Link>
             </div>
           </motion.div>
 

@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 // Evento que anuncia el banner. Al cambiar de evento basta con tocar esto.
 const EVENTO = {
-    titulo: "Buildathon Pitchless y NomuLabs",
+    titulo: "Buildathon Welcome Start",
     fecha: "2026-09-17T18:00:00",
     enlace: "/eventos#buildathon-welcome-start",
 };

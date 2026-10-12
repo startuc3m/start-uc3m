@@ -30,9 +30,9 @@ function Eventos() {
             <Navbar />
             <CollapsibleEvent
                 id='buildathon-welcome-start'
-                label='Próximo evento'
-                title='Buildathon Pitchless y NomuLabs'
-                subtitle='Jueves 17 de septiembre · 18:00 · Puerta de Toledo'
+                label='Evento anterior'
+                title='Buildathon Welcome Start'
+                subtitle='Jueves 17 de septiembre'
                 defaultOpen
             >
                 <BuildathonWelcome />

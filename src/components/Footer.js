@@ -13,7 +13,7 @@ const Footer = () => {
                 <img src={logo} className='footer-img' alt='Logo'/>
             </div>
             <div className='footer-email'>
-                <p><a href="mailto:info@startuc3m.org">info@startuc3m.org</a></p>
+                <p><a href="mailto:startuc3m@gmail.com">startuc3m@gmail.com</a></p>
             </div>
             <div className='footer-content'>
                 <a href="https://www.linkedin.com/company/start-uc3m/" target='_blank' rel='noreferrer'>

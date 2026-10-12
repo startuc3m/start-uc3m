@@ -19,9 +19,9 @@ function BuildathonWelcome() {
             <section className='buildathon-hero'>
                 <div className='buildathon-hero-content'>
                     <div className='buildathon-hero-copy'>
-                        <p className='buildathon-kicker'>Próximo evento · Arranque de temporada</p>
+                        <p className='buildathon-kicker'>Evento anterior · Arranque de temporada</p>
 
-                        <h1>Buildathon Pitchless y NomuLabs</h1>
+                        <h1>Buildathon Welcome Start</h1>
                         <h2>Construye tu primer prototipo con IA en una tarde y conoce Start desde dentro</h2>
 
                         <p className='buildathon-description'>
