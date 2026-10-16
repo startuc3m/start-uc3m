@@ -35,7 +35,7 @@ export function eventToIcs(event: {
     'PRODID:-//Start UC3M//Eventos//ES',
     'CALSCALE:GREGORIAN',
     'BEGIN:VEVENT',
-    `UID:${crypto.randomUUID()}@startuc3m.org`,
+    `UID:${crypto.randomUUID()}@startuc3m.es`,
     `DTSTAMP:${fmt(new Date())}`,
     `DTSTART:${fmt(start)}`,
     `DTEND:${fmt(end)}`,

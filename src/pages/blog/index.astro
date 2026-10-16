@@ -10,7 +10,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const [first, ...rest] = posts;
 const fmt = (d: Date) => d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
 ---
-<Base title="Blog" tone="dark">
+<Base title="Blog" tone="dark" noindex={posts.length === 0}>
   <PageHead eyebrow="Blog" title="Lo último de la comunidad" intro="Crónicas de eventos, cómo entrar en Start, lo que pasa en el ecosistema y prensa. Escrito por el equipo de Comunicación.">
     <div class="mt-8 flex flex-wrap items-center gap-2" role="tablist">
       {cats.map((c, i) => <button data-filter={c} class={`eyebrow rounded-full border px-3 py-2 ${i === 0 ? 'bg-cobalt text-white border-cobalt' : 'border-white/40'}`}>{c}</button>)}

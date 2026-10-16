@@ -23,4 +23,4 @@ Entre los eventos destacan las tres ediciones de **Alternativa Emprender**, un e
 
 Que un medio generalista cuente lo que hace una asociación de estudiantes no es habitual. Nos sirve para dos cosas: para que más gente de la UC3M sepa que existe un sitio donde probar, y para que las empresas que quieren acercarse al talento universitario sepan dónde encontrarlo.
 
-Si quieres hablar con nosotros para un reportaje, escribe a Comunicación en info@startuc3m.org.
+Si quieres hablar con nosotros para un reportaje, escribe a Comunicación en startuc3m@gmail.com.

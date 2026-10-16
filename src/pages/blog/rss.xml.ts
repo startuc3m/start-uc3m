@@ -7,7 +7,7 @@ export const GET: APIRoute = async (context) => {
   return rss({
     title: 'Blog de Start UC3M',
     description: 'Crónicas de eventos, comunidad, recursos y prensa de la asociación de emprendedores de la UC3M.',
-    site: context.site ?? 'https://startuc3m.es',
+    site: context.site ?? 'https://www.startuc3m.es',
     items: posts.map((p) => ({
       title: p.data.title,
       description: p.data.excerpt,
