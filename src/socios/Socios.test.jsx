@@ -1,6 +1,6 @@
+import { vi } from 'vitest';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { MemoryRouter } from 'react-router-dom';
 import Socios from './Socios';
 
 function availabilityPayload({ occupied = 0, premiumOpen = true } = {}) {
@@ -24,7 +24,7 @@ function availabilityPayload({ occupied = 0, premiumOpen = true } = {}) {
 }
 
 function mockFetch({ availability, eligible = false, checkout } = {}) {
-  return jest.fn((url, init) => {
+  return vi.fn((url, init) => {
     if (String(url).includes('/api/membership/availability')) {
       return Promise.resolve({ ok: true, json: () => Promise.resolve(availability) });
     }
@@ -40,11 +40,7 @@ function mockFetch({ availability, eligible = false, checkout } = {}) {
 }
 
 function renderSocios() {
-  return render(
-    <MemoryRouter>
-      <Socios />
-    </MemoryRouter>
-  );
+  return render(<Socios />);
 }
 
 /** Devuelve la fila (label) de una modalidad a partir de su precio. */
@@ -53,11 +49,11 @@ function optionRow(priceText) {
 }
 
 beforeEach(() => {
-  jest.useRealTimers();
+  vi.useRealTimers();
 });
 
 afterEach(() => {
-  jest.restoreAllMocks();
+  vi.restoreAllMocks();
 });
 
 describe('criterio 10 - estados de las modalidades', () => {

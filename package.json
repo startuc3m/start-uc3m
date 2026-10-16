@@ -21,7 +21,8 @@
     "test:e2e": "node db/test-e2e.js",
     "invitar": "node db/invitar.js",
     "corregir-email": "node db/corregir-email.js",
-    "pedir-telefonos": "node db/pedir-telefonos.js"
+    "pedir-telefonos": "node db/pedir-telefonos.js",
+    "test": "vitest run"
   },
   "dependencies": {
     "@astrojs/react": "^7.0.0",
@@ -43,6 +44,13 @@
     "esbuild": true
   },
   "devDependencies": {
-    "@tailwindcss/typography": "^0.5.20"
+    "@tailwindcss/typography": "^0.5.20",
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^13.5.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "jsdom": "^30.1.1",
+    "vitest": "^5.0.3"
   }
 }
