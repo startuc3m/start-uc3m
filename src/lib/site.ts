@@ -99,7 +99,8 @@ export const site = {
     { title: 'Proyectos', desc: 'Acompañamos a los equipos que quieren sacar su proyecto adelante sin esperar a terminar la carrera.' },
   ],
   links: [
-    { label: 'Quiero entrar en Start', href: '/unete' },
+    { label: 'Hazte socio', href: '/socios' },
+    { label: 'Quiero entrar en el equipo', href: '/unete' },
     { label: 'Podcast', href: '/podcast' },
     { label: 'Próximos eventos', href: '/eventos', featured: true },
     { label: 'Patrocina Start', href: '/patrocina' },

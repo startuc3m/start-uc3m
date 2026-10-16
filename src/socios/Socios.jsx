@@ -217,10 +217,10 @@ export default function Socios() {
 
       <div className="socios">
         <header className="socios__intro">
-          <p className="socios__eyebrow">Hazte socio</p>
-          <h1 className="socios__title">
-            Forma parte de <span>Start UC3M</span>
-          </h1>
+          <p className="socios__eyebrow">Alta de socio</p>
+          <h2 className="socios__title">
+            Únete a <span>Start UC3M</span>
+          </h2>
           <p className="socios__lead">
             Una cuota al año. Cuanto antes te apuntes, menos pagas: las primeras plazas tienen
             el precio más bajo y el tramo sube según se van ocupando.

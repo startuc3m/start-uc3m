@@ -16,14 +16,14 @@ const path = Astro.url.pathname;
       ))}
     </nav>
     <div class="flex items-center gap-3">
-      <a href="/unete" class={`hidden rounded-brand border px-4 py-2 text-[14px] font-semibold md:inline-flex ${dark ? 'border-white/60 text-white hover:bg-white hover:text-cobalt' : 'border-cobalt text-cobalt hover:bg-cobalt hover:text-white'} transition-colors`}>Únete</a>
+      <a href="/socios" class={`hidden rounded-brand border px-4 py-2 text-[14px] font-semibold md:inline-flex ${dark ? 'border-white/60 text-white hover:bg-white hover:text-cobalt' : 'border-cobalt text-cobalt hover:bg-cobalt hover:text-white'} transition-colors`}>Hazte socio</a>
       <button class="md:hidden font-mono text-sm" data-menu-toggle aria-expanded="false" aria-controls="menu">menu_</button>
     </div>
   </div>
   <div id="menu" class={`hidden md:hidden ${dark ? 'bg-cobalt' : 'bg-paper'} border-t ${dark ? 'border-cobalt-deep' : 'border-line'}`}>
     <nav class="container-x flex flex-col py-4" aria-label="Móvil">
       {nav.map((n) => <a href={n.href} class="py-3 text-2xl font-bold">{n.label}</a>)}
-      <a href="/unete" class={`btn mt-2 ${dark ? 'btn-on-blue' : 'btn-primary'}`}>Únete →</a>
+      <a href="/socios" class={`btn mt-2 ${dark ? 'btn-on-blue' : 'btn-primary'}`}>Hazte socio →</a>
     </nav>
   </div>
 </header>

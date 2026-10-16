@@ -1,9 +1,37 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Socios from '../../socios/Socios.jsx';
-// Página de la web anterior montada tal cual (#45): la lógica no cambia.
-// client:only porque lee window (parámetros de la URL) y llama a /api.
+// Beneficios: story de Instagram "Sigue cerca de Start" (curso 2026/27, #49).
+// Los precios no se escriben aquí: los pinta el formulario desde la BD
+// (membership_settings), que es quien decide lo que se cobra.
+const beneficios = [
+  { t: 'Oportunidades', items: ['Grupo de prácticas y empleo', 'Voluntariado en eventos', 'Primer aviso de nuevas plazas en el equipo'] },
+  { t: 'Comunidad', items: ['Grupo de socios', 'Grupo para LinkedIn', 'Cañas', 'Casa rural'] },
+  { t: 'Eventos', items: ['Venta anticipada de entradas', '10 % de descuento en nuestros eventos (Start Camp, Next Gen Summit…)'] },
+  { t: 'Y además…', items: ['Cena de Navidad con todo el equipo', 'Y todo lo que venga durante el curso'] },
+];
 ---
-<Base title="Hazte socio" tone="dark">
-  <Socios client:only="react" />
+<Base title="Hazte socio" description="Hazte socio de Start UC3M: oportunidades, comunidad y ventajas en nuestros eventos. Pago único por curso." tone="dark">
+  <section class="bg-cobalt text-white">
+    <div class="container-x py-20 md:py-24">
+      <span class="eyebrow text-lavender">Hazte socio · Curso 2026/27</span>
+      <h1 class="display mt-4 max-w-4xl text-[clamp(48px,8vw,120px)]" data-split>Sigue cerca de Start_</h1>
+      <p class="mt-6 max-w-2xl text-xl leading-snug text-lavender" data-reveal>Cualquier persona puede hacerse socia: no hace falta entrar en el equipo. Pago único por curso y, cuanto antes te apuntes, menos pagas.</p>
+      <a href="#alta" class="btn btn-on-blue mt-8">Hazme socio <span class="font-mono">↓</span></a>
+      <ul class="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-4" data-stagger>
+        {beneficios.map((b) => (
+          <li class="rounded-brand border border-white/25 bg-cobalt-deep/40 p-6">
+            <h2 class="text-2xl font-bold">{b.t}</h2>
+            <ul class="mt-4 flex flex-col gap-2">
+              {b.items.map((i) => <li class="flex gap-2 text-lavender"><span class="font-mono text-white">_</span><span>{i}</span></li>)}
+            </ul>
+          </li>
+        ))}
+      </ul>
+      <p class="mono mt-10 text-lavender/80">¿Quieres trabajar en Start, no solo estar cerca? Eso es entrar en el equipo: <a href="/unete" class="underline">cómo se entra</a>.</p>
+    </div>
+  </section>
+  <div id="alta" class="scroll-mt-16">
+    <Socios client:only="react" />
+  </div>
 </Base>
