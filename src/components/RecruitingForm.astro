@@ -1,0 +1,237 @@
+---
+// Formulario de entrada a Start · clon paso a paso del "START RECRUITING 2026/27" (antes en Tally),
+// integrado en la web y guardado en data/submissions.json vía /api/forms (form = "unete").
+const input = 'w-full rounded-brand border border-white/40 bg-white px-4 py-3 text-base text-ink outline-none placeholder:text-ink/40 focus:ring-2 focus:ring-lavender';
+const radio = 'flex cursor-pointer items-center gap-3 rounded-brand border border-white/40 px-4 py-3 text-base transition-colors has-[:checked]:border-white has-[:checked]:bg-white has-[:checked]:text-cobalt';
+
+const years = ['Primero', 'Segundo', 'Tercero', 'Cuarto', 'Quinto', 'Sexto'];
+const depts = ['IT', 'RRHH', 'Eventos', 'Comunicaciones', 'Marketing', 'Legal', 'Colaboraciones'];
+const canales = ['Día de las asociaciones', 'Newsletter de Start UC3M', 'Amigos o conocidos', 'Pertenezco a la asociación', 'Newsletter de la Universidad', 'Redes sociales', 'Otro'];
+const preguntas = [
+  ['motivacion', '¿Qué te motiva a entrar en START?'],
+  ['aprender', '¿Qué quieres hacer/aprender en START?'],
+  ['intereses', '¿Qué intereses profesionales quieres satisfacer al estar en una asociación de emprendedores?'],
+  ['aportar', '¿Qué aportarías a START?'],
+  ['experiencia', '¿Tienes alguna experiencia en el mundo del emprendimiento?'],
+];
+
+// Descripción de los departamentos, tal cual en el formulario original.
+const departamentos = [
+  { name: 'IT', plazas: '4 starters', proposito: 'Que todo funcione a nivel técnico: detrás de escenas.', tareas: 'Rediseñar la web y construir el área personal de socio; gestionar herramientas técnicas que ayuden a los departamentos; diseñar formularios de inscripción y frontends para eventos; y evaluar/crear un directorio de contactos.', perfil: 'Se valoran nociones básicas de desarrollo web y herramientas técnicas, o ganas de aprenderlo. En concreto, CSS, React, JavaScript o HTML.', llevais: 'Aportarás gran valor a la asociación mientras adquieres habilidades tecnológicas concretas, útiles para tu desarrollo profesional y personal. Visibilidad frente a una comunidad muy dinámica.', expectativas: 'Ganas de aprender sobre plataformas y código, iniciativa, proactividad, asistencia a reuniones semanales, y entusiasmo con la asociación.' },
+  { name: 'Recursos Humanos', plazas: '1 starter', proposito: 'Maximizar la participación y el sentido de pertenencia de los asociados mediante actividades internas, sosteniendo la parte social de la asociación, y coordinarlos para ejecutar los eventos durante el año. Desarrollo de talento.', tareas: 'Captación y selección de nuevos asociados, onboarding, seguimiento de desempeño y satisfacción, alineación de objetivos, organización de actividades de teambuilding y sesiones de coworking, y gestión de oportunidades de formación.', perfil: 'Cualquier carrera es bienvenida, aunque destacan ADE, Economía, y Relaciones Laborales y Empleo. Buscamos gente sociable, con facilidad para relacionarse y actitud real de convivencia, carismática, creativa y proactiva. Se valora también tener empatía y ser o haber sido scout.', llevais: 'Experiencia desempeñando tareas de departamentos de Recursos Humanos modernos, aprendizaje de uso de herramientas de manejo de talento (Notion), y desarrollo de habilidades de liderazgo, comunicación y escucha activa.', expectativas: 'Participación presencial en las actividades internas de Start y asistencia a las reuniones semanales o quincenales del departamento. Traer ideas nuevas y no limitarse a lo que ya se hace.' },
+  { name: 'Eventos', plazas: '4 starters', proposito: 'Crear experiencias y actividades que acerquen a los jóvenes al mundo del emprendimiento y generen oportunidades para conocer y conectar con profesionales del sector.', tareas: 'Idear y preparar eventos, organizar todos los aspectos necesarios para su realización, coordinar a las personas implicadas y buscar formas de hacer que cada evento sea diferente, dinámico y atractivo.', perfil: 'Todas las carreras son bienvenidas. Buscamos gente enérgica, organizada, resolutiva y con iniciativa, con ganas de trabajar en equipo y de involucrarse en la organización de eventos. Se valora la creatividad, la capacidad de improvisar y las ganas de proponer nuevas ideas.', llevais: 'Experiencia real en la organización de eventos, contacto directo con emprendedores, empresas y profesionales del sector, y desarrollo de habilidades de gestión, comunicación, coordinación y trabajo en equipo.', expectativas: 'Compromiso con las tareas y eventos del departamento, asistencia a reuniones y disponibilidad para participar en la organización y desarrollo de los eventos. Buscamos personas con energía e iniciativa, que propongan ideas y se involucren activamente en el departamento.' },
+  { name: 'Comunicaciones', plazas: '5 starters', proposito: 'Ser la imagen de la asociación en todos lados (Instagram, YouTube).', tareas: 'Grabación y edición de podcasts, así como trailers, highlights y miniaturas del mismo para distintas plataformas. Documentación de los eventos y actividades de Start para subir a redes.', perfil: 'Personas apasionadas por la creación de contenido: producción, grabación, edición. Personas creativas, afines a las redes y que trabajen bien en equipo. Se valora saber usar aplicaciones como CapCut, Adobe, Canva, Figma, etc.', llevais: 'Contacto directo con las personas que entrevistamos: fundadores de startups, creadores famosos, ejecutivos, etc. Experiencia y habilidades relacionadas con la creación de contenido real.', expectativas: 'Ganas de crear, búsqueda continua de nuevas maneras de comunicar lo que se hace en Start. Compromiso y cumplimiento con los tiempos, ya que en redes es muy importante el timing.' },
+  { name: 'Marketing', plazas: '4 starters', proposito: 'Construir la imagen externa de Start y llevarla directamente a la universidad a través de redes. Mostrar también lo que hacemos internamente, cómo es el día a día en Start, lo que hay detrás de los eventos, los viajes, las ferias… ¡todo! Sacar el máximo provecho y optimizar el alcance de las redes sociales (Instagram, TikTok, LinkedIn) y cuidar la marca de Start con una imagen más limpia, uniforme y atractiva para los jóvenes.', tareas: 'Instagram: diseñar y editar contenido (carruseles, stories, posts…) para la cuenta oficial. TikTok: detectar tendencias y adaptarlas a Start para vídeos de promoción, humor y recaps. LinkedIn: publicaciones actualizando lo que hacemos. Idear guiones y formatos, gestión de redes, diseño de piezas gráficas, merch y materiales para eventos, en colaboración estrecha con Comunicaciones.', perfil: 'Todas las carreras son bienvenidas. Buscamos gente extrovertida y con ganas, creativos y atrevidos que no les importe salir en cámara y puedan aportar ideas. Se valora buen ojo para detectar tendencias y, MUCHO, nociones de diseño (Canva) o edición de vídeo (CapCut).', llevais: 'Experiencia real como creadores de contenido para la mejor asociación de la uni, viendo el impacto directo de las campañas y eventos. Habilidades de comunicación, expresión frente a cámara, gestión de redes y estrategia de marketing. Acceso a todas las ventajas exclusivas de estar en Start.', expectativas: 'Compromiso con el calendario de publicaciones, asistencia a reuniones del departamento y de la asociación, disponibilidad para grabar contenido y actitud de proponer ideas nuevas más que esperar instrucciones.' },
+  { name: 'Legal', plazas: '1 starter', proposito: 'Asesorar jurídicamente a la asociación, garantizando el cumplimiento normativo de todas las actividades, proyectos y acuerdos. Actúa como apoyo transversal al resto de departamentos.', tareas: 'Revisar contratos, convenios y colaboraciones con otras instituciones. Garantizar el cumplimiento de los estatutos internos y la normativa universitaria. Asesorar sobre protección de datos y propiedad intelectual de cara a eventos como el Start Camp.', perfil: 'Carreras afines: Derecho (o cualquier doble grado con Derecho), ADE, o cualquier estudiante interesado en el ámbito jurídico. Se valora buena redacción, orden y análisis crítico.', llevais: 'Experiencia práctica en el análisis y redacción de documentos legales. Conocimiento aplicado en derecho mercantil, societario, laboral y de protección de datos. Contacto directo con el ecosistema emprendedor, viendo de cerca la aplicación de las leyes a startups reales.', expectativas: 'Atención al detalle, comunicación y trabajo en equipo. Asistencia a reuniones y cumplimiento de tareas asignadas. Entre 3 y 5 horas semanales.' },
+  { name: 'Colaboraciones', plazas: '2 starters', proposito: 'Desarrollar y gestionar relaciones estratégicas con empresas, marcas, emprendedores y otros agentes del ecosistema, generando oportunidades que aporten valor a la asociación, sus eventos y sus asociados. Impulsar la visibilidad de Start UC3M mediante colaboraciones y contenidos como el podcast.', tareas: 'Búsqueda y contacto con potenciales colaboradores y patrocinadores, preparación de propuestas, seguimiento de relaciones con marcas, apoyo en la captación de recursos para eventos, organización y producción del podcast, coordinación con invitados y búsqueda de nuevos formatos de colaboración.', perfil: 'Cualquier carrera es bienvenida, pero destacan ADE, Economía, Marketing, Comunicación y carreras relacionadas con empresa. Personas extrovertidas, resolutivas, proactivas, organizadas y con buenas habilidades de comunicación. Se valora la iniciativa, la capacidad para generar relaciones y el interés por el mundo empresarial y emprendedor.', llevais: 'Experiencia real en negociación, comunicación empresarial y gestión de relaciones con empresas y profesionales. Habilidades comerciales, organización, liderazgo y comunicación, además de ampliar tu red de contactos y conocer de cerca a empresas, emprendedores y referentes del ecosistema.', expectativas: 'Implicación activa en las tareas y proyectos del departamento, responsabilidad en el seguimiento de contactos y colaboraciones, participación presencial en eventos, reuniones o grabaciones, y capacidad para proponer nuevas marcas, invitados, formatos e iniciativas.' },
+];
+const TOTAL = 8;
+---
+<form data-recruiting data-form="unete" action="/api/forms" method="post" enctype="multipart/form-data" class="text-white" novalidate>
+  <input type="hidden" name="form" value="unete" />
+  <input type="text" name="website" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true" />
+
+  <!-- Progreso -->
+  <div class="mb-8 flex items-center justify-between gap-4">
+    <span class="mono text-lavender" data-step-label>Paso 1 de {TOTAL}</span>
+    <div class="h-[3px] flex-1 overflow-hidden rounded-full bg-white/20"><div data-step-bar class="h-full w-0 bg-white transition-[width] duration-500"></div></div>
+  </div>
+
+  <!-- 1 · Intro -->
+  <fieldset data-step="1" data-display="flex" class="flex flex-col gap-5">
+    <h3 class="display text-[clamp(28px,3.5vw,48px)]">✨ Bienvenido/a a Start UC3M ✨</h3>
+    <p class="text-lg text-lavender">¿Quieres rodearte de gente con ideas, motivación y ganas de crear?</p>
+    <p class="leading-relaxed"><strong>Start UC3M</strong> es la asociación universitaria de emprendimiento <strong>más grande</strong> de España. Hemos reunido a jóvenes de todas las carreras con ganas de crear, innovar y, sobre todo, de aprender, para construir un espacio donde conectar con personas con una mentalidad parecida e impulsar el emprendimiento en el entorno universitario.</p>
+    <p class="font-semibold">👉 Formar parte de la familia Start_ significa:</p>
+    <ul class="flex flex-col gap-2 border-t border-white/20 pt-4">
+      <li class="flex gap-3"><span class="font-mono text-lavender">_</span><span><strong>Participar</strong> en eventos, talleres y charlas con emprendedores reales.</span></li>
+      <li class="flex gap-3"><span class="font-mono text-lavender">_</span><span><strong>Conocer</strong> a estudiantes con tus mismas ganas de crecer y trabajar en equipo.</span></li>
+      <li class="flex gap-3"><span class="font-mono text-lavender">_</span><span><strong>Desarrollar</strong> habilidades prácticas en áreas como marketing, diseño, organización de eventos, tecnología, finanzas, talent management y liderazgo.</span></li>
+      <li class="flex gap-3"><span class="font-mono text-lavender">_</span><span><strong>Vivir</strong> la experiencia universitaria de una forma diferente, más intensa <em>y con verdadero impacto</em>, acercándote al mundo laboral de una forma que la carrera, por sí sola, no podría ofrecerte.</span></li>
+    </ul>
+    <p class="text-lavender">Si tienes curiosidad, creatividad, ganas de conocer gente parecida a ti y de trabajar con ella…</p>
+    <p class="text-xl font-bold">¡Apúntate y empieza a construir con nosotros!</p>
+    <div class="mt-2 flex justify-end"><button type="button" data-next class="btn btn-on-blue">Empezar <span class="font-mono">→</span></button></div>
+  </fieldset>
+
+  <!-- 2 · Datos -->
+  <fieldset data-step="2" data-display="grid" class="hidden gap-5 md:grid-cols-2">
+    <label class="flex flex-col gap-2"><span class="mono">Nombre *</span><input class={input} type="text" name="nombre" required placeholder="Escribe aquí tu respuesta..." /></label>
+    <label class="flex flex-col gap-2"><span class="mono">Apellidos *</span><input class={input} type="text" name="apellidos" required placeholder="Escribe aquí tu respuesta..." /></label>
+    <label class="flex flex-col gap-2 md:col-span-2"><span class="mono">Correo electrónico *</span><input class={input} type="email" name="email" required placeholder="soy@original.com" /></label>
+    <label class="flex flex-col gap-2"><span class="mono">LinkedIn</span><input class={input} type="url" name="linkedin" placeholder="https://linkedin.com/in/…" /></label>
+    <label class="flex flex-col gap-2"><span class="mono">CV (opcional)</span><input class={`${input} file:mr-3 file:rounded-brand file:border-0 file:bg-cobalt file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-white`} type="file" name="cv" accept=".pdf" /><span class="mono text-lavender/80 normal-case">Si tienes CV, súbelo o pega un enlace en LinkedIn</span></label>
+    <div class="flex justify-between md:col-span-2"><button type="button" data-prev class="btn btn-outline text-white">← Atrás</button><button type="button" data-next class="btn btn-on-blue">Siguiente <span class="font-mono">→</span></button></div>
+  </fieldset>
+
+  <!-- 3 · Estudios -->
+  <fieldset data-step="3" data-display="flex" class="hidden flex-col gap-6">
+    <label class="flex flex-col gap-2"><span class="mono">¿Qué estás estudiando? *</span><input class={input} type="text" name="estudios" required /></label>
+    <div class="flex flex-col gap-2"><span class="mono">¿En qué año? *</span>
+      <div class="grid gap-2 sm:grid-cols-3">{years.map((y) => <label class={radio}><input type="radio" name="curso" value={y} required class="accent-cobalt" />{y}</label>)}</div>
+    </div>
+    <div class="flex flex-col gap-2"><span class="mono">¿Eres estudiante de la Universidad Carlos III? *</span>
+      <div class="grid gap-2 sm:grid-cols-2">{['Sí', 'No'].map((v) => <label class={radio}><input type="radio" name="uc3m" value={v} required class="accent-cobalt" />{v}</label>)}</div>
+    </div>
+    <div class="flex justify-between"><button type="button" data-prev class="btn btn-outline text-white">← Atrás</button><button type="button" data-next class="btn btn-on-blue">Siguiente <span class="font-mono">→</span></button></div>
+  </fieldset>
+
+  <!-- 4 · Elegir modalidad -->
+  <fieldset data-step="4" data-display="flex" class="hidden flex-col gap-5">
+    <h3 class="display text-[clamp(26px,3vw,40px)]">Te toca elegir (juega bien tus cartas)</h3>
+    <p class="text-lavender">Las siguientes preguntas puedes responderlas en este formulario (pero cuidado como pille qué es IA) o nos mandas un vídeo y así te ponemos cara.</p>
+    <label class="flex flex-col gap-2"><span class="mono">¿Cómo prefieres responder? *</span>
+      <select class={input} name="modalidad" required data-modalidad><option value="">Elige una opción</option><option>Texto</option><option>Vídeo</option></select>
+    </label>
+    <div class="flex justify-between"><button type="button" data-prev class="btn btn-outline text-white">← Atrás</button><button type="button" data-next class="btn btn-on-blue">Siguiente <span class="font-mono">→</span></button></div>
+  </fieldset>
+
+  <!-- 5 · Preguntas (rama Texto o Vídeo) -->
+  <fieldset data-step="5" data-display="flex" class="hidden flex-col gap-6">
+    <div data-branch="Texto" class="flex flex-col gap-6">
+      {preguntas.map(([n, q]) => (
+        <label class="flex flex-col gap-2"><span class="mono">{q} *</span><span class="mono normal-case text-lavender/80">(extiende tu respuesta todo lo que necesites)</span><textarea class={input} name={n} rows="4" required data-branch-required></textarea></label>
+      ))}
+    </div>
+    <div data-branch="Vídeo" class="hidden flex-col gap-5">
+      <h3 class="display text-[clamp(26px,3vw,40px)]">Has elegido la mejor opción, ¡nos hace mucha ilusión conocerte!</h3>
+      <p class="italic text-lavender">Por aquí te dejo las preguntas que queremos que nos contestes en el vídeo:</p>
+      <ul class="flex flex-col gap-2 border-t border-white/20 pt-4">{preguntas.map(([, q]) => <li class="flex gap-3"><span class="font-mono text-lavender">_</span>{q}</li>)}</ul>
+      <p class="font-bold italic">6 minutos de vídeo máximo…</p>
+      <label class="flex flex-col gap-2"><span class="mono">Link vídeo *</span><input class={input} type="url" name="video_link" placeholder="https://…" data-branch-required /></label>
+    </div>
+    <div class="flex justify-between"><button type="button" data-prev class="btn btn-outline text-white">← Atrás</button><button type="button" data-next class="btn btn-on-blue">Siguiente <span class="font-mono">→</span></button></div>
+  </fieldset>
+
+  <!-- 6 · Departamentos -->
+  <fieldset data-step="6" data-display="flex" class="hidden flex-col gap-6">
+    <h3 class="display text-[clamp(26px,3vw,40px)]">Descripción de los departamentos</h3>
+    <p class="text-lavender">A continuación te pediremos que elijas a qué departamento te gustaría unirte dentro de START. Te recomendamos que, antes de elegir, leas la descripción y cuántos starters buscamos para cada departamento:</p>
+    <div class="flex flex-col border-t border-white/20">
+      {departamentos.map((d) => (
+        <details class="group border-b border-white/20 py-3">
+          <summary class="flex cursor-pointer items-center justify-between gap-4 text-xl font-bold"><span>{d.name} <span class="mono ml-2 text-lavender">{d.plazas}</span></span><span class="font-mono text-lavender transition-transform group-open:rotate-90">→</span></summary>
+          <dl class="mt-3 grid gap-3 text-sm leading-relaxed text-lavender">
+            {[['Propósito', d.proposito], ['Tareas', d.tareas], ['Perfil', d.perfil], ['Qué os lleváis', d.llevais], ['Expectativas', d.expectativas]].map(([k, v]) => (
+              <div><dt class="font-semibold text-white underline underline-offset-4">{k}</dt><dd class="mt-1">{v}</dd></div>
+            ))}
+          </dl>
+        </details>
+      ))}
+    </div>
+    <h4 class="text-xl font-bold">¿A qué departamento(s) te gustaría unirte? <span class="font-normal text-lavender">(Solo entrarás a uno.)</span></h4>
+    <div class="grid gap-5 md:grid-cols-2">
+      <label class="flex flex-col gap-2"><span class="mono">Primera opción *</span><select class={input} name="dept1" required><option value="">Elige</option>{depts.map((d) => <option>{d}</option>)}</select></label>
+      <label class="flex flex-col gap-2"><span class="mono">Segunda opción *</span><select class={input} name="dept2" required><option value="">Elige</option>{depts.map((d) => <option>{d}</option>)}<option>Me la juego todo a una</option></select></label>
+    </div>
+    <div class="flex justify-between"><button type="button" data-prev class="btn btn-outline text-white">← Atrás</button><button type="button" data-next class="btn btn-on-blue">Siguiente <span class="font-mono">→</span></button></div>
+  </fieldset>
+
+  <!-- 7 · Bienvenida, canal, newsletter -->
+  <fieldset data-step="7" data-display="flex" class="hidden flex-col gap-6">
+    <label class="flex flex-col gap-2"><span class="mono">¿Vas a venir al Evento de Bienvenida del 17 de septiembre? *</span>
+      <span class="italic text-lavender">Habrá ojeadores…</span>
+      <span class="text-sm text-lavender">(No olvides inscribirte: <a href="/eventos/buildathon-pitchless-nomulabs" class="underline">Buildathon Pitchless y NomuLabs</a>)</span>
+      <select class={input} name="bienvenida" required><option value="">Elige una opción</option><option>Obvio!</option><option>Me encantaría pero no puedo</option></select>
+    </label>
+    <div class="flex flex-col gap-2"><span class="mono">¿Cómo nos has encontrado? *</span>
+      <div class="grid gap-2 sm:grid-cols-2">{canales.map((c) => <label class={radio}><input type="radio" name="canal" value={c} required class="accent-cobalt" />{c}</label>)}</div>
+    </div>
+    <div class="flex flex-col gap-2"><span class="mono">¿Quieres enterarte de nuestros eventos?</span>
+      <span class="text-lavender">¡Estarás al día de todos <strong>nuestros eventos</strong>, <strong>artículos del blog</strong> y algunas <strong>ofertas de trabajo en start-ups</strong>!</span>
+      <div class="grid gap-2 sm:grid-cols-2">{['Sí', 'No'].map((v) => <label class={radio}><input type="radio" name="newsletter" value={v} class="accent-cobalt" />{v}</label>)}</div>
+    </div>
+    <label class="flex items-start gap-3 text-sm"><input type="checkbox" name="rgpd" required class="mt-1 accent-cobalt" /><span>Acepto que Start UC3M trate mis datos para gestionar mi candidatura. No los cedemos a terceros.</span></label>
+    <div class="flex items-center justify-between gap-4"><button type="button" data-prev class="btn btn-outline text-white">← Atrás</button><div class="flex items-center gap-4"><p data-form-status class="text-sm font-semibold" aria-live="polite"></p><button type="submit" class="btn btn-on-blue">Enviar <span class="font-mono">→</span></button></div></div>
+  </fieldset>
+
+  <!-- 8 · Gracias -->
+  <fieldset data-step="8" data-display="flex" class="hidden flex-col gap-4">
+    <h3 class="display text-[clamp(28px,3.5vw,48px)]">¡Gracias por rellenar el formulario!</h3>
+    <p class="text-xl font-semibold">Nos hace mucha ilusión que quieras formar parte de Start UC3M.</p>
+    <p class="text-lavender">Estate atento/a a tu correo 📩, ya que te avisaremos allí si has sido seleccionado/a para la siguiente fase.</p>
+    <p class="text-xl font-bold">¡Nos vemos pronto! 🚀</p>
+    <a href="/eventos/buildathon-pitchless-nomulabs" class="btn btn-on-blue mt-2 self-start">Apuntarme al Buildathon <span class="font-mono">→</span></a>
+  </fieldset>
+</form>
+
+<script>
+  // Un paso visible a la vez; validación por paso; rama Texto/Vídeo; envío por fetch.
+  document.querySelectorAll<HTMLFormElement>('form[data-recruiting]').forEach((form) => {
+    const steps = Array.from(form.querySelectorAll<HTMLFieldSetElement>('[data-step]'));
+    const total = steps.length;
+    const label = form.querySelector<HTMLElement>('[data-step-label]')!;
+    const bar = form.querySelector<HTMLElement>('[data-step-bar]')!;
+    const status = form.querySelector<HTMLElement>('[data-form-status]')!;
+    const modalidad = form.querySelector<HTMLSelectElement>('[data-modalidad]')!;
+    const KEY = 'start-recruiting';
+    let current = 1;
+
+    const applyBranch = () => {
+      const v = modalidad.value;
+      form.querySelectorAll<HTMLElement>('[data-branch]').forEach((b) => {
+        const on = b.dataset.branch === v;
+        b.classList.toggle('hidden', !on);
+        b.classList.toggle('flex', on);
+        b.querySelectorAll<HTMLInputElement>('[data-branch-required]').forEach((i) => { i.required = on; if (!on) i.value = ''; });
+      });
+    };
+
+    const show = (n: number, scroll = true) => {
+      current = Math.min(Math.max(n, 1), total);
+      steps.forEach((s) => {
+        const on = Number(s.dataset.step) === current;
+        s.classList.remove('hidden', 'grid', 'flex');
+        s.classList.add(on ? (s.dataset.display ?? 'flex') : 'hidden');
+      });
+      label.textContent = current === total ? '¡Enviado!' : `Paso ${current} de ${total}`;
+      bar.style.width = `${((current - 1) / (total - 1)) * 100}%`;
+      if (scroll) form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      try { sessionStorage.setItem(KEY + ':step', String(current)); } catch {}
+    };
+
+    const validStep = () => {
+      const s = steps[current - 1];
+      const fields = Array.from(s.querySelectorAll<HTMLInputElement>('input, select, textarea')).filter((f) => !f.closest('.hidden'));
+      for (const f of fields) if (!f.checkValidity()) { f.reportValidity(); return false; }
+      return true;
+    };
+
+    const save = () => {
+      try {
+        const data: Record<string, string> = {};
+        new FormData(form).forEach((v, k) => { if (typeof v === 'string' && k !== 'form' && k !== 'website') data[k] = v; });
+        sessionStorage.setItem(KEY, JSON.stringify(data));
+      } catch {}
+    };
+
+    form.querySelectorAll('[data-next]').forEach((b) => b.addEventListener('click', () => { if (!validStep()) return; save(); show(current + 1); }));
+    form.querySelectorAll('[data-prev]').forEach((b) => b.addEventListener('click', () => { save(); show(current - 1); }));
+    modalidad.addEventListener('change', applyBranch);
+    form.addEventListener('input', save);
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!validStep()) return;
+      status.textContent = 'Enviando…';
+      try {
+        const r = await fetch(form.action, { method: 'POST', body: new FormData(form) });
+        const j = await r.json();
+        if (r.ok) { status.textContent = ''; try { sessionStorage.removeItem(KEY); sessionStorage.removeItem(KEY + ':step'); } catch {} show(total); }
+        else status.textContent = j.error ?? 'Algo ha fallado.';
+      } catch { status.textContent = 'Sin conexión con el servidor. Inténtalo de nuevo.'; }
+    });
+
+    // Restaurar progreso de la sesión
+    try {
+      const saved = JSON.parse(sessionStorage.getItem(KEY) ?? '{}');
+      Object.entries(saved).forEach(([k, v]) => {
+        const els = form.querySelectorAll<HTMLInputElement>(`[name="${k}"]`);
+        els.forEach((el) => { if (el.type === 'radio' || el.type === 'checkbox') el.checked = el.value === v || (el.type === 'checkbox' && v === 'on'); else if (el.type !== 'file') el.value = v as string; });
+      });
+      const step = Number(sessionStorage.getItem(KEY + ':step') ?? 1);
+      applyBranch();
+      show(step >= total ? 1 : step, false);
+    } catch { applyBranch(); show(1, false); }
+  });
+</script>

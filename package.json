@@ -1,64 +1,45 @@
 {
   "name": "start-uc3m",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "@testing-library/dom": "^10.4.1",
-    "@testing-library/jest-dom": "^6.8.0",
-    "@testing-library/react": "^16.3.0",
-    "@testing-library/user-event": "^13.5.0",
-    "framer-motion": "^12.23.12",
-    "lucide-react": "^0.542.0",
-    "pg": "^8.23.0",
-    "postcss": "^8.5.6",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1",
-    "react-router-dom": "^7.8.2",
-    "react-scripts": "5.0.1",
-    "resend": "^6.28.1",
-    "stripe": "^22.6.2",
-    "web-vitals": "^2.1.4"
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.12.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "dev:api": "node db/dev-api.js",
+    "db:load": "node db/load-schema.js",
     "test:db": "node db/test-schema.js",
     "test:api": "node db/test-api.js",
     "test:socios": "node db/test-schema.js && node db/test-api.js",
     "test:notion": "node db/test-notion.js",
-    "db:load": "node db/load-schema.js",
     "test:email": "node db/test-email.js",
     "test:stripe": "node db/test-stripe.js",
-    "dev:api": "node db/dev-api.js",
     "test:e2e": "node db/test-e2e.js",
     "invitar": "node db/invitar.js",
     "corregir-email": "node db/corregir-email.js",
     "pedir-telefonos": "node db/pedir-telefonos.js"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+  "dependencies": {
+    "@astrojs/rss": "^4.0.19",
+    "@astrojs/sitemap": "^3.7.4",
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^7.3.3",
+    "gsap": "^3.15.0",
+    "lenis": "^1.3.26",
+    "pg": "^8.23.0",
+    "resend": "^6.28.1",
+    "stripe": "^22.6.2",
+    "tailwindcss": "^4.3.3",
+    "zod": "^4.6.5"
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "allowScripts": {
+    "esbuild": true
   },
-  "jest": {
-    "moduleNameMapper": {
-      "^react-router-dom$": "<rootDir>/node_modules/react-router-dom/dist/index.js",
-      "^react-router/dom$": "<rootDir>/node_modules/react-router/dist/development/dom-export.js"
-    }
+  "devDependencies": {
+    "@tailwindcss/typography": "^0.5.20"
   }
 }

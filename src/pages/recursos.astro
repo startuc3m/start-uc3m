@@ -1,0 +1,256 @@
+---
+const ways = [
+  { t: 'Ven a los eventos', d: 'Buildathon, hackathones, StartXperience, Start Camp. Abiertos a toda la UC3M, sin ser socio.', img: '/media/equipo/gonzalo_torrijos.jpeg', cta: ['Ver eventos', '/eventos'] },
+  { t: 'Entra en la comunidad', d: 'Newsletter, grupo y podcast: entérate de todo lo que pasa en el ecosistema desde dentro.', img: '/media/equipo/maria_martin.jpg', cta: ['Suscribirme', '/#newsletter'] },
+  { t: 'Forma parte de Start', d: 'Únete a un departamento y organiza con nosotros. Es la forma de aprender construyendo.', img: '/media/equipo/alicia_gascon.jpg', cta: ['Apuntarme', '/unete'] },
+];
+const perks = ['Equipo multidisciplinar: ADE, ingenierías, derecho, diseño', 'Contacto directo con fundadores, inversores y empresas', 'Organizas eventos de 60 a 300 personas', 'Red de alumni que fundan, invierten y contratan', 'Formaciones internas cada curso', 'Y sí: sangriadas'];
+import Base from '../layouts/Base.astro';
+import { site } from '../lib/site';
+import { asset } from '../lib/url';
+const cats = [...new Set(site.resources.map((r) => r.cat))];
+// Tres audiencias · qué ofrecemos · cómo lo hacemos · FAQ
+const audiences = [
+  {
+    id: 'idea', n: '01', eyebrow: 'Tienes una idea', title: 'De la idea a un equipo y un prototipo_', tone: 'paper',
+    img: '/media/campus-pdt-interior.jpg', imgAlt: 'Campus de Puerta de Toledo',
+    p1: 'Tener una idea es lo fácil. Lo difícil es encontrar con quién probarla, a quién preguntarle y dónde enseñarla sin que nadie te mire raro. Start existe para eso: para que pases de una idea en una libreta a un equipo, un prototipo y una demo delante de gente real antes de terminar la carrera.',
+    p2: 'No hace falta saber programar ni tener un plan de negocio. Hace falta venir. De una tarde de Buildathon salen equipos que siguen trabajando meses después, y desde ahí te acompañamos hasta los programas de emprendimiento de la universidad.',
+    offers: [
+      ['Mentores', 'Fundadores y profesionales del ecosistema que revisan tu idea y te dicen lo que nadie te dice.'],
+      ['Equipo multidisciplinar', 'ADE, ingenierías, derecho y diseño en la misma mesa: el cofundador que te falta suele estar en Start.'],
+      ['Validación en el Buildathon', 'Una tarde para construir un prototipo funcional y enseñarlo. Sin saber programar.'],
+      ['Acceso a la incubadora UC3M', 'Te acompañamos hasta los programas y ayudas de emprendimiento de la universidad.'],
+      ['Herramientas y créditos', 'Lovable, IA y las herramientas que usamos en los talleres, con créditos de nuestros partners.'],
+      ['Demo delante de gente', 'Enseñas lo construido a estudiantes, mentores y empresas. El feedback más honesto que vas a recibir.'],
+    ],
+    steps: [
+      ['Cuéntanos tu idea', 'Un formulario de dos minutos. Idea, fase y qué te falta.'],
+      ['Te conectamos', 'Con el mentor y los perfiles que encajan con lo que necesitas.'],
+      ['Construyes', 'En el Buildathon o en un taller: prototipo funcional en una tarde.'],
+      ['Demo y seguimiento', 'Lo enseñas, recoges feedback y te acompañamos hasta la incubadora.'],
+    ],
+    stats: [['60', 'plazas por Buildathon', 60], ['8', 'departamentos que te acompañan', 8]],
+    cta: ['Cuéntanos tu idea', '/contacto'],
+  },
+  {
+    id: 'startup', n: '02', eyebrow: 'Tienes una startup', title: 'Talento, visibilidad e inversores_', tone: 'navy',
+    img: '/media/leganes-biblioteca-2.jpg', imgAlt: 'Biblioteca de la Universidad Carlos III de Madrid',
+    p1: 'Start es la puerta de entrada a la comunidad emprendedora de la Universidad Carlos III: más de 3.000 estudiantes que ya han decidido que quieren construir. Si tienes una startup, aquí están tus primeras contrataciones, tus becarios que se quedan y, a veces, tu siguiente cofundador.',
+    p2: 'También es escaparate. Presentas en un evento, cuentas tu historia en el podcast y llegas a inversores, lanzaderas e incubadoras que pasan por StartXperience cada primavera.',
+    offers: [
+      ['Visibilidad en eventos', 'Presenta tu startup ante cientos de estudiantes en Buildathon, Start Camp o StartXperience.'],
+      ['Talento de la UC3M', 'Prácticas, primeras contrataciones y cofundadores entre starters y asistentes.'],
+      ['StartXperience con inversores', 'Un día con inversores, lanzaderas e incubadoras del ecosistema madrileño.'],
+      ['Podcast StartTheWeek', 'Cuenta tu historia en el podcast de Start UC3M, en YouTube y redes.'],
+      ['Retos reales para los equipos', 'Propón el reto de un Buildathon y llévate veinte prototipos y los perfiles que los hicieron.'],
+      ['Patrocinio a medida', 'Partner fijo, patrocinio de evento o colaboración en especie. Lo que encaje con tu fase.'],
+    ],
+    steps: [
+      ['Hablamos', 'Nos cuentas qué buscas: talento, marca, feedback o inversión.'],
+      ['Elegimos formato', 'Charla, reto, stand, podcast o patrocinio. Uno o varios.'],
+      ['Lo hacemos', 'Organizamos todo con Eventos y Comunicación. Tú vienes.'],
+      ['Seguimiento', 'Contacto en persona con quienes se acercan a tu stand o charla, fotos, crónica y métricas de asistencia.'],
+    ],
+    stats: [['3.000', 'estudiantes en la comunidad', 3000], ['2013', 'construyendo desde', 2013]],
+    cta: ['Hablar con Start', '/contacto'],
+  },
+  {
+    id: 'eventos', n: '03', eyebrow: 'Quieres venir a eventos', title: 'Abiertos a toda la UC3M, sin ser socio_', tone: 'paper',
+    img: '/media/madrid-skyline-2.jpg', imgAlt: 'Madrid, donde pasan los eventos de Start',
+    p1: 'No hace falta tener una idea, ni ser starter, ni saber de startups. Los eventos de Start están abiertos a cualquier estudiante de la UC3M. Vienes, construyes o escuchas, conoces gente y te vas con algo: un prototipo, un contacto o simplemente ganas.',
+    p2: 'Hay formatos de una tarde (Buildathon), de un día (StartXperience) y de dos (Start Camp). Todos con inscripción integrada en esta web: sin Luma, sin formularios externos, sin listas de espera opacas.',
+    offers: [
+      ['Calendario del curso', 'Todos los eventos con fecha, lugar e inscripción integrada en la web.'],
+      ['Formatos para todos', 'Buildathon, hackathones, Start Camp, StartXperience: de una tarde a dos días.'],
+      ['Sin ser socio', 'Los eventos están abiertos a cualquier estudiante de la UC3M. Solo tienes que apuntarte.'],
+      ['Gratis o casi', 'La mayoría de eventos son gratuitos. Cuando hay coste, lo cubren los patrocinadores.'],
+      ['Newsletter', 'Un correo cuando abrimos plazas. Nada más.'],
+      ['Sangriada al terminar', 'Donde de verdad se habla de todo. Después de cada evento.'],
+    ],
+    steps: [
+      ['Mira el calendario', 'Fechas, lugar, formato y plazas disponibles de cada evento.'],
+      ['Te apuntas', 'Un formulario en la propia ficha del evento. Confirmación al momento.'],
+      ['Vienes', 'Campus Puerta de Toledo casi siempre. Con o sin equipo, con o sin idea.'],
+      ['Repites', 'Si te lo pasas bien construyendo, esta es la forma más fácil de conocernos.'],
+    ],
+    stats: [['300', 'personas en StartXperience', 300], ['0', '€ para la mayoría de eventos', 0]],
+    cta: ['Ver eventos', '/eventos'],
+  },
+];
+// Preguntas frecuentes
+const faqs = [
+  ['¿Hay que ser socio para venir?', 'No. Los eventos están abiertos a cualquier estudiante de la UC3M. Ser starter (formar parte del equipo) es otra cosa: se entra por un proceso que abrimos cada curso.'],
+  ['¿Cuesta dinero?', 'La mayoría de eventos son gratuitos gracias a los patrocinadores. Cuando hay un coste (Start Camp, por ejemplo), lo decimos en la ficha del evento.'],
+  ['¿De qué carreras hay gente?', 'De todas: ADE, ingenierías, derecho, diseño, comunicación, ciencias. Precisamente de eso va Start: juntar perfiles distintos en un mismo equipo.'],
+  ['¿Puedo venir sin idea?', 'Sí. En el Buildathon te montamos equipo allí mismo y el reto lo ponemos nosotros. Muchos de los que hoy tienen proyecto vinieron sin nada.'],
+  ['¿Cómo patrocino un evento?', 'Escribe a Partnerships desde la página Patrocina. Hay tres formatos: partner fijo, patrocinio de evento y colaboración en especie.'],
+  ['¿Cómo llego a Puerta de Toledo?', 'Campus Puerta de Toledo de la UC3M, en Madrid centro. Metro Puerta de Toledo (L5) o Pirámides (L5, Cercanías). Lo indicamos en cada ficha.'],
+];
+---
+<Base title="Recursos" description="Lo que Start UC3M ofrece a estudiantes con idea, startups y gente que quiere venir a eventos, y cómo lo hacemos." tone="dark">
+  <!-- HERO -->
+  <section class="relative overflow-hidden bg-cobalt text-white">
+    <img src={asset('/media/campus-pdt-2.jpg')} alt="" class="absolute inset-0 h-full w-full object-cover opacity-50 mix-blend-luminosity" data-parallax="6" aria-hidden="true" />
+    <div class="absolute inset-0 bg-gradient-to-b from-cobalt/30 via-cobalt/70 to-cobalt"></div>
+    <div class="container-x relative pb-16 pt-24">
+      <span class="eyebrow text-lavender">Recursos</span>
+      <h1 class="display mt-4 max-w-5xl text-[clamp(48px,9vw,140px)]" data-split>En qué te puede ayudar Start_</h1>
+      <p class="mt-8 max-w-2xl text-xl text-lavender" data-reveal>Lo que Start te ofrece según quién seas y cómo lo hacemos, paso a paso. Sin letra pequeña.</p>
+      <ul class="mt-10 flex flex-wrap gap-2" data-reveal>
+        {audiences.map((a) => (
+          <li><a href={`#${a.id}`} class="mono inline-flex items-center gap-2 rounded-full border border-white/40 px-4 py-2 transition-colors hover:bg-white hover:text-cobalt"><span class="text-lavender">{a.n}</span>{a.eyebrow}</a></li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  {audiences.map((a) => {
+    const dark = a.tone === 'navy';
+    const line = dark ? 'border-cobalt' : 'border-line';
+    const muted = dark ? 'text-lavender' : 'opacity-80';
+    return (
+      <section id={a.id} class={`scroll-mt-16 ${dark ? 'bg-navy text-white' : 'bg-paper text-ink'}`}>
+        <div class="container-x py-24">
+          <!-- Cabecera + foto -->
+          <div class="grid gap-12 md:grid-cols-[1.2fr_1fr] md:items-end">
+            <div>
+              <span class={`display text-7xl ${dark ? 'text-lavender/40' : 'text-cobalt/25'}`} data-reveal>{a.n}</span>
+              <span class={`eyebrow mt-4 block ${dark ? 'text-lavender' : 'text-cobalt'}`}>{a.eyebrow}</span>
+              <h2 class={`display mt-3 text-[clamp(36px,5vw,72px)] ${dark ? '' : 'text-cobalt'}`} data-split>{a.title}</h2>
+              <p class={`mt-8 max-w-xl text-lg leading-relaxed ${muted}`} data-reveal>{a.p1}</p>
+              <p class={`mt-4 max-w-xl text-lg leading-relaxed ${muted}`} data-reveal>{a.p2}</p>
+              <div class="mt-8 flex flex-wrap gap-10" data-reveal>
+                {a.stats.map(([n, l, c]) => (
+                  <div class={`border-l-2 pl-4 ${dark ? 'border-white/40' : 'border-cobalt'}`}>
+                    <div class={`display text-5xl ${dark ? '' : 'text-cobalt'}`} data-count={c}>{n}</div>
+                    <div class={`eyebrow mt-1 ${dark ? 'text-lavender/80' : 'opacity-70'}`}>{l}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div class="relative aspect-[4/5] overflow-hidden rounded-brand bg-cobalt-deep" data-reveal>
+              <img src={asset(a.img)} alt={a.imgAlt} class="absolute inset-0 h-[120%] w-full object-cover" data-parallax="8" loading="lazy" />
+            </div>
+          </div>
+
+          <!-- Qué ofrecemos -->
+          <div class="mt-20">
+            <span class={`eyebrow ${dark ? 'text-lavender' : 'text-cobalt'}`}>Qué ofrecemos</span>
+            <ul class={`mt-6 grid gap-x-8 border-t sm:grid-cols-2 lg:grid-cols-3 ${line}`} data-stagger data-reveal>
+              {a.offers.map(([t, d], i) => (
+                <li class={`border-b py-6 ${line}`}>
+                  <span class={`mono ${dark ? 'text-lavender/60' : 'text-cobalt/60'}`}>0{i + 1}</span>
+                  <h3 class="mt-2 text-2xl font-bold leading-tight">{t}</h3>
+                  <p class={`mt-2 text-sm leading-relaxed ${muted}`}>{d}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <!-- Cómo lo hacemos -->
+          <div class={`mt-20 rounded-brand p-8 md:p-12 ${dark ? 'bg-cobalt' : 'bg-cobalt text-white'}`}>
+            <div class="flex flex-wrap items-end justify-between gap-6">
+              <div>
+                <span class="eyebrow text-lavender">Cómo lo hacemos</span>
+                <h3 class="display mt-3 text-[clamp(28px,3.5vw,48px)]" data-split>En {a.steps.length} pasos_</h3>
+              </div>
+              <a href={a.cta[1]} class="btn btn-on-blue">{a.cta[0]} <span class="font-mono">→</span></a>
+            </div>
+            <ol class="mt-10 grid gap-8 border-t border-white/30 pt-8 sm:grid-cols-2 lg:grid-cols-4" data-stagger data-reveal>
+              {a.steps.map(([t, d], i) => (
+                <li>
+                  <span class="display text-6xl text-lavender/60">0{i + 1}</span>
+                  <h4 class="mt-3 text-xl font-bold">{t}</h4>
+                  <p class="mt-2 text-sm text-lavender">{d}</p>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </div>
+      </section>
+    );
+  })}
+
+  <!-- SER STARTER (antes en /unete) -->
+  <section id="starter" class="scroll-mt-20 bg-paper text-ink">
+    <div class="container-x pt-24">
+      <span class="eyebrow text-cobalt">Ser starter</span>
+      <h2 class="display mt-3 text-[clamp(32px,5vw,72px)] text-cobalt">Hay un sitio para ti en Start_</h2>
+      <p class="mt-4 max-w-2xl text-lg">Vengas de la carrera que vengas y tengas idea o no. Puedes venir a un evento, seguir la comunidad o entrar en el equipo.</p>
+    </div>
+  <section class="container-x py-20">
+    <div class="grid gap-8 md:grid-cols-3" data-stagger>
+      {ways.map((w, i) => (
+        <a href={w.cta[1]} class="group flex flex-col" data-reveal>
+          <div class="relative aspect-[4/5] overflow-hidden rounded-brand bg-cobalt" data-img-reveal><img src={asset(w.img)} alt="" class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" /><span class="display absolute left-5 top-4 text-6xl text-white">0{i + 1}</span></div>
+          <h2 class="mt-5 text-3xl font-bold group-hover:underline">{w.t}</h2>
+          <p class="mt-2 opacity-80">{w.d}</p>
+          <span class="mono mt-4 text-cobalt">{w.cta[0]} →</span>
+        </a>
+      ))}
+    </div>
+  </section>
+  <section class="bg-navy text-white"><div class="container-x grid gap-12 py-24 md:grid-cols-[1fr_1.2fr] md:items-center">
+    <div data-reveal>
+      <span class="eyebrow text-lavender">Ser starter</span>
+      <h2 class="display mt-3 text-[clamp(32px,5vw,72px)]" data-split>Lo que te llevas_</h2>
+      <p class="mt-4 max-w-md text-lavender">Buscamos perfiles comprometidos, con mentalidad abierta y espíritu colaborativo. Cuanto más aportas, más crece tu recorrido dentro y fuera de Start.</p>
+    </div>
+    <ul class="grid gap-x-8 border-t border-cobalt sm:grid-cols-2" data-stagger>
+      {perks.map((p) => <li class="flex gap-3 border-b border-cobalt py-4"><span class="font-mono text-lavender">_</span><span class="text-lg">{p}</span></li>)}
+    </ul>
+  </div></section>
+    <div class="container-x py-16"><a href="/unete" class="btn btn-primary">Apuntarme a Start <span class="font-mono">→</span></a></div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="bg-cobalt text-white">
+    <div class="container-x grid gap-12 py-24 md:grid-cols-[1fr_1.6fr]">
+      <div data-reveal>
+        <span class="eyebrow text-lavender">Preguntas frecuentes</span>
+        <h2 class="display mt-3 text-[clamp(32px,5vw,72px)]" data-split>Lo que nos preguntan_</h2>
+        <p class="mt-6 max-w-sm text-lavender">¿Otra duda? Escríbenos a <a class="underline" href={`mailto:${site.email}`}>{site.email}</a> o por Instagram.</p>
+        <div class="mt-10 grid grid-cols-2 gap-3" data-stagger>
+          {[['dQeHC5E0yGU', 'StartTheWeek'], ['Und51L2OhU0', 'StartTheWeek']].map(([id, l]) => (
+            <a href="/podcast" class="group relative aspect-video overflow-hidden rounded-brand bg-cobalt-deep" data-img-reveal>
+              <img src={`https://img.youtube.com/vi/${id}/hqdefault.jpg`} alt="" class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />
+              <span class="mono absolute bottom-2 left-3 text-white">{l} ▶</span>
+            </a>
+          ))}
+        </div>
+        <p class="mono mt-3 text-lavender/80">Muchas respuestas están en el podcast.</p>
+      </div>
+      <div class="border-t border-white/30" data-stagger data-reveal>
+        {faqs.map(([q, a]) => (
+          <details class="group border-b border-white/30">
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-6 py-5 text-xl font-bold marker:hidden [&::-webkit-details-marker]:hidden">
+              {q}<span class="font-mono text-lavender transition-transform group-open:rotate-45">+</span>
+            </summary>
+            <p class="pb-6 text-lavender">{a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Enlaces útiles -->
+  <section class="bg-paper text-ink">
+    <div class="container-x py-20">
+      <span class="eyebrow text-cobalt">Enlaces útiles</span>
+      <h2 class="display mt-3 text-[clamp(28px,4vw,48px)] text-cobalt" data-split>Fuera de Start_</h2>
+      <div class="mt-8 grid gap-x-12 md:grid-cols-2" data-stagger data-reveal>
+        {cats.map((c) => (
+          <div class="border-t border-line py-6">
+            <span class="mono text-cobalt">{c}</span>
+            <ul class="mt-3">
+              {site.resources.filter((r) => r.cat === c).map((r) => (
+                <li class="border-b border-line py-3"><a href={r.url} class="group flex items-baseline justify-between gap-4"><span><span class="font-bold group-hover:underline">{r.title}</span> <span class="text-sm opacity-70">· {r.desc}</span></span><span class="font-mono text-cobalt">→</span></a></li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>
