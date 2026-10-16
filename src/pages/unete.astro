@@ -1,20 +1,19 @@
 ---
 import Base from '../layouts/Base.astro';
-import RecruitingForm from '../components/RecruitingForm.astro';
 import { site } from '../lib/site';
+// El formulario (components/RecruitingForm.astro) se guarda para la próxima
+// convocatoria; mientras las inscripciones estén cerradas no se muestra (#31).
 ---
-<Base title="Únete a Start" description="Formulario de entrada a Start UC3M · Curso 2026/27" tone="dark">
+<Base title="Únete a Start" description="Proceso de entrada a Start UC3M" tone="dark">
   <section class="bg-cobalt text-white">
-    <div class="container-x py-12 md:py-16">
-      <div class="flex flex-wrap items-end justify-between gap-6">
-        <div>
-          <span class="eyebrow text-lavender">Start recruiting · Curso {site.course}</span>
-          <h1 class="display mt-3 text-[clamp(40px,7vw,96px)]">Quiero entrar en Start_</h1>
-        </div>
-        <a href="/recursos#starter" class="mono text-lavender hover:text-white">¿Qué es ser starter? →</a>
-      </div>
-      <div id="formulario" class="mx-auto mt-10 max-w-4xl rounded-brand border border-white/20 bg-cobalt-deep/40 p-6 md:p-12">
-        <RecruitingForm />
+    <div class="container-x py-20 md:py-28">
+      <span class="eyebrow inline-flex items-center gap-2 rounded-full border border-white/40 px-3 py-2 text-lavender normal-case"><span class="h-1.5 w-1.5 rounded-full bg-white/60"></span>Inscripciones cerradas · Curso {site.course}</span>
+      <h1 class="display mt-6 text-[clamp(40px,7vw,96px)]">Quiero entrar en Start_</h1>
+      <p class="mt-6 max-w-2xl text-xl leading-snug text-lavender">El proceso de entrada de este curso ya se ha cerrado. Abrimos una nueva convocatoria cada curso: síguenos en redes para enterarte la primera vez que se abra.</p>
+      <div class="mt-10 flex flex-wrap gap-3">
+        <a href={site.social.instagram} target="_blank" rel="noopener" class="btn btn-on-blue">Seguir a Start en Instagram <span class="font-mono">↗</span></a>
+        <a href="/eventos" class="btn btn-outline text-white">Mientras tanto, ven a un evento</a>
+        <a href="/recursos#starter" class="btn btn-outline text-white">¿Qué es ser starter?</a>
       </div>
     </div>
   </section>

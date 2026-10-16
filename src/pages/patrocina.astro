@@ -1,7 +1,7 @@
 ---
 import { asset } from '../lib/url';
 import Base from '../layouts/Base.astro';
-import Form from '../components/Form.astro';
+import MailCta from '../components/MailCta.astro';
 import { site } from '../lib/site';
 const stats = [['3.000', 'Estudiantes alcanzados por curso', 3000], ['3.000', 'Seguidores en Instagram', 2990], ['12', 'Eventos al año', 12], ['13', 'Años construyendo', 13]];
 const offers = [
@@ -173,12 +173,6 @@ const others = site.tiers.slice(1);
   <!-- CONTACTO -->
   <section id="contacto" class="bg-cobalt text-white"><div class="container-x grid gap-12 py-24 md:grid-cols-[1fr_1.4fr]">
     <div data-reveal><span class="eyebrow text-lavender">Contacto empresas</span><h2 class="display mt-3 text-[clamp(32px,5vw,72px)]" data-split>Hablemos_</h2><p class="mt-4 text-lavender">Partnerships te responde en menos de 48 h. También en <a class="underline" href={`mailto:${site.email}`}>{site.email}</a>.</p></div>
-    <Form name="patrocinio" dark submit="Enviar" fields={[
-      { name: 'empresa', label: 'Empresa', required: true },
-      { name: 'nombre', label: 'Persona de contacto', required: true },
-      { name: 'email', label: 'Email', type: 'email', required: true },
-      { name: 'interes', label: 'Interés', type: 'select', options: ['Partner fijo', 'Patrocinio de un evento', 'Colaborador (en especie)', 'Aún no lo sé'] },
-      { name: 'mensaje', label: 'Mensaje', type: 'textarea', full: true, placeholder: 'Cuéntanos qué buscáis' },
-    ]} />
+    <MailCta dark subject="Patrocinio de Start UC3M" label="Hablar con Partnerships" />
   </div></section>
 </Base>

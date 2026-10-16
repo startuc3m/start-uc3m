@@ -1,6 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import Form from '../components/Form.astro';
+import MailCta from '../components/MailCta.astro';
 import { site } from '../lib/site';
 import { asset } from '../lib/url';
 const channels = [
@@ -27,12 +27,7 @@ const channels = [
           <span><span class="mono block opacity-70">¿Eres empresa?</span><span class="text-xl font-bold">Patrocina Start</span></span><span class="font-mono text-2xl">→</span>
         </a>
       </div>
-      <div data-reveal><Form name="contacto" dark fields={[
-        { name: 'nombre', label: 'Nombre', required: true },
-        { name: 'email', label: 'Email', type: 'email', required: true },
-        { name: 'asunto', label: 'Asunto', full: true, required: true },
-        { name: 'mensaje', label: 'Mensaje', type: 'textarea', full: true, required: true },
-      ]} /></div>
+      <div data-reveal class="rounded-brand bg-cobalt-deep/40 p-8 md:p-12"><MailCta dark subject="Contacto desde la web" /></div>
     </div>
   </section>
   <section class="container-x grid gap-12 py-20 md:grid-cols-[1.4fr_1fr] md:items-center">

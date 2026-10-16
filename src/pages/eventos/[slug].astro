@@ -1,6 +1,5 @@
 ---
 import Base from '../../layouts/Base.astro';
-import Form from '../../components/Form.astro';
 import { getCollection, render } from 'astro:content';
 import { eventToIcs, icsDataHref, eventStartDate } from '../../lib/ics';
 import { site } from '../../lib/site';
@@ -105,37 +104,23 @@ const eventJsonLd = {
   </section>
   {open ? (
     <section id="inscripcion" class="bg-navy text-white">
-      <div class="container-x py-20">
-        <span class="eyebrow text-lavender">Inscripción</span>
-        <h2 class="display mt-3 text-[clamp(32px,5vw,64px)]">Reserva tu plaza_</h2>
-        <p class="mt-4 max-w-xl text-lavender" data-plazas-text>{e.data.seats ? `${e.data.seats} plazas.` : 'Plazas limitadas.'} Si no tienes equipo, te lo montamos allí.</p>
-        <div class="mt-10 max-w-3xl">
-          <input type="hidden" data-evento value={e.data.title} />
-          <input type="hidden" data-evento-slug value={e.id} />
-          <Form name="evento" dark submit="Reservar plaza" fields={[
-            { name: 'nombre', label: 'Nombre y apellidos', required: true },
-            { name: 'email', label: 'Email', type: 'email', required: true, placeholder: 'tu@alumnos.uc3m.es' },
-            { name: 'grado', label: 'Grado y curso', required: true, placeholder: 'ADE · 3º' },
-            { name: 'equipo', label: 'Equipo', type: 'select', options: ['No tengo equipo', 'Vengo con equipo de 2', 'Vengo con equipo de 3'] },
-          ]} />
+      <div class="container-x flex flex-col gap-6 py-20 md:flex-row md:items-end md:justify-between" data-reveal>
+        <div>
+          <span class="eyebrow text-lavender">Inscripción</span>
+          <h2 class="display mt-3 text-[clamp(32px,5vw,64px)]">Reserva tu plaza_</h2>
+          <p class="mt-4 max-w-xl text-lavender">{e.data.external ? 'La inscripción se hace en Luma. Si no tienes equipo, te lo montamos allí.' : 'Abrimos la inscripción muy pronto. Síguenos en Instagram para enterarte.'}</p>
         </div>
+        {e.data.external
+          ? <a href={e.data.external} target="_blank" rel="noopener" class="btn btn-on-blue">Inscribirme en Luma <span class="font-mono">↗</span></a>
+          : <a href={site.social.instagram} target="_blank" rel="noopener" class="btn btn-outline text-white">Instagram de Start <span class="font-mono">↗</span></a>}
       </div>
     </section>
   ) : soldOut ? (
-    <section id="lista-espera" class="bg-navy text-white">
-      <div class="container-x py-20">
+    <section id="inscripcion" class="bg-navy text-white">
+      <div class="container-x py-20" data-reveal>
         <span class="eyebrow text-lavender">Sold out</span>
-        <h2 class="display mt-3 text-[clamp(32px,5vw,64px)]">Apúntate a la lista de espera_</h2>
-        <p class="mt-4 max-w-xl text-lavender">Las plazas están completas. Si se libera alguna, avisamos por orden de inscripción.</p>
-        <div class="mt-10 max-w-3xl">
-          <input type="hidden" data-evento value={e.data.title} />
-          <input type="hidden" data-espera value="si" />
-          <Form name="evento" dark submit="Apuntarme a la lista de espera" fields={[
-            { name: 'nombre', label: 'Nombre y apellidos', required: true },
-            { name: 'email', label: 'Email', type: 'email', required: true, placeholder: 'tu@alumnos.uc3m.es' },
-            { name: 'grado', label: 'Grado y curso', required: true, placeholder: 'ADE · 3º' },
-          ]} />
-        </div>
+        <h2 class="display mt-3 text-[clamp(32px,5vw,64px)]">Plazas completas_</h2>
+        <p class="mt-4 max-w-xl text-lavender">Si se libera alguna plaza lo anunciaremos en nuestras redes.</p>
       </div>
     </section>
   ) : (
@@ -147,32 +132,3 @@ const eventJsonLd = {
     </section>
   )}
 </Base>
-<script>
-  // Añade el nombre del evento, su slug (para el conteo de plazas) y si es lista de espera al envío del formulario
-  const ev = document.querySelector<HTMLInputElement>('[data-evento]');
-  const slug = document.querySelector<HTMLInputElement>('[data-evento-slug]');
-  const espera = document.querySelector<HTMLInputElement>('[data-espera]');
-  const form = document.querySelector<HTMLFormElement>('form[data-form="evento"]');
-  const addHidden = (name: string, value: string) => { const i = document.createElement('input'); i.type = 'hidden'; i.name = name; i.value = value; form!.appendChild(i); };
-  if (ev && form) addHidden('evento', ev.value);
-  if (slug && form) addHidden('slug', slug.value);
-  if (espera && form) addHidden('tipo', 'lista-espera');
-
-  // Plazas en vivo: solo tiene sentido en la sección de inscripción abierta (con data-evento-slug y sin lista de espera)
-  const plazasText = document.querySelector<HTMLElement>('[data-plazas-text]');
-  if (slug && plazasText && !espera) {
-    fetch(`/api/eventos/${slug.value}/plazas`)
-      .then((r) => r.json())
-      .then((p: { seats: number | null; remaining: number | null }) => {
-        if (p.remaining == null) return;
-        if (p.remaining > 0) {
-          plazasText.textContent = `${p.remaining} de ${p.seats} plazas libres. Si no tienes equipo, te lo montamos allí.`;
-        } else {
-          plazasText.textContent = 'Plazas completas por ahora.';
-          const submit = form?.querySelector<HTMLButtonElement>('button');
-          if (submit) { submit.disabled = true; submit.classList.add('opacity-50', 'cursor-not-allowed'); submit.textContent = 'Plazas completas'; }
-        }
-      })
-      .catch(() => {});
-  }
-</script>

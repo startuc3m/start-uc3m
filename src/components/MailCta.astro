@@ -1,0 +1,12 @@
+---
+// Contacto por correo mientras no haya un formulario que envíe de verdad (#33).
+// Se muestra la dirección en texto además del botón: no todo el mundo tiene un
+// cliente de correo configurado y así puede copiarla.
+import { site } from '../lib/site';
+const { subject = '', label = 'Escribir un email', dark = false } = Astro.props as { subject?: string; label?: string; dark?: boolean };
+const href = `mailto:${site.email}${subject ? `?subject=${encodeURIComponent(subject)}` : ''}`;
+---
+<div class="flex flex-col gap-4">
+  <p class={`text-lg leading-relaxed ${dark ? 'text-lavender' : ''}`}>Escríbenos a <span class="font-mono font-semibold select-all">{site.email}</span> y te respondemos lo antes posible.</p>
+  <a href={href} class={`btn w-fit ${dark ? 'btn-on-blue' : 'btn-primary'}`}>{label} <span class="font-mono">→</span></a>
+</div>

@@ -34,13 +34,6 @@ const ogImage = `${siteOrigin}${base}/brand/logo-full-cobalt.png`;
       <span class="min-w-0"><span class="mono block text-lavender">Último episodio · StartTheWeek #37</span><span class="block truncate font-semibold group-hover:underline">La verdad detrás del Mundo Inmobiliario</span><span class="block text-xs text-lavender">Guillermo Esteban</span></span>
     </a>
     <div class="mt-auto pt-10">
-      <form class="flex gap-2" data-form="newsletter" action="/api/forms" method="post">
-        <input type="hidden" name="form" value="newsletter" />
-        <input type="text" name="website" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true" />
-        <input required type="email" name="email" placeholder="Tu email para la newsletter" class="w-full rounded-brand border border-white/50 bg-transparent px-3 py-2 text-sm text-white placeholder:text-lavender/60" />
-        <button class="btn btn-on-blue whitespace-nowrap px-4 py-2 text-sm">Apuntarme</button>
-      </form>
-      <p class="mt-2 text-xs text-lavender/70" data-form-status></p>
       <div class="mt-8 flex justify-center gap-6 pb-4 text-sm font-semibold">{Object.entries(site.social).map(([k, v]) => <a href={v} class="capitalize underline-offset-4 hover:underline">{k}</a>)}</div>
     </div>
   </main>
@@ -49,23 +42,5 @@ const ogImage = `${siteOrigin}${base}/brand/logo-full-cobalt.png`;
       document.querySelectorAll('a[href^="/"], form[action^="/"]').forEach(fix);
       document.addEventListener('click', function (e) { var a = e.target && e.target.closest ? e.target.closest('a[href^="/"]') : null; if (a) fix(a); }, true);
       document.addEventListener('submit', function (e) { if (e.target && e.target.tagName === 'FORM') fix(e.target); }, true); }
-  </script>
-  <script>
-    document.querySelectorAll<HTMLFormElement>('form[data-form="newsletter"]').forEach((form) => {
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const status = form.parentElement?.querySelector<HTMLElement>('[data-form-status]');
-        if (!form.reportValidity()) return;
-        if (status) status.textContent = 'Enviando…';
-        try {
-          const r = await fetch(form.action, { method: 'POST', body: new FormData(form) });
-          const j = await r.json();
-          if (status) status.textContent = r.ok ? '¡Listo! Ya estás dentro.' : (j.error ?? 'Algo ha fallado.');
-          if (r.ok) form.reset();
-        } catch {
-          if (status) status.textContent = 'Sin conexión con el servidor. Inténtalo de nuevo.';
-        }
-      });
-    });
   </script>
 </body></html>

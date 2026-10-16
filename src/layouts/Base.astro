@@ -65,10 +65,6 @@ const organizationJsonLd = {
         document.addEventListener('submit', function (e) { var f = e.target; if (f && f.tagName === 'FORM') fix(f); }, true);
       }
     </script>
-    <script is:inline>
-      // CMS local: textos editados en /admin (localStorage cms:site) se muestran en la web
-      try { var st = JSON.parse(localStorage.getItem('cms:site') || 'null'); if (st) document.querySelectorAll('[data-cms^="site."]').forEach(function (el) { var k = el.getAttribute('data-cms').slice(5); if (st[k]) { el.textContent = st[k] + (el.getAttribute('data-cms-suffix') || ''); if (el.tagName === 'A' && k === 'email') el.setAttribute('href', 'mailto:' + st[k]); } }); } catch (e) {}
-    </script>
     <script>
       import { initLoader, initMotion } from '../lib/motion';
       initLoader().then(initMotion);

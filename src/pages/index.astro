@@ -5,7 +5,7 @@ import PodcastTrack from '../components/PodcastTrack.astro';
 import SponsorTicker from '../components/SponsorTicker.astro';
 import { getCollection } from 'astro:content';
 import { site } from '../lib/site';
-import Form from '../components/Form.astro';
+import MailCta from '../components/MailCta.astro';
 const eventos = (await getCollection('eventos')).sort((a, b) => a.data.date.valueOf() - b.data.date.valueOf());
 const next = eventos.find((e) => e.data.status !== 'pasado')!;
 const grid = eventos.filter((e) => e.id !== next.id).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
@@ -20,10 +20,10 @@ const fmtShort = (d: Date) => d.toLocaleDateString('es-ES', { day: '2-digit', mo
     <div class="absolute inset-0 bg-gradient-to-b from-cobalt/20 via-cobalt/55 to-cobalt"></div>
     <div class="container-x relative flex min-h-[calc(100vh-64px)] flex-col justify-end pb-16 pt-24">
       <span class="eyebrow inline-flex w-fit max-w-full items-center gap-2 rounded-full border border-white/40 bg-cobalt/40 px-3 py-2 text-lavender normal-case backdrop-blur"><span class="h-1.5 w-1.5 rounded-full bg-white"></span>Inscripciones abiertas · Curso {site.course}</span>
-      <h1 class="display mt-8 max-w-6xl text-[clamp(52px,9.5vw,152px)]" data-split data-cms="site.claim" data-cms-suffix="_">Piensa diferente, actúa con propósito_</h1>
+      <h1 class="display mt-8 max-w-6xl text-[clamp(52px,9.5vw,152px)]" data-split>Piensa diferente, actúa con propósito_</h1>
       <div class="mt-10 grid gap-10 md:grid-cols-[1fr_auto] md:items-end">
         <div class="max-w-xl">
-          <p class="text-xl leading-snug text-lavender md:text-2xl" data-cms="site.description">La asociación de emprendedores de la Universidad Carlos III de Madrid. Eventos, comunidad y proyectos para pasar de la idea a algo real.</p>
+          <p class="text-xl leading-snug text-lavender md:text-2xl">La asociación de emprendedores de la Universidad Carlos III de Madrid. Eventos, comunidad y proyectos para pasar de la idea a algo real.</p>
           <div class="mt-8 flex flex-wrap gap-3">
             <a href="/unete" class="btn btn-on-blue">Apuntarme a Start <span class="font-mono">→</span></a>
             <a href="/eventos" class="btn btn-outline text-white">Ver eventos</a>
@@ -174,12 +174,7 @@ const fmtShort = (d: Date) => d.toLocaleDateString('es-ES', { day: '2-digit', mo
         <span class="eyebrow text-lavender">Contacto</span>
         <h3 class="display mt-3 text-[clamp(28px,3.5vw,44px)]">Escríbenos_</h3>
         <div class="mt-6">
-          <Form name="contacto" dark submit="Enviar" fields={[
-            { name: 'nombre', label: 'Nombre', required: true },
-            { name: 'email', label: 'Email', type: 'email', required: true },
-            { name: 'asunto', label: 'Asunto', type: 'select', options: ['Quiero entrar en Start', 'Un evento', 'Patrocinio', 'Tengo una startup', 'Otra cosa'] },
-            { name: 'mensaje', label: 'Mensaje', type: 'textarea', full: true, required: true },
-          ]} />
+          <MailCta dark subject="Contacto desde la web" />
         </div>
       </div>
     </div>
