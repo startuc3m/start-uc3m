@@ -1,0 +1,43 @@
+---
+import Placeholder from '../components/Placeholder.astro';
+import { asset } from '../lib/url';
+import Base from '../layouts/Base.astro';
+import { site } from '../lib/site';
+const tiers = ['Partner', 'Evento', 'Colaborador'].map((t) => [t === 'Evento' ? 'Patrocinio de evento' : t === 'Partner' ? 'Partners fijos' : 'Colaboradores', site.sponsors.filter((s) => s.tier === t)] as const);
+---
+<Base title="Patrocinadores" tone="dark">
+  <section class="relative overflow-hidden bg-cobalt text-white">
+    <Placeholder class="absolute inset-0 h-full w-full object-cover opacity-60 mix-blend-luminosity" />
+    <div class="absolute inset-0 bg-gradient-to-b from-cobalt/30 via-cobalt/60 to-cobalt"></div>
+    <div class="container-x relative flex min-h-[60vh] flex-col justify-end pb-16 pt-24">
+      <span class="eyebrow text-lavender">Patrocinadores · Curso {site.course}</span>
+      <h1 class="display mt-4 max-w-5xl text-[clamp(44px,8vw,120px)]" data-split>Gracias a quienes lo hacen posible_</h1>
+      <p class="mt-8 max-w-2xl text-xl text-lavender">Las empresas que apoyan a Start UC3M este curso. Sin ellas no hay Buildathon, ni StartXperience, ni Start Camp.</p>
+    </div>
+  </section>
+
+  <section class="container-x py-20">
+    {tiers.map(([t, list]) => list.length > 0 && (
+      <div class="border-t border-line py-12" data-reveal>
+        <div class="flex items-baseline justify-between"><span class="eyebrow text-cobalt">{t}</span><span class="mono opacity-50">{list.length}</span></div>
+        <ul class={`mt-8 grid gap-6 sm:grid-cols-2 ${t === 'Partners fijos' ? 'md:grid-cols-2' : 'md:grid-cols-4'}`} data-stagger>
+          {list.map((s) => (
+            <li class={`grid place-items-center rounded-brand border border-line bg-white transition-transform hover:-translate-y-1 ${t === 'Partners fijos' ? 'aspect-[3/1.4] p-12' : 'aspect-[3/2] p-8'}`} data-reveal>
+              {s.logo ? <img src={asset(s.logo)} alt={s.name} class={`w-auto max-w-full object-contain ${t === 'Partners fijos' ? 'max-h-28' : 'max-h-16'}`} loading="lazy" /> : <span class="text-2xl font-bold uppercase tracking-wider text-cobalt">{s.name}</span>}
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
+
+    <div class="mt-8 grid gap-0 overflow-hidden rounded-brand bg-cobalt text-white md:grid-cols-[1fr_1fr]" data-reveal>
+      <div class="relative aspect-[4/3] md:aspect-auto"><Placeholder class="absolute inset-0 h-full w-full object-cover" alt="Puerta de Toledo, Madrid" /></div>
+      <div class="p-10 md:p-16">
+        <span class="eyebrow text-lavender">Para empresas</span>
+        <h2 class="display mt-3 text-[clamp(32px,4vw,56px)]" data-split>¿Quieres aparecer aquí?</h2>
+        <p class="mt-4 text-lavender">Partner fijo, patrocinio de un evento o colaboración en especie. Te contamos cifras, formatos y qué se lleva tu marca.</p>
+        <div class="mt-8 flex flex-wrap gap-3"><a href="/patrocina" class="btn btn-on-blue">Ver media kit <span class="font-mono">→</span></a><a href="/patrocina#contacto" class="btn btn-outline text-white">Hablar con Partnerships</a></div>
+      </div>
+    </div>
+  </section>
+</Base>
