@@ -1,0 +1,22 @@
+---
+import Placeholder from '../components/Placeholder.astro';
+import Base from '../layouts/Base.astro';
+import Logo from '../components/Logo.astro';
+import { asset } from '../lib/url';
+---
+<Base title="404" tone="dark">
+  <section class="relative overflow-hidden bg-cobalt text-white">
+    <Placeholder class="absolute inset-0 h-full w-full object-cover opacity-30 mix-blend-luminosity" />
+    <div class="absolute inset-0 bg-gradient-to-b from-cobalt/40 to-cobalt"></div>
+    <div class="container-x relative flex min-h-[80vh] flex-col justify-center py-20">
+      <Logo tone="white" size={40} />
+      <span class="eyebrow mt-12 text-lavender">Error 404</span>
+      <h1 class="display mt-4 text-[clamp(64px,16vw,240px)]" data-split>404_</h1>
+      <p class="mt-6 max-w-md text-xl text-lavender" data-reveal>Esta página no existe todavía. Como casi todo en Start: se construye.</p>
+      <div class="mt-8 flex flex-wrap gap-3" data-reveal>
+        <a href="/" class="btn btn-on-blue">Volver al inicio <span class="font-mono">→</span></a>
+        <a href="/eventos" class="btn btn-outline text-white">Ver eventos</a>
+      </div>
+    </div>
+  </section>
+</Base>

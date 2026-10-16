@@ -63,6 +63,7 @@ async function main() {
     '/api/membership/checkout': (await import('../api/membership/checkout.mjs')).default,
     '/api/membership/telefono': (await import('../api/membership/telefono.mjs')).default,
     '/api/stripe/webhook': (await import('../api/stripe/webhook.mjs')).default,
+    '/api/contacto': (await import('../api/contacto.mjs')).default,
   };
 
   const server = http.createServer(async (req, res) => {
