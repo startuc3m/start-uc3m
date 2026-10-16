@@ -82,6 +82,10 @@ export default function Privacidad() {
             tarjeta</strong>: el cobro lo gestiona Stripe íntegramente y nosotros nunca
             llegamos a verlos.
           </p>
+          <p>
+            Si nos escribes por el <strong>formulario de contacto o de patrocinio</strong>,
+            recogemos tu nombre, tu email, la empresa (si la indicas) y tu mensaje.
+          </p>
         </section>
 
         <section>
@@ -100,6 +104,10 @@ export default function Privacidad() {
               consentimiento. Ten en cuenta que, al entrar en un grupo, el resto de
               participantes verá tu número: si prefieres no aparecer, no nos lo facilites o
               dinos que te demos de baja del grupo.
+            </li>
+            <li>
+              <strong>Responder a lo que nos escribes por el formulario.</strong> La base
+              legal es tu consentimiento, que das al enviarlo.
             </li>
             <li>
               <strong>Cumplir nuestras obligaciones contables.</strong> La base legal es el
@@ -136,13 +144,18 @@ export default function Privacidad() {
                 </tr>
                 <tr>
                   <td>Resend</td>
-                  <td>Envío del correo de bienvenida</td>
+                  <td>Envío del correo de bienvenida y de los mensajes del formulario de contacto</td>
                   <td>UE / EE. UU.</td>
                 </tr>
                 <tr>
                   <td>Notion</td>
                   <td>Gestión interna del listado de socios</td>
                   <td>EE. UU.</td>
+                </tr>
+                <tr>
+                  <td>Google (Gmail)</td>
+                  <td>Buzón donde recibimos los mensajes del formulario</td>
+                  <td>UE / EE. UU.</td>
                 </tr>
                 <tr>
                   <td>Vercel</td>
@@ -163,7 +176,8 @@ export default function Privacidad() {
           <p>
             Mantenemos tus datos mientras seas socio. Después los conservamos solo el
             tiempo necesario para atender posibles responsabilidades legales y contables, y
-            luego los eliminamos.
+            luego los eliminamos. Los mensajes del formulario de contacto los conservamos
+            el tiempo necesario para atender tu consulta.
           </p>
         </section>
 

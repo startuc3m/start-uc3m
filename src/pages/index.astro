@@ -6,7 +6,7 @@ import PodcastTrack from '../components/PodcastTrack.astro';
 import SponsorTicker from '../components/SponsorTicker.astro';
 import { eventos as publicados, posts as postsPublicados, blogVisible } from '../lib/content';
 import { site } from '../lib/site';
-import MailCta from '../components/MailCta.astro';
+import ContactForm from '../components/ContactForm.astro';
 const eventos = await publicados();
 const next = eventos.find((e) => e.data.status !== 'pasado')!;
 const grid = eventos.filter((e) => e.id !== next.id).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
@@ -178,7 +178,7 @@ const fmtShort = (d: Date) => d.toLocaleDateString('es-ES', { day: '2-digit', mo
         <span class="eyebrow text-lavender">Contacto</span>
         <h3 class="display mt-3 text-[clamp(28px,3.5vw,44px)]">Escríbenos_</h3>
         <div class="mt-6">
-          <MailCta dark subject="Contacto desde la web" />
+          <ContactForm dark />
         </div>
       </div>
     </div>

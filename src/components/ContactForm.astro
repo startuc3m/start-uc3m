@@ -1,0 +1,56 @@
+---
+// Formulario de contacto o patrocinio (#33): POST a api/contacto.mjs, que
+// manda un correo al buzón de Start. Si el envío falla se dice y se da el
+// email, nunca se responde "recibido" sin haber enviado.
+import { site } from '../lib/site';
+const { form = 'contacto', dark = false } = Astro.props as { form?: 'contacto' | 'patrocinio'; dark?: boolean };
+const input = `w-full rounded-brand border px-4 py-3 text-base outline-none focus:ring-2 ${dark ? 'border-white/40 bg-transparent text-white placeholder:text-lavender/60 focus:ring-white' : 'border-line bg-white text-ink focus:ring-cobalt'}`;
+const label = 'flex flex-col gap-2';
+---
+<form data-contacto={form} class="grid gap-5 md:grid-cols-2" novalidate>
+  <input type="text" name="website" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true" />
+  <label class={label}><span class="mono">Nombre *</span><input name="nombre" required minlength="2" maxlength="100" autocomplete="name" class={input} /></label>
+  <label class={label}><span class="mono">Email *</span><input name="email" type="email" required autocomplete="email" class={input} /></label>
+  {form === 'patrocinio'
+    ? <label class={`${label} md:col-span-2`}><span class="mono">Empresa</span><input name="empresa" maxlength="150" autocomplete="organization" class={input} /></label>
+    : <label class={`${label} md:col-span-2`}><span class="mono">Asunto</span><input name="asunto" maxlength="150" class={input} /></label>}
+  <label class={`${label} md:col-span-2`}><span class="mono">Mensaje *</span><textarea name="mensaje" required minlength="10" maxlength="4000" rows="5" class={input}></textarea></label>
+  <label class="flex items-start gap-3 text-sm md:col-span-2"><input type="checkbox" name="privacidad" required class="mt-1" /><span>He leído la <a href="/privacidad" class="underline">política de privacidad</a> y acepto que Start UC3M use estos datos para responderme.</span></label>
+  <div class="flex flex-wrap items-center gap-4 md:col-span-2">
+    <button class={`btn ${dark ? 'btn-on-blue' : 'btn-primary'}`}>Enviar <span class="font-mono">→</span></button>
+    <p data-estado class="text-sm font-semibold" aria-live="polite"></p>
+  </div>
+</form>
+<script define:vars={{ email: site.email }}>
+  const errores = {
+    INVALID_NAME: 'Escribe tu nombre.',
+    INVALID_EMAIL: 'Revisa el email.',
+    INVALID_MESSAGE: 'El mensaje es demasiado corto.',
+    PRIVACY_REQUIRED: 'Tienes que aceptar la política de privacidad.',
+    RATE_LIMITED: 'Has enviado varios mensajes seguidos. Prueba en unos minutos.',
+  };
+  const fallo = `No hemos podido enviarlo. Escríbenos directamente a ${email}.`;
+  document.querySelectorAll('form[data-contacto]').forEach((f) => {
+    f.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const estado = f.querySelector('[data-estado]');
+      if (!f.reportValidity()) return;
+      const boton = f.querySelector('button');
+      const datos = Object.fromEntries(new FormData(f));
+      datos.form = f.dataset.contacto;
+      datos.privacidad = f.elements.privacidad.checked;
+      boton.disabled = true;
+      estado.textContent = 'Enviando…';
+      try {
+        const r = await fetch('/api/contacto', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datos) });
+        const j = await r.json().catch(() => ({}));
+        if (r.ok) { estado.textContent = '¡Recibido! Te respondemos lo antes posible.'; f.reset(); }
+        else estado.textContent = errores[j.error] || fallo;
+      } catch {
+        estado.textContent = fallo;
+      } finally {
+        boton.disabled = false;
+      }
+    });
+  });
+</script>
