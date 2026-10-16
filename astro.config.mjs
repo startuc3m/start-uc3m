@@ -2,6 +2,7 @@
 import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
+import react from '@astrojs/react';
 
 // Web 100% estática, sin adaptador: Vercel sirve dist/ y, aparte, las
 // funciones de socios de api/ (igual que con la web de CRA). Si hiciera
@@ -10,7 +11,9 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://startuc3m.es',
   output: 'static',
-  integrations: [sitemap()],
+  // react: solo para las páginas de socios y privacidad (src/socios), que
+  // vienen de la web anterior y se montan tal cual como islas.
+  integrations: [sitemap(), react()],
   vite: {
     plugins: [tailwindcss()],
     // Solo en `npm run dev`: las funciones de api/ las levanta `npm run dev:api`
