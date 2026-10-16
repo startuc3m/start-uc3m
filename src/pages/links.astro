@@ -4,7 +4,8 @@ import Placeholder from '../components/Placeholder.astro';
 import '../styles/global.css';
 import Logo from '../components/Logo.astro';
 import { site } from '../lib/site';
-import { blogVisible } from '../lib/content';
+import { blogVisible, eventos } from '../lib/content';
+const next = (await eventos()).find((e) => e.data.status !== 'pasado');
 const links = (await blogVisible()) ? site.links : site.links.filter((l) => l.href !== '/blog');
 import { asset } from '../lib/url';
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
@@ -19,16 +20,18 @@ const ogImage = `${siteOrigin}${base}/brand/logo-full-cobalt.png`;
 <body class="bg-cobalt text-white" style="background:#2b3a91">
   <main class="mx-auto flex min-h-screen max-w-md flex-col px-5 py-12">
     <div class="flex flex-col items-center gap-2"><Logo tone="white" size={72} full /></div>
-    <p class="eyebrow mt-8 text-center text-lavender">Inscripciones abiertas · Curso {site.course}</p>
-    <a href="/eventos/buildathon-pitchless-nomulabs" class="group relative mt-6 block aspect-[16/10] overflow-hidden rounded-brand bg-cobalt-deep">
-      <Placeholder class="absolute inset-0 h-full w-full object-cover opacity-80 transition-transform duration-700 group-hover:scale-105" />
-      <div class="absolute inset-0 bg-gradient-to-t from-navy via-navy/30 to-transparent"></div>
-      <div class="absolute inset-x-0 bottom-0 p-4">
-        <span class="mono rounded-full bg-white px-2.5 py-1 text-cobalt">Próximo evento · 17 sep</span>
-        <p class="display mt-2 text-2xl">Buildathon Pitchless × NomuLabs</p>
-        <p class="text-sm text-lavender">18:00 · Puerta de Toledo · Reservar plaza →</p>
-      </div>
-    </a>
+    <p class="eyebrow mt-8 text-center text-lavender">Asociación de emprendedores · UC3M</p>
+    {next && (
+      <a href={`/eventos/${next.id}`} class="group relative mt-6 block aspect-[16/10] overflow-hidden rounded-brand bg-cobalt-deep">
+        <Placeholder class="absolute inset-0 h-full w-full object-cover opacity-80 transition-transform duration-700 group-hover:scale-105" />
+        <div class="absolute inset-0 bg-gradient-to-t from-navy via-navy/30 to-transparent"></div>
+        <div class="absolute inset-x-0 bottom-0 p-4">
+          <span class="mono rounded-full bg-white px-2.5 py-1 text-cobalt">Próximo evento · {next.data.date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}</span>
+          <p class="display mt-2 text-2xl">{next.data.title}</p>
+          <p class="text-sm text-lavender">{next.data.place} · Ver evento →</p>
+        </div>
+      </a>
+    )}
     <ul class="mt-4 flex flex-col gap-3">
       {links.map((l) => <li><a href={l.href} class={`flex items-center justify-between rounded-brand px-5 py-4 text-lg font-semibold ${l.featured ? 'bg-white text-cobalt' : 'border border-white/50'}`}>{l.label}<span class="font-mono">→</span></a></li>)}
     </ul>

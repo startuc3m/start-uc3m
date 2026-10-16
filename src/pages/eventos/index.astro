@@ -85,3 +85,12 @@ const fmtLong = (d: Date) => d.toLocaleDateString('es-ES', { weekday: 'long', da
     </div>
   </section>
 </Base>
+<script is:inline>
+  // La web anterior tenía todos los eventos en /eventos con anclas (#36).
+  // Los enlaces antiguos (Instagram, correos, QR) llevan ahora a cada ficha.
+  (function () {
+    var fichas = { 'buildathon-welcome-start': 'buildathon-welcome-start', startxperience: 'startxperience', 'lovable-hackathon': 'lovable-hackathon' };
+    var id = location.hash.slice(1);
+    if (fichas[id]) location.replace('/eventos/' + fichas[id]);
+  })();
+</script>
