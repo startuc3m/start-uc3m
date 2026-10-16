@@ -1,16 +1,15 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
-import node from '@astrojs/node';
+import vercel from '@astrojs/vercel';
 import sitemap from '@astrojs/sitemap';
 
-// Todo se prerenderiza en estático salvo /api/* (formularios), que corre en Node.
+// Todo se prerenderiza en estático. Las funciones de socios siguen en api/
+// (funciones de Vercel), fuera de Astro.
 export default defineConfig({
-  // En GitHub Pages la web cuelga de /WebStartUC3M (BASE_PATH lo pone el workflow).
-  site: process.env.SITE_URL ?? 'https://www.startuc3m.es',
-  base: process.env.BASE_PATH ?? '/',
+  site: 'https://startuc3m.es',
   output: 'static',
-  adapter: node({ mode: 'standalone' }),
+  adapter: vercel(),
   integrations: [sitemap()],
   vite: { plugins: [tailwindcss()] },
 });

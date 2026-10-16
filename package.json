@@ -1,5 +1,5 @@
 {
-  "name": "webstartuc3m",
+  "name": "start-uc3m",
   "type": "module",
   "version": "0.0.1",
   "engines": {
@@ -10,16 +10,30 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "export:submissions": "node scripts/export-submissions.mjs"
+    "dev:api": "node db/dev-api.js",
+    "db:load": "node db/load-schema.js",
+    "test:db": "node db/test-schema.js",
+    "test:api": "node db/test-api.js",
+    "test:socios": "node db/test-schema.js && node db/test-api.js",
+    "test:notion": "node db/test-notion.js",
+    "test:email": "node db/test-email.js",
+    "test:stripe": "node db/test-stripe.js",
+    "test:e2e": "node db/test-e2e.js",
+    "invitar": "node db/invitar.js",
+    "corregir-email": "node db/corregir-email.js",
+    "pedir-telefonos": "node db/pedir-telefonos.js"
   },
   "dependencies": {
-    "@astrojs/node": "^11.1.6",
     "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.4",
+    "@astrojs/vercel": "11.0.11",
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.3.3",
     "gsap": "^3.15.0",
     "lenis": "^1.3.26",
+    "pg": "^8.23.0",
+    "resend": "^6.28.1",
+    "stripe": "^22.6.2",
     "tailwindcss": "^4.3.3",
     "zod": "^4.6.5"
   },
