@@ -3,7 +3,7 @@ import Placeholder from '../../components/Placeholder.astro';
 import Base from '../../layouts/Base.astro';
 import { render } from 'astro:content';
 import { eventos } from '../../lib/content';
-import { eventToIcs, icsDataHref, eventStartDate } from '../../lib/ics';
+import { eventToIcs, icsDataHref, eventStartDate, hasClockTime } from '../../lib/ics';
 import { site } from '../../lib/site';
 import { asset } from '../../lib/url';
 export async function getStaticPaths() {
@@ -16,13 +16,13 @@ const open = e.data.status === 'abierto';
 const soldOut = e.data.status === 'sold-out';
 const past = e.data.status === 'pasado';
 const sponsorLogos = e.data.sponsors.map((n) => site.sponsors.find((s) => s.name.toLowerCase() === n.toLowerCase()) ?? { name: n });
-const icsHref = icsDataHref(eventToIcs({ title: e.data.title, description: e.data.subtitle, location: e.data.place, date: e.data.date, time: e.data.time }));
+const icsHref = icsDataHref(eventToIcs({ title: e.data.title, description: e.data.subtitle, location: e.data.place, date: e.data.date, time: e.data.time, days: e.data.days }));
 const eventJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Event',
   name: e.data.title,
   description: e.data.subtitle,
-  startDate: eventStartDate(e.data.date, e.data.time).toISOString(),
+  startDate: hasClockTime(e.data.time) ? eventStartDate(e.data.date, e.data.time).toISOString() : e.data.date.toISOString().slice(0, 10),
   eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
   eventStatus: 'https://schema.org/EventScheduled',
   location: { '@type': 'Place', name: e.data.place, address: e.data.place },
@@ -42,17 +42,18 @@ const eventJsonLd = {
         <p class="mt-6 max-w-xl text-2xl text-lavender">{e.data.subtitle}</p>
         <ul class="mt-8 flex flex-wrap gap-2">{e.data.tags.map((t) => <li class="mono rounded-full border border-white/40 px-3 py-2">{t}</li>)}</ul>
       </div>
-      <dl class="flex flex-col gap-5 rounded-brand border border-white/20 bg-cobalt/50 p-6 backdrop-blur md:text-right" data-reveal>
-        <div><dt class="eyebrow text-lavender/70">Fecha</dt><dd class="text-2xl font-semibold capitalize">{fmt(e.data.date)} · {e.data.time}</dd></div>
+      <div class="flex flex-col gap-5" data-reveal>
+      <dl class="flex flex-col gap-5 rounded-brand border border-white/20 bg-cobalt/50 p-6 backdrop-blur md:text-right">
+        <div><dt class="eyebrow text-lavender/70">Fecha</dt><dd class="text-2xl font-semibold  first-letter:uppercase">{fmt(e.data.date)} · {e.data.time}</dd></div>
         <div><dt class="eyebrow text-lavender/70">Lugar</dt><dd class="text-2xl font-semibold">{e.data.place}</dd></div>
-        <div><dt class="eyebrow text-lavender/70">Plazas</dt><dd class="text-2xl font-semibold">{past ? 'Evento celebrado' : soldOut ? 'Sold out' : e.data.seats ? `${e.data.seats}` : 'Limitadas'}</dd></div>
-        <div class="flex flex-wrap gap-3 md:justify-end">
-          {open && <a href="#inscripcion" class="btn btn-on-blue">Reservar plaza <span class="font-mono">→</span></a>}
-          {soldOut && <a href="#lista-espera" class="btn btn-on-blue">Lista de espera <span class="font-mono">→</span></a>}
+        {(past || soldOut || e.data.seats) && <div><dt class="eyebrow text-lavender/70">Plazas</dt><dd class="text-2xl font-semibold">{past ? 'Evento celebrado' : soldOut ? 'Sold out' : e.data.seats}</dd></div>}
+      </dl>
+      <div class="flex flex-wrap gap-3 md:justify-end">
+          {open && <a href="#inscripcion" class="btn btn-on-blue">{e.data.external ? 'Reservar plaza' : 'Inscripción'} <span class="font-mono">→</span></a>}
           {!past && <a href={icsHref} download={`${e.id}.ics`} class="btn btn-outline text-white">Añadir al calendario <span class="font-mono">＋</span></a>}
           {past && <a href="/eventos" class="btn btn-outline text-white">Ver próximos eventos</a>}
-        </div>
-      </dl>
+      </div>
+      </div>
     </div>
   </section>
 

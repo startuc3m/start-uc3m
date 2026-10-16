@@ -5,7 +5,8 @@ subtitle: "Dos días para pasar de idea a proyecto con mentores, jurado y premio
 # Pendiente de Eventos (#44): lugar, horario, precio, premios y enlace de
 # inscripción (se venderá por Neonpass: añadirlo en `external`).
 date: 2026-11-07
-time: "2 días · 7 y 8 de noviembre"
+days: 2
+time: "2 días"
 place: "Lugar por confirmar"
 type: "Campamento"
 status: abierto

@@ -44,7 +44,7 @@ const fmtLong = (d: Date) => d.toLocaleDateString('es-ES', { weekday: 'long', da
               <span class="eyebrow text-lavender">{e.data.type} · {e.data.place}</span>
               <h3 class="display mt-3 text-[clamp(30px,3.5vw,52px)]">{e.data.title}</h3>
               <p class="mt-3 text-lg text-lavender">{e.data.subtitle}.</p>
-              <p class="mono mt-4 text-lavender/70 capitalize">{fmtLong(e.data.date)} · {e.data.time}</p>
+              <p class="mono mt-4 text-lavender/70  first-letter:uppercase">{fmtLong(e.data.date)} · {e.data.time}</p>
               <ul class="mt-5 flex flex-wrap gap-2">{e.data.tags.slice(0, 4).map((t) => <li class="mono rounded-full border border-white/30 px-3 py-1.5">{t}</li>)}</ul>
             </div>
             <div class="flex items-center justify-between">

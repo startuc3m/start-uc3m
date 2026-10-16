@@ -16,17 +16,30 @@ export function eventStartDate(date: Date, time: string): Date {
 }
 
 // Genera un archivo .ics (RFC 5545) para el botón "Añadir al calendario" de la ficha de evento.
+// "18:00" es una hora; cualquier otra cosa ("2 días · 7 y 8 de noviembre") es un evento de día completo.
+export const hasClockTime = (time: string) => /^\d{1,2}:\d{2}$/.test(time.trim());
+
 export function eventToIcs(event: {
   title: string;
   description: string;
   location: string;
   date: Date;
   time: string;
+  days?: number;
   durationHours?: number;
 }): string {
-  const start = eventStartDate(event.date, event.time);
-  const end = new Date(start.getTime() + (event.durationHours ?? 3) * 60 * 60 * 1000);
   const fmt = (d: Date) => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+  const day = (d: Date) => d.toISOString().slice(0, 10).replace(/-/g, '');
+  let when: string[];
+  if (hasClockTime(event.time)) {
+    const start = eventStartDate(event.date, event.time);
+    const end = new Date(start.getTime() + (event.durationHours ?? 3) * 60 * 60 * 1000);
+    when = [`DTSTART:${fmt(start)}`, `DTEND:${fmt(end)}`];
+  } else {
+    // DTEND de un evento de día completo es el día siguiente al último (no inclusivo).
+    const end = new Date(event.date.getTime() + (event.days ?? 1) * 24 * 60 * 60 * 1000);
+    when = [`DTSTART;VALUE=DATE:${day(event.date)}`, `DTEND;VALUE=DATE:${day(end)}`];
+  }
   const esc = (s: string) => s.replace(/[\\,;]/g, (c) => '\\' + c).replace(/\n/g, '\\n');
 
   return [
@@ -37,8 +50,7 @@ export function eventToIcs(event: {
     'BEGIN:VEVENT',
     `UID:${crypto.randomUUID()}@startuc3m.es`,
     `DTSTAMP:${fmt(new Date())}`,
-    `DTSTART:${fmt(start)}`,
-    `DTEND:${fmt(end)}`,
+    ...when,
     `SUMMARY:${esc(event.title)}`,
     `DESCRIPTION:${esc(event.description)}`,
     `LOCATION:${esc(event.location)}`,
