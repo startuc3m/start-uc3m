@@ -95,8 +95,8 @@ export const site = {
   ],
   pillars: [
     { title: 'Eventos', desc: 'Buildathon, hackathones, StartXperience, Start Camp: formatos pensados para construir, no para escuchar.' },
-    { title: 'Comunidad', desc: 'Más de 3.000 estudiantes, alumni que hoy fundan e invierten, y empresas que apoyan cada curso.' },
-    { title: 'Proyectos', desc: 'Acompañamos a los equipos que quieren sacar su proyecto adelante sin esperar a terminar la carrera.' },
+    { title: 'Comunidad', desc: 'Más de 3.000 estudiantes y las empresas que apoyan cada curso.' },
+    { title: 'Proyectos', desc: 'Formatos para pasar de una idea a un prototipo, y gente con quien hacerlo, sin esperar a terminar la carrera.' },
   ],
   links: [
     { label: 'Hazte socio', href: '/socios' },
