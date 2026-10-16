@@ -3,7 +3,6 @@ title: "Cómo entrar en Start: proceso, departamentos y FAQs"
 excerpt: "Qué buscamos, cómo es el proceso de entrada y qué hace cada uno de los ocho departamentos."
 date: 2026-09-03
 category: Comunidad
-cover: "/media/blog/como-entrar-en-start.jpg"
 ---
 Cada septiembre nos llega la misma pregunta por Instagram: "¿cómo se entra en Start?". Aquí va la respuesta completa.
 

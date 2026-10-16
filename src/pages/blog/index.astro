@@ -1,4 +1,5 @@
 ---
+import Placeholder from '../../components/Placeholder.astro';
 import Base from '../../layouts/Base.astro';
 import PageHead from '../../components/PageHead.astro';
 import { getCollection } from 'astro:content';
@@ -8,7 +9,6 @@ const cats = ['Todas', 'Eventos', 'Comunidad', 'Recursos', 'Prensa'];
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const [first, ...rest] = posts;
 const fmt = (d: Date) => d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
-const cover = (c?: string) => (c && c.startsWith('http') ? c : asset(c ?? '/media/equipo/pedro_rodriguez.jpg'));
 ---
 <Base title="Blog" tone="dark">
   <PageHead eyebrow="Blog" title="Lo último de la comunidad" intro="Crónicas de eventos, cómo entrar en Start, lo que pasa en el ecosistema y prensa. Escrito por el equipo de Comunicación.">
@@ -23,7 +23,7 @@ const cover = (c?: string) => (c && c.startsWith('http') ? c : asset(c ?? '/medi
     {first && (
       <a href={`/blog/${first.id}`} class="group grid gap-8 md:grid-cols-[1.3fr_1fr] md:items-center" data-reveal data-cat={first.data.category}>
         <div class="relative aspect-[16/10] overflow-hidden rounded-brand bg-cobalt">
-          <img src={cover(first.data.cover)} alt="" class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+          <Placeholder class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
           <span class="mono absolute left-4 top-4 rounded-full bg-navy/70 px-3 py-1.5 text-lavender backdrop-blur">Último</span>
         </div>
         <div>
@@ -43,7 +43,7 @@ const cover = (c?: string) => (c && c.startsWith('http') ? c : asset(c ?? '/medi
       {rest.map((p) => (
         <a href={`/blog/${p.id}`} class="group" data-reveal data-cat={p.data.category}>
           <div class="relative aspect-[16/10] overflow-hidden rounded-brand bg-cobalt">
-            <img src={cover(p.data.cover)} alt="" class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />
+            <Placeholder class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
           </div>
           <span class="eyebrow mt-4 block text-cobalt">{p.data.category} · {fmt(p.data.date)}</span>
           <h2 class="mt-2 text-2xl font-bold leading-tight group-hover:underline">{p.data.title}</h2>

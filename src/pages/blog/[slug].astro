@@ -1,4 +1,5 @@
 ---
+import Placeholder from '../../components/Placeholder.astro';
 import Base from '../../layouts/Base.astro';
 import { getCollection, render } from 'astro:content';
 import { asset } from '../../lib/url';
@@ -7,7 +8,6 @@ export async function getStaticPaths() {
 }
 const { p } = Astro.props;
 const { Content } = await render(p);
-const cover = (c?: string) => (c && c.startsWith('http') ? c : asset(c ?? '/media/equipo/pedro_rodriguez.jpg'));
 const fmt = (d: Date) => d.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
 const more = (await getCollection('blog')).filter((x) => !x.data.draft && x.id !== p.id).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()).slice(0, 3);
 const articleJsonLd = {
@@ -24,7 +24,7 @@ const articleJsonLd = {
   <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
   <!-- Hero: portada a sangre bajo un degradado cobalto -->
   <section class="relative overflow-hidden bg-cobalt text-white">
-    <img src={cover(p.data.cover)} alt="" class="absolute inset-0 h-full w-full object-cover opacity-50 mix-blend-luminosity" data-parallax="6" aria-hidden="true" />
+    <Placeholder class="absolute inset-0 h-full w-full object-cover opacity-50 mix-blend-luminosity" />
     <div class="absolute inset-0 bg-gradient-to-b from-cobalt/30 via-cobalt/70 to-cobalt"></div>
     <div class="container-x relative flex min-h-[60vh] flex-col justify-end pb-16 pt-24">
       <span class="eyebrow text-lavender">{p.data.category} · {fmt(p.data.date)} · {p.data.author}</span>
@@ -51,7 +51,7 @@ const articleJsonLd = {
         <div class="mt-10 grid gap-8 md:grid-cols-3" data-stagger>
           {more.map((m) => (
             <a href={`/blog/${m.id}`} class="group" data-reveal>
-              <div class="relative aspect-[16/10] overflow-hidden rounded-brand bg-cobalt"><img src={cover(m.data.cover)} alt="" class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" /></div>
+              <div class="relative aspect-[16/10] overflow-hidden rounded-brand bg-cobalt"><Placeholder class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" /></div>
               <span class="eyebrow mt-4 block text-cobalt">{m.data.category} · {m.data.date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}</span>
               <h3 class="mt-2 text-2xl font-bold leading-tight group-hover:underline">{m.data.title}</h3>
             </a>

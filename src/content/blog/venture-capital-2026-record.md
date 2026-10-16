@@ -3,7 +3,6 @@ title: "412.700 millones en seis meses: el capital riesgo en EE. UU. bate todos 
 excerpt: "El primer semestre de 2026 ha sido el mayor de la historia para el venture capital estadounidense. El 86 % del dinero fue a empresas de IA. Qué significa para quien empieza hoy."
 date: 2026-09-12
 category: Recursos
-cover: "/media/blog/venture-capital-2026-record.jpg"
 ---
 Si te preguntabas si sigue habiendo dinero para startups, la respuesta corta es: sí, más que nunca. Pero está muy concentrado.
 

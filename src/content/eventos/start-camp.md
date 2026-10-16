@@ -9,7 +9,6 @@ status: abierto
 seats: 40
 sponsors: []
 tags: ["2 días", "Plazas limitadas", "Ediciones anteriores sold out"]
-image: "/media/leganes-campus.jpg"
 edition: "Curso 2026/27"
 highlights: ["2 días", "40 plazas", "Mentores y demos"]
 ---

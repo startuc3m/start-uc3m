@@ -3,7 +3,6 @@ title: "El Demo Day de Y Combinator ya no va de apps: va de centros de datos flo
 excerpt: "La última promoción de YC ha girado hacia el deep tech. Los inversores explican por qué y qué buscan ahora en un fundador."
 date: 2026-09-14
 category: Recursos
-cover: "/media/blog/yc-demo-day-deep-tech.jpg"
 ---
 Cada Demo Day de Y Combinator es un termómetro de hacia dónde mira Silicon Valley. El de septiembre de 2026 ha dejado una lectura clara: **menos aplicaciones, más infraestructura**.
 

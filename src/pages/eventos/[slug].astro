@@ -1,4 +1,5 @@
 ---
+import Placeholder from '../../components/Placeholder.astro';
 import Base from '../../layouts/Base.astro';
 import { getCollection, render } from 'astro:content';
 import { eventToIcs, icsDataHref, eventStartDate } from '../../lib/ics';
@@ -13,8 +14,6 @@ const fmt = (d: Date) => d.toLocaleDateString('es-ES', { weekday: 'long', day: '
 const open = e.data.status === 'abierto';
 const soldOut = e.data.status === 'sold-out';
 const past = e.data.status === 'pasado';
-const raw = e.data.image ?? '/media/starter.jpg';
-const image = raw.startsWith('http') ? raw : asset(raw);
 const sponsorLogos = e.data.sponsors.map((n) => site.sponsors.find((s) => s.name.toLowerCase() === n.toLowerCase()) ?? { name: n });
 const icsHref = icsDataHref(eventToIcs({ title: e.data.title, description: e.data.subtitle, location: e.data.place, date: e.data.date, time: e.data.time }));
 const eventJsonLd = {
@@ -33,7 +32,7 @@ const eventJsonLd = {
   <script type="application/ld+json" set:html={JSON.stringify(eventJsonLd)} />
   <!-- HERO: imagen del evento a sangre fundida con cobalto -->
   <section class="relative overflow-hidden bg-cobalt text-white">
-    <img src={image} alt="" class="absolute inset-0 h-full w-full object-cover opacity-70 mix-blend-luminosity" data-parallax="6" aria-hidden="true" />
+    <Placeholder class="absolute inset-0 h-full w-full object-cover opacity-70 mix-blend-luminosity" />
     <div class="absolute inset-0 bg-gradient-to-b from-cobalt/30 via-cobalt/65 to-cobalt"></div>
     <div class="container-x relative grid min-h-[80vh] gap-12 pb-16 pt-24 md:grid-cols-[1.4fr_1fr] md:items-end">
       <div>
@@ -99,7 +98,7 @@ const eventJsonLd = {
         </ol>
       </div>
     ) : (
-      <div class="relative aspect-[4/3] overflow-hidden rounded-brand" data-reveal><img src={image} alt="" class="absolute inset-0 h-[120%] w-full object-cover" data-parallax="8" loading="lazy" /></div>
+      <div class="relative aspect-[4/3] overflow-hidden rounded-brand" data-reveal><Placeholder class="absolute inset-0 h-[120%] w-full object-cover" /></div>
     )}
   </section>
   {open ? (

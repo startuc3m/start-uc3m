@@ -3,7 +3,6 @@ title: "Buildathon: así fue la primera tarde de build del curso"
 excerpt: "Sesenta personas, veinte prototipos y una sangriada. Crónica del arranque de temporada en Puerta de Toledo."
 date: 2026-09-18
 category: Eventos
-cover: "/media/blog/asi-fue-el-buildathon.jpg"
 ---
 Abrimos el curso construyendo. El jueves 17 de septiembre, a las 18:00, el Campus Puerta de Toledo se llenó de gente que venía con una idea, sin ella, o con ganas de robársela a alguien. Tres horas después había veinte prototipos funcionando encima de las mesas.
 

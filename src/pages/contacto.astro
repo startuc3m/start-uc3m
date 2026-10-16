@@ -1,4 +1,5 @@
 ---
+import Placeholder from '../components/Placeholder.astro';
 import Base from '../layouts/Base.astro';
 import MailCta from '../components/MailCta.astro';
 import { site } from '../lib/site';
@@ -32,7 +33,7 @@ const channels = [
   </section>
   <section class="container-x grid gap-12 py-20 md:grid-cols-[1.4fr_1fr] md:items-center">
     <div class="relative aspect-[16/9] overflow-hidden rounded-brand bg-cobalt" data-img-reveal>
-      <img src={asset('/media/location.jpg')} alt="Campus Puerta de Toledo, UC3M" class="absolute inset-0 h-[120%] w-full object-cover" data-parallax="8" loading="lazy" />
+      <Placeholder class="absolute inset-0 h-[120%] w-full object-cover" alt="Campus Puerta de Toledo, UC3M" />
       <span class="eyebrow absolute bottom-4 left-4 rounded-full bg-navy/70 px-3 py-2 text-lavender backdrop-blur">Campus Puerta de Toledo</span>
     </div>
     <div data-reveal>

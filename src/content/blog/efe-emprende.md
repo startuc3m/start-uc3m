@@ -3,7 +3,6 @@ title: "EFE Emprende: “emprendimiento y universidad no están reñidos”"
 excerpt: "Start UC3M en prensa: una organización estudiantil que acerca la innovación, el emprendimiento y el inconformismo a otros jóvenes."
 date: 2026-06-20
 category: Prensa
-cover: "/media/blog/efe-emprende.jpg"
 ---
 La agencia EFE dedicó un reportaje a Start UC3M bajo un titular que resume bien lo que intentamos demostrar cada curso: que emprendimiento y universidad no están reñidos.
 

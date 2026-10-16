@@ -13,7 +13,6 @@ agenda:
   - { time: "10:30", title: "Inauguración institucional", desc: "Apertura con la universidad y los partners." }
   - { time: "12:00", title: "Referentes emprendedores", desc: "Referentes emprendedores inspiran a la comunidad universitaria." }
   - { time: "18:00", title: "Networking + últimas votaciones", desc: "Cierre con votaciones a los mejores proyectos." }
-image: "/media/puerta-toledo-1.jpg"
 edition: "Curso 2025/26"
 highlights: ["300 asistentes", "Inversores e incubadoras", "Votación final"]
 ---

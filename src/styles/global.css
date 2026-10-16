@@ -102,3 +102,8 @@ header.sticky { transition: transform .35s cubic-bezier(.2,.7,.2,1); }
   .adm-toast.show { @apply translate-y-0 opacity-100; }
   .adm-toast-err { @apply bg-red-600; }
 }
+
+/* Placeholder de imagen (#17): cobalto con el wordmark de Start muy tenue. */
+.ph { background: linear-gradient(135deg, var(--color-cobalt) 0%, var(--color-cobalt-deep) 100%); overflow: hidden; }
+.ph:not(.absolute):not(.fixed) { position: relative; }
+.ph::after { content: ''; position: absolute; inset: 0; background: url('/brand/logo-wordmark-white.png') center / min(45%, 220px) no-repeat; opacity: .14; }

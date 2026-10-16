@@ -1,0 +1,6 @@
+---
+// Hueco de imagen con la marca mientras no tengamos las fotos oficiales del
+// Drive (#17, #41). Recibe las mismas clases que tendría el <img>.
+const { class: cls = '', alt = '' } = Astro.props as { class?: string; alt?: string };
+---
+{alt ? <div class:list={['ph', cls]} role="img" aria-label={alt}></div> : <div class:list={['ph', cls]} aria-hidden="true"></div>}

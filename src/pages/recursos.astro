@@ -1,4 +1,5 @@
 ---
+import Placeholder from '../components/Placeholder.astro';
 const ways = [
   { t: 'Ven a los eventos', d: 'Buildathon, hackathones, StartXperience, Start Camp. Abiertos a toda la UC3M, sin ser socio.', img: '/media/equipo/gonzalo_torrijos.jpeg', cta: ['Ver eventos', '/eventos'] },
   { t: 'Entra en la comunidad', d: 'Newsletter, grupo y podcast: entérate de todo lo que pasa en el ecosistema desde dentro.', img: '/media/equipo/maria_martin.jpg', cta: ['Suscribirme', '/#newsletter'] },
@@ -91,7 +92,7 @@ const faqs = [
 <Base title="Recursos" description="Lo que Start UC3M ofrece a estudiantes con idea, startups y gente que quiere venir a eventos, y cómo lo hacemos." tone="dark">
   <!-- HERO -->
   <section class="relative overflow-hidden bg-cobalt text-white">
-    <img src={asset('/media/campus-pdt-2.jpg')} alt="" class="absolute inset-0 h-full w-full object-cover opacity-50 mix-blend-luminosity" data-parallax="6" aria-hidden="true" />
+    <Placeholder class="absolute inset-0 h-full w-full object-cover opacity-50 mix-blend-luminosity" />
     <div class="absolute inset-0 bg-gradient-to-b from-cobalt/30 via-cobalt/70 to-cobalt"></div>
     <div class="container-x relative pb-16 pt-24">
       <span class="eyebrow text-lavender">Recursos</span>
@@ -130,7 +131,7 @@ const faqs = [
               </div>
             </div>
             <div class="relative aspect-[4/5] overflow-hidden rounded-brand bg-cobalt-deep" data-reveal>
-              <img src={asset(a.img)} alt={a.imgAlt} class="absolute inset-0 h-[120%] w-full object-cover" data-parallax="8" loading="lazy" />
+              <Placeholder class="absolute inset-0 h-[120%] w-full object-cover" alt={a.imgAlt} />
             </div>
           </div>
 
@@ -183,7 +184,7 @@ const faqs = [
     <div class="grid gap-8 md:grid-cols-3" data-stagger>
       {ways.map((w, i) => (
         <a href={w.cta[1]} class="group flex flex-col" data-reveal>
-          <div class="relative aspect-[4/5] overflow-hidden rounded-brand bg-cobalt" data-img-reveal><img src={asset(w.img)} alt="" class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" /><span class="display absolute left-5 top-4 text-6xl text-white">0{i + 1}</span></div>
+          <div class="relative aspect-[4/5] overflow-hidden rounded-brand bg-cobalt" data-img-reveal><Placeholder class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" /><span class="display absolute left-5 top-4 text-6xl text-white">0{i + 1}</span></div>
           <h2 class="mt-5 text-3xl font-bold group-hover:underline">{w.t}</h2>
           <p class="mt-2 opacity-80">{w.d}</p>
           <span class="mono mt-4 text-cobalt">{w.cta[0]} →</span>

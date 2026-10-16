@@ -3,7 +3,6 @@ title: "Berkeley, Stanford y las universidades que más fundadores producen (y q
 excerpt: "PitchBook publica su ranking 2026 de universidades por número de fundadores de startups con inversión. Lo que hacen distinto y lo que se puede replicar desde una asociación."
 date: 2026-09-08
 category: Comunidad
-cover: "/media/blog/universidades-fundadores-2026.jpg"
 ---
 PitchBook acaba de publicar su ranking anual de universidades según el número de fundadores de startups respaldadas por capital riesgo que han salido de sus aulas. Los datos de 2026 dejan pocas sorpresas arriba y una lección clara para el resto.
 

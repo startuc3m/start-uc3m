@@ -7,7 +7,6 @@ place: "Campus Puerta de Toledo"
 type: "Campamento"
 status: pasado
 edition: "Curso 2025/26"
-image: "/media/metro-pdt.jpg"
 sponsors: []
 tags: ["2 días", "Sold out"]
 highlights: ["Sold out", "40 asistentes", "10 proyectos"]

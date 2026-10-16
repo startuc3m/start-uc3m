@@ -1,4 +1,5 @@
 ---
+import Placeholder from '../components/Placeholder.astro';
 import { asset } from '../lib/url';
 import Base from '../layouts/Base.astro';
 import PodcastTrack from '../components/PodcastTrack.astro';
@@ -16,10 +17,10 @@ const fmtShort = (d: Date) => d.toLocaleDateString('es-ES', { day: '2-digit', mo
 <Base tone="dark">
   <!-- HERO: foto del banner de Start fundida con el cobalto -->
   <section class="relative overflow-hidden bg-cobalt text-white">
-    <img src={asset('/media/home-banner.jpg')} alt="" class="absolute inset-0 h-full w-full object-cover object-[center_30%] opacity-80 mix-blend-luminosity" data-parallax="6" aria-hidden="true" />
+    <Placeholder class="absolute inset-0 h-full w-full object-cover object-[center_30%] opacity-80 mix-blend-luminosity" />
     <div class="absolute inset-0 bg-gradient-to-b from-cobalt/20 via-cobalt/55 to-cobalt"></div>
     <div class="container-x relative flex min-h-[calc(100vh-64px)] flex-col justify-end pb-16 pt-24">
-      <span class="eyebrow inline-flex w-fit max-w-full items-center gap-2 rounded-full border border-white/40 bg-cobalt/40 px-3 py-2 text-lavender normal-case backdrop-blur"><span class="h-1.5 w-1.5 rounded-full bg-white"></span>Inscripciones abiertas · Curso {site.course}</span>
+      <span class="eyebrow inline-flex w-fit max-w-full items-center gap-2 rounded-full border border-white/40 bg-cobalt/40 px-3 py-2 text-lavender normal-case backdrop-blur"><span class="h-1.5 w-1.5 rounded-full bg-white"></span>Asociación de emprendedores · UC3M</span>
       <h1 class="display mt-8 max-w-6xl text-[clamp(52px,9.5vw,152px)]" data-split>Piensa diferente, actúa con propósito_</h1>
       <div class="mt-10 grid gap-10 md:grid-cols-[1fr_auto] md:items-end">
         <div class="max-w-xl">
@@ -49,7 +50,7 @@ const fmtShort = (d: Date) => d.toLocaleDateString('es-ES', { day: '2-digit', mo
     <div class="container-x py-24">
       <a href={`/eventos/${next.id}`} class="group grid gap-0 overflow-hidden rounded-brand bg-cobalt md:grid-cols-[1.1fr_1fr]" data-reveal>
         <div class="relative aspect-[4/3] md:aspect-auto md:min-h-[480px]" data-img-reveal>
-          <img src={(next.data.image && !next.data.image.startsWith('http') ? asset(next.data.image) : next.data.image ?? asset('/media/starter.jpg'))} alt={next.data.title} class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+          <Placeholder class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" alt={next.data.title} />
           <span class="eyebrow absolute left-4 top-4 rounded-full bg-navy/70 px-3 py-2 text-lavender backdrop-blur">Próximo evento</span>
         </div>
         <div class="flex flex-col justify-between gap-8 p-8 md:p-12">
@@ -88,7 +89,7 @@ const fmtShort = (d: Date) => d.toLocaleDateString('es-ES', { day: '2-digit', mo
       </div>
       <div class="mt-20 grid gap-12 md:grid-cols-[1fr_1fr] md:items-center">
         <div class="relative aspect-[4/3] overflow-hidden rounded-brand" data-reveal>
-          <img src={asset("/media/uc3m-sign.jpg")} alt="Campus de la UC3M" class="absolute inset-0 h-[120%] w-full object-cover" data-parallax="8" />
+          <Placeholder class="absolute inset-0 h-[120%] w-full object-cover" alt="Campus de la UC3M" />
         </div>
         <ol class="border-t border-line" data-stagger>
           {site.milestones.map((m) => (
@@ -110,7 +111,7 @@ const fmtShort = (d: Date) => d.toLocaleDateString('es-ES', { day: '2-digit', mo
   <section class="bg-paper text-ink">
     <div class="container-x grid gap-12 py-28 md:grid-cols-[1fr_1.2fr] md:items-end" data-reveal>
       <div class="relative aspect-[4/5] overflow-hidden rounded-brand">
-        <img src={asset("/media/equipo/ioana_nedelcu.jpeg")} alt="Starter de Start UC3M" class="absolute inset-0 h-[120%] w-full object-cover" data-parallax="6" />
+        <Placeholder class="absolute inset-0 h-[120%] w-full object-cover" alt="Starter de Start UC3M" />
       </div>
       <div>
         <span class="eyebrow text-cobalt">¿Qué es un starter?</span>
@@ -131,7 +132,7 @@ const fmtShort = (d: Date) => d.toLocaleDateString('es-ES', { day: '2-digit', mo
       <div class="mt-10 grid gap-8 md:grid-cols-3" data-stagger>
         {posts.map((p, i) => (
           <a href={`/blog/${p.id}`} class="group">
-            <div class="relative aspect-[16/10] overflow-hidden rounded-brand bg-cobalt"><img src={p.data.cover ? (p.data.cover.startsWith('http') ? p.data.cover : asset(p.data.cover)) : asset('/media/equipo/lola_lopez.jpeg')} alt="" class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" /></div>
+            <div class="relative aspect-[16/10] overflow-hidden rounded-brand bg-cobalt"><Placeholder class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" /></div>
             <span class="eyebrow mt-4 block text-cobalt">{p.data.category} · {p.data.date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}</span>
             <h3 class="mt-2 text-2xl font-bold leading-tight group-hover:underline">{p.data.title}</h3>
           </a>

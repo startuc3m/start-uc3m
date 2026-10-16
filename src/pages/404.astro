@@ -1,11 +1,12 @@
 ---
+import Placeholder from '../components/Placeholder.astro';
 import Base from '../layouts/Base.astro';
 import Logo from '../components/Logo.astro';
 import { asset } from '../lib/url';
 ---
 <Base title="404" tone="dark">
   <section class="relative overflow-hidden bg-cobalt text-white">
-    <img src={asset('/media/equipo/ana_gimenez.jpg')} alt="" class="absolute inset-0 h-full w-full object-cover opacity-30 mix-blend-luminosity" aria-hidden="true" />
+    <Placeholder class="absolute inset-0 h-full w-full object-cover opacity-30 mix-blend-luminosity" />
     <div class="absolute inset-0 bg-gradient-to-b from-cobalt/40 to-cobalt"></div>
     <div class="container-x relative flex min-h-[80vh] flex-col justify-center py-20">
       <Logo tone="white" size={40} />
