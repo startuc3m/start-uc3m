@@ -40,7 +40,7 @@ const ogImage = `${siteOrigin}${base}/brand/logo-full-cobalt.png`;
       <span class="min-w-0"><span class="mono block text-lavender">Último episodio · StartTheWeek #37</span><span class="block truncate font-semibold group-hover:underline">La verdad detrás del Mundo Inmobiliario</span><span class="block text-xs text-lavender">Guillermo Esteban</span></span>
     </a>
     <div class="mt-auto pt-10">
-      <div class="mt-8 flex justify-center gap-6 pb-4 text-sm font-semibold">{Object.entries(site.social).map(([k, v]) => <a href={v} class="first-letter:uppercase underline-offset-4 hover:underline">{k}</a>)}</div>
+      <div class="mt-8 flex justify-center gap-6 pb-4 text-sm font-semibold">{Object.entries(site.social).map(([k, v]) => <a href={v} class="capitalize underline-offset-4 hover:underline">{k}</a>)}</div>
     </div>
   </main>
   <script is:inline define:vars={{ base }}>
