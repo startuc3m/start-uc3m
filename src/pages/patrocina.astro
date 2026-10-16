@@ -8,7 +8,7 @@ const stats = [['3.000', 'Estudiantes alcanzados por curso', 3000], ['3.000', 'S
 const offers = [
   ['01', 'Talento', 'Acceso directo a starters y asistentes: prácticas, cofundadores y primeras contrataciones. La gente que va a construir, antes de que esté en LinkedIn.'],
   ['02', 'Marca en campus', 'Tu marca en todos los eventos del curso, en la cartelería de Puerta de Toledo y en las redes de Start: Instagram, TikTok, LinkedIn y YouTube.'],
-  ['03', 'Contenido', 'Un episodio de StartTheWeek con tu equipo, grabado en el campus, y crónicas de tus eventos en el blog y la newsletter de Start.'],
+  ['03', 'Contenido', 'Un episodio de StartTheWeek con tu equipo, grabado en el campus, y crónicas de tus eventos en las redes de Start.'],
   ['04', 'Datos', 'Feedback directo en el propio evento: de qué grado son y qué les interesó de tu propuesta, cara a cara. No cedemos bases de datos de asistentes.'],
 ];
 const contentThumb = 'https://img.youtube.com/vi/G2hVH1AGr38/hqdefault.jpg';
@@ -62,7 +62,7 @@ const others = site.tiers.slice(1);
   <section class="container-x grid gap-16 py-24 md:grid-cols-[1fr_1.3fr]">
     <div data-reveal><span class="eyebrow text-cobalt">Por qué Start</span><h2 class="display mt-4 text-[clamp(32px,4.5vw,64px)] text-cobalt" data-split>Talento antes de que esté en LinkedIn.</h2></div>
     <ul class="grid gap-8 sm:grid-cols-2" data-stagger>
-      {[['Audiencia cualificada', 'Estudiantes de ADE, ingenierías, derecho y diseño que ya han decidido que quieren construir algo.'], ['Eventos con marca', 'Buildathon, StartXperience y Start Camp con tu naming, tu producto y tu gente dentro.'], ['Bolsa de talento', 'Contacto en persona con starters y asistentes en cada evento: sin base de datos exportable.'], ['Presencia todo el curso', 'Web, links en bio, newsletter, redes (IG, TikTok, LinkedIn, YouTube) y campus.']].map(([h, d]) => (
+      {[['Audiencia cualificada', 'Estudiantes de ADE, ingenierías, derecho y diseño que ya han decidido que quieren construir algo.'], ['Eventos con marca', 'Buildathon, StartXperience y Start Camp con tu naming, tu producto y tu gente dentro.'], ['Bolsa de talento', 'Contacto en persona con starters y asistentes en cada evento: sin base de datos exportable.'], ['Presencia todo el curso', 'Web, links en bio, redes (IG, TikTok, LinkedIn, YouTube) y campus.']].map(([h, d]) => (
         <li class="border-t-2 border-cobalt pt-5" data-reveal><h3 class="text-2xl font-bold">{h}</h3><p class="mt-2 opacity-80">{d}</p></li>
       ))}
     </ul>

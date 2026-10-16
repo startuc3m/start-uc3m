@@ -1,95 +1,48 @@
 ---
 import Placeholder from '../components/Placeholder.astro';
-const ways = [
-  { t: 'Ven a los eventos', d: 'Buildathon, hackathones, StartXperience, Start Camp. Abiertos a toda la UC3M, sin ser socio.', img: '/media/equipo/gonzalo_torrijos.jpeg', cta: ['Ver eventos', '/eventos'] },
-  { t: 'Entra en la comunidad', d: 'Newsletter, grupo y podcast: entérate de todo lo que pasa en el ecosistema desde dentro.', img: '/media/equipo/maria_martin.jpg', cta: ['Suscribirme', '/#newsletter'] },
-  { t: 'Forma parte de Start', d: 'Únete a un departamento y organiza con nosotros. Es la forma de aprender construyendo.', img: '/media/equipo/alicia_gascon.jpg', cta: ['Apuntarme', '/unete'] },
-];
-const perks = ['Equipo multidisciplinar: ADE, ingenierías, derecho, diseño', 'Contacto directo con fundadores, inversores y empresas', 'Organizas eventos de 60 a 300 personas', 'Red de alumni que fundan, invierten y contratan', 'Formaciones internas cada curso', 'Y sí: sangriadas'];
 import Base from '../layouts/Base.astro';
 import { site } from '../lib/site';
-import { asset } from '../lib/url';
+// Versión reducida a lo que Start ofrece hoy (#29). Qué más se añade lo
+// decide la directiva (#9): mentores, incubadora, créditos, etc. quedan fuera.
+const ways = [
+  { t: 'Ven a los eventos', d: 'Buildathon, hackathones, StartXperience, Start Camp. Abiertos a toda la UC3M, sin ser socio.', cta: ['Ver eventos', '/eventos'] },
+  { t: 'Sigue la comunidad', d: 'El podcast StartTheWeek y nuestras redes: entérate de lo que pasa en el ecosistema.', cta: ['Escuchar el podcast', '/podcast'] },
+  { t: 'Forma parte de Start', d: 'Únete a un departamento y organiza con nosotros. Es la forma de aprender construyendo.', cta: ['Cómo entrar', '/unete'] },
+];
+const perks = ['Equipo multidisciplinar: ADE, ingenierías, derecho, diseño', 'Contacto directo con fundadores, inversores y empresas', 'Organizas eventos de principio a fin', 'Formaciones internas cada curso'];
 const cats = [...new Set(site.resources.map((r) => r.cat))];
-// Tres audiencias · qué ofrecemos · cómo lo hacemos · FAQ
 const audiences = [
   {
-    id: 'idea', n: '01', eyebrow: 'Tienes una idea', title: 'De la idea a un equipo y un prototipo_', tone: 'paper',
-    img: '/media/campus-pdt-interior.jpg', imgAlt: 'Campus de Puerta de Toledo',
-    p1: 'Tener una idea es lo fácil. Lo difícil es encontrar con quién probarla, a quién preguntarle y dónde enseñarla sin que nadie te mire raro. Start existe para eso: para que pases de una idea en una libreta a un equipo, un prototipo y una demo delante de gente real antes de terminar la carrera.',
-    p2: 'No hace falta saber programar ni tener un plan de negocio. Hace falta venir. De una tarde de Buildathon salen equipos que siguen trabajando meses después, y desde ahí te acompañamos hasta los programas de emprendimiento de la universidad.',
-    offers: [
-      ['Mentores', 'Fundadores y profesionales del ecosistema que revisan tu idea y te dicen lo que nadie te dice.'],
-      ['Equipo multidisciplinar', 'ADE, ingenierías, derecho y diseño en la misma mesa: el cofundador que te falta suele estar en Start.'],
-      ['Validación en el Buildathon', 'Una tarde para construir un prototipo funcional y enseñarlo. Sin saber programar.'],
-      ['Acceso a la incubadora UC3M', 'Te acompañamos hasta los programas y ayudas de emprendimiento de la universidad.'],
-      ['Herramientas y créditos', 'Lovable, IA y las herramientas que usamos en los talleres, con créditos de nuestros partners.'],
-      ['Demo delante de gente', 'Enseñas lo construido a estudiantes, mentores y empresas. El feedback más honesto que vas a recibir.'],
-    ],
-    steps: [
-      ['Cuéntanos tu idea', 'Un formulario de dos minutos. Idea, fase y qué te falta.'],
-      ['Te conectamos', 'Con el mentor y los perfiles que encajan con lo que necesitas.'],
-      ['Construyes', 'En el Buildathon o en un taller: prototipo funcional en una tarde.'],
-      ['Demo y seguimiento', 'Lo enseñas, recoges feedback y te acompañamos hasta la incubadora.'],
-    ],
-    stats: [['60', 'plazas por Buildathon', 60], ['8', 'departamentos que te acompañan', 8]],
-    cta: ['Cuéntanos tu idea', '/contacto'],
-  },
-  {
-    id: 'startup', n: '02', eyebrow: 'Tienes una startup', title: 'Talento, visibilidad e inversores_', tone: 'navy',
-    img: '/media/leganes-biblioteca-2.jpg', imgAlt: 'Biblioteca de la Universidad Carlos III de Madrid',
-    p1: 'Start es la puerta de entrada a la comunidad emprendedora de la Universidad Carlos III: más de 3.000 estudiantes que ya han decidido que quieren construir. Si tienes una startup, aquí están tus primeras contrataciones, tus becarios que se quedan y, a veces, tu siguiente cofundador.',
-    p2: 'También es escaparate. Presentas en un evento, cuentas tu historia en el podcast y llegas a inversores, lanzaderas e incubadoras que pasan por StartXperience cada primavera.',
-    offers: [
-      ['Visibilidad en eventos', 'Presenta tu startup ante cientos de estudiantes en Buildathon, Start Camp o StartXperience.'],
-      ['Talento de la UC3M', 'Prácticas, primeras contrataciones y cofundadores entre starters y asistentes.'],
-      ['StartXperience con inversores', 'Un día con inversores, lanzaderas e incubadoras del ecosistema madrileño.'],
-      ['Podcast StartTheWeek', 'Cuenta tu historia en el podcast de Start UC3M, en YouTube y redes.'],
-      ['Retos reales para los equipos', 'Propón el reto de un Buildathon y llévate veinte prototipos y los perfiles que los hicieron.'],
-      ['Patrocinio a medida', 'Partner fijo, patrocinio de evento o colaboración en especie. Lo que encaje con tu fase.'],
-    ],
-    steps: [
-      ['Hablamos', 'Nos cuentas qué buscas: talento, marca, feedback o inversión.'],
-      ['Elegimos formato', 'Charla, reto, stand, podcast o patrocinio. Uno o varios.'],
-      ['Lo hacemos', 'Organizamos todo con Eventos y Comunicación. Tú vienes.'],
-      ['Seguimiento', 'Contacto en persona con quienes se acercan a tu stand o charla, fotos, crónica y métricas de asistencia.'],
-    ],
-    stats: [['3.000', 'estudiantes en la comunidad', 3000], ['2013', 'construyendo desde', 2013]],
-    cta: ['Hablar con Start', '/contacto'],
-  },
-  {
-    id: 'eventos', n: '03', eyebrow: 'Quieres venir a eventos', title: 'Abiertos a toda la UC3M, sin ser socio_', tone: 'paper',
-    img: '/media/madrid-skyline-2.jpg', imgAlt: 'Madrid, donde pasan los eventos de Start',
+    id: 'eventos', n: '01', eyebrow: 'Quieres venir a eventos', title: 'Abiertos a toda la UC3M, sin ser socio_', tone: 'paper',
+    imgAlt: 'Un evento de Start UC3M',
     p1: 'No hace falta tener una idea, ni ser starter, ni saber de startups. Los eventos de Start están abiertos a cualquier estudiante de la UC3M. Vienes, construyes o escuchas, conoces gente y te vas con algo: un prototipo, un contacto o simplemente ganas.',
-    p2: 'Hay formatos de una tarde (Buildathon), de un día (StartXperience) y de dos (Start Camp). Todos con inscripción integrada en esta web: sin Luma, sin formularios externos, sin listas de espera opacas.',
+    p2: 'Hay formatos de una tarde, como el Buildathon, y de un día entero, como StartXperience. En la ficha de cada evento tienes la fecha, el lugar y el enlace para apuntarte.',
     offers: [
-      ['Calendario del curso', 'Todos los eventos con fecha, lugar e inscripción integrada en la web.'],
-      ['Formatos para todos', 'Buildathon, hackathones, Start Camp, StartXperience: de una tarde a dos días.'],
+      ['Calendario del curso', 'Todos los eventos con fecha, lugar y enlace de inscripción en su ficha.'],
+      ['Formatos para todos', 'Buildathon, hackathones, StartXperience y Start Camp: de una tarde a varios días.'],
       ['Sin ser socio', 'Los eventos están abiertos a cualquier estudiante de la UC3M. Solo tienes que apuntarte.'],
-      ['Gratis o casi', 'La mayoría de eventos son gratuitos. Cuando hay coste, lo cubren los patrocinadores.'],
-      ['Newsletter', 'Un correo cuando abrimos plazas. Nada más.'],
-      ['Sangriada al terminar', 'Donde de verdad se habla de todo. Después de cada evento.'],
     ],
     steps: [
-      ['Mira el calendario', 'Fechas, lugar, formato y plazas disponibles de cada evento.'],
-      ['Te apuntas', 'Un formulario en la propia ficha del evento. Confirmación al momento.'],
-      ['Vienes', 'Campus Puerta de Toledo casi siempre. Con o sin equipo, con o sin idea.'],
-      ['Repites', 'Si te lo pasas bien construyendo, esta es la forma más fácil de conocernos.'],
+      ['Mira el calendario', 'Fecha, lugar y formato de cada evento.'],
+      ['Te apuntas', 'Desde la ficha del evento, con el enlace de inscripción.'],
+      ['Vienes', 'Con o sin equipo, con o sin idea. El lugar está en cada ficha.'],
+      ['Repites', 'Si te lo pasas bien construyendo, es la forma más fácil de conocernos.'],
     ],
-    stats: [['300', 'personas en StartXperience', 300], ['0', '€ para la mayoría de eventos', 0]],
+    stats: [['300', 'personas en StartXperience', 300]],
     cta: ['Ver eventos', '/eventos'],
   },
 ];
 // Preguntas frecuentes
 const faqs = [
   ['¿Hay que ser socio para venir?', 'No. Los eventos están abiertos a cualquier estudiante de la UC3M. Ser starter (formar parte del equipo) es otra cosa: se entra por un proceso que abrimos cada curso.'],
-  ['¿Cuesta dinero?', 'La mayoría de eventos son gratuitos gracias a los patrocinadores. Cuando hay un coste (Start Camp, por ejemplo), lo decimos en la ficha del evento.'],
+  ['¿Cuesta dinero?', 'Depende del evento. Si hay un precio, lo indicamos en su ficha.'],
   ['¿De qué carreras hay gente?', 'De todas: ADE, ingenierías, derecho, diseño, comunicación, ciencias. Precisamente de eso va Start: juntar perfiles distintos en un mismo equipo.'],
-  ['¿Puedo venir sin idea?', 'Sí. En el Buildathon te montamos equipo allí mismo y el reto lo ponemos nosotros. Muchos de los que hoy tienen proyecto vinieron sin nada.'],
-  ['¿Cómo patrocino un evento?', 'Escribe a Partnerships desde la página Patrocina. Hay tres formatos: partner fijo, patrocinio de evento y colaboración en especie.'],
-  ['¿Cómo llego a Puerta de Toledo?', 'Campus Puerta de Toledo de la UC3M, en Madrid centro. Metro Puerta de Toledo (L5) o Pirámides (L5, Cercanías). Lo indicamos en cada ficha.'],
+  ['¿Puedo venir sin idea?', 'Sí. En el Buildathon te montamos equipo allí mismo y el reto lo ponemos nosotros.'],
+  ['¿Cómo patrocino un evento?', 'Escríbenos desde la página Patrocina y Partnerships te cuenta las opciones.'],
+  ['¿Cómo llego a Puerta de Toledo?', 'Campus Puerta de Toledo de la UC3M, en Madrid centro. Metro Puerta de Toledo (L5) o Pirámides (L5, Cercanías). Si un evento es en otro sitio, lo indicamos en su ficha.'],
 ];
 ---
-<Base title="Recursos" description="Lo que Start UC3M ofrece a estudiantes con idea, startups y gente que quiere venir a eventos, y cómo lo hacemos." tone="dark">
+<Base title="Recursos" description="Cómo participar en Start UC3M: eventos, comunidad, entrar en el equipo, preguntas frecuentes y enlaces útiles." tone="dark">
   <!-- HERO -->
   <section class="relative overflow-hidden bg-cobalt text-white">
     <Placeholder class="absolute inset-0 h-full w-full object-cover opacity-50 mix-blend-luminosity" />
@@ -97,7 +50,7 @@ const faqs = [
     <div class="container-x relative pb-16 pt-24">
       <span class="eyebrow text-lavender">Recursos</span>
       <h1 class="display mt-4 max-w-5xl text-[clamp(48px,9vw,140px)]" data-split>En qué te puede ayudar Start_</h1>
-      <p class="mt-8 max-w-2xl text-xl text-lavender" data-reveal>Lo que Start te ofrece según quién seas y cómo lo hacemos, paso a paso. Sin letra pequeña.</p>
+      <p class="mt-8 max-w-2xl text-xl text-lavender" data-reveal>Cómo participar en Start: eventos, comunidad y el equipo. Y respuestas a lo que más nos preguntáis.</p>
       <ul class="mt-10 flex flex-wrap gap-2" data-reveal>
         {audiences.map((a) => (
           <li><a href={`#${a.id}`} class="mono inline-flex items-center gap-2 rounded-full border border-white/40 px-4 py-2 transition-colors hover:bg-white hover:text-cobalt"><span class="text-lavender">{a.n}</span>{a.eyebrow}</a></li>
@@ -202,7 +155,7 @@ const faqs = [
       {perks.map((p) => <li class="flex gap-3 border-b border-cobalt py-4"><span class="font-mono text-lavender">_</span><span class="text-lg">{p}</span></li>)}
     </ul>
   </div></section>
-    <div class="container-x py-16"><a href="/unete" class="btn btn-primary">Apuntarme a Start <span class="font-mono">→</span></a></div>
+    <div class="container-x py-16"><a href="/unete" class="btn btn-primary">Cómo entrar en Start <span class="font-mono">→</span></a></div>
   </section>
 
   <!-- FAQ -->

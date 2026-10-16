@@ -81,7 +81,7 @@ export const site = {
   // { name, role: cargo + años (ej. "Presidenta 2022-23"), linkedin? } — pendiente de contenido real de RRHH
   alumni: [] as { name: string; role: string; linkedin?: string }[],
   tiers: [
-    { name: 'Partner', tag: 'Fijo · todo el curso', desc: 'Tu marca dentro de Start de forma permanente: todos los eventos, la web, las redes y el campus.', perks: ['Logo en todos los eventos del curso', 'Presencia fija en web, links y newsletter', 'Contacto directo con los starters de cada promoción', 'Mesa propia en StartXperience y Start Camp', 'Episodio del podcast con tu equipo'] },
+    { name: 'Partner', tag: 'Fijo · todo el curso', desc: 'Tu marca dentro de Start de forma permanente: todos los eventos, la web, las redes y el campus.', perks: ['Logo en todos los eventos del curso', 'Presencia fija en la web y en links', 'Contacto directo con los starters de cada promoción', 'Mesa propia en StartXperience y Start Camp', 'Episodio del podcast con tu equipo'] },
     { name: 'Patrocinio de evento', tag: 'Por evento', desc: 'Un evento concreto con tu naming, tu producto y tu gente dentro.', perks: ['Naming ("Buildathon × Tu marca")', 'Logo en cartelería, ficha y redes del evento', 'Charla, taller o reto propio', 'Contacto en persona con quienes se acercan a tu stand o reto'] },
     { name: 'Colaborador', tag: 'En especie', desc: 'Producto, espacio, créditos o mentores.', perks: ['Logo en la ficha del evento', 'Agradecimiento en redes'] },
   ],
@@ -112,8 +112,6 @@ export const site = {
     { cat: 'Herramientas', title: 'Luma', desc: 'Para publicar y gestionar eventos.', url: 'https://luma.com' },
     { cat: 'Ecosistema', title: 'TeamLabs', desc: 'Laboratorio de aprendizaje radical y espacio de eventos en Madrid.', url: 'https://teamlabs.es' },
     { cat: 'Ecosistema', title: 'Madrid Startup Bar', desc: 'Comunidad y eventos del ecosistema madrileño.', url: 'https://www.instagram.com/madridstartupbar/' },
-    { cat: 'Guías', title: 'Cómo validar una idea en una semana', desc: 'Plantilla que usamos en los talleres de Start.', url: '#' },
-    { cat: 'Guías', title: 'Plantilla de pitch de 3 minutos', desc: 'Estructura, timing y errores habituales.', url: '#' },
     { cat: 'Financiación', title: 'ENISA · Jóvenes Emprendedores', desc: 'Préstamos participativos para proyectos de menores de 40 años, sin aval.', url: 'https://www.enisa.es' },
     { cat: 'Ecosistema', title: 'South Summit', desc: 'Uno de los grandes encuentros de startups e inversores de Europa, en Madrid.', url: 'https://www.southsummit.co' },
   ],
