@@ -1,0 +1,109 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* Tokens: colores de la web actual de startuc3m.es, nada inventado.
+   Tipografía: Titillium Web (familia del logo) + JetBrains Mono para etiquetas. */
+@theme {
+  --color-cobalt: #2b3a91;
+  --color-cobalt-deep: #0e1a52;
+  --color-navy: #070d22;
+  --color-ink: #0b1233;
+  --color-paper: #f8fafc;
+  --color-paper-2: #f3f4f6;
+  --color-line: #e0e0e0;
+  --color-lavender: #cddaff;
+  --color-cyan: #4cc9f0;
+  --color-accent: #f6c700;
+
+  --font-sans: "Titillium Web", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --radius-brand: 4px;
+}
+
+html { scroll-behavior: auto; }
+@layer base { body { @apply bg-paper text-ink font-sans antialiased; } }
+::selection { background: var(--color-cobalt); color: white; }
+
+@layer components {
+/* Etiqueta mono con cursor _ */
+.eyebrow { @apply font-mono text-[12px] tracking-[0.12em] uppercase; }
+.eyebrow::after { content: "_"; }
+.mono { @apply font-mono text-[12px] tracking-[0.12em] uppercase; }
+
+/* Titulares */
+.display { @apply font-sans font-bold leading-[0.9] tracking-[-0.03em]; }
+
+/* Botones */
+.btn { @apply inline-flex items-center gap-2.5 rounded-brand px-7 py-4 text-[15px] font-semibold transition-transform duration-200 will-change-transform; }
+.btn:hover { transform: translateY(-1px); }
+.btn-primary { @apply bg-cobalt text-white; }
+.btn-on-blue { @apply bg-white text-cobalt; }
+.btn-outline { @apply border border-current; }
+
+.container-x { @apply mx-auto w-full max-w-[1312px] px-4 md:px-8 lg:px-16; }
+
+}
+
+/* Reveal al scroll (GSAP añade .is-in) */
+[data-reveal] { opacity: 0; transform: translateY(24px); }
+[data-reveal].is-in { opacity: 1; transform: none; transition: opacity .8s cubic-bezier(.2,.7,.2,1), transform .8s cubic-bezier(.2,.7,.2,1); }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] { opacity: 1; transform: none; }
+  header.sticky { transition: none; }
+}
+
+/* Loader de entrada: cortina cobalto con el logo real. Animación 100 % CSS
+   (no depende de JS ni de GSAP); un script inline la retira a los 1,6 s. */
+.loader { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; background: var(--color-cobalt); animation: curtain 1.6s cubic-bezier(.76,0,.24,1) forwards; pointer-events: none; }
+.loader img { width: clamp(180px, 28vw, 380px); height: auto; animation: logo-in 0.7s cubic-bezier(.2,.7,.2,1) both; }
+.loader-bar { position: absolute; left: 0; bottom: 0; height: 3px; background: white; animation: bar 0.9s 0.3s cubic-bezier(.65,0,.35,1) both; }
+@keyframes logo-in { from { opacity: 0; transform: translateY(24px) scale(.96); } to { opacity: 1; transform: none; } }
+@keyframes bar { from { width: 0; } to { width: 100%; } }
+@keyframes curtain { 0%, 72% { transform: translateY(0); } 100% { transform: translateY(-100%); } }
+html.no-loader .loader { display: none; }
+html.is-loading { overflow: hidden; }
+@media (prefers-reduced-motion: reduce) { .loader { display: none; } }
+
+/* Parallax suave en imágenes (data-parallax) */
+[data-parallax] { will-change: transform; }
+
+/* Nav: se oculta al hacer scroll hacia abajo (clase que pone motion.ts) */
+header.sticky { transition: transform .35s cubic-bezier(.2,.7,.2,1); }
+
+/* Cortina de imagen (data-img-reveal) y stagger (data-stagger): el estado inicial
+   lo pone GSAP, así el contenido es visible si el JS no corre. */
+[data-img-reveal] { will-change: clip-path; }
+
+/* Ticker de logos */
+.ticker { display: flex; align-items: center; gap: 3rem; width: max-content; animation: ticker 22s linear infinite; }
+.ticker img { height: 40px; width: auto; object-fit: contain; }
+@keyframes ticker { to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) { .ticker { animation: none; } }
+
+/* ---- Panel /admin ---- */
+@layer components {
+  .adm-nav { @apply block rounded-brand px-3 py-2 text-sm font-semibold text-ink/80 hover:bg-paper-2 hover:text-cobalt; }
+  .adm-nav-active { @apply bg-cobalt text-white hover:bg-cobalt hover:text-white; }
+  .adm-card { @apply rounded-brand border border-line bg-white p-5; }
+  .adm-btn { @apply inline-flex items-center gap-2 rounded-brand bg-cobalt px-4 py-2 text-sm font-semibold text-white hover:bg-cobalt-deep disabled:opacity-60; }
+  .adm-btn-ghost { @apply inline-flex items-center gap-2 rounded-brand border border-line bg-white px-4 py-2 text-sm font-semibold text-ink hover:border-cobalt hover:text-cobalt; }
+  .adm-btn-danger { @apply inline-flex items-center gap-2 rounded-brand border border-line px-3 py-2 text-sm font-semibold text-ink/70 hover:border-red-500 hover:text-red-600; }
+  .adm-input { @apply w-full rounded-brand border border-line bg-white px-3 py-2 text-sm outline-none focus:border-cobalt focus:ring-2 focus:ring-cobalt/20; }
+  .adm-label { @apply mb-1 block font-mono text-[12px] uppercase tracking-[0.12em] text-ink/60; }
+  .adm-table { @apply w-full text-sm; }
+  .adm-table th { @apply font-mono text-[12px] uppercase tracking-[0.12em] border-b border-line px-3 py-2 text-left text-ink/60; }
+  .adm-table td { @apply border-b border-line px-3 py-3 align-middle; }
+  .adm-table tr:hover td { @apply bg-paper-2; }
+  .adm-badge { @apply font-mono text-[11px] uppercase tracking-[0.12em] inline-block rounded-full border border-line px-2 py-0.5; }
+  .adm-badge-ok { @apply border-cobalt bg-cobalt text-white; }
+  .adm-toast { @apply fixed bottom-6 left-1/2 z-[200] -translate-x-1/2 translate-y-4 rounded-brand bg-navy px-4 py-3 text-sm font-semibold text-white opacity-0 shadow-lg transition-all; }
+  .adm-toast.show { @apply translate-y-0 opacity-100; }
+  .adm-toast-err { @apply bg-red-600; }
+}
+
+/* Placeholder de imagen (#17): cobalto con el wordmark de Start muy tenue. */
+.ph { background: linear-gradient(135deg, var(--color-cobalt) 0%, var(--color-cobalt-deep) 100%); overflow: hidden; }
+.ph:not(.absolute):not(.fixed) { position: relative; }
+.ph::after { content: ''; position: absolute; inset: 0; background: url('/brand/logo-wordmark-white.png') center / min(45%, 220px) no-repeat; opacity: .14; }
