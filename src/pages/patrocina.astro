@@ -15,7 +15,7 @@ const contentThumb = 'https://img.youtube.com/vi/G2hVH1AGr38/hqdefault.jpg';
 const photos = [
   ['/media/madrid-night.jpg', 'Buildathon', 'Arranque de curso · 60 personas construyendo en una tarde'],
   ['/media/leganes-biblioteca-1.jpg', 'StartXperience', 'Un día con startups, inversores e incubadoras · 300 personas'],
-  ['/media/equipo/clemente_cebrian.jpeg', 'Start Camp', 'Dos días de trabajo en equipo, mentores y demos · sold out'],
+  ['/media/equipo/clemente_cebrian.jpeg', 'Start Camp', 'Dos días de trabajo en equipo, mentores y jurado'],
 ];
 // Sin citas reales todavía — Partnerships tiene que conseguirlas de NomuLabs/Pitchless antes de publicar nada atribuido.
 const testimonials: { quote: string; who: string; logo: string }[] = [];
@@ -31,7 +31,7 @@ const others = site.tiers.slice(1);
       <span class="eyebrow text-lavender">Media kit · Para empresas</span>
       <h1 class="display mt-4 max-w-5xl text-[clamp(48px,9vw,140px)]" data-split>Este año puedes estar del otro lado_</h1>
       <p class="mt-8 max-w-2xl text-xl text-lavender">Start UC3M es la puerta de entrada al talento emprendedor de la Universidad Carlos III. Patrocinar Start es estar delante de la gente que va a fundar, construir y contratar en los próximos cinco años.</p>
-      <div class="mt-10 flex flex-wrap gap-3"><a href="#contacto" class="btn btn-on-blue">Hablar con Partnerships <span class="font-mono">→</span></a><a href="/dossier-startuc3m.pdf" class="btn btn-outline text-white">Descargar dossier PDF</a></div>
+      <div class="mt-10 flex flex-wrap gap-3"><a href="#contacto" class="btn btn-on-blue">Hablar con Partnerships <span class="font-mono">→</span></a>{/* Dossier PDF: se enlaza cuando Partnerships lo tenga (#24). */}</div>
     </div>
   </section>
 
