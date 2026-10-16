@@ -1,15 +1,15 @@
 ---
-title: "Start Camp"
+title: "Start Camp 2026"
 subtitle: "Dos días para pasar de idea a proyecto con el equipo de Start"
+# Contenido pendiente de Eventos (#44): hora, lugar, precio, agenda, ponentes y enlace de Luma.
 date: 2026-11-25
-time: "09:00"
+time: "Por confirmar"
 place: "Por confirmar"
 type: "Campamento"
 status: abierto
-seats: 40
 sponsors: []
-tags: ["2 días", "Plazas limitadas", "Ediciones anteriores sold out"]
+tags: []
 edition: "Curso 2026/27"
-highlights: ["2 días", "40 plazas", "Mentores y demos"]
+highlights: []
 ---
-El formato más intenso del curso: dos días de trabajo en equipo, mentores y demos finales.
+Muy pronto, toda la información de Start Camp 2026.

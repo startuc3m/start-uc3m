@@ -1,4 +1,5 @@
 ---
+draft: true # pendiente de validar por Comunicación (#11)
 title: "Buildathon: así fue la primera tarde de build del curso"
 excerpt: "Sesenta personas, veinte prototipos y una sangriada. Crónica del arranque de temporada en Puerta de Toledo."
 date: 2026-09-18

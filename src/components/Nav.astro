@@ -1,6 +1,8 @@
 ---
 import Logo from './Logo.astro';
 import { site } from '../lib/site';
+import { blogVisible } from '../lib/content';
+const nav = (await blogVisible()) ? site.nav : site.nav.filter((n) => n.href !== '/blog');
 const { tone = 'light' } = Astro.props; // light = sobre papel, dark = sobre azul
 const dark = tone === 'dark';
 const path = Astro.url.pathname;
@@ -9,7 +11,7 @@ const path = Astro.url.pathname;
   <div class="container-x flex h-[64px] items-center justify-between">
     <Logo tone={dark ? 'white' : 'cobalt'} size={24} />
     <nav class="hidden items-center gap-8 md:flex" aria-label="Principal">
-      {site.nav.map((n) => (
+      {nav.map((n) => (
         <a href={n.href} class={`text-[14px] font-semibold transition-opacity hover:opacity-70 ${path.startsWith(n.href) ? 'underline underline-offset-8 decoration-2' : ''}`}>{n.label}</a>
       ))}
     </nav>
@@ -20,7 +22,7 @@ const path = Astro.url.pathname;
   </div>
   <div id="menu" class={`hidden md:hidden ${dark ? 'bg-cobalt' : 'bg-paper'} border-t ${dark ? 'border-cobalt-deep' : 'border-line'}`}>
     <nav class="container-x flex flex-col py-4" aria-label="Móvil">
-      {site.nav.map((n) => <a href={n.href} class="py-3 text-2xl font-bold">{n.label}</a>)}
+      {nav.map((n) => <a href={n.href} class="py-3 text-2xl font-bold">{n.label}</a>)}
       <a href="/unete" class={`btn mt-2 ${dark ? 'btn-on-blue' : 'btn-primary'}`}>Únete →</a>
     </nav>
   </div>

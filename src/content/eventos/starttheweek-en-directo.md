@@ -1,4 +1,5 @@
 ---
+draft: true # pendiente de validar (#8)
 title: "StartTheWeek en directo"
 subtitle: "Grabación del podcast de Start con público en el campus"
 date: 2026-03-12

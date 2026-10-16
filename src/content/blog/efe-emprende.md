@@ -1,4 +1,5 @@
 ---
+draft: true # pendiente de validar por Comunicación (#11)
 title: "EFE Emprende: “emprendimiento y universidad no están reñidos”"
 excerpt: "Start UC3M en prensa: una organización estudiantil que acerca la innovación, el emprendimiento y el inconformismo a otros jóvenes."
 date: 2026-06-20

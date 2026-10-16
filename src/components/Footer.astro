@@ -1,8 +1,10 @@
 ---
 import Logo from './Logo.astro';
 import { site } from '../lib/site';
+import { blogVisible } from '../lib/content';
+const conBlog = await blogVisible();
 const cols = [
-  { h: 'Web', items: [['Eventos', '/eventos'], ['Podcast', '/podcast'], ['Equipo', '/equipo'], ['Blog', '/blog'], ['Recursos', '/recursos'], ['Links', '/links']] },
+  { h: 'Web', items: [['Eventos', '/eventos'], ['Podcast', '/podcast'], ['Equipo', '/equipo'], ...(conBlog ? [['Blog', '/blog']] : []), ['Recursos', '/recursos'], ['Links', '/links']] },
   { h: 'Empresas', items: [['Patrocina', '/patrocina'], ['Patrocinadores', '/patrocinadores'], ['Contacto', '/contacto']] },
   { h: 'Redes', items: [['Instagram', site.social.instagram], ['LinkedIn', site.social.linkedin], ['TikTok', site.social.tiktok], ['YouTube', site.social.youtube]] },
 ];

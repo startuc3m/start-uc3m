@@ -1,12 +1,13 @@
 ---
 import Placeholder from '../../components/Placeholder.astro';
 import Base from '../../layouts/Base.astro';
-import { getCollection, render } from 'astro:content';
+import { render } from 'astro:content';
+import { eventos } from '../../lib/content';
 import { eventToIcs, icsDataHref, eventStartDate } from '../../lib/ics';
 import { site } from '../../lib/site';
 import { asset } from '../../lib/url';
 export async function getStaticPaths() {
-  return (await getCollection('eventos')).map((e) => ({ params: { slug: e.id }, props: { e } }));
+  return (await eventos()).map((e) => ({ params: { slug: e.id }, props: { e } }));
 }
 const { e } = Astro.props;
 const { Content } = await render(e);

@@ -1,15 +1,16 @@
 ---
 import Placeholder from '../../components/Placeholder.astro';
 import Base from '../../layouts/Base.astro';
-import { getCollection, render } from 'astro:content';
+import { render } from 'astro:content';
+import { posts } from '../../lib/content';
 import { asset } from '../../lib/url';
 export async function getStaticPaths() {
-  return (await getCollection('blog')).map((p) => ({ params: { slug: p.id }, props: { p } }));
+  return (await posts()).map((p) => ({ params: { slug: p.id }, props: { p } }));
 }
 const { p } = Astro.props;
 const { Content } = await render(p);
 const fmt = (d: Date) => d.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
-const more = (await getCollection('blog')).filter((x) => !x.data.draft && x.id !== p.id).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()).slice(0, 3);
+const more = (await posts()).filter((x) => x.id !== p.id).slice(0, 3);
 const articleJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'BlogPosting',

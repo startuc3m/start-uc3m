@@ -1,4 +1,5 @@
 ---
+draft: true # pendiente de validar (#8)
 title: "Alternativa Emprender 2016"
 subtitle: "Ponencias y talleres enfocados a emprendedores, con referentes que estaban triunfando en ese momento"
 date: 2016-04-20

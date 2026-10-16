@@ -2,9 +2,9 @@
 import Placeholder from '../../components/Placeholder.astro';
 import Base from '../../layouts/Base.astro';
 import PageHead from '../../components/PageHead.astro';
-import { getCollection } from 'astro:content';
+import { posts as publicados } from '../../lib/content';
 import { asset } from '../../lib/url';
-const posts = (await getCollection('blog')).filter((p) => !p.data.draft).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const posts = await publicados();
 const cats = ['Todas', 'Eventos', 'Comunidad', 'Recursos', 'Prensa'];
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const [first, ...rest] = posts;
@@ -19,6 +19,7 @@ const fmt = (d: Date) => d.toLocaleDateString('es-ES', { day: 'numeric', month: 
   </PageHead>
 
   <section class="container-x py-20">
+    {posts.length === 0 && <p class="max-w-xl text-lg">Muy pronto, las primeras crónicas del curso.</p>}
     <!-- Destacado: imagen a la izquierda, texto a la derecha -->
     {first && (
       <a href={`/blog/${first.id}`} class="group grid gap-8 md:grid-cols-[1.3fr_1fr] md:items-center" data-reveal data-cat={first.data.category}>

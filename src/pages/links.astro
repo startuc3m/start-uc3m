@@ -4,6 +4,8 @@ import Placeholder from '../components/Placeholder.astro';
 import '../styles/global.css';
 import Logo from '../components/Logo.astro';
 import { site } from '../lib/site';
+import { blogVisible } from '../lib/content';
+const links = (await blogVisible()) ? site.links : site.links.filter((l) => l.href !== '/blog');
 import { asset } from '../lib/url';
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const siteOrigin = Astro.site?.origin ?? 'https://www.startuc3m.es';
@@ -28,7 +30,7 @@ const ogImage = `${siteOrigin}${base}/brand/logo-full-cobalt.png`;
       </div>
     </a>
     <ul class="mt-4 flex flex-col gap-3">
-      {site.links.map((l) => <li><a href={l.href} class={`flex items-center justify-between rounded-brand px-5 py-4 text-lg font-semibold ${l.featured ? 'bg-white text-cobalt' : 'border border-white/50'}`}>{l.label}<span class="font-mono">→</span></a></li>)}
+      {links.map((l) => <li><a href={l.href} class={`flex items-center justify-between rounded-brand px-5 py-4 text-lg font-semibold ${l.featured ? 'bg-white text-cobalt' : 'border border-white/50'}`}>{l.label}<span class="font-mono">→</span></a></li>)}
     </ul>
     <a href="/podcast" class="group mt-4 flex items-center gap-4 rounded-brand border border-white/50 p-3">
       <span class="relative block h-16 w-24 shrink-0 overflow-hidden rounded-brand bg-cobalt-deep"><img src="https://img.youtube.com/vi/ivKDwYuMc_A/hqdefault.jpg" alt="" class="absolute inset-0 h-full w-full object-cover" loading="lazy" /><span class="absolute inset-0 grid place-items-center text-white">▶</span></span>

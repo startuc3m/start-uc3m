@@ -4,13 +4,14 @@ import { asset } from '../lib/url';
 import Base from '../layouts/Base.astro';
 import PodcastTrack from '../components/PodcastTrack.astro';
 import SponsorTicker from '../components/SponsorTicker.astro';
-import { getCollection } from 'astro:content';
+import { eventos as publicados, posts as postsPublicados, blogVisible } from '../lib/content';
 import { site } from '../lib/site';
 import MailCta from '../components/MailCta.astro';
-const eventos = (await getCollection('eventos')).sort((a, b) => a.data.date.valueOf() - b.data.date.valueOf());
+const eventos = await publicados();
 const next = eventos.find((e) => e.data.status !== 'pasado')!;
 const grid = eventos.filter((e) => e.id !== next.id).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
-const posts = (await getCollection('blog')).filter((p) => !p.data.draft).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()).slice(0, 3);
+const conBlog = await blogVisible();
+const posts = (await postsPublicados()).slice(0, 3);
 const fmtLong = (d: Date) => d.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
 const fmtShort = (d: Date) => d.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }).toUpperCase();
 ---
@@ -61,8 +62,8 @@ const fmtShort = (d: Date) => d.toLocaleDateString('es-ES', { day: '2-digit', mo
             <ul class="mt-5 flex flex-wrap gap-2">{next.data.tags.slice(0, 3).map((t) => <li class="mono rounded-full border border-white/40 px-3 py-1.5">{t}</li>)}</ul>
           </div>
           <div class="flex items-center justify-between">
-            <span class="btn btn-on-blue">Reservar plaza <span class="font-mono">→</span></span>
-            <span class="mono text-lavender">{next.data.seats ? `${next.data.seats} plazas` : 'Plazas limitadas'}</span>
+            <span class="btn btn-on-blue">{next.data.external ? 'Reservar plaza' : 'Ver el evento'} <span class="font-mono">→</span></span>
+            {next.data.seats && <span class="mono text-lavender">{next.data.seats} plazas</span>}
           </div>
         </div>
       </a>
@@ -123,6 +124,7 @@ const fmtShort = (d: Date) => d.toLocaleDateString('es-ES', { day: '2-digit', mo
   </section>
 
   <!-- BLOG -->
+  {conBlog && (
   <section class="bg-paper-2 text-ink">
     <div class="container-x py-24" data-reveal>
       <div class="flex items-end justify-between">
@@ -140,6 +142,7 @@ const fmtShort = (d: Date) => d.toLocaleDateString('es-ES', { day: '2-digit', mo
       </div>
     </div>
   </section>
+  )}
 
   <!-- PATROCINA -->
   <section class="bg-cobalt text-white">

@@ -1,9 +1,9 @@
 ---
 import Placeholder from '../../components/Placeholder.astro';
 import Base from '../../layouts/Base.astro';
-import { getCollection } from 'astro:content';
+import { eventos } from '../../lib/content';
 import { asset } from '../../lib/url';
-const all = (await getCollection('eventos')).sort((a, b) => a.data.date.valueOf() - b.data.date.valueOf());
+const all = await eventos();
 const next = all.filter((e) => e.data.status !== 'pasado');
 const past = all.filter((e) => e.data.status === 'pasado').reverse();
 // Agrupa los pasados por temporada (campo `edition` o año)

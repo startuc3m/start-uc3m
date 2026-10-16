@@ -33,6 +33,7 @@ const eventos = defineCollection({
     image: z.string().optional(),
     highlights: z.array(z.string()).default([]),
     edition: z.string().optional(),
+    draft: z.boolean().default(false),
   }),
 });
 

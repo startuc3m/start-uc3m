@@ -1,4 +1,5 @@
 ---
+draft: true # pendiente de validar por Comunicación (#11)
 title: "Cómo entrar en Start: proceso, departamentos y FAQs"
 excerpt: "Qué buscamos, cómo es el proceso de entrada y qué hace cada uno de los ocho departamentos."
 date: 2026-09-03
