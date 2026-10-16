@@ -1,0 +1,87 @@
+---
+import Placeholder from '../../components/Placeholder.astro';
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+import { asset } from '../../lib/url';
+const all = (await getCollection('eventos')).sort((a, b) => a.data.date.valueOf() - b.data.date.valueOf());
+const next = all.filter((e) => e.data.status !== 'pasado');
+const past = all.filter((e) => e.data.status === 'pasado').reverse();
+// Agrupa los pasados por temporada (campo `edition` o año)
+const season = (e: (typeof all)[number]) => e.data.edition?.replace(/ · .*$/, '') ?? String(e.data.date.getFullYear());
+const groups = [...new Set(past.map(season))].map((s) => [s, past.filter((e) => season(e) === s)] as const);
+const fmt = (d: Date) => d.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }).toUpperCase().replace('.', '');
+const fmtLong = (d: Date) => d.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+---
+<Base title="Eventos" description="Buildathon, hackathones, StartXperience, Start Camp. Todo lo que organiza Start UC3M, con inscripción propia." tone="dark">
+  <!-- HERO con imagen fundida -->
+  <section class="relative overflow-hidden bg-cobalt text-white">
+    <Placeholder class="absolute inset-0 h-full w-full object-cover object-[center_35%] opacity-70 mix-blend-luminosity" />
+    <div class="absolute inset-0 bg-gradient-to-b from-cobalt/30 via-cobalt/60 to-cobalt"></div>
+    <div class="container-x relative flex min-h-[70vh] flex-col justify-end pb-16 pt-24">
+      <span class="eyebrow text-lavender">Eventos · Curso 2026/27</span>
+      <h1 class="display mt-4 max-w-5xl text-[clamp(48px,9vw,140px)]" data-split>Una tarde para construir, no para escuchar</h1>
+      <p class="mt-8 max-w-2xl text-xl text-lavender">Buildathon, hackathones, StartXperience, Start Camp. Formatos propios, inscripción propia, abiertos a toda la UC3M.</p>
+    </div>
+  </section>
+
+  <!-- PRÓXIMOS: tarjetas grandes con imagen -->
+  <section class="container-x py-20">
+    <div class="flex items-end justify-between" data-reveal>
+      <div><span class="eyebrow text-cobalt">Próximos</span><h2 class="display mt-3 text-[clamp(32px,5vw,72px)] text-cobalt" data-split>Apúntate_</h2></div>
+      <span class="mono hidden text-ink/60 md:block">{next.length} eventos con inscripción</span>
+    </div>
+    <ul class="mt-10 flex flex-col gap-10" data-stagger>
+      {next.map((e, i) => (
+        <li data-reveal><a href={`/eventos/${e.id}`} class="group grid gap-0 overflow-hidden rounded-brand bg-navy text-white md:grid-cols-[1.25fr_1fr]">
+          <div class="relative aspect-video md:aspect-auto md:min-h-[420px]">
+            <Placeholder class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" alt={e.data.title} />
+            <div class="absolute inset-0 bg-gradient-to-t from-navy/80 to-transparent md:bg-gradient-to-r"></div>
+            <span class="display absolute bottom-4 left-5 text-5xl md:text-6xl">{fmt(e.data.date)}<span class="ml-2 text-lg font-normal text-lavender">{e.data.date.getFullYear()}</span></span>
+            <span class={`mono absolute right-4 top-4 rounded-full px-3 py-1.5 backdrop-blur ${e.data.status === 'sold-out' ? 'bg-white text-cobalt' : 'bg-navy/70 text-lavender'}`}>{e.data.status === 'sold-out' ? 'Sold out · lista de espera' : 'Inscripción abierta'}</span>
+          </div>
+          <div class="flex flex-col justify-between gap-8 p-8 md:p-10">
+            <div>
+              <span class="eyebrow text-lavender">{e.data.type} · {e.data.place}</span>
+              <h3 class="display mt-3 text-[clamp(30px,3.5vw,52px)]">{e.data.title}</h3>
+              <p class="mt-3 text-lg text-lavender">{e.data.subtitle}.</p>
+              <p class="mono mt-4 text-lavender/70 capitalize">{fmtLong(e.data.date)} · {e.data.time}</p>
+              <ul class="mt-5 flex flex-wrap gap-2">{e.data.tags.slice(0, 4).map((t) => <li class="mono rounded-full border border-white/30 px-3 py-1.5">{t}</li>)}</ul>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="btn btn-on-blue">{e.data.status === 'sold-out' ? 'Lista de espera' : 'Reservar plaza'} <span class="font-mono">→</span></span>
+              {e.data.seats && <span class="mono text-lavender">{e.data.seats} plazas</span>}
+            </div>
+          </div>
+        </a></li>
+      ))}
+    </ul>
+  </section>
+
+  <!-- ANTERIORES: grid editorial por temporada -->
+  <section class="bg-paper-2">
+    <div class="container-x py-20">
+      <div data-reveal><span class="eyebrow text-cobalt">Anteriores</span><h2 class="display mt-3 text-[clamp(32px,5vw,72px)] text-cobalt" data-split>Lo que ya hemos construido_</h2></div>
+      {groups.map(([s, list]) => (
+        <div class="mt-14">
+          <div class="flex items-center gap-4 border-b border-line pb-3" data-reveal><span class="display text-2xl text-cobalt">{s}</span><span class="mono text-ink/50">{list.length} {list.length === 1 ? 'evento' : 'eventos'}</span></div>
+          <ul class="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3" data-stagger>
+            {list.map((e, i) => (
+              <li data-reveal><a href={`/eventos/${e.id}`} class="group block">
+                <div class="relative aspect-[4/3] overflow-hidden rounded-brand bg-cobalt">
+                  <Placeholder class="absolute inset-0 h-full w-full object-cover opacity-90 transition-transform duration-700 group-hover:scale-105" />
+                  <div class="absolute inset-0 bg-gradient-to-t from-navy/70 to-transparent"></div>
+                  <span class="display absolute bottom-3 left-4 text-4xl text-white">{fmt(e.data.date)}<span class="ml-2 text-base font-normal text-lavender">{e.data.date.getFullYear()}</span></span>
+                  {e.data.edition && <span class="mono absolute right-3 top-3 rounded-full bg-navy/70 px-3 py-1.5 text-lavender backdrop-blur">{e.data.edition.replace(/^.*· /, '')}</span>}
+                </div>
+                <span class="eyebrow mt-4 block text-cobalt">{e.data.type} · {e.data.place}</span>
+                <h3 class="mt-2 text-2xl font-bold leading-tight group-hover:underline">{e.data.title}</h3>
+                <p class="mt-2 text-sm opacity-70">{e.data.subtitle}.</p>
+                {(e.data.highlights ?? []).length > 0 && <ul class="mt-3 flex flex-wrap gap-1.5">{(e.data.highlights ?? []).map((h) => <li class="mono rounded-full bg-cobalt/10 px-2.5 py-1 text-cobalt">{h}</li>)}</ul>}
+              </a></li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </section>
+</Base>

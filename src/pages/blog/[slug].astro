@@ -1,0 +1,63 @@
+---
+import Placeholder from '../../components/Placeholder.astro';
+import Base from '../../layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+import { asset } from '../../lib/url';
+export async function getStaticPaths() {
+  return (await getCollection('blog')).map((p) => ({ params: { slug: p.id }, props: { p } }));
+}
+const { p } = Astro.props;
+const { Content } = await render(p);
+const fmt = (d: Date) => d.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+const more = (await getCollection('blog')).filter((x) => !x.data.draft && x.id !== p.id).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()).slice(0, 3);
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: p.data.title,
+  description: p.data.excerpt,
+  datePublished: p.data.date.toISOString(),
+  author: { '@type': 'Organization', name: p.data.author },
+  publisher: { '@type': 'Organization', name: 'Start UC3M' },
+};
+---
+<Base title={p.data.title} description={p.data.excerpt} tone="dark" image={p.data.cover}>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <!-- Hero: portada a sangre bajo un degradado cobalto -->
+  <section class="relative overflow-hidden bg-cobalt text-white">
+    <Placeholder class="absolute inset-0 h-full w-full object-cover opacity-50 mix-blend-luminosity" />
+    <div class="absolute inset-0 bg-gradient-to-b from-cobalt/30 via-cobalt/70 to-cobalt"></div>
+    <div class="container-x relative flex min-h-[60vh] flex-col justify-end pb-16 pt-24">
+      <span class="eyebrow text-lavender">{p.data.category} · {fmt(p.data.date)} · {p.data.author}</span>
+      <h1 class="display mt-4 max-w-5xl text-[clamp(36px,6vw,88px)]" data-split>{p.data.title}</h1>
+      <p class="mt-6 max-w-2xl text-xl text-lavender">{p.data.excerpt}</p>
+    </div>
+  </section>
+
+  <article class="container-x py-20">
+    <div class="prose prose-lg mx-auto max-w-[68ch] text-ink prose-headings:font-bold prose-headings:tracking-[-0.02em] prose-a:text-cobalt prose-strong:text-ink" data-reveal><Content /></div>
+    <div class="mx-auto mt-12 flex max-w-[68ch] flex-wrap items-center justify-between gap-4 border-t border-line pt-6">
+      <a href="/blog" class="mono text-cobalt">← Todos los posts</a>
+      <a href="/unete" class="btn btn-primary">Únete a Start <span class="font-mono">→</span></a>
+    </div>
+  </article>
+
+  {more.length > 0 && (
+    <section class="bg-paper-2 text-ink">
+      <div class="container-x py-20">
+        <div class="flex items-end justify-between" data-reveal>
+          <div><span class="eyebrow text-cobalt">Más posts</span><h2 class="display mt-3 text-[clamp(28px,3.5vw,48px)]">Sigue leyendo_</h2></div>
+          <a href="/blog" class="btn btn-outline hidden md:inline-flex">Ver todos</a>
+        </div>
+        <div class="mt-10 grid gap-8 md:grid-cols-3" data-stagger>
+          {more.map((m) => (
+            <a href={`/blog/${m.id}`} class="group" data-reveal>
+              <div class="relative aspect-[16/10] overflow-hidden rounded-brand bg-cobalt"><Placeholder class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" /></div>
+              <span class="eyebrow mt-4 block text-cobalt">{m.data.category} · {m.data.date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}</span>
+              <h3 class="mt-2 text-2xl font-bold leading-tight group-hover:underline">{m.data.title}</h3>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+</Base>
