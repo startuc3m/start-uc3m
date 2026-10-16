@@ -1,0 +1,28 @@
+---
+import Logo from './Logo.astro';
+import { site } from '../lib/site';
+import { blogVisible } from '../lib/content';
+const conBlog = await blogVisible();
+const cols = [
+  { h: 'Web', items: [['Eventos', '/eventos'], ['Podcast', '/podcast'], ['Equipo', '/equipo'], ...(conBlog ? [['Blog', '/blog']] : []), ['Recursos', '/recursos'], ['Links', '/links']] },
+  { h: 'Empresas', items: [['Patrocina', '/patrocina'], ['Patrocinadores', '/patrocinadores'], ['Contacto', '/contacto']] },
+  { h: 'Redes', items: [['Instagram', site.social.instagram], ['LinkedIn', site.social.linkedin], ['TikTok', site.social.tiktok], ['YouTube', site.social.youtube]] },
+];
+---
+<footer class="bg-navy text-white">
+  <div class="container-x grid gap-12 py-16 md:grid-cols-[1.5fr_1fr_1fr_1fr]">
+    <div class="flex flex-col gap-3">
+      <Logo tone="white" size={64} full />
+      <a class="font-mono text-sm text-lavender hover:text-white" href={`mailto:${site.email}`}>{site.email}</a>
+    </div>
+    {cols.map((c) => (
+      <div class="flex flex-col gap-2">
+        <span class="eyebrow text-lavender">{c.h}</span>
+        {c.items.map(([l, h]) => <a href={h} class="text-[15px] hover:underline">{l}</a>)}
+      </div>
+    ))}
+  </div>
+  <div class="container-x border-t border-cobalt-deep py-6 font-mono text-[11px] tracking-wider text-lavender/70">
+    © 2026 START UC3M · ASOCIACIÓN DE EMPRENDEDORES DE LA UNIVERSIDAD CARLOS III DE MADRID · <a href="/contacto" class="hover:text-white">CONTACTO</a> · <a href="/privacidad" class="hover:text-white">PRIVACIDAD</a>
+  </div>
+</footer>
