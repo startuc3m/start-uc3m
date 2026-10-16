@@ -1,0 +1,9 @@
+---
+import Base from '../../layouts/Base.astro';
+import SociosGracias from '../../socios/SociosGracias.jsx';
+// Página de la web anterior montada tal cual (#45): la lógica no cambia.
+// client:only porque lee window (parámetros de la URL) y llama a /api.
+---
+<Base title="Gracias por hacerte socio" tone="dark" noindex>
+  <SociosGracias client:only="react" />
+</Base>

@@ -1,0 +1,12 @@
+---
+// Cabecera de página interior: azul principal, titular grande
+const { eyebrow, title, intro } = Astro.props;
+---
+<section class="bg-cobalt text-white">
+  <div class="container-x pb-16 pt-20">
+    <span class="eyebrow text-lavender">{eyebrow}</span>
+    <h1 class="display mt-4 max-w-5xl text-[clamp(44px,8vw,120px)]" data-split>{title}</h1>
+    {intro && <p class="mt-8 max-w-2xl text-xl text-lavender">{intro}</p>}
+    <slot />
+  </div>
+</section>
