@@ -1,0 +1,50 @@
+---
+import Base from '../layouts/Base.astro';
+import Form from '../components/Form.astro';
+import { site } from '../lib/site';
+import { asset } from '../lib/url';
+const channels = [
+  ['Email', site.email, `mailto:${site.email}`],
+  ['Instagram', '@startuc3m', site.social.instagram],
+  ['LinkedIn', 'Start UC3M Emprendedores', site.social.linkedin],
+  ['TikTok', '@startuc3m', site.social.tiktok],
+  ['YouTube', '@StartUC3MG · StartTheWeek', site.social.youtube],
+];
+---
+<Base title="Contacto" tone="dark">
+  <section class="bg-cobalt text-white">
+    <div class="container-x grid gap-12 pb-20 pt-20 md:grid-cols-[1fr_1.2fr]">
+      <div>
+        <span class="eyebrow text-lavender">Contacto</span>
+        <h1 class="display mt-4 text-[clamp(44px,7vw,104px)]" data-split>Escríbenos_</h1>
+        <p class="mt-6 max-w-md text-xl text-lavender" data-reveal>Respondemos en menos de 48 h. Para ideas, dudas, eventos o simplemente para conocernos.</p>
+        <ul class="mt-10 border-t border-white/30" data-stagger>
+          {channels.map(([k, v, h]) => (
+            <li><a href={h} class="group flex items-center justify-between gap-4 border-b border-white/30 py-4"><span class="mono text-lavender">{k}</span><span class="text-lg font-semibold group-hover:underline">{v} <span class="font-mono text-lavender">→</span></span></a></li>
+          ))}
+        </ul>
+        <a href="/patrocina" class="mt-8 flex items-center justify-between rounded-brand border border-white/50 px-5 py-4 transition-colors hover:bg-white hover:text-cobalt" data-reveal>
+          <span><span class="mono block opacity-70">¿Eres empresa?</span><span class="text-xl font-bold">Patrocina Start</span></span><span class="font-mono text-2xl">→</span>
+        </a>
+      </div>
+      <div data-reveal><Form name="contacto" dark fields={[
+        { name: 'nombre', label: 'Nombre', required: true },
+        { name: 'email', label: 'Email', type: 'email', required: true },
+        { name: 'asunto', label: 'Asunto', full: true, required: true },
+        { name: 'mensaje', label: 'Mensaje', type: 'textarea', full: true, required: true },
+      ]} /></div>
+    </div>
+  </section>
+  <section class="container-x grid gap-12 py-20 md:grid-cols-[1.4fr_1fr] md:items-center">
+    <div class="relative aspect-[16/9] overflow-hidden rounded-brand bg-cobalt" data-img-reveal>
+      <img src={asset('/media/location.jpg')} alt="Campus Puerta de Toledo, UC3M" class="absolute inset-0 h-[120%] w-full object-cover" data-parallax="8" loading="lazy" />
+      <span class="eyebrow absolute bottom-4 left-4 rounded-full bg-navy/70 px-3 py-2 text-lavender backdrop-blur">Campus Puerta de Toledo</span>
+    </div>
+    <div data-reveal>
+      <span class="eyebrow text-cobalt">Dónde estamos</span>
+      <h2 class="display mt-3 text-[clamp(32px,4vw,56px)] text-cobalt" data-split>Campus Puerta de Toledo_</h2>
+      <p class="mt-4 text-lg leading-relaxed">Universidad Carlos III de Madrid · Ronda de Toledo, 1 · 28005 Madrid. Casi todos los eventos son aquí; si no, lo pone en la ficha del evento.</p>
+      <a href="https://www.google.com/maps/search/Campus+Puerta+de+Toledo+UC3M" class="btn btn-primary mt-6" target="_blank" rel="noopener">Cómo llegar <span class="font-mono">→</span></a>
+    </div>
+  </section>
+</Base>

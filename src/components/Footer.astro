@@ -1,0 +1,52 @@
+---
+import Logo from './Logo.astro';
+import { site } from '../lib/site';
+const cols = [
+  { h: 'Web', items: [['Eventos', '/eventos'], ['Podcast', '/podcast'], ['Equipo', '/equipo'], ['Blog', '/blog'], ['Recursos', '/recursos'], ['Links', '/links']] },
+  { h: 'Empresas', items: [['Patrocina', '/patrocina'], ['Patrocinadores', '/patrocinadores'], ['Contacto', '/contacto']] },
+  { h: 'Redes', items: [['Instagram', site.social.instagram], ['LinkedIn', site.social.linkedin], ['TikTok', site.social.tiktok], ['YouTube', site.social.youtube]] },
+];
+---
+<footer class="bg-navy text-white">
+  <div class="container-x grid gap-12 py-16 md:grid-cols-[1.5fr_1fr_1fr_1fr]">
+    <div class="flex flex-col gap-3">
+      <Logo tone="white" size={64} full />
+      <a class="font-mono text-sm text-lavender hover:text-white" href={`mailto:${site.email}`} data-cms="site.email">{site.email}</a>
+      <form id="newsletter" class="mt-6 flex max-w-sm gap-2" data-form="newsletter" action="/api/forms" method="post">
+        <input type="hidden" name="form" value="newsletter" />
+        <input type="text" name="website" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true" />
+        <input required type="email" name="email" placeholder="tu@alumnos.uc3m.es" class="w-full rounded-brand border border-cobalt bg-transparent px-3 py-2 text-sm placeholder:text-lavender/60" />
+        <button class="btn btn-on-blue px-4 py-2 text-sm">Newsletter</button>
+      </form>
+      <p class="text-xs text-lavender/70" data-form-status></p>
+    </div>
+    {cols.map((c) => (
+      <div class="flex flex-col gap-2">
+        <span class="eyebrow text-lavender">{c.h}</span>
+        {c.items.map(([l, h]) => <a href={h} class="text-[15px] hover:underline">{l}</a>)}
+      </div>
+    ))}
+  </div>
+  <div class="container-x border-t border-cobalt-deep py-6 font-mono text-[11px] tracking-wider text-lavender/70">
+    © 2026 START UC3M · ASOCIACIÓN DE EMPRENDEDORES DE LA UNIVERSIDAD CARLOS III DE MADRID · <a href="/contacto" class="hover:text-white">CONTACTO</a> · <a href="/admin" class="hover:text-white">PANEL</a>
+  </div>
+</footer>
+<script>
+  // Envío sin recarga para los formularios de newsletter (fuera de <Form>, que trae su propio handler).
+  document.querySelectorAll<HTMLFormElement>('form[data-form="newsletter"]').forEach((form) => {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const status = form.querySelector<HTMLElement>('[data-form-status]') ?? form.parentElement?.querySelector<HTMLElement>('[data-form-status]');
+      if (!form.reportValidity()) return;
+      if (status) status.textContent = 'Enviando…';
+      try {
+        const r = await fetch(form.action, { method: 'POST', body: new FormData(form) });
+        const j = await r.json();
+        if (status) status.textContent = r.ok ? '¡Listo! Ya estás dentro.' : (j.error ?? 'Algo ha fallado.');
+        if (r.ok) form.reset();
+      } catch {
+        if (status) status.textContent = 'Sin conexión con el servidor. Inténtalo de nuevo.';
+      }
+    });
+  });
+</script>

@@ -1,0 +1,219 @@
+---
+import Admin from '../../layouts/Admin.astro';
+---
+<Admin title="Recursos" section="recursos">
+  <div class="flex flex-wrap items-start justify-between gap-4">
+    <div>
+      <span class="eyebrow text-cobalt">Contenido</span>
+      <h2 class="display mt-1 text-3xl">Recursos_</h2>
+      <p class="mt-1 text-sm text-ink/60">Enlaces útiles agrupados por categoría que se muestran en la página pública /recursos.</p>
+    </div>
+    <div class="flex items-center gap-2">
+      <button class="adm-btn-ghost" data-check><span data-check-label>Comprobar enlaces</span></button>
+      <button class="adm-btn" data-new>+ Nuevo recurso</button>
+    </div>
+  </div>
+
+  <div class="mt-6 flex flex-wrap items-center gap-2" data-chips></div>
+
+  <div class="adm-card mt-4 overflow-x-auto p-0">
+    <table class="adm-table">
+      <thead><tr><th>Título</th><th>Descripción</th><th>URL</th><th class="text-right">Acciones</th></tr></thead>
+      <tbody data-rows></tbody>
+    </table>
+    <p class="hidden p-8 text-center text-sm text-ink/60" data-empty>No hay recursos todavía. Crea el primero con «Nuevo recurso».</p>
+  </div>
+
+  <!-- Drawer -->
+  <div class="fixed inset-0 z-[150] hidden" data-drawer>
+    <div class="absolute inset-0 bg-navy/40" data-drawer-close></div>
+    <aside class="absolute right-0 top-0 flex h-full w-full max-w-md flex-col bg-white shadow-2xl">
+      <header class="flex h-14 items-center justify-between border-b border-line px-5">
+        <h3 class="font-bold" data-drawer-title>Nuevo recurso</h3>
+        <button class="adm-btn-ghost px-3 py-1" data-drawer-close aria-label="Cerrar">✕</button>
+      </header>
+      <form class="flex flex-1 flex-col gap-4 overflow-y-auto p-5" data-form>
+        <input type="hidden" name="id" />
+        <label><span class="adm-label">Categoría</span>
+          <select class="adm-input" name="cat" data-cat-select></select>
+        </label>
+        <label class="hidden" data-newcat-wrap><span class="adm-label">Nueva categoría</span>
+          <input class="adm-input" name="newcat" placeholder="p. ej. Becas" />
+        </label>
+        <label><span class="adm-label">Título</span><input class="adm-input" name="title" required /></label>
+        <label><span class="adm-label">Descripción</span><textarea class="adm-input" name="desc" rows="3"></textarea></label>
+        <label><span class="adm-label">URL</span><input class="adm-input" name="url" placeholder="https://…" required /></label>
+        <div class="mt-auto flex items-center justify-between gap-2 border-t border-line pt-4">
+          <button type="button" class="adm-btn-danger hidden" data-delete>Borrar</button>
+          <div class="ml-auto flex gap-2">
+            <button type="button" class="adm-btn-ghost" data-drawer-close>Cancelar</button>
+            <button type="submit" class="adm-btn">Guardar</button>
+          </div>
+        </div>
+      </form>
+    </aside>
+  </div>
+
+  <script>
+    const cms = window.cms;
+    const COL = 'recursos';
+    const NEW = '__new__';
+    const DEFAULT_CATS = ['UC3M', 'Herramientas', 'Ecosistema', 'Guías', 'Financiación'];
+
+    type Recurso = { id: string; cat: string; title: string; desc: string; url: string };
+
+    const $ = <T extends Element = HTMLElement>(s: string) => document.querySelector(s) as T;
+    const rows = $('[data-rows]');
+    const empty = $('[data-empty]');
+    const chips = $('[data-chips]');
+    const drawer = $('[data-drawer]');
+    const form = $<HTMLFormElement>('[data-form]');
+    const catSelect = $<HTMLSelectElement>('[data-cat-select]');
+    const newCatWrap = $('[data-newcat-wrap]');
+    const delBtn = $<HTMLButtonElement>('[data-delete]');
+
+    let filter = 'all';
+    let linkStatus: Record<string, string> = {};
+
+    const items = (): Recurso[] => cms.list(COL) as Recurso[];
+    const cats = () => {
+      const set = new Set<string>(DEFAULT_CATS);
+      items().forEach((r) => r.cat && set.add(r.cat));
+      return [...set];
+    };
+
+    function renderChips() {
+      const counts: Record<string, number> = {};
+      items().forEach((r) => (counts[r.cat] = (counts[r.cat] || 0) + 1));
+      const all = [['all', 'Todas', items().length], ...cats().map((c) => [c, c, counts[c] || 0])] as [string, string, number][];
+      chips.innerHTML = all
+        .map(([k, l, n]) => `<button class="adm-badge cursor-pointer transition ${filter === k ? 'adm-badge-ok' : 'hover:border-cobalt hover:text-cobalt'}" data-chip="${cms.esc(k)}">${cms.esc(l)} · ${n}</button>`)
+        .join('');
+    }
+
+    function renderRows() {
+      const list = items().filter((r) => filter === 'all' || r.cat === filter);
+      const groups = cats().filter((c) => list.some((r) => r.cat === c));
+      rows.innerHTML = groups
+        .map((c) => {
+          const head = `<tr><td colspan="4" class="!bg-paper-2 !py-2"><span class="mono text-cobalt">${cms.esc(c)}</span></td></tr>`;
+          const body = list
+            .filter((r) => r.cat === c)
+            .map((r) => {
+              const st = linkStatus[r.id];
+              const badge = st ? `<span class="adm-badge ml-2 ${st === '200 OK' ? 'adm-badge-ok' : 'border-red-500 text-red-600'}">${cms.esc(st)}</span>` : '';
+              const href = r.url && r.url !== '#' ? `<a href="${cms.esc(r.url)}" target="_blank" rel="noopener" class="text-cobalt underline-offset-2 hover:underline">${cms.esc(r.url.replace(/^https?:\/\//, '').replace(/\/$/, ''))}</a>` : `<span class="text-ink/40">sin enlace</span>`;
+              return `<tr>
+                <td class="font-semibold">${cms.esc(r.title)}</td>
+                <td class="max-w-xs text-ink/70">${cms.esc(r.desc)}</td>
+                <td class="whitespace-nowrap">${href}${badge}</td>
+                <td class="whitespace-nowrap text-right"><button class="adm-btn-ghost px-3 py-1" data-edit="${cms.esc(r.id)}">Editar</button> <button class="adm-btn-danger px-3 py-1" data-remove="${cms.esc(r.id)}">Borrar</button></td>
+              </tr>`;
+            })
+            .join('');
+          return head + body;
+        })
+        .join('');
+      empty.classList.toggle('hidden', list.length > 0);
+    }
+
+    function render() { renderChips(); renderRows(); }
+
+    // Drawer
+    function fillCatSelect(current?: string) {
+      catSelect.innerHTML = cats().map((c) => `<option value="${cms.esc(c)}">${cms.esc(c)}</option>`).join('') + `<option value="${NEW}">+ Nueva categoría…</option>`;
+      catSelect.value = current && cats().includes(current) ? current : cats()[0];
+      newCatWrap.classList.add('hidden');
+    }
+    function openDrawer(r?: Recurso) {
+      form.reset();
+      fillCatSelect(r?.cat);
+      (form.elements.namedItem('id') as HTMLInputElement).value = r?.id || '';
+      (form.elements.namedItem('title') as HTMLInputElement).value = r?.title || '';
+      (form.elements.namedItem('desc') as HTMLTextAreaElement).value = r?.desc || '';
+      (form.elements.namedItem('url') as HTMLInputElement).value = r?.url || '';
+      $('[data-drawer-title]').textContent = r ? 'Editar recurso' : 'Nuevo recurso';
+      delBtn.classList.toggle('hidden', !r);
+      drawer.classList.remove('hidden');
+      setTimeout(() => (form.elements.namedItem('title') as HTMLInputElement).focus(), 50);
+    }
+    function closeDrawer() { drawer.classList.add('hidden'); }
+
+    catSelect.addEventListener('change', () => {
+      const isNew = catSelect.value === NEW;
+      newCatWrap.classList.toggle('hidden', !isNew);
+      if (isNew) (form.elements.namedItem('newcat') as HTMLInputElement).focus();
+    });
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const fd = new FormData(form);
+      let cat = String(fd.get('cat') || '');
+      if (cat === NEW) cat = String(fd.get('newcat') || '').trim();
+      if (!cat) { cms.toast('Indica una categoría', 'err'); return; }
+      const id = String(fd.get('id') || '') || cms.uid();
+      cms.save(COL, { id, cat, title: String(fd.get('title') || '').trim(), desc: String(fd.get('desc') || '').trim(), url: String(fd.get('url') || '').trim() });
+      delete linkStatus[id];
+      closeDrawer();
+      cms.toast('Guardado');
+      render();
+    });
+
+    function remove(id: string) {
+      const r = items().find((x) => x.id === id);
+      if (!r || !confirm(`¿Borrar «${r.title}»?`)) return;
+      cms.remove(COL, id);
+      delete linkStatus[id];
+      closeDrawer();
+      cms.toast('Recurso borrado');
+      render();
+    }
+    delBtn.addEventListener('click', () => remove((form.elements.namedItem('id') as HTMLInputElement).value));
+
+    document.querySelectorAll('[data-drawer-close]').forEach((b) => b.addEventListener('click', closeDrawer));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDrawer(); });
+    $('[data-new]').addEventListener('click', () => openDrawer());
+
+    chips.addEventListener('click', (e) => {
+      const b = (e.target as HTMLElement).closest<HTMLElement>('[data-chip]');
+      if (!b) return;
+      filter = b.dataset.chip!;
+      render();
+    });
+    rows.addEventListener('click', (e) => {
+      const t = e.target as HTMLElement;
+      const ed = t.closest<HTMLElement>('[data-edit]');
+      if (ed) { openDrawer(items().find((r) => r.id === ed.dataset.edit)); return; }
+      const rm = t.closest<HTMLElement>('[data-remove]');
+      if (rm) remove(rm.dataset.remove!);
+    });
+
+    // Comprobación simulada de enlaces
+    const checkBtn = $<HTMLButtonElement>('[data-check]');
+    checkBtn.addEventListener('click', () => {
+      const label = $('[data-check-label]');
+      checkBtn.disabled = true;
+      label.innerHTML = '<span class="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-cobalt border-t-transparent align-[-2px]"></span> Comprobando…';
+      linkStatus = {};
+      render();
+      const list = items();
+      let i = 0;
+      const tick = () => {
+        if (i >= list.length) {
+          checkBtn.disabled = false;
+          label.textContent = 'Comprobar enlaces';
+          const bad = list.filter((r) => linkStatus[r.id] !== '200 OK').length;
+          cms.toast(bad ? `${list.length - bad} enlaces OK · ${bad} sin enlace` : `${list.length} enlaces comprobados · todo OK`, bad ? 'err' : 'ok');
+          return;
+        }
+        const r = list[i++];
+        linkStatus[r.id] = r.url && r.url !== '#' ? '200 OK' : 'sin URL';
+        renderRows();
+        setTimeout(tick, 120);
+      };
+      setTimeout(tick, 400);
+    });
+
+    render();
+  </script>
+</Admin>

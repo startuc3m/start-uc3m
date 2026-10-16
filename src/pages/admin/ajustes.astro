@@ -1,0 +1,244 @@
+---
+import Admin from '../../layouts/Admin.astro';
+---
+<Admin title="Ajustes" section="ajustes">
+  <div class="mb-6 flex flex-wrap items-end justify-between gap-3">
+    <div>
+      <h2 class="text-2xl font-bold">Ajustes</h2>
+      <p class="mt-1 text-sm text-ink/60">Datos generales del sitio, identidad, usuarios y despliegue.</p>
+    </div>
+    <button class="adm-btn" type="submit" form="site-form">Guardar cambios</button>
+  </div>
+
+  <div class="grid gap-6 lg:grid-cols-3">
+    <!-- Columna principal -->
+    <div class="flex flex-col gap-6 lg:col-span-2">
+      <!-- Datos del sitio -->
+      <section class="adm-card">
+        <h3 class="text-base font-bold">Datos del sitio</h3>
+        <p class="mt-1 text-sm text-ink/60">Se usan en la cabecera, el pie y las metaetiquetas de toda la web.</p>
+        <form id="site-form" class="mt-5 grid gap-4 sm:grid-cols-2">
+          <label class="sm:col-span-1"><span class="adm-label">Nombre</span><input class="adm-input" name="name" required /></label>
+          <label class="sm:col-span-1"><span class="adm-label">Curso</span><input class="adm-input" name="course" placeholder="2026/27" /></label>
+          <label class="sm:col-span-2"><span class="adm-label">Claim</span><input class="adm-input" name="claim" /></label>
+          <label class="sm:col-span-2"><span class="adm-label">Descripción</span><textarea class="adm-input" name="description" rows="3"></textarea></label>
+          <label class="sm:col-span-2"><span class="adm-label">Email de contacto</span><input class="adm-input" name="email" type="email" /></label>
+          <div class="sm:col-span-2 mt-2 border-t border-line pt-4">
+            <span class="adm-label">Redes sociales</span>
+          </div>
+          <label><span class="adm-label">Instagram</span><input class="adm-input" name="instagram" placeholder="https://instagram.com/…" /></label>
+          <label><span class="adm-label">LinkedIn</span><input class="adm-input" name="linkedin" placeholder="https://linkedin.com/company/…" /></label>
+          <label><span class="adm-label">TikTok</span><input class="adm-input" name="tiktok" placeholder="https://tiktok.com/@…" /></label>
+          <label><span class="adm-label">YouTube</span><input class="adm-input" name="youtube" placeholder="https://youtube.com/@…" /></label>
+          <div class="sm:col-span-2 flex items-center justify-end gap-2 pt-2">
+            <button type="button" class="adm-btn-ghost" data-site-undo>Descartar</button>
+            <button type="submit" class="adm-btn">Guardar</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Usuarios -->
+      <section class="adm-card">
+        <div class="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h3 class="text-base font-bold">Usuarios</h3>
+            <p class="mt-1 text-sm text-ink/60">Quién puede entrar al panel y con qué permisos.</p>
+          </div>
+          <form class="flex items-center gap-2" data-invite>
+            <input class="adm-input w-56" type="email" placeholder="nombre@startuc3m.org" required />
+            <button class="adm-btn-ghost whitespace-nowrap" type="submit">Invitar</button>
+          </form>
+        </div>
+        <div class="mt-4 overflow-x-auto">
+          <table class="adm-table">
+            <thead><tr><th>Usuario</th><th>Rol</th><th>Estado</th><th></th></tr></thead>
+            <tbody id="users"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Zona de peligro -->
+      <section class="adm-card border-red-200">
+        <h3 class="text-base font-bold text-red-600">Zona de peligro</h3>
+        <p class="mt-1 text-sm text-ink/60">Acciones irreversibles sobre el contenido local de este navegador.</p>
+        <div class="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-brand border border-line bg-paper-2 p-4">
+          <div>
+            <p class="text-sm font-semibold">Restablecer contenido de demo</p>
+            <p class="text-sm text-ink/60">Borra todos los cambios guardados y vuelve a la semilla original del sitio.</p>
+          </div>
+          <button class="adm-btn-danger" data-reset>Restablecer</button>
+        </div>
+      </section>
+    </div>
+
+    <!-- Columna lateral -->
+    <div class="flex flex-col gap-6">
+      <!-- Identidad -->
+      <section class="adm-card">
+        <h3 class="text-base font-bold">Identidad</h3>
+        <p class="mt-1 text-sm text-ink/60">Logo y colores que usa la web.</p>
+        <div class="mt-4">
+          <span class="adm-label">Logotipo</span>
+          <div class="grid h-28 place-items-center rounded-brand border border-line bg-paper-2 p-4">
+            <img data-logo alt="Start UC3M" class="max-h-full max-w-full object-contain" />
+          </div>
+          <p class="mono mt-2 text-ink/50">/brand/logo-wordmark-cobalt.png</p>
+        </div>
+        <div class="mt-4">
+          <span class="adm-label">Color principal</span>
+          <div class="flex items-center gap-3 rounded-brand border border-line p-3">
+            <span class="h-9 w-9 shrink-0 rounded-brand border border-line" style="background:#2b3a91"></span>
+            <div class="min-w-0">
+              <p class="mono">#2b3a91 · cobalt</p>
+              <p class="text-xs text-ink/50">Solo lectura · colores de marca definidos en el manual de identidad.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Dominio y despliegue -->
+      <section class="adm-card">
+        <h3 class="text-base font-bold">Dominio y despliegue</h3>
+        <p class="mt-1 text-sm text-ink/60">Dónde y cómo se publica la web.</p>
+        <dl class="mt-4 flex flex-col gap-3 text-sm">
+          <div class="flex items-center justify-between gap-3">
+            <dt class="text-ink/60">Dominio</dt>
+            <dd class="flex items-center gap-2 font-semibold">startuc3m.es <span class="adm-badge adm-badge-ok">verificado</span></dd>
+          </div>
+          <div class="flex items-center justify-between gap-3">
+            <dt class="text-ink/60">Hosting</dt>
+            <dd class="font-semibold">GitHub Pages</dd>
+          </div>
+          <div class="flex items-center justify-between gap-3">
+            <dt class="text-ink/60">Último despliegue</dt>
+            <dd class="font-semibold" data-deploy-when>hace 3 min</dd>
+          </div>
+          <div class="flex items-center justify-between gap-3">
+            <dt class="text-ink/60">Rama</dt>
+            <dd class="mono">main</dd>
+          </div>
+        </dl>
+        <button class="adm-btn-ghost mt-4 w-full justify-center" data-redeploy>
+          <span data-spinner class="hidden h-3.5 w-3.5 animate-spin rounded-full border-2 border-cobalt border-t-transparent"></span>
+          <span data-redeploy-label>Redesplegar</span>
+        </button>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const cms = window.cms;
+    const base = document.documentElement.dataset.base ?? '';
+    const FIELDS = ['name', 'claim', 'description', 'email', 'course', 'instagram', 'linkedin', 'tiktok', 'youtube'];
+
+    // ---- Datos del sitio ----
+    const form = document.getElementById('site-form') as HTMLFormElement;
+    function fill() {
+      const site = cms.getObject('site');
+      for (const k of FIELDS) {
+        const el = form.elements.namedItem(k) as HTMLInputElement | HTMLTextAreaElement | null;
+        if (el) el.value = site[k] ?? '';
+      }
+    }
+    fill();
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const site = { ...cms.getObject('site') };
+      for (const k of FIELDS) {
+        const el = form.elements.namedItem(k) as HTMLInputElement | HTMLTextAreaElement | null;
+        if (el) site[k] = el.value.trim();
+      }
+      cms.setObject('site', site);
+      fill();
+      cms.toast('Guardado');
+    });
+    document.querySelector('[data-site-undo]')?.addEventListener('click', () => { fill(); cms.toast('Cambios descartados'); });
+
+    // ---- Identidad ----
+    const logo = document.querySelector<HTMLImageElement>('[data-logo]');
+    if (logo) logo.src = `${base}/brand/logo-wordmark-cobalt.png`;
+
+    // ---- Usuarios (demo, en memoria) ----
+    type User = { name: string; email: string; role: string; status: 'activo' | 'invitado' };
+    const ROLES = ['Admin', 'Editora', 'Editor', 'Comunicación', 'Lectura'];
+    const users: User[] = [
+      { name: 'Ioana Nedelcu', email: 'ioana@startuc3m.org', role: 'Admin', status: 'activo' },
+      { name: 'Ana Giménez', email: 'ana@startuc3m.org', role: 'Editora', status: 'activo' },
+      { name: 'Uxío López', email: 'uxio@startuc3m.org', role: 'Comunicación', status: 'activo' },
+    ];
+    const tbody = document.getElementById('users')!;
+    function renderUsers() {
+      tbody.innerHTML = users.map((u, i) => `
+        <tr>
+          <td>
+            <div class="flex items-center gap-3">
+              <span class="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-cobalt text-xs font-bold text-white">${cms.esc(u.name.split(' ').map((p) => p[0]).join('').slice(0, 2).toUpperCase())}</span>
+              <div class="min-w-0"><p class="font-semibold">${cms.esc(u.name)}</p><p class="mono text-ink/50">${cms.esc(u.email)}</p></div>
+            </div>
+          </td>
+          <td>
+            <select class="adm-input w-40" data-role="${i}">
+              ${ROLES.map((r) => `<option ${r === u.role ? 'selected' : ''}>${cms.esc(r)}</option>`).join('')}
+            </select>
+          </td>
+          <td><span class="adm-badge ${u.status === 'activo' ? 'adm-badge-ok' : ''}">${cms.esc(u.status)}</span></td>
+          <td class="text-right">${i === 0 ? '' : `<button class="adm-btn-danger" data-remove="${i}">Quitar</button>`}</td>
+        </tr>`).join('');
+    }
+    renderUsers();
+    tbody.addEventListener('change', (e) => {
+      const sel = (e.target as HTMLElement).closest<HTMLSelectElement>('[data-role]');
+      if (!sel) return;
+      const u = users[Number(sel.dataset.role)];
+      u.role = sel.value;
+      cms.toast(`${u.name} ahora es ${u.role}`);
+    });
+    tbody.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-remove]');
+      if (!btn) return;
+      const i = Number(btn.dataset.remove);
+      if (!confirm(`¿Quitar a ${users[i].name} del panel?`)) return;
+      users.splice(i, 1);
+      renderUsers();
+      cms.toast('Usuario eliminado');
+    });
+    const invite = document.querySelector<HTMLFormElement>('[data-invite]')!;
+    invite.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const input = invite.querySelector('input')!;
+      const email = input.value.trim();
+      if (!email) return;
+      if (users.some((u) => u.email.toLowerCase() === email.toLowerCase())) { cms.toast('Ese usuario ya está en el panel', 'err'); return; }
+      const local = email.split('@')[0];
+      const name = local.split(/[._-]/).filter(Boolean).map((p) => p[0].toUpperCase() + p.slice(1)).join(' ') || email;
+      users.push({ name, email, role: 'Lectura', status: 'invitado' });
+      input.value = '';
+      renderUsers();
+      cms.toast(`Invitación enviada a ${email}`);
+    });
+
+    // ---- Despliegue ----
+    const redeploy = document.querySelector<HTMLButtonElement>('[data-redeploy]')!;
+    const spinner = redeploy.querySelector<HTMLElement>('[data-spinner]')!;
+    const label = redeploy.querySelector<HTMLElement>('[data-redeploy-label]')!;
+    const when = document.querySelector<HTMLElement>('[data-deploy-when]')!;
+    redeploy.addEventListener('click', () => {
+      redeploy.disabled = true;
+      spinner.classList.remove('hidden');
+      label.textContent = 'Desplegando…';
+      setTimeout(() => {
+        redeploy.disabled = false;
+        spinner.classList.add('hidden');
+        label.textContent = 'Redesplegar';
+        when.textContent = 'hace un momento';
+        cms.toast('Despliegue completado en startuc3m.es');
+      }, 1600);
+    });
+
+    // ---- Zona de peligro ----
+    document.querySelector('[data-reset]')?.addEventListener('click', () => {
+      if (!confirm('¿Restablecer todo el contenido de demo? Se perderán los cambios guardados en este navegador.')) return;
+      cms.reset();
+    });
+  </script>
+</Admin>

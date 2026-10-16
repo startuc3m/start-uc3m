@@ -1,0 +1,141 @@
+---
+import Admin from '../../layouts/Admin.astro';
+---
+<Admin title="Envíos de formularios" section="envios">
+  <div class="flex flex-wrap items-start justify-between gap-4">
+    <div>
+      <h2 class="text-2xl font-bold">Envíos de formularios</h2>
+      <p class="mt-1 text-sm text-ink/60">Todo lo que llega desde los formularios de la web: únete, eventos, patrocinio, contacto y newsletter.</p>
+    </div>
+    <button class="adm-btn-ghost" data-export>↓ Exportar CSV</button>
+  </div>
+
+  <div class="mt-6 flex flex-wrap gap-2" data-tabs></div>
+
+  <div class="adm-card mt-4 overflow-x-auto p-0">
+    <table class="adm-table">
+      <thead>
+        <tr><th>Fecha</th><th>Formulario</th><th>Quién</th><th>Resumen</th><th>Estado</th></tr>
+      </thead>
+      <tbody data-rows></tbody>
+    </table>
+    <p class="hidden p-6 text-sm text-ink/60" data-empty>No hay envíos en este filtro todavía. Cuando alguien rellene un formulario de la web aparecerá aquí.</p>
+  </div>
+
+  <!-- Drawer de detalle -->
+  <div class="fixed inset-0 z-[150] hidden" data-drawer>
+    <div class="absolute inset-0 bg-navy/40" data-close></div>
+    <aside class="absolute right-0 top-0 flex h-full w-full max-w-lg flex-col border-l border-line bg-white shadow-xl">
+      <div class="flex items-center justify-between border-b border-line px-5 py-4">
+        <div><span class="mono text-cobalt" data-d-form></span><h3 class="mt-1 text-lg font-bold" data-d-title></h3><p class="mono text-ink/50" data-d-date></p></div>
+        <button class="adm-btn-ghost" data-close>Cerrar</button>
+      </div>
+      <div class="flex-1 overflow-y-auto px-5 py-4">
+        <dl class="grid grid-cols-[minmax(90px,1fr)_2fr] gap-x-4 gap-y-3 text-sm" data-d-body></dl>
+      </div>
+      <div class="flex flex-wrap items-center gap-2 border-t border-line px-5 py-4">
+        <a class="adm-btn" data-d-mail href="#">Responder por email</a>
+        <button class="adm-btn-ghost" data-d-done>Marcar como respondido</button>
+        <button class="adm-btn-danger ml-auto" data-d-del>Borrar</button>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    const cms = window.cms;
+    const base = document.documentElement.dataset.base || '';
+    const FORMS: Record<string, string> = { unete: 'Únete', evento: 'Evento', patrocinio: 'Patrocinio', contacto: 'Contacto', newsletter: 'Newsletter' };
+    const ESTADOS = ['Nuevo', 'Visto', 'Respondido'];
+    const SUMMARY_KEYS = ['mensaje', 'asunto', 'interes', 'evento', 'estudios', 'dept1', 'empresa', 'email'];
+    let filter = 'todos';
+    let current: string | null = null;
+
+    const $ = (s: string) => document.querySelector(s) as HTMLElement;
+    const items = () => cms.list('envios').slice().sort((a, b) => (b.at || '').localeCompare(a.at || ''));
+    const filtered = () => items().filter((i) => filter === 'todos' || i.form === filter);
+    const who = (i: any) => { const d = i.data || {}; return [d.empresa, [d.nombre, d.apellidos].filter(Boolean).join(' ')].filter(Boolean).join(' · '); };
+    const summary = (i: any) => { const d = i.data || {}; const k = SUMMARY_KEYS.find((k) => d[k] && k !== 'email' && d[k] !== who(i)) || 'email'; const v = String(d[k] || ''); return v.length > 60 ? v.slice(0, 60) + '…' : v; };
+    const fmt = (iso: string) => { const d = new Date(iso); return cms.fmtDate(iso) + ' ' + d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }); };
+    const estado = (i: any) => i.estado || 'Nuevo';
+
+    function renderTabs() {
+      const all = items();
+      const tabs = [['todos', 'Todos', all.length], ...Object.entries(FORMS).map(([k, l]) => [k, l, all.filter((i) => i.form === k).length])];
+      $('[data-tabs]').innerHTML = tabs.map(([k, l, n]) => `<button data-tab="${k}" class="${filter === k ? 'adm-btn' : 'adm-btn-ghost'}">${cms.esc(l)} <span class="mono opacity-70">${n}</span></button>`).join('');
+    }
+
+    function renderRows() {
+      const list = filtered();
+      $('[data-empty]').classList.toggle('hidden', list.length > 0);
+      $('[data-rows]').innerHTML = list.map((i) => `
+        <tr data-id="${cms.esc(i.id)}" class="cursor-pointer ${estado(i) === 'Nuevo' ? 'font-semibold' : ''}">
+          <td class="mono whitespace-nowrap text-ink/70">${cms.esc(fmt(i.at))}</td>
+          <td><span class="adm-badge ${i.form === 'patrocinio' ? 'adm-badge-ok' : ''}">${cms.esc(FORMS[i.form] || i.form)}</span></td>
+          <td><div>${cms.esc(who(i) || '—')}</div><div class="mono text-ink/50">${cms.esc(i.data?.email || '')}</div></td>
+          <td class="max-w-xs truncate text-ink/70">${cms.esc(summary(i))}</td>
+          <td><select class="adm-input w-auto" data-estado="${cms.esc(i.id)}">${ESTADOS.map((e) => `<option ${estado(i) === e ? 'selected' : ''}>${e}</option>`).join('')}</select></td>
+        </tr>`).join('');
+    }
+
+    function render() { renderTabs(); renderRows(); }
+
+    function setEstado(id: string, value: string, quiet = false) {
+      const it = cms.get('envios', id); if (!it) return;
+      cms.save('envios', { ...it, estado: value });
+      if (!quiet) cms.toast('Guardado');
+      render();
+    }
+
+    function openDrawer(id: string) {
+      const i = cms.get('envios', id); if (!i) return;
+      current = id;
+      $('[data-d-form]').textContent = FORMS[i.form] || i.form;
+      $('[data-d-title]').textContent = who(i) || i.data?.email || 'Envío';
+      $('[data-d-date]').textContent = fmt(i.at) + ' · ' + estado(i);
+      $('[data-d-body]').innerHTML = Object.entries(i.data || {}).map(([k, v]) => `<dt class="adm-label mb-0">${cms.esc(k)}</dt><dd class="break-words">${cms.esc(v)}</dd>`).join('') || '<dd class="text-ink/50">Sin datos</dd>';
+      const mail = $('[data-d-mail]') as HTMLAnchorElement;
+      const to = i.data?.email || '';
+      mail.href = `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent('Re: ' + (FORMS[i.form] || i.form) + ' · Start UC3M')}`;
+      mail.classList.toggle('opacity-60', !to);
+      $('[data-drawer]').classList.remove('hidden');
+      if (estado(i) === 'Nuevo') setEstado(id, 'Visto', true);
+    }
+
+    function closeDrawer() { $('[data-drawer]').classList.add('hidden'); current = null; }
+
+    function exportCSV() {
+      const list = filtered();
+      if (!list.length) { cms.toast('Nada que exportar', 'err'); return; }
+      const keys = Array.from(new Set(list.flatMap((i) => Object.keys(i.data || {}))));
+      const head = ['id', 'formulario', 'fecha', 'estado', ...keys];
+      const cell = (v: any) => { const s = String(v ?? ''); return /[",\n;]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+      const rows = list.map((i) => [i.id, i.form, i.at, estado(i), ...keys.map((k) => i.data?.[k])].map(cell).join(','));
+      const csv = '﻿' + [head.join(','), ...rows].join('\n');
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+      a.download = `envios-${filter}-${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+      cms.toast(`Exportados ${list.length} envíos`);
+    }
+
+    // Eventos
+    $('[data-tabs]').addEventListener('click', (e) => { const b = (e.target as HTMLElement).closest('[data-tab]') as HTMLElement | null; if (!b) return; filter = b.dataset.tab!; render(); });
+    $('[data-rows]').addEventListener('change', (e) => { const s = e.target as HTMLSelectElement; if (s.dataset.estado) setEstado(s.dataset.estado, s.value); });
+    $('[data-rows]').addEventListener('click', (e) => { const t = e.target as HTMLElement; if (t.closest('select')) return; const tr = t.closest('tr[data-id]') as HTMLElement | null; if (tr) openDrawer(tr.dataset.id!); });
+    document.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', closeDrawer));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDrawer(); });
+    $('[data-d-done]').addEventListener('click', () => { if (current) { setEstado(current, 'Respondido'); closeDrawer(); } });
+    $('[data-d-del]').addEventListener('click', () => { if (current && confirm('¿Borrar este envío? No se puede deshacer.')) { cms.remove('envios', current); closeDrawer(); cms.toast('Envío borrado'); render(); } });
+    $('[data-export]').addEventListener('click', exportCSV);
+
+    render();
+
+    // Intento silencioso de sincronizar con el endpoint real (solo acepta POST; se ignora cualquier error)
+    fetch(base + '/api/forms').then((r) => (r.ok ? r.json() : null)).then((d) => {
+      if (!Array.isArray(d)) return;
+      d.forEach((x: any) => { if (x && x.id && !cms.get('envios', x.id)) cms.save('envios', x); });
+      render();
+    }).catch(() => {});
+  </script>
+</Admin>

@@ -1,0 +1,205 @@
+---
+import Admin from '../../layouts/Admin.astro';
+---
+<Admin title="Podcast · StartTheWeek" section="podcast">
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <span class="eyebrow text-cobalt">StartTheWeek</span>
+      <h1 class="display mt-1 text-3xl">Podcast_</h1>
+      <p class="mt-1 text-sm text-ink/60">Episodios del canal de YouTube. Pega una URL y el episodio se rellena solo.</p>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <button class="adm-btn-ghost" data-import><span data-import-icon>⟳</span> Importar del canal</button>
+      <button class="adm-btn" data-new>+ Nuevo episodio</button>
+    </div>
+  </div>
+
+  <div class="mt-6 flex flex-wrap items-center gap-3">
+    <input class="adm-input max-w-sm" type="search" placeholder="Buscar por título, invitado o nº…" data-search />
+    <span class="mono text-ink/50" data-count></span>
+  </div>
+
+  <div id="grid" class="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3"></div>
+  <p id="empty" class="mt-10 hidden text-center text-sm text-ink/60">No hay episodios que coincidan. Crea uno con «Nuevo episodio» o cambia la búsqueda.</p>
+
+  <!-- Drawer -->
+  <div id="drawer" class="fixed inset-0 z-[150] hidden">
+    <div class="absolute inset-0 bg-navy/40" data-close></div>
+    <aside class="absolute right-0 top-0 flex h-full w-full max-w-lg flex-col overflow-y-auto border-l border-line bg-paper shadow-2xl">
+      <div class="flex items-center justify-between border-b border-line bg-white px-5 py-4">
+        <h2 class="text-lg font-bold" data-drawer-title>Nuevo episodio</h2>
+        <button class="adm-btn-ghost !px-3" data-close aria-label="Cerrar">✕</button>
+      </div>
+      <form class="flex flex-1 flex-col gap-4 p-5" data-form>
+        <input type="hidden" name="id" />
+        <label><span class="adm-label">URL de YouTube</span><input class="adm-input" name="youtube" placeholder="https://www.youtube.com/watch?v=…" /></label>
+        <div class="adm-card !p-3">
+          <div class="flex items-center gap-3">
+            <div class="aspect-video w-40 shrink-0 overflow-hidden rounded-brand bg-paper-2">
+              <img data-preview class="h-full w-full object-cover hidden" alt="" />
+              <div data-preview-empty class="grid h-full w-full place-items-center font-mono text-[11px] uppercase tracking-[0.12em] text-ink/40">Sin portada</div>
+            </div>
+            <div class="min-w-0 text-sm">
+              <span class="adm-label">YouTube ID</span>
+              <code class="mono break-all text-cobalt" data-yt-id>—</code>
+              <p class="mt-1 text-xs text-ink/50">La portada se toma de YouTube automáticamente.</p>
+            </div>
+          </div>
+        </div>
+        <input type="hidden" name="youtubeId" /><input type="hidden" name="cover" />
+        <label><span class="adm-label">Título</span><input class="adm-input" name="title" required /></label>
+        <div class="grid grid-cols-2 gap-3">
+          <label><span class="adm-label">Invitado/a</span><input class="adm-input" name="guest" /></label>
+          <label><span class="adm-label">Rol</span><input class="adm-input" name="role" placeholder="Fundador de…" /></label>
+        </div>
+        <div class="grid grid-cols-3 gap-3">
+          <label><span class="adm-label">Nº episodio</span><input class="adm-input" name="episode" type="number" min="1" required /></label>
+          <label><span class="adm-label">Fecha</span><input class="adm-input" name="date" type="date" required /></label>
+          <label><span class="adm-label">Duración</span><input class="adm-input" name="duration" placeholder="42 min" /></label>
+        </div>
+        <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="published" class="h-4 w-4 accent-cobalt" /> Publicado en la web</label>
+        <div class="mt-auto flex items-center justify-between gap-2 border-t border-line pt-4">
+          <button type="button" class="adm-btn-danger hidden" data-delete>Borrar</button>
+          <div class="ml-auto flex gap-2">
+            <button type="button" class="adm-btn-ghost" data-close>Cancelar</button>
+            <button type="submit" class="adm-btn">Guardar</button>
+          </div>
+        </div>
+      </form>
+    </aside>
+  </div>
+
+  <script>
+    const cms = window.cms;
+    const COL = 'podcast';
+    const base = document.documentElement.dataset.base || '';
+    const $ = (s: string) => document.querySelector(s) as HTMLElement;
+    const grid = $('#grid'), empty = $('#empty'), search = $('[data-search]') as HTMLInputElement;
+    const drawer = $('#drawer'), form = $('[data-form]') as HTMLFormElement;
+    const f = (n: string) => form.elements.namedItem(n) as HTMLInputElement;
+
+    const ytId = (url: string) => {
+      const m = String(url || '').trim().match(/(?:youtu\.be\/|v=|\/embed\/|\/shorts\/|\/live\/)([A-Za-z0-9_-]{11})/) || String(url || '').trim().match(/^([A-Za-z0-9_-]{11})$/);
+      return m ? m[1] : '';
+    };
+    const coverOf = (id: string) => (id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : '');
+    const imgSrc = (u: string) => (u && !/^https?:/.test(u) ? base + u : u);
+
+    function render() {
+      const q = search.value.trim().toLowerCase();
+      const all = cms.list(COL).slice().sort((a, b) => (Number(b.episode) || 0) - (Number(a.episode) || 0));
+      const items = q ? all.filter((p) => [p.title, p.guest, p.role, '#' + p.episode, String(p.episode)].join(' ').toLowerCase().includes(q)) : all;
+      $('[data-count]').textContent = `${items.length} de ${all.length} episodios`;
+      empty.classList.toggle('hidden', items.length > 0);
+      grid.innerHTML = items.map((p) => `
+        <article class="adm-card !p-0 overflow-hidden flex flex-col">
+          <button class="aspect-video w-full bg-paper-2 text-left" data-edit="${cms.esc(p.id)}">
+            ${p.cover ? `<img src="${cms.esc(imgSrc(p.cover))}" alt="" class="h-full w-full object-cover" loading="lazy" />` : `<div class="grid h-full place-items-center font-mono text-[11px] uppercase tracking-[0.12em] text-ink/40">Sin portada</div>`}
+          </button>
+          <div class="flex flex-1 flex-col gap-2 p-4">
+            <div class="flex items-center justify-between gap-2">
+              <span class="mono text-cobalt">#${cms.esc(p.episode)}</span>
+              <span class="mono text-ink/50">${p.date ? cms.esc(cms.fmtDate(p.date)) : '—'}${p.duration ? ' · ' + cms.esc(p.duration) : ''}</span>
+            </div>
+            <h3 class="line-clamp-2 font-bold leading-snug"><button class="text-left hover:text-cobalt" data-edit="${cms.esc(p.id)}">${cms.esc(p.title)}</button></h3>
+            <p class="text-sm text-ink/60">${cms.esc(p.guest || 'Sin invitado')}${p.role ? ` · <span class="text-ink/40">${cms.esc(p.role)}</span>` : ''}</p>
+            <div class="mt-auto flex items-center justify-between pt-2">
+              <label class="flex cursor-pointer items-center gap-2 text-sm"><input type="checkbox" class="h-4 w-4 accent-cobalt" data-pub="${cms.esc(p.id)}" ${p.published ? 'checked' : ''} /> <span class="adm-badge ${p.published ? 'adm-badge-ok' : ''}">${p.published ? 'Publicado' : 'Borrador'}</span></label>
+              <div class="flex gap-1">
+                ${p.youtube ? `<a class="adm-btn-ghost !px-2 !py-1 text-xs" href="${cms.esc(p.youtube)}" target="_blank" rel="noopener">▶ Ver</a>` : ''}
+                <button class="adm-btn-ghost !px-2 !py-1 text-xs" data-edit="${cms.esc(p.id)}">Editar</button>
+              </div>
+            </div>
+          </div>
+        </article>`).join('');
+    }
+
+    // Drawer
+    const nextEpisode = () => cms.list(COL).reduce((m, p) => Math.max(m, Number(p.episode) || 0), 0) + 1;
+    function updatePreview() {
+      const id = ytId(f('youtube').value);
+      f('youtubeId').value = id;
+      f('cover').value = coverOf(id);
+      $('[data-yt-id]').textContent = id || '—';
+      const img = $('[data-preview]') as HTMLImageElement;
+      img.classList.toggle('hidden', !id);
+      $('[data-preview-empty]').classList.toggle('hidden', !!id);
+      if (id) img.src = coverOf(id);
+    }
+    function open(item?: any) {
+      form.reset();
+      $('[data-drawer-title]').textContent = item ? `Editar #${item.episode}` : 'Nuevo episodio';
+      $('[data-delete]').classList.toggle('hidden', !item);
+      f('id').value = item?.id || '';
+      f('youtube').value = item?.youtube || '';
+      f('title').value = item?.title || '';
+      f('guest').value = item?.guest || '';
+      f('role').value = item?.role || '';
+      f('episode').value = String(item?.episode ?? nextEpisode());
+      f('date').value = item?.date || new Date().toISOString().slice(0, 10);
+      f('duration').value = item?.duration || '';
+      f('published').checked = item ? !!item.published : true;
+      updatePreview();
+      if (item?.cover && !f('cover').value) { f('cover').value = item.cover; const img = $('[data-preview]') as HTMLImageElement; img.src = imgSrc(item.cover); img.classList.remove('hidden'); $('[data-preview-empty]').classList.add('hidden'); }
+      drawer.classList.remove('hidden');
+      setTimeout(() => f(item ? 'title' : 'youtube').focus(), 50);
+    }
+    const close = () => drawer.classList.add('hidden');
+
+    f('youtube').addEventListener('input', updatePreview);
+    drawer.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', close));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+    $('[data-new]').addEventListener('click', () => open());
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const item = {
+        id: f('id').value || cms.uid(),
+        title: f('title').value.trim(),
+        guest: f('guest').value.trim(),
+        role: f('role').value.trim(),
+        episode: Number(f('episode').value) || nextEpisode(),
+        date: f('date').value,
+        duration: f('duration').value.trim(),
+        youtube: f('youtube').value.trim(),
+        youtubeId: f('youtubeId').value,
+        cover: f('cover').value,
+        published: f('published').checked,
+      };
+      cms.save(COL, item);
+      close(); render();
+      cms.toast('Guardado');
+    });
+    $('[data-delete]').addEventListener('click', () => {
+      const id = f('id').value;
+      if (!id || !confirm('¿Borrar este episodio? No se puede deshacer.')) return;
+      cms.remove(COL, id); close(); render(); cms.toast('Episodio borrado');
+    });
+
+    // Grid interactions
+    grid.addEventListener('click', (e) => {
+      const b = (e.target as HTMLElement).closest('[data-edit]') as HTMLElement | null;
+      if (b) open(cms.get(COL, b.dataset.edit!));
+    });
+    grid.addEventListener('change', (e) => {
+      const c = e.target as HTMLInputElement;
+      if (!c.matches('[data-pub]')) return;
+      const item = cms.get(COL, c.dataset.pub!); if (!item) return;
+      cms.save(COL, { ...item, published: c.checked }); render();
+      cms.toast(c.checked ? 'Episodio publicado' : 'Episodio ocultado');
+    });
+    search.addEventListener('input', render);
+
+    // Importar del canal (simulado)
+    $('[data-import]').addEventListener('click', () => {
+      const b = $('[data-import]') as HTMLButtonElement, ic = $('[data-import-icon]');
+      b.disabled = true; ic.classList.add('animate-spin', 'inline-block'); b.lastChild!.textContent = ' Sincronizando…';
+      setTimeout(() => {
+        b.disabled = false; ic.classList.remove('animate-spin', 'inline-block'); b.lastChild!.textContent = ' Importar del canal';
+        cms.toast('Canal sincronizado · 0 episodios nuevos');
+      }, 1000);
+    });
+
+    render();
+  </script>
+</Admin>

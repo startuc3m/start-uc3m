@@ -1,0 +1,238 @@
+---
+import Admin from '../../layouts/Admin.astro';
+---
+<Admin title="Eventos" section="eventos">
+  <div class="flex flex-wrap items-start justify-between gap-4">
+    <div>
+      <h2 class="text-2xl font-bold">Eventos</h2>
+      <p class="mt-1 text-sm text-ink/60">Hackathons, camps y jornadas de Start. Cambia el estado desde la tabla o edita cada evento en el panel lateral.</p>
+    </div>
+    <button class="adm-btn" data-new>+ Nuevo evento</button>
+  </div>
+
+  <div class="mt-6 flex flex-wrap items-center justify-between gap-3">
+    <div class="inline-flex rounded-brand border border-line bg-white p-1" data-tabs>
+      <button class="rounded-brand px-3 py-1.5 text-sm font-semibold text-ink/70 hover:text-cobalt data-[active]:bg-cobalt data-[active]:text-white data-[active]:hover:text-white" data-tab="proximos">Próximos <span class="mono ml-1 opacity-60" data-count="proximos">0</span></button>
+      <button class="rounded-brand px-3 py-1.5 text-sm font-semibold text-ink/70 hover:text-cobalt data-[active]:bg-cobalt data-[active]:text-white data-[active]:hover:text-white" data-tab="pasados">Pasados <span class="mono ml-1 opacity-60" data-count="pasados">0</span></button>
+    </div>
+    <input class="adm-input max-w-xs" type="search" placeholder="Buscar por título, lugar o tipo…" data-search />
+  </div>
+
+  <div class="adm-card mt-4 overflow-x-auto p-0">
+    <table class="adm-table">
+      <thead>
+        <tr>
+          <th class="w-16"></th><th>Evento</th><th>Fecha</th><th>Lugar</th><th>Estado</th><th class="text-right">Plazas</th><th class="text-right">Inscritos</th><th class="text-right">Acciones</th>
+        </tr>
+      </thead>
+      <tbody data-rows></tbody>
+    </table>
+    <p class="hidden p-8 text-center text-sm text-ink/60" data-empty>No hay eventos en esta pestaña. Crea uno con «Nuevo evento».</p>
+  </div>
+
+  <!-- Drawer de edición -->
+  <div class="fixed inset-0 z-[100] hidden" data-drawer>
+    <div class="absolute inset-0 bg-navy/40" data-drawer-close></div>
+    <form class="absolute right-0 top-0 flex h-full w-full max-w-2xl flex-col bg-white shadow-2xl" data-form>
+      <div class="flex h-14 shrink-0 items-center justify-between border-b border-line px-5">
+        <h3 class="font-bold" data-drawer-title>Nuevo evento</h3>
+        <button type="button" class="adm-btn-ghost px-3" data-drawer-close aria-label="Cerrar">✕</button>
+      </div>
+      <div class="flex-1 overflow-y-auto p-5">
+        <div class="grid gap-4 md:grid-cols-2">
+          <label class="md:col-span-2"><span class="adm-label">Título</span><input class="adm-input" name="title" required /></label>
+          <label class="md:col-span-2"><span class="adm-label">Subtítulo</span><input class="adm-input" name="subtitle" /></label>
+          <label><span class="adm-label">Tipo</span><input class="adm-input" name="type" placeholder="Hackathon, Camp, Jornada…" list="evt-types" /></label>
+          <datalist id="evt-types"><option value="Hackathon" /><option value="Camp" /><option value="Jornada" /><option value="Evento de referencia" /><option value="Directo" /></datalist>
+          <label><span class="adm-label">Estado</span>
+            <select class="adm-input" name="status"><option value="abierto">Abierto</option><option value="sold-out">Sold out</option><option value="pasado">Pasado</option></select>
+          </label>
+          <label><span class="adm-label">Fecha</span><input class="adm-input" type="date" name="date" required /></label>
+          <label><span class="adm-label">Hora</span><input class="adm-input" type="time" name="time" /></label>
+          <label><span class="adm-label">Lugar</span><input class="adm-input" name="place" /></label>
+          <label><span class="adm-label">Plazas</span><input class="adm-input" type="number" min="0" name="seats" placeholder="Sin límite" /></label>
+          <label class="md:col-span-2"><span class="adm-label">Imagen (URL o /media/…)</span>
+            <div class="flex items-center gap-3"><input class="adm-input" name="image" /><img class="hidden h-12 w-20 shrink-0 rounded-brand border border-line object-cover" data-img-preview alt="" /></div>
+          </label>
+          <label><span class="adm-label">Tags (separados por coma)</span><input class="adm-input" name="tags" /></label>
+          <label><span class="adm-label">Patrocinadores (coma)</span><input class="adm-input" name="sponsors" /></label>
+          <label class="md:col-span-2"><span class="adm-label">Highlights (coma)</span><input class="adm-input" name="highlights" placeholder="24 h de hackathon, 3.000 € en premios…" /></label>
+        </div>
+
+        <div class="mt-6">
+          <div class="flex items-center justify-between"><span class="adm-label mb-0">Agenda</span><button type="button" class="adm-btn-ghost px-3 py-1" data-agenda-add>+ Añadir fila</button></div>
+          <div class="mt-2 flex flex-col gap-2" data-agenda></div>
+          <p class="mt-2 hidden text-xs text-ink/50" data-agenda-empty>Sin agenda. Añade filas con hora, título y descripción.</p>
+        </div>
+
+        <label class="mt-6 block"><span class="adm-label">Descripción (Markdown)</span><textarea class="adm-input min-h-40 font-mono text-[13px]" name="body"></textarea></label>
+      </div>
+      <div class="flex shrink-0 items-center justify-between gap-3 border-t border-line px-5 py-3">
+        <button type="button" class="adm-btn-danger hidden" data-delete>Borrar</button>
+        <div class="ml-auto flex gap-2"><button type="button" class="adm-btn-ghost" data-drawer-close>Cancelar</button><button class="adm-btn">Guardar</button></div>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    const cms = window.cms;
+    const COL = 'eventos';
+    const base = document.documentElement.dataset.base || '';
+    const $ = (s: string, r: ParentNode = document) => r.querySelector(s) as HTMLElement;
+    const today = new Date().toISOString().slice(0, 10);
+
+    let tab: 'proximos' | 'pasados' = 'proximos';
+    let query = '';
+    let editingId: string | null = null;
+
+    const isPast = (e: any) => e.status === 'pasado' || (e.date && e.date < today);
+    const imgSrc = (s: string) => (s && s.startsWith('/') ? base + s : s);
+    const inscritos = (title: string) => cms.list('envios').filter((s: any) => s.form === 'evento' && s.data?.evento === title).length;
+    const badge = (st: string) => st === 'abierto' ? 'adm-badge adm-badge-ok' : st === 'sold-out' ? 'adm-badge border-navy bg-navy text-white' : 'adm-badge';
+    const splitList = (s: string) => s.split(',').map((x) => x.trim()).filter(Boolean);
+
+    // ---------- Tabla ----------
+    function render() {
+      const all = cms.list(COL);
+      const q = query.toLowerCase();
+      const matches = (e: any) => !q || [e.title, e.place, e.type, e.subtitle].some((v) => String(v ?? '').toLowerCase().includes(q));
+      const prox = all.filter((e) => !isPast(e)).sort((a, b) => a.date.localeCompare(b.date));
+      const past = all.filter(isPast).sort((a, b) => b.date.localeCompare(a.date));
+      $('[data-count="proximos"]').textContent = String(prox.length);
+      $('[data-count="pasados"]').textContent = String(past.length);
+      document.querySelectorAll<HTMLElement>('[data-tab]').forEach((b) => b.toggleAttribute('data-active', b.dataset.tab === tab));
+
+      const rows = (tab === 'proximos' ? prox : past).filter(matches);
+      $('[data-empty]').classList.toggle('hidden', rows.length > 0);
+      $('[data-rows]').innerHTML = rows.map((e) => `
+        <tr data-id="${cms.esc(e.id)}">
+          <td>${e.image ? `<img src="${cms.esc(imgSrc(e.image))}" alt="" class="h-10 w-14 rounded-brand border border-line object-cover" />` : `<div class="grid h-10 w-14 place-items-center rounded-brand border border-line bg-paper-2 text-ink/30">—</div>`}</td>
+          <td><div class="font-semibold">${cms.esc(e.title)}</div><div class="mono text-ink/50">${cms.esc(e.type || '')}</div></td>
+          <td class="whitespace-nowrap">${cms.esc(cms.fmtDate(e.date))}${e.time ? `<div class="mono text-ink/50">${cms.esc(e.time)}</div>` : ''}</td>
+          <td>${cms.esc(e.place || '—')}</td>
+          <td>
+            <span class="${badge(e.status)}">${cms.esc(e.status)}</span>
+            <select class="adm-input mt-1 w-auto py-1 text-xs" data-status>
+              <option value="abierto"${e.status === 'abierto' ? ' selected' : ''}>Abierto</option>
+              <option value="sold-out"${e.status === 'sold-out' ? ' selected' : ''}>Sold out</option>
+              <option value="pasado"${e.status === 'pasado' ? ' selected' : ''}>Pasado</option>
+            </select>
+          </td>
+          <td class="mono text-right">${e.seats === '' || e.seats == null ? '∞' : cms.esc(e.seats)}</td>
+          <td class="mono text-right">${inscritos(e.title)}</td>
+          <td class="whitespace-nowrap text-right">
+            <button class="adm-btn-ghost px-2 py-1" data-act="edit">Editar</button>
+            <a class="adm-btn-ghost px-2 py-1" href="${base}/eventos/${cms.esc(e.id)}" target="_blank" rel="noopener">Ver</a>
+            <button class="adm-btn-ghost px-2 py-1" data-act="dup">Duplicar</button>
+            <button class="adm-btn-danger px-2 py-1" data-act="del">Borrar</button>
+          </td>
+        </tr>`).join('');
+    }
+
+    $('[data-rows]').addEventListener('click', (ev) => {
+      const btn = (ev.target as HTMLElement).closest<HTMLElement>('[data-act]'); if (!btn) return;
+      const id = btn.closest<HTMLElement>('tr')!.dataset.id!;
+      const e = cms.get(COL, id); if (!e) return;
+      if (btn.dataset.act === 'edit') openDrawer(id);
+      if (btn.dataset.act === 'del') { if (confirm(`¿Borrar «${e.title}»?`)) { cms.remove(COL, id); cms.toast('Evento borrado'); render(); } }
+      if (btn.dataset.act === 'dup') {
+        const copy = structuredClone(e); copy.id = cms.uid(); copy.title = e.title + ' (copia)';
+        cms.save(COL, copy); cms.toast('Evento duplicado'); render(); openDrawer(copy.id);
+      }
+    });
+    $('[data-rows]').addEventListener('change', (ev) => {
+      const sel = ev.target as HTMLSelectElement; if (!sel.matches('[data-status]')) return;
+      const id = sel.closest<HTMLElement>('tr')!.dataset.id!;
+      cms.save(COL, { id, status: sel.value }); cms.toast('Estado actualizado'); render();
+    });
+    document.querySelectorAll<HTMLElement>('[data-tab]').forEach((b) => b.addEventListener('click', () => { tab = b.dataset.tab as any; render(); }));
+    $('[data-search]').addEventListener('input', (ev) => { query = (ev.target as HTMLInputElement).value; render(); });
+
+    // ---------- Drawer ----------
+    const drawer = $('[data-drawer]');
+    const form = $('[data-form]') as HTMLFormElement;
+    const agendaBox = $('[data-agenda]');
+    const f = (n: string) => form.elements.namedItem(n) as HTMLInputElement;
+
+    function agendaRow(r: { time?: string; title?: string; desc?: string } = {}) {
+      const row = document.createElement('div');
+      row.className = 'grid grid-cols-[6rem_1fr_1fr_auto] items-start gap-2';
+      row.dataset.agendaRow = '';
+      row.innerHTML = `
+        <input class="adm-input" placeholder="10:00" data-f="time" value="${cms.esc(r.time || '')}" />
+        <input class="adm-input" placeholder="Título" data-f="title" value="${cms.esc(r.title || '')}" />
+        <input class="adm-input" placeholder="Descripción" data-f="desc" value="${cms.esc(r.desc || '')}" />
+        <button type="button" class="adm-btn-danger px-2" data-agenda-del aria-label="Quitar">✕</button>`;
+      agendaBox.appendChild(row);
+      agendaEmpty();
+    }
+    const agendaEmpty = () => $('[data-agenda-empty]').classList.toggle('hidden', agendaBox.children.length > 0);
+    $('[data-agenda-add]').addEventListener('click', () => { agendaRow(); (agendaBox.lastElementChild!.querySelector('input') as HTMLInputElement).focus(); });
+    agendaBox.addEventListener('click', (ev) => { const b = (ev.target as HTMLElement).closest('[data-agenda-del]'); if (b) { b.closest('[data-agenda-row]')!.remove(); agendaEmpty(); } });
+    const readAgenda = () => [...agendaBox.querySelectorAll<HTMLElement>('[data-agenda-row]')].map((r) => ({
+      time: (r.querySelector('[data-f="time"]') as HTMLInputElement).value.trim(),
+      title: (r.querySelector('[data-f="title"]') as HTMLInputElement).value.trim(),
+      desc: (r.querySelector('[data-f="desc"]') as HTMLInputElement).value.trim(),
+    })).filter((a) => a.time || a.title || a.desc);
+
+    function previewImg() {
+      const img = $('[data-img-preview]') as HTMLImageElement; const v = f('image').value.trim();
+      img.classList.toggle('hidden', !v); if (v) img.src = imgSrc(v);
+    }
+    f('image').addEventListener('input', previewImg);
+
+    function openDrawer(id: string | null) {
+      editingId = id;
+      const e: any = id ? cms.get(COL, id) : null;
+      form.reset(); agendaBox.innerHTML = '';
+      $('[data-drawer-title]').textContent = e ? 'Editar evento' : 'Nuevo evento';
+      $('[data-delete]').classList.toggle('hidden', !e);
+      if (e) {
+        f('title').value = e.title || ''; f('subtitle').value = e.subtitle || ''; f('type').value = e.type || '';
+        f('status').value = e.status || 'abierto'; f('date').value = e.date || ''; f('time').value = e.time || '';
+        f('place').value = e.place || ''; f('seats').value = e.seats ?? ''; f('image').value = e.image || '';
+        f('tags').value = (e.tags || []).join(', '); f('sponsors').value = (e.sponsors || []).join(', ');
+        f('highlights').value = (e.highlights || []).join(', '); f('body').value = e.body || '';
+        (e.agenda || []).forEach(agendaRow);
+      } else { f('status').value = 'abierto'; f('date').value = today; }
+      agendaEmpty(); previewImg();
+      drawer.classList.remove('hidden'); document.body.style.overflow = 'hidden';
+      const url = new URL(location.href); url.search = id ? `?id=${id}` : '?new=1'; history.replaceState(null, '', url);
+      setTimeout(() => f('title').focus(), 50);
+    }
+    function closeDrawer() {
+      drawer.classList.add('hidden'); document.body.style.overflow = ''; editingId = null;
+      const url = new URL(location.href); url.search = ''; history.replaceState(null, '', url);
+    }
+    document.querySelectorAll('[data-drawer-close]').forEach((b) => b.addEventListener('click', closeDrawer));
+    document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape' && !drawer.classList.contains('hidden')) closeDrawer(); });
+    $('[data-new]').addEventListener('click', () => openDrawer(null));
+    $('[data-delete]').addEventListener('click', () => {
+      if (!editingId) return; const e = cms.get(COL, editingId);
+      if (confirm(`¿Borrar «${e?.title}»?`)) { cms.remove(COL, editingId); cms.toast('Evento borrado'); closeDrawer(); render(); }
+    });
+
+    form.addEventListener('submit', (ev) => {
+      ev.preventDefault();
+      const title = f('title').value.trim();
+      if (!title) { cms.toast('El título es obligatorio', 'err'); return; }
+      const seatsRaw = f('seats').value.trim();
+      const item = {
+        id: editingId || cms.uid(),
+        title, subtitle: f('subtitle').value.trim(), type: f('type').value.trim(), status: f('status').value,
+        date: f('date').value, time: f('time').value, place: f('place').value.trim(),
+        seats: seatsRaw === '' ? '' : Number(seatsRaw), image: f('image').value.trim(),
+        tags: splitList(f('tags').value), sponsors: splitList(f('sponsors').value), highlights: splitList(f('highlights').value),
+        agenda: readAgenda(), body: f('body').value,
+      };
+      cms.save(COL, item); cms.toast('Guardado'); closeDrawer(); render();
+    });
+
+    // ---------- Arranque ----------
+    render();
+    const params = new URLSearchParams(location.search);
+    if (params.get('new') === '1') openDrawer(null);
+    else if (params.get('id')) { const id = params.get('id')!; if (cms.get(COL, id)) { tab = isPast(cms.get(COL, id)) ? 'pasados' : 'proximos'; render(); openDrawer(id); } else cms.toast('Evento no encontrado', 'err'); }
+    window.addEventListener('cms:change', (ev: any) => { if (['eventos', 'envios'].includes(ev.detail?.collection)) render(); });
+  </script>
+</Admin>

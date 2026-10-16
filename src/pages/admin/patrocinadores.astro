@@ -1,0 +1,261 @@
+---
+import Admin from '../../layouts/Admin.astro';
+---
+<Admin title="Patrocinadores" section="patrocinadores">
+  <div class="flex flex-wrap items-start justify-between gap-4">
+    <div>
+      <h2 class="text-2xl font-bold">Patrocinadores</h2>
+      <p class="mt-1 text-sm text-ink/60">Empresas que apoyan la asociación, los niveles de patrocinio y las solicitudes recibidas desde la web.</p>
+    </div>
+    <button class="adm-btn" data-new>+ Nuevo patrocinador</button>
+  </div>
+
+  <div class="mt-6 flex gap-1 border-b border-line">
+    <button class="adm-tab" data-tab="patrocinadores">Patrocinadores</button>
+    <button class="adm-tab" data-tab="tiers">Tiers</button>
+  </div>
+
+  <!-- Tab: patrocinadores -->
+  <section data-panel="patrocinadores" class="mt-5">
+    <div class="adm-card">
+      <div class="flex flex-wrap items-center gap-3">
+        <input class="adm-input max-w-xs" placeholder="Buscar por nombre o web…" data-search />
+        <select class="adm-input max-w-[180px]" data-filter-tier>
+          <option value="">Todos los tiers</option>
+          <option>Partner</option><option>Evento</option><option>Colaborador</option>
+        </select>
+        <span class="mono ml-auto text-ink/50" data-count></span>
+      </div>
+      <div class="mt-4 overflow-x-auto">
+        <table class="adm-table">
+          <thead><tr><th>Logo</th><th>Nombre</th><th>Tier</th><th>Web</th><th>Activo</th><th class="text-right">Acciones</th></tr></thead>
+          <tbody data-rows></tbody>
+        </table>
+      </div>
+      <p class="mono mt-4 hidden text-ink/50" data-empty>No hay patrocinadores que coincidan. Crea uno con «Nuevo patrocinador».</p>
+    </div>
+  </section>
+
+  <!-- Tab: tiers -->
+  <section data-panel="tiers" class="mt-5 hidden">
+    <div class="grid gap-4 lg:grid-cols-3" data-tiers></div>
+
+    <div class="adm-card mt-6">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h3 class="text-lg font-bold">Solicitudes de patrocinio</h3>
+          <p class="mt-1 text-sm text-ink/60">Formularios de patrocinio recibidos desde la web.</p>
+        </div>
+        <span class="mono text-ink/50" data-req-count></span>
+      </div>
+      <div class="mt-4 overflow-x-auto">
+        <table class="adm-table">
+          <thead><tr><th>Empresa</th><th>Contacto</th><th>Interés</th><th>Fecha</th><th>Estado</th></tr></thead>
+          <tbody data-requests></tbody>
+        </table>
+      </div>
+      <p class="mono mt-4 hidden text-ink/50" data-req-empty>Todavía no hay solicitudes de patrocinio.</p>
+    </div>
+  </section>
+
+  <!-- Drawer editor -->
+  <div class="fixed inset-0 z-[100] hidden" data-drawer>
+    <div class="absolute inset-0 bg-navy/40" data-drawer-close></div>
+    <aside class="absolute right-0 top-0 flex h-full w-full max-w-md flex-col bg-white shadow-2xl">
+      <header class="flex items-center justify-between border-b border-line px-5 py-4">
+        <h3 class="text-lg font-bold" data-drawer-title>Patrocinador</h3>
+        <button class="adm-btn-ghost px-3 py-1" data-drawer-close aria-label="Cerrar">✕</button>
+      </header>
+      <form class="flex flex-1 flex-col gap-4 overflow-y-auto px-5 py-5" data-form>
+        <input type="hidden" name="id" />
+        <label><span class="adm-label">Nombre</span><input class="adm-input" name="name" required /></label>
+        <label><span class="adm-label">Tier</span>
+          <select class="adm-input" name="tier"><option>Partner</option><option>Evento</option><option>Colaborador</option></select>
+        </label>
+        <label><span class="adm-label">Web</span><input class="adm-input" name="web" type="url" placeholder="https://…" /></label>
+        <label><span class="adm-label">Logo (ruta o URL)</span><input class="adm-input" name="logo" placeholder="/media/sponsors/logo.svg" /></label>
+        <div class="grid h-24 place-items-center rounded-brand border border-dashed border-line bg-paper-2 p-3" data-preview>
+          <span class="mono text-ink/40">Sin logo</span>
+        </div>
+        <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="active" class="h-4 w-4 accent-cobalt" /> Activo (visible en la web)</label>
+        <div class="mt-auto flex items-center justify-between gap-3 border-t border-line pt-4">
+          <button type="button" class="adm-btn-danger hidden" data-delete>Borrar</button>
+          <div class="ml-auto flex gap-2">
+            <button type="button" class="adm-btn-ghost" data-drawer-close>Cancelar</button>
+            <button type="submit" class="adm-btn">Guardar</button>
+          </div>
+        </div>
+      </form>
+    </aside>
+  </div>
+
+  <style>
+    .adm-tab { padding: 0.5rem 0.9rem; font-size: 0.875rem; font-weight: 600; color: rgb(17 24 39 / 0.6); border-bottom: 2px solid transparent; margin-bottom: -1px; }
+    .adm-tab:hover { color: inherit; }
+    .adm-tab.active { color: var(--color-cobalt); border-color: var(--color-cobalt); }
+    .adm-toggle { position: relative; width: 38px; height: 22px; border-radius: 999px; background: rgb(17 24 39 / 0.2); transition: background 0.15s; }
+    .adm-toggle::after { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 999px; background: #fff; transition: transform 0.15s; }
+    .adm-toggle.on { background: var(--color-cobalt); }
+    .adm-toggle.on::after { transform: translateX(16px); }
+  </style>
+
+  <script>
+    const cms = window.cms;
+    const $ = (s: string, r: ParentNode = document) => r.querySelector(s) as HTMLElement;
+    const base = document.documentElement.dataset.base || '';
+    const TIERS = ['Partner', 'Evento', 'Colaborador'];
+    const ESTADOS = ['Nueva', 'En conversación', 'Cerrada'];
+    const img = (p: string) => (p.startsWith('http') ? p : base + p);
+
+    // ---------- Tabs ----------
+    const tabs = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-tab]'));
+    function showTab(k: string) {
+      tabs.forEach((t) => t.classList.toggle('active', t.dataset.tab === k));
+      document.querySelectorAll<HTMLElement>('[data-panel]').forEach((p) => p.classList.toggle('hidden', p.dataset.panel !== k));
+      history.replaceState(null, '', k === 'tiers' ? '#tiers' : location.pathname);
+    }
+    tabs.forEach((t) => t.addEventListener('click', () => showTab(t.dataset.tab!)));
+    showTab(location.hash === '#tiers' ? 'tiers' : 'patrocinadores');
+
+    // ---------- Patrocinadores ----------
+    const rows = $('[data-rows]');
+    const search = $('[data-search]') as HTMLInputElement;
+    const filterTier = $('[data-filter-tier]') as HTMLSelectElement;
+
+    function renderSponsors() {
+      const q = search.value.trim().toLowerCase();
+      const ft = filterTier.value;
+      const all = cms.list('patrocinadores');
+      const list = all.filter((s) => (!ft || s.tier === ft) && (!q || `${s.name} ${s.web ?? ''}`.toLowerCase().includes(q)));
+      $('[data-count]').textContent = `${list.length} de ${all.length}`;
+      $('[data-empty]').classList.toggle('hidden', list.length > 0);
+      rows.innerHTML = list.map((s) => `
+        <tr data-id="${cms.esc(s.id)}">
+          <td>${s.logo
+            ? `<img src="${cms.esc(img(s.logo))}" alt="${cms.esc(s.name)}" class="h-8 w-16 object-contain" />`
+            : `<span class="grid h-8 w-16 place-items-center rounded-brand bg-paper-2 font-mono text-[11px] uppercase text-ink/50">${cms.esc(String(s.name).slice(0, 3))}</span>`}</td>
+          <td class="font-semibold">${cms.esc(s.name)}</td>
+          <td><select class="adm-input w-auto py-1" data-tier>${TIERS.map((t) => `<option ${s.tier === t ? 'selected' : ''}>${t}</option>`).join('')}</select></td>
+          <td>${s.web ? `<a href="${cms.esc(s.web)}" target="_blank" rel="noopener" class="text-cobalt hover:underline">${cms.esc(String(s.web).replace(/^https?:\/\//, ''))}</a>` : '<span class="text-ink/40">—</span>'}</td>
+          <td><button type="button" class="adm-toggle ${s.active ? 'on' : ''}" data-active aria-label="Activo"></button></td>
+          <td class="text-right whitespace-nowrap">
+            <button class="adm-btn-ghost px-3 py-1" data-edit>Editar</button>
+            <button class="adm-btn-danger ml-1" data-remove>Borrar</button>
+          </td>
+        </tr>`).join('');
+    }
+    search.addEventListener('input', renderSponsors);
+    filterTier.addEventListener('change', renderSponsors);
+
+    rows.addEventListener('change', (e) => {
+      const el = e.target as HTMLSelectElement;
+      const id = el.closest('tr')?.dataset.id!;
+      if (el.matches('[data-tier]')) { cms.save('patrocinadores', { id, tier: el.value }); cms.toast('Guardado'); renderSponsors(); }
+    });
+    rows.addEventListener('click', (e) => {
+      const el = (e.target as HTMLElement).closest('button') as HTMLElement | null;
+      if (!el) return;
+      const id = el.closest('tr')?.dataset.id!;
+      if (el.matches('[data-active]')) { const s = cms.get('patrocinadores', id)!; cms.save('patrocinadores', { id, active: !s.active }); cms.toast(s.active ? 'Ocultado' : 'Activado'); renderSponsors(); }
+      if (el.matches('[data-edit]')) openDrawer(id);
+      if (el.matches('[data-remove]')) removeSponsor(id);
+    });
+    function removeSponsor(id: string) {
+      const s = cms.get('patrocinadores', id);
+      if (s && confirm(`¿Borrar «${s.name}»?`)) { cms.remove('patrocinadores', id); cms.toast('Borrado'); renderSponsors(); closeDrawer(); }
+    }
+
+    // ---------- Drawer ----------
+    const drawer = $('[data-drawer]');
+    const form = $('[data-form]') as HTMLFormElement;
+    const preview = $('[data-preview]');
+    const f = (n: string) => form.elements.namedItem(n) as HTMLInputElement;
+    function renderPreview() {
+      const p = f('logo').value.trim();
+      preview.innerHTML = p ? `<img src="${cms.esc(img(p))}" alt="" class="max-h-20 max-w-full object-contain" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'mono text-red-600',textContent:'No se encuentra la imagen'}))" />` : '<span class="mono text-ink/40">Sin logo</span>';
+    }
+    function openDrawer(id?: string) {
+      const s = id ? cms.get('patrocinadores', id) : undefined;
+      form.reset();
+      f('id').value = s?.id ?? '';
+      f('name').value = s?.name ?? '';
+      f('tier').value = s?.tier ?? 'Partner';
+      f('web').value = s?.web ?? '';
+      f('logo').value = s?.logo ?? '';
+      f('active').checked = s ? !!s.active : true;
+      $('[data-drawer-title]').textContent = s ? 'Editar patrocinador' : 'Nuevo patrocinador';
+      $('[data-delete]').classList.toggle('hidden', !s);
+      renderPreview();
+      drawer.classList.remove('hidden');
+      setTimeout(() => f('name').focus(), 50);
+    }
+    function closeDrawer() { drawer.classList.add('hidden'); }
+    $('[data-new]').addEventListener('click', () => openDrawer());
+    document.querySelectorAll('[data-drawer-close]').forEach((b) => b.addEventListener('click', closeDrawer));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDrawer(); });
+    f('logo').addEventListener('input', renderPreview);
+    $('[data-delete]').addEventListener('click', () => removeSponsor(f('id').value));
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const item = { id: f('id').value || cms.uid(), name: f('name').value.trim(), tier: f('tier').value, web: f('web').value.trim(), logo: f('logo').value.trim(), active: f('active').checked };
+      if (!item.name) { cms.toast('El nombre es obligatorio', 'err'); return; }
+      cms.save('patrocinadores', item);
+      cms.toast('Guardado');
+      closeDrawer();
+      renderSponsors();
+    });
+
+    // ---------- Tiers ----------
+    const tiersBox = $('[data-tiers]');
+    function renderTiers() {
+      const list = cms.list('tiers');
+      tiersBox.innerHTML = list.length ? list.map((t) => `
+        <form class="adm-card flex flex-col gap-3" data-tier-form data-id="${cms.esc(t.id)}">
+          <span class="adm-badge adm-badge-ok self-start">${cms.esc(t.tag || t.name)}</span>
+          <label><span class="adm-label">Nombre</span><input class="adm-input" name="name" value="${cms.esc(t.name)}" required /></label>
+          <label><span class="adm-label">Etiqueta</span><input class="adm-input" name="tag" value="${cms.esc(t.tag ?? '')}" /></label>
+          <label><span class="adm-label">Descripción</span><textarea class="adm-input" name="desc" rows="3">${cms.esc(t.desc ?? '')}</textarea></label>
+          <label><span class="adm-label">Ventajas (una por línea)</span><textarea class="adm-input" name="perks" rows="6">${cms.esc((t.perks ?? []).join('\n'))}</textarea></label>
+          <button class="adm-btn mt-auto justify-center">Guardar tier</button>
+        </form>`).join('') : '<p class="mono text-ink/50 lg:col-span-3">No hay tiers definidos.</p>';
+    }
+    tiersBox.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const fm = e.target as HTMLFormElement;
+      const g = (n: string) => (fm.elements.namedItem(n) as HTMLInputElement).value;
+      cms.save('tiers', { id: fm.dataset.id!, name: g('name').trim(), tag: g('tag').trim(), desc: g('desc').trim(), perks: g('perks').split('\n').map((s) => s.trim()).filter(Boolean) });
+      cms.toast('Guardado');
+      renderTiers();
+    });
+
+    // ---------- Solicitudes de patrocinio ----------
+    const reqBox = $('[data-requests]');
+    function renderRequests() {
+      const list = cms.list('envios').filter((e) => e.form === 'patrocinio').sort((a, b) => String(b.at).localeCompare(String(a.at)));
+      $('[data-req-count]').textContent = `${list.length} solicitud${list.length === 1 ? '' : 'es'}`;
+      $('[data-req-empty]').classList.toggle('hidden', list.length > 0);
+      reqBox.innerHTML = list.map((e) => {
+        const d = e.data ?? {};
+        const estado = e.estado ?? 'Nueva';
+        const contacto = [d.nombre, d.email].filter(Boolean);
+        return `
+        <tr data-id="${cms.esc(e.id)}">
+          <td class="font-semibold">${cms.esc(d.empresa ?? '—')}</td>
+          <td>${contacto.length ? `${cms.esc(d.nombre ?? '')}${d.email ? `<br><a href="mailto:${cms.esc(d.email)}" class="text-cobalt hover:underline">${cms.esc(d.email)}</a>` : ''}` : '—'}</td>
+          <td>${d.interes ? `<span class="adm-badge">${cms.esc(d.interes)}</span>` : '—'}</td>
+          <td class="whitespace-nowrap">${cms.esc(cms.fmtDate(e.at))}</td>
+          <td><select class="adm-input w-auto py-1 ${estado === 'Cerrada' ? 'text-ink/50' : ''}" data-estado>${ESTADOS.map((s) => `<option ${estado === s ? 'selected' : ''}>${s}</option>`).join('')}</select></td>
+        </tr>`;
+      }).join('');
+    }
+    reqBox.addEventListener('change', (e) => {
+      const el = e.target as HTMLSelectElement;
+      if (!el.matches('[data-estado]')) return;
+      cms.save('envios', { id: el.closest('tr')!.dataset.id!, estado: el.value });
+      cms.toast('Guardado');
+      renderRequests();
+    });
+
+    renderSponsors(); renderTiers(); renderRequests();
+  </script>
+</Admin>

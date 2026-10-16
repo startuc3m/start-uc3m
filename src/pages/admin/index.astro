@@ -1,0 +1,198 @@
+---
+import Admin from '../../layouts/Admin.astro';
+---
+<Admin title="Inicio" section="dashboard">
+  <div id="login" class="mx-auto mt-10 max-w-sm adm-card hidden">
+    <span class="eyebrow text-cobalt">Panel de Start</span>
+    <h2 class="display mt-2 text-3xl">Entrar_</h2>
+    <form class="mt-6 flex flex-col gap-3" data-login>
+      <label><span class="adm-label">Email</span><input class="adm-input" type="email" value="ioana@startuc3m.org" required /></label>
+      <label><span class="adm-label">Contraseña</span><input class="adm-input" type="password" value="start2026" required /></label>
+      <button class="adm-btn justify-center">Entrar</button>
+      <p class="mono text-ink/50">Demo local · cualquier credencial vale</p>
+    </form>
+  </div>
+  <div id="dash" class="hidden">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <span class="eyebrow text-cobalt">Inicio</span>
+        <h2 class="display mt-1 text-3xl">Hola, Ioana_</h2>
+        <p class="mt-1 text-sm text-ink/60" id="dash-sub">Resumen del sitio a día de hoy.</p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <a href="/admin/posts?new=1" class="adm-btn">+ Nuevo post</a>
+        <a href="/admin/eventos?new=1" class="adm-btn-ghost">+ Nuevo evento</a>
+        <a href="/" class="adm-btn-ghost" target="_blank" rel="noopener">Ver web ↗</a>
+      </div>
+    </div>
+
+    <div id="kpis" class="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4"></div>
+
+    <div class="mt-6 grid gap-4 lg:grid-cols-3">
+      <div class="adm-card lg:col-span-2">
+        <div class="flex items-center justify-between">
+          <span class="mono text-ink/60">Últimos envíos</span>
+          <a href="/admin/envios" class="mono text-cobalt hover:underline">Ver todos →</a>
+        </div>
+        <div class="mt-3 overflow-x-auto">
+          <table class="adm-table">
+            <thead><tr><th>Formulario</th><th>Quién</th><th>Detalle</th><th>Cuándo</th></tr></thead>
+            <tbody id="envios"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="adm-card" id="proximo"></div>
+    </div>
+
+    <div class="mt-4 grid gap-4 lg:grid-cols-3">
+      <div class="adm-card">
+        <div class="flex items-center justify-between">
+          <span class="mono text-ink/60">Borradores</span>
+          <a href="/admin/posts" class="mono text-cobalt hover:underline">Blog →</a>
+        </div>
+        <ul id="borradores" class="mt-3 flex flex-col divide-y divide-line"></ul>
+      </div>
+      <div class="adm-card">
+        <span class="mono text-ink/60">Accesos rápidos</span>
+        <div class="mt-3 grid grid-cols-1 gap-2">
+          <a href="/admin/posts?new=1" class="adm-btn justify-center">Nuevo post</a>
+          <a href="/admin/eventos?new=1" class="adm-btn justify-center">Nuevo evento</a>
+          <a href="/" class="adm-btn-ghost justify-center" target="_blank" rel="noopener">Ver web</a>
+          <a href="/admin/envios" class="adm-btn-ghost justify-center">Bandeja de envíos</a>
+          <a href="/admin/ajustes" class="adm-btn-ghost justify-center">Ajustes del sitio</a>
+        </div>
+      </div>
+      <div class="adm-card">
+        <span class="mono text-ink/60">Actividad</span>
+        <ul id="actividad" class="mt-3 flex flex-col gap-3"></ul>
+      </div>
+    </div>
+  </div>
+  <script>
+    const logged = window.cms.isLogged();
+    document.getElementById(logged ? 'dash' : 'login')!.classList.remove('hidden');
+    document.querySelector('[data-login]')?.addEventListener('submit', (e) => { e.preventDefault(); window.cms.login(); location.reload(); });
+
+    if (logged) {
+      const cms = window.cms;
+      const esc = cms.esc;
+      const now = new Date();
+      const today = now.toISOString().slice(0, 10);
+      const weekAgo = new Date(now.getTime() - 7 * 864e5);
+
+      const posts = cms.list('posts');
+      const eventos = cms.list('eventos');
+      const podcast = cms.list('podcast');
+      const envios = cms.list('envios');
+
+      // ── KPIs ──────────────────────────────────────────────
+      const publicados = posts.filter((p) => !p.draft).length;
+      const abiertos = eventos.filter((e) => e.status === 'abierto').length;
+      const episodios = podcast.length;
+      const enviosSemana = envios.filter((e) => new Date(e.at) >= weekAgo).length;
+      const kpi = (label: string, value: number, hint: string, href: string) =>
+        `<a href="${href}" class="adm-card block transition hover:border-cobalt">
+          <span class="mono text-ink/60">${esc(label)}</span>
+          <div class="display mt-2 text-4xl text-cobalt">${value}</div>
+          <p class="mt-1 text-xs text-ink/50">${esc(hint)}</p>
+        </a>`;
+      document.getElementById('kpis')!.innerHTML =
+        kpi('Posts publicados', publicados, `${posts.length - publicados} en borrador`, '/admin/posts') +
+        kpi('Eventos abiertos', abiertos, `${eventos.length} en total`, '/admin/eventos') +
+        kpi('Episodios', episodios, `${podcast.filter((p) => p.published !== false).length} publicados`, '/admin/podcast') +
+        kpi('Envíos esta semana', enviosSemana, `${envios.length} en la bandeja`, '/admin/envios');
+
+      document.getElementById('dash-sub')!.textContent = `Resumen a ${cms.fmtDate(today)} · ${posts.length} posts, ${eventos.length} eventos, ${episodios} episodios.`;
+
+      // ── Próximo evento ─────────────────────────────────────
+      const proximo = eventos
+        .filter((e) => e.date >= today && e.status !== 'pasado')
+        .sort((a, b) => a.date.localeCompare(b.date))[0];
+      const px = document.getElementById('proximo')!;
+      if (proximo) {
+        const dias = Math.max(0, Math.round((new Date(proximo.date).getTime() - new Date(today).getTime()) / 864e5));
+        const badge = proximo.status === 'abierto' ? 'adm-badge adm-badge-ok' : 'adm-badge';
+        px.innerHTML = `
+          <div class="flex items-center justify-between"><span class="mono text-ink/60">Próximo evento</span><span class="${badge}">${esc(proximo.status)}</span></div>
+          <h3 class="display mt-3 text-2xl leading-tight">${esc(proximo.title)}</h3>
+          ${proximo.subtitle ? `<p class="mt-1 text-sm text-ink/60">${esc(proximo.subtitle)}</p>` : ''}
+          <dl class="mt-4 grid grid-cols-2 gap-x-3 gap-y-2 text-sm">
+            <dt class="mono text-ink/50">Fecha</dt><dd>${esc(cms.fmtDate(proximo.date))}${proximo.time ? ` · ${esc(proximo.time)}` : ''}</dd>
+            <dt class="mono text-ink/50">Lugar</dt><dd>${esc(proximo.place || '—')}</dd>
+            <dt class="mono text-ink/50">Tipo</dt><dd>${esc(proximo.type || '—')}</dd>
+            <dt class="mono text-ink/50">Plazas</dt><dd>${esc(proximo.seats || '—')}</dd>
+          </dl>
+          <p class="mt-4 text-3xl font-bold text-cobalt">${dias === 0 ? 'Hoy' : `${dias} día${dias === 1 ? '' : 's'}`}<span class="mono ml-2 text-ink/50">${dias === 0 ? '' : 'restantes'}</span></p>
+          <a href="/admin/eventos?id=${encodeURIComponent(proximo.id)}" class="adm-btn-ghost mt-4">Editar evento</a>`;
+      } else {
+        px.innerHTML = `<span class="mono text-ink/60">Próximo evento</span>
+          <p class="mt-3 text-sm text-ink/60">No hay eventos programados. ¡Es buen momento para crear uno!</p>
+          <a href="/admin/eventos?new=1" class="adm-btn mt-4">Nuevo evento</a>`;
+      }
+
+      // ── Últimos envíos ─────────────────────────────────────
+      const formLabel: Record<string, string> = { unete: 'Únete', evento: 'Evento', patrocinio: 'Patrocinio', newsletter: 'Newsletter', contacto: 'Contacto' };
+      const rel = (iso: string) => {
+        const diff = (now.getTime() - new Date(iso).getTime()) / 6e4;
+        if (diff < 1) return 'ahora mismo';
+        if (diff < 60) return `hace ${Math.round(diff)} min`;
+        if (diff < 60 * 24) return `hace ${Math.round(diff / 60)} h`;
+        const d = Math.round(diff / 1440);
+        return d === 1 ? 'ayer' : `hace ${d} días`;
+      };
+      const quien = (e: any) => {
+        const d = e.data || {};
+        return d.empresa || [d.nombre, d.apellidos].filter(Boolean).join(' ') || d.email || '—';
+      };
+      const detalle = (e: any) => {
+        const d = e.data || {};
+        return d.evento || d.asunto || d.interes || d.estudios || d.email || '';
+      };
+      const ultimos = [...envios].sort((a, b) => b.at.localeCompare(a.at)).slice(0, 5);
+      const tb = document.getElementById('envios')!;
+      tb.innerHTML = ultimos.length
+        ? ultimos.map((e) => `<tr>
+            <td><a href="/admin/envios?id=${encodeURIComponent(e.id)}" class="adm-badge hover:border-cobalt">${esc(formLabel[e.form] || e.form)}</a></td>
+            <td class="font-semibold">${esc(quien(e))}</td>
+            <td class="max-w-[16rem] truncate text-ink/70">${esc(detalle(e))}</td>
+            <td class="whitespace-nowrap text-ink/60" title="${esc(new Date(e.at).toLocaleString('es-ES'))}">${esc(rel(e.at))}</td>
+          </tr>`).join('')
+        : `<tr><td colspan="4" class="text-center text-ink/50">Todavía no hay envíos.</td></tr>`;
+
+      // ── Borradores ─────────────────────────────────────────
+      const borradores = posts.filter((p) => p.draft).sort((a, b) => b.date.localeCompare(a.date));
+      const bl = document.getElementById('borradores')!;
+      bl.innerHTML = borradores.length
+        ? borradores.slice(0, 5).map((p) => `<li class="py-2">
+            <a href="/admin/posts?id=${encodeURIComponent(p.id)}" class="block hover:text-cobalt">
+              <span class="block text-sm font-semibold leading-snug">${esc(p.title)}</span>
+              <span class="mono text-ink/50">${esc(p.category || 'Blog')} · ${esc(cms.fmtDate(p.date))}</span>
+            </a></li>`).join('') + (borradores.length > 5 ? `<li class="pt-2"><a href="/admin/posts" class="mono text-cobalt hover:underline">+${borradores.length - 5} más →</a></li>` : '')
+        : `<li class="py-2 text-sm text-ink/50">No hay borradores pendientes. Todo publicado.</li>`;
+
+      // ── Actividad (derivada de fechas reales de los datos) ─
+      type Act = { at: string; icon: string; text: string; href?: string };
+      const acts: Act[] = [];
+      envios.forEach((e) => acts.push({ at: e.at, icon: '✉', text: `Nuevo envío de <b>${esc(formLabel[e.form] || e.form)}</b> · ${esc(quien(e))}`, href: '/admin/envios' }));
+      posts.forEach((p) => acts.push({ at: p.date + 'T08:00:00Z', icon: p.draft ? '✎' : '✓', text: `${p.draft ? 'Borrador creado' : 'Post publicado'}: <b>${esc(p.title)}</b>`, href: `/admin/posts?id=${encodeURIComponent(p.id)}` }));
+      podcast.forEach((p) => acts.push({ at: p.date + 'T10:00:00Z', icon: '▶', text: `Episodio ${esc(p.episode)} publicado: <b>${esc(p.title)}</b>`, href: '/admin/podcast' }));
+      eventos.forEach((e) => {
+        if (e.status === 'pasado' || e.date < today) acts.push({ at: e.date + 'T20:00:00Z', icon: '★', text: `Evento celebrado: <b>${esc(e.title)}</b>`, href: '/admin/eventos' });
+        else if (e.status === 'sold-out') acts.push({ at: e.date + 'T09:00:00Z', icon: '◉', text: `Plazas agotadas en <b>${esc(e.title)}</b>`, href: '/admin/eventos' });
+      });
+      const feed = acts
+        .filter((a) => new Date(a.at) <= now)
+        .sort((a, b) => b.at.localeCompare(a.at))
+        .slice(0, 7);
+      const al = document.getElementById('actividad')!;
+      al.innerHTML = feed.length
+        ? feed.map((a) => `<li class="flex gap-3 text-sm">
+            <span class="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-paper-2 text-xs text-cobalt">${a.icon}</span>
+            <div class="min-w-0">
+              ${a.href ? `<a href="${a.href}" class="block leading-snug hover:text-cobalt">${a.text}</a>` : `<span class="block leading-snug">${a.text}</span>`}
+              <span class="mono text-ink/50">${esc(rel(a.at))}</span>
+            </div></li>`).join('')
+        : `<li class="text-sm text-ink/50">Sin actividad todavía.</li>`;
+    }
+  </script>
+</Admin>

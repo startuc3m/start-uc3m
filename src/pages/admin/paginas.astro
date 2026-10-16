@@ -1,0 +1,220 @@
+---
+import Admin from '../../layouts/Admin.astro';
+---
+<Admin title="Páginas" section="paginas">
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <h1 class="display text-3xl">Páginas_</h1>
+      <p class="mt-1 text-ink/60">Edita los bloques de cada página pública. Los cambios se guardan en local.</p>
+    </div>
+    <a href="/" target="_blank" rel="noopener" class="adm-btn-ghost" data-view-current>Ver página ↗</a>
+  </div>
+
+  <div class="mt-6 grid gap-6 lg:grid-cols-[260px_1fr]">
+    <aside class="adm-card p-0 self-start">
+      <div class="border-b border-line px-4 py-3"><span class="adm-label">Páginas del sitio</span></div>
+      <ul id="page-list" class="divide-y divide-line"></ul>
+    </aside>
+
+    <section>
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <span class="adm-label">Editando</span>
+          <h2 id="page-title" class="display text-2xl">Inicio</h2>
+        </div>
+        <div class="flex gap-2">
+          <button class="adm-btn-ghost" data-reset>Restaurar</button>
+          <button class="adm-btn" data-save>Guardar</button>
+        </div>
+      </div>
+      <div id="blocks" class="mt-4 flex flex-col gap-4"></div>
+    </section>
+  </div>
+
+  <script>
+    const cms = (window as any).cms;
+    const $ = (s: string, r: ParentNode = document) => r.querySelector(s) as HTMLElement;
+
+    type Field = { key: string; label: string; type?: 'text' | 'textarea' };
+    type Block = { id: string; name: string; hidden: boolean; auto?: boolean; fields: Field[]; values: Record<string, string> };
+    type Page = { id: string; name: string; href: string; status: string; blocks: Block[] };
+
+    const T = (key: string, label: string): Field => ({ key, label, type: 'text' });
+    const A = (key: string, label: string): Field => ({ key, label, type: 'textarea' });
+    const B = (id: string, name: string, fields: Field[], values: Record<string, string>, auto = false): Block => ({ id, name, hidden: false, auto, fields, values });
+
+    const defaults = (): Record<string, Page> => ({
+      inicio: { id: 'inicio', name: 'Inicio', href: '/', status: 'Publicada', blocks: [
+        B('hero', 'Hero', [T('eyebrow', 'Eyebrow'), T('title', 'Título'), A('subtitle', 'Subtítulo'), T('cta1', 'CTA principal'), T('cta2', 'CTA secundaria')], {
+          eyebrow: 'Inscripciones abiertas · Curso 2026/27',
+          title: 'Piensa diferente, actúa con propósito',
+          subtitle: 'La asociación de emprendedores de la Universidad Carlos III de Madrid. Eventos, comunidad y proyectos para pasar de la idea a algo real.',
+          cta1: 'Apuntarme a Start', cta2: 'Ver eventos',
+        }),
+        B('proximo', 'Próximo evento', [], {}, true),
+        B('quienes', 'Quiénes somos', [T('title', 'Título'), A('text', 'Texto')], {
+          title: 'De la idea a algo real, antes de terminar la carrera.',
+          text: 'Start UC3M nació en 2013 cuando seis alumnos de ADE se dieron cuenta de que en la universidad faltaba una iniciativa que conectara el talento técnico, de diseño y de negocio.',
+        }),
+        B('podcast', 'Podcast', [T('title', 'Título')], { title: 'Podcast · StartTheWeek' }),
+        B('starter', 'Starter', [T('title', 'Título'), A('text', 'Texto')], {
+          title: 'Un starter no es solo alguien que forma parte de Start_',
+          text: 'Es una persona con iniciativa, curiosidad y ganas reales de implicarse. Alguien que aporta ideas, energía y actitud a la comunidad, y que entiende que el valor de Start lo construimos entre todos.',
+        }),
+        B('cta', 'CTA final', [T('title', 'Título'), A('text', 'Texto')], {
+          title: 'Este año puedes estar del otro lado_',
+          text: 'Sé partner fijo de Start o patrocina un evento y llega a más de 3.000 estudiantes de la UC3M que quieren construir. Media kit, formatos y cifras en una página.',
+        }),
+      ]},
+      eventos: { id: 'eventos', name: 'Eventos', href: '/eventos', status: 'Publicada', blocks: [
+        B('hero', 'Cabecera', [T('title', 'Título'), A('text', 'Texto')], { title: 'Eventos_', text: 'Charlas, talleres y competiciones para pasar de la idea a algo real.' }),
+        B('lista', 'Listado de eventos', [], {}, true),
+      ]},
+      podcast: { id: 'podcast', name: 'Podcast', href: '/podcast', status: 'Publicada', blocks: [
+        B('hero', 'Cabecera', [T('title', 'Título'), A('text', 'Texto')], { title: 'StartTheWeek_', text: 'Conversaciones con fundadores, inversores y gente que construye.' }),
+        B('lista', 'Episodios', [], {}, true),
+      ]},
+      equipo: { id: 'equipo', name: 'Equipo', href: '/equipo', status: 'Publicada', blocks: [
+        B('hero', 'Cabecera', [T('title', 'Título'), A('text', 'Texto')], { title: 'El equipo_', text: 'Las personas que hacen que Start pase.' }),
+        B('lista', 'Miembros y departamentos', [], {}, true),
+      ]},
+      blog: { id: 'blog', name: 'Blog', href: '/blog', status: 'Publicada', blocks: [
+        B('hero', 'Cabecera', [T('title', 'Título'), A('text', 'Texto')], { title: 'Blog_', text: 'Lo último de la comunidad.' }),
+        B('lista', 'Artículos', [], {}, true),
+      ]},
+      patrocina: { id: 'patrocina', name: 'Patrocina', href: '/patrocina', status: 'Publicada', blocks: [
+        B('hero', 'Cabecera', [T('title', 'Título'), A('text', 'Texto')], { title: 'Patrocina_', text: 'Llega a más de 3.000 estudiantes de la UC3M que quieren construir.' }),
+        B('tiers', 'Niveles de patrocinio', [], {}, true),
+        B('cta', 'CTA', [T('title', 'Título'), T('button', 'Botón')], { title: '¿Hablamos?', button: 'Pedir media kit' }),
+      ]},
+      recursos: { id: 'recursos', name: 'Recursos', href: '/recursos', status: 'Publicada', blocks: [
+        B('hero', 'Cabecera', [T('title', 'Título'), A('text', 'Texto')], { title: 'Recursos_', text: 'Herramientas, plantillas y lecturas que usamos en Start.' }),
+        B('lista', 'Listado de recursos', [], {}, true),
+      ]},
+      unete: { id: 'unete', name: 'Únete', href: '/unete', status: 'Publicada', blocks: [
+        B('hero', 'Cabecera', [T('title', 'Título'), A('text', 'Texto')], { title: 'Únete a Start_', text: 'Forma parte de la comunidad de emprendedores de la UC3M.' }),
+        B('form', 'Formulario', [T('button', 'Botón')], { button: 'Enviar solicitud' }),
+      ]},
+      links: { id: 'links', name: 'Links', href: '/links', status: 'Publicada', blocks: [
+        B('hero', 'Cabecera', [T('title', 'Título')], { title: 'Start UC3M' }),
+        B('lista', 'Enlaces', [], {}, true),
+      ]},
+      contacto: { id: 'contacto', name: 'Contacto', href: '/contacto', status: 'Publicada', blocks: [
+        B('hero', 'Cabecera', [T('title', 'Título'), A('text', 'Texto')], { title: 'Contacto_', text: 'Escríbenos y te respondemos en menos de 48 h.' }),
+        B('form', 'Formulario', [T('button', 'Botón')], { button: 'Enviar' }),
+      ]},
+    });
+
+    const ORDER = ['inicio', 'eventos', 'podcast', 'equipo', 'blog', 'patrocina', 'recursos', 'unete', 'links', 'contacto'];
+
+    // Load stored pages; fill any missing page with its default.
+    let pages: Record<string, Page> = { ...defaults(), ...(cms.getObject('paginas') as Record<string, Page>) };
+    let current = ORDER.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'inicio';
+
+    const list = $('#page-list');
+    const blocksEl = $('#blocks');
+    const base = document.documentElement.dataset.base ?? '';
+
+    function renderList() {
+      list.innerHTML = ORDER.map((id) => {
+        const p = pages[id];
+        const on = id === current;
+        return `<li class="flex items-center justify-between gap-2 px-4 py-2.5 ${on ? 'bg-paper-2' : ''}">
+          <button class="flex-1 text-left font-semibold ${on ? 'text-cobalt' : ''}" data-page="${id}">${cms.esc(p.name)}</button>
+          <span class="adm-badge adm-badge-ok">${cms.esc(p.status)}</span>
+          <a href="${base}${p.href}" target="_blank" rel="noopener" class="mono text-ink/50 hover:text-cobalt">Ver</a>
+        </li>`;
+      }).join('');
+      $('#page-title').textContent = pages[current].name;
+      ($('[data-view-current]') as HTMLAnchorElement).href = base + pages[current].href;
+    }
+
+    function renderBlocks() {
+      const p = pages[current];
+      if (!p.blocks.length) { blocksEl.innerHTML = '<p class="adm-card text-ink/60">Esta página no tiene bloques editables.</p>'; return; }
+      blocksEl.innerHTML = p.blocks.map((b, i) => `
+        <article class="adm-card ${b.hidden ? 'opacity-60' : ''}" data-block="${i}">
+          <header class="flex flex-wrap items-center justify-between gap-3 border-b border-line pb-3">
+            <div class="flex items-center gap-3">
+              <span class="mono text-ink/40">${String(i + 1).padStart(2, '0')}</span>
+              <h3 class="font-bold">${cms.esc(b.name)}</h3>
+              ${b.auto ? '<span class="adm-badge">automático</span>' : ''}
+              ${b.hidden ? '<span class="adm-badge">oculto</span>' : ''}
+            </div>
+            <div class="flex items-center gap-2">
+              <label class="mono flex cursor-pointer items-center gap-2 text-ink/60"><input type="checkbox" data-hide ${b.hidden ? 'checked' : ''} /> Ocultar bloque</label>
+              <button class="adm-btn-ghost px-2" data-move="-1" title="Subir" ${i === 0 ? 'disabled' : ''}>↑</button>
+              <button class="adm-btn-ghost px-2" data-move="1" title="Bajar" ${i === p.blocks.length - 1 ? 'disabled' : ''}>↓</button>
+            </div>
+          </header>
+          ${b.auto
+            ? '<p class="mt-3 text-ink/60">Este bloque se rellena automáticamente con el contenido del CMS (eventos, episodios, listados…).</p>'
+            : `<div class="mt-3 grid gap-3 sm:grid-cols-2">${b.fields.map((f) => `
+                <label class="${f.type === 'textarea' ? 'sm:col-span-2' : ''}"><span class="adm-label">${cms.esc(f.label)}</span>
+                  ${f.type === 'textarea'
+                    ? `<textarea class="adm-input" rows="3" data-field="${f.key}">${cms.esc(b.values[f.key] ?? '')}</textarea>`
+                    : `<input class="adm-input" type="text" data-field="${f.key}" value="${cms.esc(b.values[f.key] ?? '')}" />`}
+                </label>`).join('')}</div>`}
+        </article>`).join('');
+    }
+
+    // Read the DOM into the model (values + hidden flag) before reorder/save.
+    function collect() {
+      const p = pages[current];
+      blocksEl.querySelectorAll<HTMLElement>('[data-block]').forEach((el) => {
+        const b = p.blocks[Number(el.dataset.block)];
+        b.hidden = (el.querySelector('[data-hide]') as HTMLInputElement).checked;
+        el.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('[data-field]').forEach((f) => { b.values[f.dataset.field!] = f.value; });
+      });
+    }
+
+    function render() { renderList(); renderBlocks(); }
+
+    list.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest<HTMLElement>('[data-page]');
+      if (!btn) return;
+      collect();
+      current = btn.dataset.page!;
+      history.replaceState(null, '', '#' + current);
+      render();
+    });
+
+    blocksEl.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-move]');
+      if (!btn) return;
+      collect();
+      const i = Number(btn.closest<HTMLElement>('[data-block]')!.dataset.block);
+      const j = i + Number(btn.dataset.move);
+      const bl = pages[current].blocks;
+      if (j < 0 || j >= bl.length) return;
+      [bl[i], bl[j]] = [bl[j], bl[i]];
+      renderBlocks();
+    });
+
+    blocksEl.addEventListener('change', (e) => {
+      if ((e.target as HTMLElement).matches('[data-hide]')) { collect(); renderBlocks(); }
+    });
+
+    $('[data-save]').addEventListener('click', () => {
+      collect();
+      cms.setObject('paginas', pages);
+      // Public-side hook: the home hero title/subtitle feed the shared `site` object.
+      const hero = pages.inicio.blocks.find((b) => b.id === 'hero');
+      if (hero) {
+        cms.setObject('site', { ...cms.getObject('site'), claim: hero.values.title, description: hero.values.subtitle });
+      }
+      cms.toast('Guardado');
+      render();
+    });
+
+    $('[data-reset]').addEventListener('click', () => {
+      if (!confirm(`¿Restaurar los bloques de "${pages[current].name}" a su contenido original?`)) return;
+      pages[current] = defaults()[current];
+      cms.setObject('paginas', pages);
+      cms.toast('Página restaurada');
+      render();
+    });
+
+    render();
+  </script>
+</Admin>

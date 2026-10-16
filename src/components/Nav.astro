@@ -1,0 +1,35 @@
+---
+import Logo from './Logo.astro';
+import { site } from '../lib/site';
+const { tone = 'light' } = Astro.props; // light = sobre papel, dark = sobre azul
+const dark = tone === 'dark';
+const path = Astro.url.pathname;
+---
+<header class={`sticky top-0 z-50 ${dark ? 'bg-cobalt text-white' : 'bg-paper/85 text-ink backdrop-blur'} border-b ${dark ? 'border-cobalt-deep' : 'border-line'}`}>
+  <div class="container-x flex h-[64px] items-center justify-between">
+    <Logo tone={dark ? 'white' : 'cobalt'} size={24} />
+    <nav class="hidden items-center gap-8 md:flex" aria-label="Principal">
+      {site.nav.map((n) => (
+        <a href={n.href} class={`text-[14px] font-semibold transition-opacity hover:opacity-70 ${path.startsWith(n.href) ? 'underline underline-offset-8 decoration-2' : ''}`}>{n.label}</a>
+      ))}
+    </nav>
+    <div class="flex items-center gap-3">
+      <a href="/unete" class={`hidden rounded-brand border px-4 py-2 text-[14px] font-semibold md:inline-flex ${dark ? 'border-white/60 text-white hover:bg-white hover:text-cobalt' : 'border-cobalt text-cobalt hover:bg-cobalt hover:text-white'} transition-colors`}>Únete</a>
+      <button class="md:hidden font-mono text-sm" data-menu-toggle aria-expanded="false" aria-controls="menu">menu_</button>
+    </div>
+  </div>
+  <div id="menu" class={`hidden md:hidden ${dark ? 'bg-cobalt' : 'bg-paper'} border-t ${dark ? 'border-cobalt-deep' : 'border-line'}`}>
+    <nav class="container-x flex flex-col py-4" aria-label="Móvil">
+      {site.nav.map((n) => <a href={n.href} class="py-3 text-2xl font-bold">{n.label}</a>)}
+      <a href="/unete" class={`btn mt-2 ${dark ? 'btn-on-blue' : 'btn-primary'}`}>Únete →</a>
+    </nav>
+  </div>
+</header>
+<script>
+  const t = document.querySelector('[data-menu-toggle]');
+  const m = document.getElementById('menu');
+  t?.addEventListener('click', () => {
+    const open = m!.classList.toggle('hidden') === false;
+    t.setAttribute('aria-expanded', String(open));
+  });
+</script>

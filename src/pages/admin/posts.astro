@@ -1,0 +1,190 @@
+---
+import Admin from '../../layouts/Admin.astro';
+const cats = ['Eventos', 'Comunidad', 'Recursos', 'Prensa'];
+---
+<Admin title="Blog" section="posts">
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <h2 class="display text-3xl">Blog_</h2>
+      <p class="mt-1 text-sm text-ink/60">Posts, borradores y publicaciones de la web. Los borradores no se muestran en <span class="mono">/blog</span>.</p>
+    </div>
+    <button class="adm-btn" data-new>+ Nuevo post</button>
+  </div>
+
+  <div class="mt-6 flex flex-wrap gap-3">
+    <input class="adm-input max-w-xs" type="search" placeholder="Buscar por título, autor…" data-search />
+    <select class="adm-input max-w-[180px]" data-cat>
+      <option value="">Todas las categorías</option>
+      {cats.map((c) => <option value={c}>{c}</option>)}
+    </select>
+    <span class="mono self-center text-ink/50" data-count></span>
+  </div>
+
+  <div class="adm-card mt-4 overflow-x-auto p-0">
+    <table class="adm-table">
+      <thead><tr><th class="w-16"></th><th>Título</th><th>Categoría</th><th>Fecha</th><th>Estado</th><th class="text-right">Acciones</th></tr></thead>
+      <tbody data-rows></tbody>
+    </table>
+    <p class="hidden p-8 text-center text-sm text-ink/60" data-empty>No hay posts que coincidan. Crea uno con «Nuevo post».</p>
+  </div>
+
+  <!-- Drawer editor -->
+  <div class="fixed inset-0 z-[100] hidden" data-drawer>
+    <div class="absolute inset-0 bg-navy/40" data-close></div>
+    <form class="absolute right-0 top-0 flex h-full w-full max-w-2xl flex-col bg-white shadow-2xl" data-form>
+      <div class="flex h-14 shrink-0 items-center justify-between border-b border-line px-5">
+        <h3 class="text-base font-bold" data-drawer-title>Nuevo post</h3>
+        <button type="button" class="adm-btn-ghost px-3 py-1" data-close aria-label="Cerrar">✕</button>
+      </div>
+      <div class="flex-1 space-y-4 overflow-y-auto p-5">
+        <input type="hidden" name="id" />
+        <label><span class="adm-label">Título</span><input class="adm-input" name="title" required /></label>
+        <label><span class="adm-label">Extracto</span><textarea class="adm-input" name="excerpt" rows="2"></textarea></label>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <label><span class="adm-label">Categoría</span>
+            <select class="adm-input" name="category">{cats.map((c) => <option value={c}>{c}</option>)}</select>
+          </label>
+          <label><span class="adm-label">Fecha</span><input class="adm-input" type="date" name="date" required /></label>
+          <label><span class="adm-label">Autor</span><input class="adm-input" name="author" placeholder="Equipo Start" /></label>
+        </div>
+        <div>
+          <label><span class="adm-label">Portada (URL o /media/…)</span><input class="adm-input" name="cover" placeholder="/media/blog/portada.jpg" /></label>
+          <div class="mt-2 hidden aspect-[16/7] w-full overflow-hidden rounded-brand border border-line bg-paper-2" data-cover-wrap>
+            <img class="h-full w-full object-cover" alt="" data-cover-preview />
+          </div>
+        </div>
+        <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="draft" class="h-4 w-4 accent-cobalt" /> Borrador (no visible en la web)</label>
+        <div>
+          <div class="mb-1 flex items-end justify-between">
+            <span class="adm-label mb-0">Contenido (markdown)</span>
+            <div class="flex gap-1">
+              <button type="button" class="adm-btn-ghost px-2 py-0.5 text-xs font-bold" data-md="b" title="Negrita">B</button>
+              <button type="button" class="adm-btn-ghost px-2 py-0.5 text-xs italic" data-md="i" title="Cursiva">I</button>
+              <button type="button" class="adm-btn-ghost px-2 py-0.5 text-xs" data-md="h2" title="Título H2">H2</button>
+              <button type="button" class="adm-btn-ghost px-2 py-0.5 text-xs" data-md="link" title="Enlace">🔗</button>
+            </div>
+          </div>
+          <textarea class="adm-input font-mono text-[13px]" name="body" rows="14" placeholder="## Un titular&#10;&#10;Texto del post en **markdown**…"></textarea>
+        </div>
+      </div>
+      <div class="flex shrink-0 flex-wrap items-center justify-between gap-2 border-t border-line px-5 py-3">
+        <button type="button" class="adm-btn-danger hidden" data-delete>Borrar</button>
+        <div class="ml-auto flex gap-2">
+          <button type="button" class="adm-btn-ghost" data-close>Cancelar</button>
+          <button type="submit" class="adm-btn-ghost" data-save>Guardar</button>
+          <button type="submit" class="adm-btn" data-publish-post>Guardar y publicar</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    const cms = window.cms;
+    const base = document.documentElement.dataset.base || '';
+    const $ = (s: string) => document.querySelector(s) as HTMLElement;
+    const rows = $('[data-rows]') as HTMLTableSectionElement;
+    const search = $('[data-search]') as HTMLInputElement;
+    const catSel = $('[data-cat]') as HTMLSelectElement;
+    const drawer = $('[data-drawer]');
+    const form = $('[data-form]') as HTMLFormElement;
+    const body = form.elements.namedItem('body') as HTMLTextAreaElement;
+    const coverIn = form.elements.namedItem('cover') as HTMLInputElement;
+    const img = (src: string) => (src ? (src.startsWith('http') ? src : base + src) : '');
+
+    function render() {
+      const q = search.value.trim().toLowerCase();
+      const cat = catSel.value;
+      const list = cms.list('posts')
+        .filter((p) => (!cat || p.category === cat) && (!q || `${p.title} ${p.author} ${p.excerpt}`.toLowerCase().includes(q)))
+        .sort((a, b) => String(b.date).localeCompare(String(a.date)));
+      $('[data-count]').textContent = `${list.length} post${list.length === 1 ? '' : 's'}`;
+      $('[data-empty]').classList.toggle('hidden', list.length > 0);
+      rows.innerHTML = list.map((p) => `
+        <tr>
+          <td>${p.cover ? `<img src="${cms.esc(img(p.cover))}" alt="" class="h-10 w-14 rounded object-cover bg-paper-2" />` : `<div class="h-10 w-14 rounded bg-paper-2"></div>`}</td>
+          <td><button class="text-left font-semibold hover:text-cobalt" data-edit="${cms.esc(p.id)}">${cms.esc(p.title)}</button><div class="mono text-ink/50">${cms.esc(p.author || '')}</div></td>
+          <td><span class="adm-badge">${cms.esc(p.category)}</span></td>
+          <td class="whitespace-nowrap">${p.date ? cms.fmtDate(p.date) : '—'}</td>
+          <td><span class="adm-badge ${p.draft ? '' : 'adm-badge-ok'}">${p.draft ? 'Borrador' : 'Publicado'}</span></td>
+          <td class="whitespace-nowrap text-right">
+            <button class="adm-btn-ghost px-3 py-1" data-edit="${cms.esc(p.id)}">Editar</button>
+            <a class="adm-btn-ghost px-3 py-1" href="${base}/blog/${cms.esc(p.id)}" target="_blank" rel="noopener">Ver en web</a>
+            <button class="adm-btn-danger px-3 py-1" data-del="${cms.esc(p.id)}">Borrar</button>
+          </td>
+        </tr>`).join('');
+    }
+
+    function openDrawer(id?: string) {
+      const p = id ? cms.get('posts', id) : undefined;
+      form.reset();
+      $('[data-drawer-title]').textContent = p ? 'Editar post' : 'Nuevo post';
+      $('[data-delete]').classList.toggle('hidden', !p);
+      const set = (n: string, v: any) => ((form.elements.namedItem(n) as HTMLInputElement).value = v ?? '');
+      set('id', p?.id || '');
+      set('title', p?.title); set('excerpt', p?.excerpt); set('category', p?.category || 'Comunidad');
+      set('date', (p?.date || new Date().toISOString()).slice(0, 10)); set('author', p?.author); set('cover', p?.cover); set('body', p?.body);
+      (form.elements.namedItem('draft') as HTMLInputElement).checked = p ? !!p.draft : true;
+      updateCover();
+      drawer.classList.remove('hidden'); document.body.style.overflow = 'hidden';
+      const url = new URL(location.href); url.search = p ? `?id=${p.id}` : '?new=1'; history.replaceState(null, '', url);
+      setTimeout(() => (form.elements.namedItem('title') as HTMLInputElement).focus(), 50);
+    }
+    function closeDrawer() {
+      drawer.classList.add('hidden'); document.body.style.overflow = '';
+      history.replaceState(null, '', location.pathname);
+    }
+    function updateCover() {
+      const v = coverIn.value.trim();
+      $('[data-cover-wrap]').classList.toggle('hidden', !v);
+      if (v) ($('[data-cover-preview]') as HTMLImageElement).src = img(v);
+    }
+    function save(publish: boolean) {
+      const fd = new FormData(form);
+      const item = {
+        id: (fd.get('id') as string) || cms.uid(),
+        title: String(fd.get('title') || '').trim(), excerpt: String(fd.get('excerpt') || '').trim(),
+        category: String(fd.get('category')), date: String(fd.get('date')), author: String(fd.get('author') || '').trim(),
+        cover: String(fd.get('cover') || '').trim(), draft: publish ? false : fd.get('draft') === 'on', body: String(fd.get('body') || ''),
+      };
+      if (!item.title) { cms.toast('El título es obligatorio', 'err'); return; }
+      cms.save('posts', item);
+      cms.toast(publish ? 'Guardado y publicado' : 'Guardado');
+      closeDrawer(); render();
+    }
+    // Toolbar markdown
+    function insertMd(kind: string) {
+      const s = body.selectionStart, e = body.selectionEnd, sel = body.value.slice(s, e);
+      let out = '', ph = '', off = 0;
+      if (kind === 'b') { ph = sel || 'texto'; out = `**${ph}**`; off = 2; }
+      else if (kind === 'i') { ph = sel || 'texto'; out = `_${ph}_`; off = 1; }
+      else if (kind === 'h2') { const nl = s === 0 || body.value[s - 1] === '\n' ? '' : '\n\n'; ph = sel || 'Título'; out = `${nl}## ${ph}`; off = nl.length + 3; }
+      else if (kind === 'link') { const url = prompt('URL del enlace', 'https://') || ''; if (!url) return; ph = sel || 'texto'; out = `[${ph}](${url})`; off = 1; }
+      body.setRangeText(out, s, e, 'end');
+      if (!sel) body.setSelectionRange(s + off, s + off + ph.length);
+      body.focus();
+    }
+
+    // Eventos
+    $('[data-new]').addEventListener('click', () => openDrawer());
+    search.addEventListener('input', render); catSel.addEventListener('change', render);
+    coverIn.addEventListener('input', updateCover);
+    document.querySelectorAll('[data-md]').forEach((b) => b.addEventListener('click', () => insertMd((b as HTMLElement).dataset.md!)));
+    document.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', closeDrawer));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !drawer.classList.contains('hidden')) closeDrawer(); });
+    form.addEventListener('submit', (e) => { e.preventDefault(); save((e as SubmitEvent).submitter === $('[data-publish-post]')); });
+    $('[data-delete]').addEventListener('click', () => {
+      const id = (form.elements.namedItem('id') as HTMLInputElement).value;
+      if (id && confirm('¿Borrar este post? No se puede deshacer.')) { cms.remove('posts', id); cms.toast('Post borrado'); closeDrawer(); render(); }
+    });
+    rows.addEventListener('click', (e) => {
+      const t = (e.target as HTMLElement).closest<HTMLElement>('[data-edit],[data-del]'); if (!t) return;
+      if (t.dataset.edit) openDrawer(t.dataset.edit);
+      else if (t.dataset.del) { const p = cms.get('posts', t.dataset.del); if (confirm(`¿Borrar «${p?.title}»?`)) { cms.remove('posts', t.dataset.del); cms.toast('Post borrado'); render(); } }
+    });
+
+    render();
+    const params = new URLSearchParams(location.search);
+    if (params.get('new')) openDrawer();
+    else if (params.get('id')) openDrawer(params.get('id')!);
+  </script>
+</Admin>

@@ -1,0 +1,274 @@
+---
+import Admin from '../../layouts/Admin.astro';
+---
+<Admin title="Equipo" section="equipo">
+  <div class="flex flex-wrap items-start justify-between gap-4">
+    <div>
+      <h2 class="text-2xl font-bold">Equipo</h2>
+      <p class="mt-1 text-sm text-ink/60">Personas y departamentos que aparecen en la página <a href="/equipo" class="text-cobalt underline">/equipo</a>.</p>
+    </div>
+    <button class="adm-btn" data-new>+ Nueva persona</button>
+  </div>
+
+  <div class="mt-6 flex gap-1 border-b border-line" role="tablist">
+    <button class="adm-tab" data-tab="personas" role="tab">Personas <span class="adm-badge ml-1" data-count-personas>0</span></button>
+    <button class="adm-tab" data-tab="departamentos" role="tab">Departamentos <span class="adm-badge ml-1" data-count-deptos>0</span></button>
+  </div>
+
+  <!-- Tab Personas -->
+  <section id="tab-personas" class="mt-5">
+    <div class="flex flex-wrap items-center gap-3">
+      <input class="adm-input max-w-xs" placeholder="Buscar por nombre…" data-search />
+      <select class="adm-input max-w-[220px]" data-filter-dept><option value="">Todos los departamentos</option></select>
+      <label class="mono flex items-center gap-2 text-ink/60"><input type="checkbox" data-show-alumni /> Mostrar alumni</label>
+    </div>
+    <div class="mt-5 flex flex-col gap-8" data-personas></div>
+  </section>
+
+  <!-- Tab Departamentos -->
+  <section id="tab-departamentos" class="mt-5 hidden">
+    <p class="text-sm text-ink/60">Edita el nombre, la frase corta y la descripción de cada departamento. Los cambios se guardan por tarjeta.</p>
+    <div class="mt-5 grid gap-4 md:grid-cols-2" data-deptos></div>
+    <div class="mt-4"><button class="adm-btn-ghost" data-new-dept>+ Nuevo departamento</button></div>
+  </section>
+
+  <!-- Drawer edición persona -->
+  <div id="drawer" class="fixed inset-0 z-[100] hidden">
+    <div class="absolute inset-0 bg-navy/40" data-close></div>
+    <aside class="absolute right-0 top-0 flex h-full w-full max-w-md flex-col bg-white shadow-2xl">
+      <header class="flex h-14 items-center justify-between border-b border-line px-5">
+        <h3 class="font-bold" data-drawer-title>Editar persona</h3>
+        <button class="adm-btn-ghost !px-2 !py-1" data-close aria-label="Cerrar">✕</button>
+      </header>
+      <form class="flex flex-1 flex-col gap-4 overflow-y-auto p-5" data-form>
+        <input type="hidden" name="id" />
+        <div class="flex items-center gap-4">
+          <div class="grid h-20 w-20 shrink-0 place-items-center overflow-hidden rounded-full bg-lavender text-xl font-bold text-navy" data-preview></div>
+          <label class="flex-1"><span class="adm-label">Foto (ruta o URL)</span><input class="adm-input" name="photo" placeholder="/media/equipo/nombre.jpg" /></label>
+        </div>
+        <label><span class="adm-label">Nombre</span><input class="adm-input" name="name" required /></label>
+        <label><span class="adm-label">Cargo</span>
+          <select class="adm-input" name="role">
+            <option>Presidenta</option><option>Vicepresidenta</option><option>Responsable</option><option>Asociado/a</option><option>Futuro miembro</option>
+          </select>
+        </label>
+        <label><span class="adm-label">Departamento</span><select class="adm-input" name="dept" data-dept-select></select></label>
+        <label><span class="adm-label">LinkedIn</span><input class="adm-input" name="linkedin" type="url" placeholder="https://www.linkedin.com/in/…" /></label>
+        <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="alumni" /> Alumni (ya no forma parte del equipo activo)</label>
+        <div class="mt-auto flex items-center justify-between gap-2 border-t border-line pt-4">
+          <button type="button" class="adm-btn-danger" data-delete>Borrar</button>
+          <div class="flex gap-2"><button type="button" class="adm-btn-ghost" data-close>Cancelar</button><button class="adm-btn">Guardar</button></div>
+        </div>
+      </form>
+    </aside>
+  </div>
+
+  <style>
+    .adm-tab { margin-bottom: -1px; border-bottom: 2px solid transparent; padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 600; opacity: 0.6; }
+    .adm-tab:hover { opacity: 1; }
+    .adm-tab-active { border-bottom-color: var(--color-cobalt, #1f3fd6); color: var(--color-cobalt, #1f3fd6); opacity: 1; }
+  </style>
+
+  <script>
+    const cms = window.cms;
+    const base = document.documentElement.dataset.base || '';
+    const $ = (s: string) => document.querySelector(s) as HTMLElement;
+    const ROLE_ORDER = ['Presidenta', 'Vicepresidenta', 'Responsable', 'Asociado/a', 'Futuro miembro'];
+
+    const src = (p: string) => (p?.startsWith('http') ? p : base + p);
+    const initials = (n: string) => n.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]!.toUpperCase()).join('');
+    const avatar = (m: any, cls = 'h-14 w-14 text-lg') =>
+      m.photo
+        ? `<img src="${cms.esc(src(m.photo))}" alt="" class="${cls} shrink-0 rounded-full object-cover bg-paper-2" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'${cls} shrink-0 grid place-items-center rounded-full bg-lavender font-bold text-navy',textContent:'${cms.esc(initials(m.name))}'}))" />`
+        : `<div class="${cls} shrink-0 grid place-items-center rounded-full bg-lavender font-bold text-navy">${cms.esc(initials(m.name))}</div>`;
+
+    // ---------- Tabs ----------
+    const tabs = document.querySelectorAll<HTMLButtonElement>('[data-tab]');
+    function showTab(k: string) {
+      tabs.forEach((t) => t.classList.toggle('adm-tab-active', t.dataset.tab === k));
+      $('#tab-personas').classList.toggle('hidden', k !== 'personas');
+      $('#tab-departamentos').classList.toggle('hidden', k !== 'departamentos');
+      history.replaceState(null, '', '#' + k);
+    }
+    tabs.forEach((t) => t.addEventListener('click', () => showTab(t.dataset.tab!)));
+    showTab(location.hash === '#departamentos' ? 'departamentos' : 'personas');
+
+    // ---------- Personas ----------
+    const search = $('[data-search]') as HTMLInputElement;
+    const filterDept = $('[data-filter-dept]') as HTMLSelectElement;
+    const showAlumni = $('[data-show-alumni]') as HTMLInputElement;
+
+    function deptNames() {
+      const list = cms.list('departamentos').map((d) => d.name);
+      cms.list('equipo').forEach((m) => { if (m.dept && !list.includes(m.dept)) list.push(m.dept); });
+      return list;
+    }
+    function fillDeptSelects() {
+      const names = deptNames();
+      const opts = names.map((n) => `<option value="${cms.esc(n)}">${cms.esc(n)}</option>`).join('');
+      const cur = filterDept.value;
+      filterDept.innerHTML = `<option value="">Todos los departamentos</option>${opts}`;
+      filterDept.value = names.includes(cur) ? cur : '';
+      $('[data-dept-select]').innerHTML = opts;
+    }
+
+    function sortedTeam() {
+      return cms.list('equipo').slice().sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    }
+
+    function renderPersonas() {
+      const all = sortedTeam();
+      const active = all.filter((m) => !m.alumni);
+      $('[data-count-personas]').textContent = String(active.length);
+      const q = search.value.trim().toLowerCase();
+      const fd = filterDept.value;
+      const list = all.filter((m) => (showAlumni.checked || !m.alumni) && (!fd || m.dept === fd) && (!q || m.name.toLowerCase().includes(q)));
+      const box = $('[data-personas]');
+      if (!list.length) { box.innerHTML = `<div class="adm-card text-center text-sm text-ink/60">No hay personas que coincidan. Crea una con «Nueva persona».</div>`; return; }
+
+      const names = deptNames();
+      const groups = new Map<string, any[]>();
+      names.forEach((n) => groups.set(n, []));
+      list.forEach((m) => { const k = m.dept || 'Sin departamento'; if (!groups.has(k)) groups.set(k, []); groups.get(k)!.push(m); });
+
+      box.innerHTML = [...groups.entries()].filter(([, ms]) => ms.length).map(([dept, ms]) => `
+        <div>
+          <div class="mb-3 flex items-baseline gap-3"><h3 class="font-bold">${cms.esc(dept)}</h3><span class="mono text-ink/50">${ms.length} ${ms.length === 1 ? 'persona' : 'personas'}</span></div>
+          <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            ${ms.map((m) => {
+              const i = all.findIndex((x) => x.id === m.id);
+              return `
+              <article class="adm-card flex items-center gap-4 !p-4 ${m.alumni ? 'opacity-60' : ''}">
+                ${avatar(m)}
+                <div class="min-w-0 flex-1">
+                  <div class="flex flex-wrap items-center gap-2"><strong class="truncate">${cms.esc(m.name)}</strong>${m.alumni ? '<span class="adm-badge">Alumni</span>' : ''}</div>
+                  <p class="text-sm text-ink/70">${cms.esc(m.role)} · ${cms.esc(m.dept)}</p>
+                  ${m.linkedin ? `<a href="${cms.esc(m.linkedin)}" target="_blank" rel="noopener" class="mono text-cobalt hover:underline">LinkedIn ↗</a>` : '<span class="mono text-ink/40">Sin LinkedIn</span>'}
+                </div>
+                <div class="flex flex-col gap-1">
+                  <button class="adm-btn-ghost !px-2 !py-0.5" data-move="${m.id}" data-dir="-1" title="Subir" ${i <= 0 ? 'disabled' : ''}>↑</button>
+                  <button class="adm-btn-ghost !px-2 !py-0.5" data-move="${m.id}" data-dir="1" title="Bajar" ${i >= all.length - 1 ? 'disabled' : ''}>↓</button>
+                  <button class="adm-btn-ghost !px-2 !py-0.5" data-edit="${m.id}" title="Editar">✎</button>
+                </div>
+              </article>`;
+            }).join('')}
+          </div>
+        </div>`).join('');
+    }
+
+    $('[data-personas]').addEventListener('click', (e) => {
+      const t = (e.target as HTMLElement).closest<HTMLElement>('[data-move],[data-edit]');
+      if (!t) return;
+      if (t.dataset.edit) return openDrawer(t.dataset.edit);
+      const id = t.dataset.move!, dir = Number(t.dataset.dir);
+      const ids = sortedTeam().map((m) => m.id);
+      const i = ids.indexOf(id), j = i + dir;
+      if (i < 0 || j < 0 || j >= ids.length) return;
+      [ids[i], ids[j]] = [ids[j]!, ids[i]!];
+      cms.reorder('equipo', ids);
+      // Normaliza el campo order para que la web pública respete el nuevo orden
+      cms.list('equipo').forEach((m, k) => cms.save('equipo', { id: m.id, order: k }));
+      renderPersonas();
+    });
+    [search, filterDept, showAlumni].forEach((el) => el.addEventListener('input', renderPersonas));
+
+    // ---------- Drawer ----------
+    const drawer = $('#drawer');
+    const form = $('[data-form]') as HTMLFormElement;
+    const preview = $('[data-preview]');
+    const f = (n: string) => form.elements.namedItem(n) as HTMLInputElement | HTMLSelectElement;
+
+    function updatePreview() {
+      const p = (f('photo') as HTMLInputElement).value.trim();
+      const n = (f('name') as HTMLInputElement).value.trim() || '?';
+      preview.innerHTML = p ? `<img src="${cms.esc(src(p))}" alt="" class="h-full w-full object-cover" onerror="this.remove()" />` : cms.esc(initials(n));
+    }
+    function openDrawer(id?: string) {
+      fillDeptSelects();
+      const m = (id && cms.get('equipo', id)) || { id: '', name: '', photo: '', role: 'Asociado/a', dept: deptNames()[0] || '', linkedin: '', alumni: false };
+      $('[data-drawer-title]').textContent = id ? 'Editar persona' : 'Nueva persona';
+      f('id').value = m.id; f('name').value = m.name; f('photo').value = m.photo || ''; f('role').value = m.role; f('dept').value = m.dept; f('linkedin').value = m.linkedin || '';
+      (f('alumni') as HTMLInputElement).checked = !!m.alumni;
+      if (!ROLE_ORDER.includes(m.role)) f('role').value = 'Asociado/a';
+      $('[data-delete]').classList.toggle('hidden', !id);
+      updatePreview();
+      drawer.classList.remove('hidden');
+      setTimeout(() => f('name').focus(), 50);
+    }
+    function closeDrawer() { drawer.classList.add('hidden'); }
+    document.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', closeDrawer));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !drawer.classList.contains('hidden')) closeDrawer(); });
+    f('photo').addEventListener('input', updatePreview);
+    f('name').addEventListener('input', updatePreview);
+    $('[data-new]').addEventListener('click', () => openDrawer());
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const id = f('id').value;
+      const item: any = {
+        id: id || cms.uid(), name: f('name').value.trim(), photo: f('photo').value.trim(), role: f('role').value, dept: f('dept').value,
+        linkedin: f('linkedin').value.trim(), alumni: (f('alumni') as HTMLInputElement).checked,
+      };
+      if (!item.name) return cms.toast('El nombre es obligatorio', 'err');
+      if (!id) item.order = cms.list('equipo').length;
+      cms.save('equipo', item);
+      if (!id) { // nuevo → al final del orden
+        const ids = cms.list('equipo').filter((m) => m.id !== item.id).map((m) => m.id); ids.push(item.id); cms.reorder('equipo', ids);
+        cms.list('equipo').forEach((m, k) => cms.save('equipo', { id: m.id, order: k }));
+      }
+      cms.toast('Guardado'); closeDrawer(); fillDeptSelects(); renderPersonas();
+    });
+    $('[data-delete]').addEventListener('click', () => {
+      const id = f('id').value; const m = cms.get('equipo', id);
+      if (!m || !confirm(`¿Borrar a ${m.name}? Esta acción no se puede deshacer.`)) return;
+      cms.remove('equipo', id); cms.toast('Persona borrada'); closeDrawer(); renderPersonas();
+    });
+
+    // ---------- Departamentos ----------
+    function renderDeptos() {
+      const list = cms.list('departamentos');
+      $('[data-count-deptos]').textContent = String(list.length);
+      const box = $('[data-deptos]');
+      if (!list.length) { box.innerHTML = `<div class="adm-card text-center text-sm text-ink/60 md:col-span-2">Todavía no hay departamentos.</div>`; return; }
+      const team = cms.list('equipo');
+      box.innerHTML = list.map((d) => {
+        const n = team.filter((m) => m.dept === d.name && !m.alumni).length;
+        return `
+        <form class="adm-card flex flex-col gap-3" data-dept-form="${d.id}">
+          <div class="flex items-center justify-between"><span class="mono text-ink/50">${n} ${n === 1 ? 'persona' : 'personas'}</span><button type="button" class="adm-btn-danger !px-2 !py-1" data-dept-del="${d.id}" title="Borrar">✕</button></div>
+          <label><span class="adm-label">Nombre</span><input class="adm-input" name="name" value="${cms.esc(d.name)}" required /></label>
+          <label><span class="adm-label">Frase corta</span><input class="adm-input" name="short" value="${cms.esc(d.short)}" /></label>
+          <label><span class="adm-label">Descripción</span><textarea class="adm-input" name="desc" rows="4">${cms.esc(d.desc)}</textarea></label>
+          <div class="flex justify-end"><button class="adm-btn">Guardar</button></div>
+        </form>`;
+      }).join('');
+    }
+    $('[data-deptos]').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const fm = e.target as HTMLFormElement; const id = fm.dataset.deptForm!;
+      const g = (n: string) => (fm.elements.namedItem(n) as HTMLInputElement).value.trim();
+      const prev = cms.get('departamentos', id);
+      const item = { id, name: g('name'), short: g('short'), desc: g('desc') };
+      if (!item.name) return cms.toast('El nombre es obligatorio', 'err');
+      cms.save('departamentos', item);
+      // Si cambia el nombre, actualiza las personas de ese departamento
+      if (prev && prev.name !== item.name) cms.list('equipo').filter((m) => m.dept === prev.name).forEach((m) => cms.save('equipo', { id: m.id, dept: item.name }));
+      cms.toast('Guardado'); renderDeptos(); fillDeptSelects(); renderPersonas();
+    });
+    $('[data-deptos]').addEventListener('click', (e) => {
+      const b = (e.target as HTMLElement).closest<HTMLElement>('[data-dept-del]'); if (!b) return;
+      const d = cms.get('departamentos', b.dataset.deptDel!); if (!d) return;
+      const n = cms.list('equipo').filter((m) => m.dept === d.name).length;
+      if (!confirm(`¿Borrar el departamento «${d.name}»?${n ? ` Hay ${n} persona(s) asignadas; quedarán sin departamento.` : ''}`)) return;
+      cms.remove('departamentos', d.id); cms.toast('Departamento borrado'); renderDeptos(); fillDeptSelects(); renderPersonas();
+    });
+    $('[data-new-dept]').addEventListener('click', () => {
+      cms.save('departamentos', { id: cms.uid(), name: 'Nuevo departamento', short: '', desc: '' });
+      renderDeptos(); fillDeptSelects();
+      (document.querySelector('[data-deptos] input[name=name]') as HTMLInputElement)?.select();
+    });
+
+    // ---------- Init ----------
+    fillDeptSelects(); renderPersonas(); renderDeptos();
+  </script>
+</Admin>

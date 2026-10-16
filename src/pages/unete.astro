@@ -1,0 +1,21 @@
+---
+import Base from '../layouts/Base.astro';
+import RecruitingForm from '../components/RecruitingForm.astro';
+import { site } from '../lib/site';
+---
+<Base title="Únete a Start" description="Formulario de entrada a Start UC3M · Curso 2026/27" tone="dark">
+  <section class="bg-cobalt text-white">
+    <div class="container-x py-12 md:py-16">
+      <div class="flex flex-wrap items-end justify-between gap-6">
+        <div>
+          <span class="eyebrow text-lavender">Start recruiting · Curso {site.course}</span>
+          <h1 class="display mt-3 text-[clamp(40px,7vw,96px)]">Quiero entrar en Start_</h1>
+        </div>
+        <a href="/recursos#starter" class="mono text-lavender hover:text-white">¿Qué es ser starter? →</a>
+      </div>
+      <div id="formulario" class="mx-auto mt-10 max-w-4xl rounded-brand border border-white/20 bg-cobalt-deep/40 p-6 md:p-12">
+        <RecruitingForm />
+      </div>
+    </div>
+  </section>
+</Base>
