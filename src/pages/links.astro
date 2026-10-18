@@ -1,0 +1,44 @@
+---
+import Placeholder from '../components/Placeholder.astro';
+// Página de links para la bio de Instagram/TikTok (móvil-first, sin nav)
+import '../styles/global.css';
+import Logo from '../components/Logo.astro';
+import { site } from '../lib/site';
+import { blogVisible, eventos } from '../lib/content';
+const next = (await eventos()).find((e) => e.data.status !== 'pasado');
+const links = (await blogVisible()) ? site.links : site.links.filter((l) => l.href !== '/blog');
+const siteOrigin = Astro.site?.origin ?? 'https://www.startuc3m.es';
+const ogImage = `${siteOrigin}/brand/logo-full-cobalt.png`;
+---
+<!doctype html><html lang="es"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Links | Start UC3M</title><meta name="theme-color" content="#2b3a91" />
+<meta name="description" content="Todos los enlaces de Start UC3M: próximo evento, únete, podcast, patrocina, blog y redes." />
+<meta property="og:title" content="Start UC3M · Links" /><meta property="og:description" content="Próximo evento, únete a Start, podcast, patrocina y redes, todo en un sitio." /><meta property="og:image" content={ogImage} /><meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" /><meta name="twitter:image" content={ogImage} />
+<link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet" /></head>
+<body class="bg-cobalt text-white" style="background:#2b3a91">
+  <main class="mx-auto flex min-h-screen max-w-md flex-col px-5 py-12">
+    <div class="flex flex-col items-center gap-2"><Logo tone="white" size={72} full /></div>
+    <p class="eyebrow mt-8 text-center text-lavender">Asociación de emprendedores · UC3M</p>
+    {next && (
+      <a href={`/eventos/${next.id}`} class="group relative mt-6 block aspect-[16/10] overflow-hidden rounded-brand bg-cobalt-deep">
+        <Placeholder class="absolute inset-0 h-full w-full object-cover opacity-80 transition-transform duration-700 group-hover:scale-105" />
+        <div class="absolute inset-0 bg-gradient-to-t from-navy via-navy/30 to-transparent"></div>
+        <div class="absolute inset-x-0 bottom-0 p-4">
+          <span class="mono rounded-full bg-white px-2.5 py-1 text-cobalt">Próximo evento · {next.data.date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}</span>
+          <p class="display mt-2 text-2xl">{next.data.title}</p>
+          <p class="text-sm text-lavender">{next.data.place} · Ver evento →</p>
+        </div>
+      </a>
+    )}
+    <ul class="mt-4 flex flex-col gap-3">
+      {links.map((l) => <li><a href={l.href} class={`flex items-center justify-between rounded-brand px-5 py-4 text-lg font-semibold ${l.featured ? 'bg-white text-cobalt' : 'border border-white/50'}`}>{l.label}<span class="font-mono">→</span></a></li>)}
+    </ul>
+    <a href="/podcast" class="group mt-4 flex items-center gap-4 rounded-brand border border-white/50 p-3">
+      <span class="relative block h-16 w-24 shrink-0 overflow-hidden rounded-brand bg-cobalt-deep"><img src="https://img.youtube.com/vi/ivKDwYuMc_A/hqdefault.jpg" alt="" class="absolute inset-0 h-full w-full object-cover" loading="lazy" /><span class="absolute inset-0 grid place-items-center text-white">▶</span></span>
+      <span class="min-w-0"><span class="mono block text-lavender">Último episodio · StartTheWeek #37</span><span class="block truncate font-semibold group-hover:underline">La verdad detrás del Mundo Inmobiliario</span><span class="block text-xs text-lavender">Guillermo Esteban</span></span>
+    </a>
+    <div class="mt-auto pt-10">
+      <div class="mt-8 flex justify-center gap-6 pb-4 text-sm font-semibold">{Object.entries(site.social).map(([k, v]) => <a href={v} class="capitalize underline-offset-4 hover:underline">{k}</a>)}</div>
+    </div>
+  </main>
+</body></html>

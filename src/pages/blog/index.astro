@@ -1,0 +1,66 @@
+---
+import Placeholder from '../../components/Placeholder.astro';
+import Base from '../../layouts/Base.astro';
+import PageHead from '../../components/PageHead.astro';
+import { posts as publicados } from '../../lib/content';
+const posts = await publicados();
+const cats = ['Todas', 'Eventos', 'Comunidad', 'Recursos', 'Prensa'];
+const [first, ...rest] = posts;
+const fmt = (d: Date) => d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
+---
+<Base title="Blog" tone="dark" noindex={posts.length === 0}>
+  <PageHead eyebrow="Blog" title="Lo último de la comunidad" intro="Crónicas de eventos, cómo entrar en Start, lo que pasa en el ecosistema y prensa. Escrito por el equipo de Comunicación.">
+    <div class="mt-8 flex flex-wrap items-center gap-2" role="tablist">
+      {cats.map((c, i) => <button data-filter={c} class={`eyebrow rounded-full border px-3 py-2 ${i === 0 ? 'bg-cobalt text-white border-cobalt' : 'border-white/40'}`}>{c}</button>)}
+      <a href="/blog/rss.xml" class="eyebrow ml-auto rounded-full border border-white/40 px-3 py-2">RSS <span class="font-mono">↗</span></a>
+    </div>
+  </PageHead>
+
+  <section class="container-x py-20">
+    {posts.length === 0 && <p class="max-w-xl text-lg">Muy pronto, las primeras crónicas del curso.</p>}
+    <!-- Destacado: imagen a la izquierda, texto a la derecha -->
+    {first && (
+      <a href={`/blog/${first.id}`} class="group grid gap-8 md:grid-cols-[1.3fr_1fr] md:items-center" data-reveal data-cat={first.data.category}>
+        <div class="relative aspect-[16/10] overflow-hidden rounded-brand bg-cobalt">
+          <Placeholder class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+          <span class="mono absolute left-4 top-4 rounded-full bg-navy/70 px-3 py-1.5 text-lavender backdrop-blur">Último</span>
+        </div>
+        <div>
+          <span class="eyebrow text-cobalt">{first.data.category} · {fmt(first.data.date)}</span>
+          <h2 class="display mt-4 text-[clamp(30px,3.6vw,52px)] text-cobalt group-hover:underline" data-split>{first.data.title}</h2>
+          <p class="mt-5 max-w-lg text-lg opacity-80">{first.data.excerpt}</p>
+          <span class="btn btn-primary mt-8">Leer <span class="font-mono">→</span></span>
+        </div>
+      </a>
+    )}
+
+    <div class="mt-20 flex items-end justify-between border-t border-line pt-8" data-reveal>
+      <span class="eyebrow text-cobalt">Todos los posts</span>
+      <span class="mono opacity-60">{posts.length} artículos</span>
+    </div>
+    <div class="mt-8 grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3" data-stagger>
+      {rest.map((p) => (
+        <a href={`/blog/${p.id}`} class="group" data-reveal data-cat={p.data.category}>
+          <div class="relative aspect-[16/10] overflow-hidden rounded-brand bg-cobalt">
+            <Placeholder class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+          </div>
+          <span class="eyebrow mt-4 block text-cobalt">{p.data.category} · {fmt(p.data.date)}</span>
+          <h2 class="mt-2 text-2xl font-bold leading-tight group-hover:underline">{p.data.title}</h2>
+          <p class="mt-2 text-sm opacity-70">{p.data.excerpt}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+</Base>
+<script>
+  const buttons = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
+  const items = document.querySelectorAll<HTMLElement>('[data-cat]');
+  const apply = (c: string) => {
+    buttons.forEach((b) => { const on = b.dataset.filter === c; b.classList.toggle('bg-cobalt', on); b.classList.toggle('text-white', on); b.classList.toggle('border-cobalt', on); });
+    items.forEach((it) => { it.style.display = c === 'Todas' || it.dataset.cat === c ? '' : 'none'; });
+    history.replaceState(null, '', c === 'Todas' ? location.pathname : `?cat=${encodeURIComponent(c)}`);
+  };
+  buttons.forEach((b) => b.addEventListener('click', () => apply(b.dataset.filter!)));
+  const q = new URLSearchParams(location.search).get('cat');
+  if (q) apply(q);
+</script>

@@ -1,0 +1,64 @@
+// Desfase (minutos) entre Europe/Madrid y UTC para un instante dado, cubriendo el cambio de horario CET/CEST.
+function madridOffsetMinutes(instant: Date): number {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Europe/Madrid', hour12: false,
+    year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit',
+  }).formatToParts(instant).reduce((acc, p) => ({ ...acc, [p.type]: p.value }), {} as Record<string, string>);
+  const asUTC = Date.UTC(+parts.year, +parts.month - 1, +parts.day, +parts.hour === 24 ? 0 : +parts.hour, +parts.minute, +parts.second);
+  return (asUTC - instant.getTime()) / 60000;
+}
+
+// Convierte fecha + hora local de Madrid (del frontmatter) al instante UTC real, cubriendo el cambio de horario.
+export function eventStartDate(date: Date, time: string): Date {
+  const [h, m] = time.split(':').map(Number);
+  const naiveUTC = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), h || 0, m || 0);
+  return new Date(naiveUTC - madridOffsetMinutes(new Date(naiveUTC)) * 60000);
+}
+
+// Genera un archivo .ics (RFC 5545) para el botón "Añadir al calendario" de la ficha de evento.
+// "18:00" es una hora; cualquier otra cosa ("2 días · 7 y 8 de noviembre") es un evento de día completo.
+export const hasClockTime = (time: string) => /^\d{1,2}:\d{2}$/.test(time.trim());
+
+export function eventToIcs(event: {
+  title: string;
+  description: string;
+  location: string;
+  date: Date;
+  time: string;
+  days?: number;
+  durationHours?: number;
+}): string {
+  const fmt = (d: Date) => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+  const day = (d: Date) => d.toISOString().slice(0, 10).replace(/-/g, '');
+  let when: string[];
+  if (hasClockTime(event.time)) {
+    const start = eventStartDate(event.date, event.time);
+    const end = new Date(start.getTime() + (event.durationHours ?? 3) * 60 * 60 * 1000);
+    when = [`DTSTART:${fmt(start)}`, `DTEND:${fmt(end)}`];
+  } else {
+    // DTEND de un evento de día completo es el día siguiente al último (no inclusivo).
+    const end = new Date(event.date.getTime() + (event.days ?? 1) * 24 * 60 * 60 * 1000);
+    when = [`DTSTART;VALUE=DATE:${day(event.date)}`, `DTEND;VALUE=DATE:${day(end)}`];
+  }
+  const esc = (s: string) => s.replace(/[\\,;]/g, (c) => '\\' + c).replace(/\n/g, '\\n');
+
+  return [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Start UC3M//Eventos//ES',
+    'CALSCALE:GREGORIAN',
+    'BEGIN:VEVENT',
+    `UID:${crypto.randomUUID()}@startuc3m.es`,
+    `DTSTAMP:${fmt(new Date())}`,
+    ...when,
+    `SUMMARY:${esc(event.title)}`,
+    `DESCRIPTION:${esc(event.description)}`,
+    `LOCATION:${esc(event.location)}`,
+    'END:VEVENT',
+    'END:VCALENDAR',
+  ].join('\r\n');
+}
+
+export function icsDataHref(ics: string): string {
+  return `data:text/calendar;charset=utf8,${encodeURIComponent(ics)}`;
+}
