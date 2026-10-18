@@ -53,8 +53,11 @@ export function clientIp(req) {
 /**
  * Rate limiting respaldado por la BD (ver rate_limit_hit en db/schema.sql).
  * Devuelve true si la peticion se permite.
+ *
+ * Por defecto, si la BD falla se deja pasar (no bloqueamos el registro de
+ * socios). Los endpoints publicos que envian correo pasan failOpen: false.
  */
-export async function rateLimit(bucket, limit, windowSeconds) {
+export async function rateLimit(bucket, limit, windowSeconds, { failOpen = true } = {}) {
   try {
     const { rows } = await query('select rate_limit_hit($1, $2, $3) as allowed', [
       bucket,
@@ -63,8 +66,7 @@ export async function rateLimit(bucket, limit, windowSeconds) {
     ]);
     return rows[0].allowed;
   } catch {
-    // Si el limitador falla no bloqueamos el registro de socios.
-    return true;
+    return failOpen;
   }
 }
 

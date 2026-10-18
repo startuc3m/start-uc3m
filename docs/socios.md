@@ -27,7 +27,7 @@ STRIPE_PRODUCT_PREMIUM       # opcional
 RESEND_API_KEY
 EMAIL_FROM                   # "Start UC3M <socios@startuc3m.es>"
 CONTACT_EMAIL                # opcional, sale en el correo de bienvenida
-NEXT_PUBLIC_SITE_URL         # https://startuc3m.es
+NEXT_PUBLIC_SITE_URL         # https://www.startuc3m.es
 NOTION_API_KEY               # token de la integración interna de Notion
 NOTION_SOCIOS_DATABASE_ID    # id de la base de datos de socios
 ```
@@ -48,9 +48,14 @@ SQL. Vercel inyecta `DATABASE_URL` automáticamente al conectar la integración.
 
 1. Cuenta a nombre de la asociación, en modo test primero.
 2. Activar el envío de recibos: *Settings → Customer emails → Successful payments*.
-3. Webhook a `https://startuc3m.es/api/stripe/webhook` con los eventos
+3. Webhook a `https://www.startuc3m.es/api/stripe/webhook` (**con `www`**) con los eventos
    `checkout.session.completed` y `checkout.session.expired`.
 4. Copiar el signing secret a `STRIPE_WEBHOOK_SECRET`.
+
+   > `startuc3m.es` redirige a `www.startuc3m.es` con un 308 y **Stripe no sigue
+   > redirecciones**: con la URL sin `www` cada pago se cobra pero el webhook falla
+   > y el socio no queda dado de alta. Comprobar en *Developers → Webhooks* que no
+   > hay entregas fallidas.
 
 ### 3. Notion
 

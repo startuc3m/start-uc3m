@@ -1,0 +1,57 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHead from '../../components/PageHead.astro';
+import { getCollection } from 'astro:content';
+import { site } from '../../lib/site';
+// Todo el canal de YouTube (StartTheWeek) como rejilla de vídeos; arriba, el reproductor de la lista de subidas.
+const eps = (await getCollection('podcast')).sort((a, b) => b.data.episode - a.data.episode);
+const UPLOADS = 'UUbfIppe2oCIZpT6eHvu6q1g';
+---
+<Base title="Podcast · StartTheWeek" description="StartTheWeek, el podcast de Start UC3M: fundadores y referentes contando cómo se emprende. Todos los episodios del canal." tone="dark">
+  <PageHead eyebrow="Podcast · StartTheWeek" title="Todos los episodios_" intro="El canal de YouTube de Start UC3M entero, aquí. Dale al play o ábrelo en YouTube." />
+
+  <section class="bg-navy text-white">
+    <div class="container-x py-16">
+      <div class="flex flex-wrap items-end justify-between gap-6" data-reveal>
+        <div><span class="eyebrow text-lavender">Último episodio</span><h2 class="display mt-3 text-[clamp(28px,4vw,56px)]">Reproducir el canal_</h2></div>
+        <a href={site.social.youtube} class="btn btn-on-blue">Ver canal en YouTube <span class="font-mono">→</span></a>
+      </div>
+      <div class="relative mt-8 aspect-video overflow-hidden rounded-brand bg-cobalt-deep" data-reveal>
+        <iframe class="absolute inset-0 h-full w-full" src={`https://www.youtube-nocookie.com/embed/videoseries?list=${UPLOADS}&rel=0`} title="StartTheWeek · Start UC3M" loading="lazy" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe>
+      </div>
+    </div>
+  </section>
+
+  <section class="container-x py-20">
+    <span class="eyebrow text-cobalt">{eps.length} episodios</span>
+    <div class="mt-8 grid gap-x-8 gap-y-12 sm:grid-cols-2 md:grid-cols-3">
+      {eps.map((e) => {
+        const id = e.data.youtubeId;
+        return (
+        <article id={e.id} class="group" data-reveal>
+          <div class="relative aspect-video overflow-hidden rounded-brand bg-cobalt-deep" data-video={id ?? ''}>
+            {e.data.cover && <img src={e.data.cover} alt="" class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />}
+            <div class="absolute inset-0 bg-gradient-to-t from-navy/70 to-transparent"></div>
+            {id ? (
+              <button data-play class="absolute left-1/2 top-1/2 grid h-16 w-16 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white text-xl text-cobalt transition-transform hover:scale-110" aria-label={`Reproducir episodio ${e.data.episode}`}>▶</button>
+            ) : (
+              <a href={e.data.youtube ?? site.social.youtube} class="absolute left-1/2 top-1/2 grid h-16 w-16 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white text-xl text-cobalt transition-transform hover:scale-110" aria-label="Ver en YouTube">▶</a>
+            )}
+            <span class="display absolute bottom-3 left-4 text-3xl text-white">{String(e.data.episode).padStart(2, '0')}</span>
+          </div>
+          <span class="mono mt-4 block text-cobalt">{e.data.role}</span>
+          <h2 class="mt-2 text-2xl font-bold leading-tight">{e.data.title}</h2>
+          <p class="mt-1 opacity-70">{e.data.guest}</p>
+        </article>
+      )})}
+    </div>
+  </section>
+</Base>
+<script>
+  document.querySelectorAll<HTMLElement>('[data-video]').forEach((box) => {
+    const id = box.dataset.video; if (!id) return;
+    box.querySelector('[data-play]')?.addEventListener('click', () => {
+      box.innerHTML = `<iframe class="absolute inset-0 h-full w-full" src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0" title="StartTheWeek · Start UC3M" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>`;
+    });
+  });
+</script>
