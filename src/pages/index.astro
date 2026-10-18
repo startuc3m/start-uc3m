@@ -1,6 +1,5 @@
 ---
 import Placeholder from '../components/Placeholder.astro';
-import { asset } from '../lib/url';
 import Base from '../layouts/Base.astro';
 import PodcastTrack from '../components/PodcastTrack.astro';
 import SponsorTicker from '../components/SponsorTicker.astro';
@@ -8,8 +7,7 @@ import { eventos as publicados, posts as postsPublicados, blogVisible } from '..
 import { site } from '../lib/site';
 import ContactForm from '../components/ContactForm.astro';
 const eventos = await publicados();
-const next = eventos.find((e) => e.data.status !== 'pasado')!;
-const grid = eventos.filter((e) => e.id !== next.id).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const next = eventos.find((e) => e.data.status !== 'pasado');
 const conBlog = await blogVisible();
 const posts = (await postsPublicados()).slice(0, 3);
 const fmtLong = (d: Date) => d.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
@@ -49,7 +47,7 @@ const fmtShort = (d: Date) => d.toLocaleDateString('es-ES', { day: '2-digit', mo
   <!-- EVENTOS: próximo con imagen + tarjetas con imagen -->
   <section class="bg-navy text-white">
     <div class="container-x py-24">
-      <a href={`/eventos/${next.id}`} class="group grid gap-0 overflow-hidden rounded-brand bg-cobalt md:grid-cols-[1.1fr_1fr]" data-reveal>
+      {next && <a href={`/eventos/${next.id}`} class="group grid gap-0 overflow-hidden rounded-brand bg-cobalt md:grid-cols-[1.1fr_1fr]" data-reveal>
         <div class="relative aspect-[4/3] md:aspect-auto md:min-h-[480px]" data-img-reveal>
           <Placeholder class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" alt={next.data.title} />
           <span class="eyebrow absolute left-4 top-4 rounded-full bg-navy/70 px-3 py-2 text-lavender backdrop-blur">Próximo evento</span>
@@ -66,9 +64,9 @@ const fmtShort = (d: Date) => d.toLocaleDateString('es-ES', { day: '2-digit', mo
             {next.data.seats && <span class="mono text-lavender">{next.data.seats} plazas</span>}
           </div>
         </div>
-      </a>
+      </a>}
 
-      <div class="mt-10 flex justify-center" data-reveal><a href="/eventos" class="btn btn-outline text-white">Ver todos los eventos <span class="font-mono">→</span></a></div>
+      <div class={`${next ? 'mt-10 ' : ''}flex justify-center`} data-reveal><a href="/eventos" class="btn btn-outline text-white">Ver todos los eventos <span class="font-mono">→</span></a></div>
     </div>
   </section>
 

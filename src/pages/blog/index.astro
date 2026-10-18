@@ -3,10 +3,8 @@ import Placeholder from '../../components/Placeholder.astro';
 import Base from '../../layouts/Base.astro';
 import PageHead from '../../components/PageHead.astro';
 import { posts as publicados } from '../../lib/content';
-import { asset } from '../../lib/url';
 const posts = await publicados();
 const cats = ['Todas', 'Eventos', 'Comunidad', 'Recursos', 'Prensa'];
-const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const [first, ...rest] = posts;
 const fmt = (d: Date) => d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
 ---
@@ -14,7 +12,7 @@ const fmt = (d: Date) => d.toLocaleDateString('es-ES', { day: 'numeric', month: 
   <PageHead eyebrow="Blog" title="Lo último de la comunidad" intro="Crónicas de eventos, cómo entrar en Start, lo que pasa en el ecosistema y prensa. Escrito por el equipo de Comunicación.">
     <div class="mt-8 flex flex-wrap items-center gap-2" role="tablist">
       {cats.map((c, i) => <button data-filter={c} class={`eyebrow rounded-full border px-3 py-2 ${i === 0 ? 'bg-cobalt text-white border-cobalt' : 'border-white/40'}`}>{c}</button>)}
-      <a href={`${base}/blog/rss.xml`} class="eyebrow ml-auto rounded-full border border-white/40 px-3 py-2">RSS <span class="font-mono">↗</span></a>
+      <a href="/blog/rss.xml" class="eyebrow ml-auto rounded-full border border-white/40 px-3 py-2">RSS <span class="font-mono">↗</span></a>
     </div>
   </PageHead>
 

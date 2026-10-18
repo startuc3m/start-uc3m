@@ -7,10 +7,8 @@ import { site } from '../lib/site';
 import { blogVisible, eventos } from '../lib/content';
 const next = (await eventos()).find((e) => e.data.status !== 'pasado');
 const links = (await blogVisible()) ? site.links : site.links.filter((l) => l.href !== '/blog');
-import { asset } from '../lib/url';
-const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const siteOrigin = Astro.site?.origin ?? 'https://www.startuc3m.es';
-const ogImage = `${siteOrigin}${base}/brand/logo-full-cobalt.png`;
+const ogImage = `${siteOrigin}/brand/logo-full-cobalt.png`;
 ---
 <!doctype html><html lang="es"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Links | Start UC3M</title><meta name="theme-color" content="#2b3a91" />
 <meta name="description" content="Todos los enlaces de Start UC3M: próximo evento, únete, podcast, patrocina, blog y redes." />
@@ -43,10 +41,4 @@ const ogImage = `${siteOrigin}${base}/brand/logo-full-cobalt.png`;
       <div class="mt-8 flex justify-center gap-6 pb-4 text-sm font-semibold">{Object.entries(site.social).map(([k, v]) => <a href={v} class="capitalize underline-offset-4 hover:underline">{k}</a>)}</div>
     </div>
   </main>
-  <script is:inline define:vars={{ base }}>
-    if (base) { var fix = function (el) { var k = el.tagName === 'FORM' ? 'action' : 'href'; var v = el.getAttribute(k); if (v && v.charAt(0) === '/' && v.indexOf(base + '/') !== 0) el.setAttribute(k, base + v); };
-      document.querySelectorAll('a[href^="/"], form[action^="/"]').forEach(fix);
-      document.addEventListener('click', function (e) { var a = e.target && e.target.closest ? e.target.closest('a[href^="/"]') : null; if (a) fix(a); }, true);
-      document.addEventListener('submit', function (e) { if (e.target && e.target.tagName === 'FORM') fix(e.target); }, true); }
-  </script>
 </body></html>

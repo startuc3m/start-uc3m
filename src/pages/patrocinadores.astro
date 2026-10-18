@@ -1,6 +1,5 @@
 ---
 import Placeholder from '../components/Placeholder.astro';
-import { asset } from '../lib/url';
 import Base from '../layouts/Base.astro';
 import { site } from '../lib/site';
 const tiers = ['Partner', 'Evento', 'Colaborador'].map((t) => [t === 'Evento' ? 'Patrocinio de evento' : t === 'Partner' ? 'Partners fijos' : 'Colaboradores', site.sponsors.filter((s) => s.tier === t)] as const);
@@ -23,7 +22,7 @@ const tiers = ['Partner', 'Evento', 'Colaborador'].map((t) => [t === 'Evento' ? 
         <ul class={`mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 ${t === 'Partners fijos' ? 'md:grid-cols-2' : 'md:grid-cols-4'}`} data-stagger>
           {list.map((s) => (
             <li class={`grid min-w-0 place-items-center rounded-brand border border-line bg-white transition-transform hover:-translate-y-1 ${t === 'Partners fijos' ? 'aspect-[3/1.4] p-12' : 'aspect-[3/2] p-8'}`} data-reveal>
-              {s.logo ? <img src={asset(s.logo)} alt={s.name} class={`w-auto max-w-full object-contain ${t === 'Partners fijos' ? 'max-h-28' : 'max-h-16'}`} loading="lazy" /> : <span class="text-center text-2xl font-bold uppercase tracking-wider break-words text-cobalt">{s.name}</span>}
+              {s.logo ? <img src={s.logo} alt={s.name} class={`w-auto max-w-full object-contain ${t === 'Partners fijos' ? 'max-h-28' : 'max-h-16'}`} loading="lazy" /> : <span class="text-center text-2xl font-bold uppercase tracking-wider break-words text-cobalt">{s.name}</span>}
             </li>
           ))}
         </ul>

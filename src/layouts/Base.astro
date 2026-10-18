@@ -1,21 +1,19 @@
 ---
-import { asset } from '../lib/url';
 import '../styles/global.css';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import { site } from '../lib/site';
 const { title, description = site.description, tone = 'light', image, noindex = false } = Astro.props;
-const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const fullTitle = title ? `${title} | Start UC3M` : 'Start UC3M | Asociación de emprendedores de la UC3M';
 const siteOrigin = Astro.site?.origin ?? 'https://www.startuc3m.es';
 const canonical = new URL(Astro.url.pathname, siteOrigin).href;
-const ogImage = image ? (image.startsWith('http') ? image : `${siteOrigin}${base}${image}`) : `${siteOrigin}${base}/brand/logo-full-cobalt.png`;
+const ogImage = image ? (image.startsWith('http') ? image : `${siteOrigin}${image}`) : `${siteOrigin}/brand/logo-full-cobalt.png`;
 const organizationJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   name: site.name,
   url: siteOrigin,
-  logo: `${siteOrigin}${base}/favicon.svg`,
+  logo: `${siteOrigin}/favicon.svg`,
   email: site.email,
   sameAs: Object.values(site.social),
 };
@@ -37,8 +35,8 @@ const organizationJsonLd = {
     <meta name="theme-color" content="#2b3a91" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
-    <link rel="icon" href={`${base}/favicon.svg`} type="image/svg+xml" />
-    <link rel="manifest" href={`${base}/site.webmanifest`} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/site.webmanifest" />
     <script type="application/ld+json" set:html={JSON.stringify(organizationJsonLd)} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
@@ -55,19 +53,10 @@ const organizationJsonLd = {
     <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   </head>
   <body>
-    <div class="loader" aria-hidden="true"><img src={asset("/brand/logo-full-white.png")} alt="" width="816" height="342" /><div class="loader-bar"></div></div>
+    <div class="loader" aria-hidden="true"><img src="/brand/logo-full-white.png" alt="" width="816" height="342" /><div class="loader-bar"></div></div>
     <Nav tone={tone} />
     <main><slot /></main>
     <Footer />
-    <script is:inline define:vars={{ base }}>
-      // Con base (GitHub Pages) los enlaces raíz "/x" pasan a "/WebStartUC3M/x": al cargar y en cada clic (enlaces generados por JS incluidos).
-      if (base) {
-        var fix = function (el) { var k = el.tagName === 'FORM' ? 'action' : 'href'; var v = el.getAttribute(k); if (v && v.charAt(0) === '/' && v.indexOf(base + '/') !== 0 && v !== base) el.setAttribute(k, base + v); };
-        document.querySelectorAll('a[href^="/"], form[action^="/"]').forEach(fix);
-        document.addEventListener('click', function (e) { var a = e.target && e.target.closest ? e.target.closest('a[href^="/"]') : null; if (a) fix(a); }, true);
-        document.addEventListener('submit', function (e) { var f = e.target; if (f && f.tagName === 'FORM') fix(f); }, true);
-      }
-    </script>
     <script>
       import { initLoader, initMotion } from '../lib/motion';
       initLoader().then(initMotion);

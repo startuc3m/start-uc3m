@@ -7,9 +7,9 @@
 - Podcasts con protagonismo: pista horizontal pineada que avanza con el scroll en la home (GSAP ScrollTrigger).
 
 ## 2026-09-17 · Stack
-- **Astro 7 + Tailwind v4 + GSAP + Lenis**, salida estática con adaptador Node solo para `/api/forms`.
+- **Astro 7 + Tailwind v4 + GSAP + Lenis**, salida estática sin adaptador; los endpoints van en `api/` como funciones de Vercel (ver `astro.config.mjs`).
 - "CMS" = markdown en `src/content` + `src/lib/site.ts`. Un panel (Keystatic/Payload) queda para más adelante (#8) si hace falta.
-- Formularios propios (Start, evento, patrocinio, contacto, newsletter) guardan en `data/submissions.json`; sustituyen a Tally y Luma.
+- Formularios propios (Start, evento, patrocinio, contacto, newsletter) guardan en `data/submissions.json`; sustituyen a Tally y Luma. *Sustituido después: contacto y patrocinio mandan correo con `api/contacto.mjs` (ver `docs/web/forms.md`).*
 
 ## 2026-09-17 · Email de confirmación
 - Sin SMTP/Mailpit por ahora: cada envío registra en consola (dev) el email de confirmación que se mandaría (`src/lib/mail.ts`), como contempla el issue #9. Se sustituye por un SMTP local el día que haga falta probar la entrega real.

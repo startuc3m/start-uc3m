@@ -1,8 +1,7 @@
 ---
 // Wordmark real de Start (public/brand). `tone` = "white" | "cobalt"; `full` añade "EMPRENDEDORES | UC3M".
 const { tone = 'cobalt', size = 28, full = false } = Astro.props;
-const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-const src = `${base}/brand/logo-${full ? 'full' : 'wordmark'}-${tone}.png`;
+const src = `/brand/logo-${full ? 'full' : 'wordmark'}-${tone}.png`;
 // el wordmark mide 816×230 → ancho = alto × 3.55; el completo 816×342 → × 2.39
 const w = Math.round(size * (full ? 2.39 : 3.55));
 ---

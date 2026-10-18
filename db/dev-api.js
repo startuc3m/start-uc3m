@@ -4,17 +4,17 @@
  *
  *   node db/dev-api.js          (o: npm run dev:api)
  *
- * El servidor de desarrollo de CRA solo sirve la web; las funciones
- * serverless las ejecuta Vercel en produccion. Esto las levanta en local
+ * `npm run dev` (Astro) solo sirve la web; las funciones serverless las
+ * ejecuta Vercel en produccion. Esto las levanta en local
  * para poder probar el flujo entero sin desplegar.
  *
- * El formulario en localhost:3000 las alcanza por el "proxy" declarado en
- * package.json. El webhook de Stripe, en cambio, conviene apuntarlo AQUI
+ * La web en localhost:4321 las alcanza por el proxy de /api declarado en
+ * astro.config.mjs. El webhook de Stripe, en cambio, conviene apuntarlo AQUI
  * directamente:
  *
  *   stripe listen --forward-to localhost:3001/api/stripe/webhook
  *
- * Pasar por el proxy de CRA puede alterar el cuerpo de la peticion, y la
+ * Pasar por el proxy de Vite puede alterar el cuerpo de la peticion, y la
  * firma de Stripe se calcula sobre los bytes exactos: si cambian, deja de
  * validar.
  */
@@ -118,7 +118,7 @@ async function main() {
     console.log('\nRutas:');
     Object.keys(rutas).forEach((r) => console.log('  ' + base + r));
     console.log('\nEn otra terminal:');
-    console.log('  npm start');
+    console.log('  npm run dev');
     console.log('  stripe listen --forward-to localhost:' + PORT + '/api/stripe/webhook');
     console.log('');
   });

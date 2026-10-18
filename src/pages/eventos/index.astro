@@ -2,7 +2,6 @@
 import Placeholder from '../../components/Placeholder.astro';
 import Base from '../../layouts/Base.astro';
 import { eventos } from '../../lib/content';
-import { asset } from '../../lib/url';
 const all = await eventos();
 const next = all.filter((e) => e.data.status !== 'pasado');
 const past = all.filter((e) => e.data.status === 'pasado').reverse();

@@ -2,10 +2,9 @@
 import Placeholder from '../../components/Placeholder.astro';
 import Base from '../../layouts/Base.astro';
 import { render } from 'astro:content';
-import { eventos } from '../../lib/content';
+import { eventos, eventEnd } from '../../lib/content';
 import { eventToIcs, icsDataHref, eventStartDate, hasClockTime } from '../../lib/ics';
 import { site } from '../../lib/site';
-import { asset } from '../../lib/url';
 export async function getStaticPaths() {
   return (await eventos()).map((e) => ({ params: { slug: e.id }, props: { e } }));
 }
@@ -24,6 +23,7 @@ const eventJsonLd = {
   description: e.data.subtitle,
   startDate: hasClockTime(e.data.time) ? eventStartDate(e.data.date, e.data.time).toISOString() : e.data.date.toISOString().slice(0, 10),
   eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+  endDate: new Date(eventEnd(e.data.date, e.data.days) - 1).toISOString().slice(0, 10),
   eventStatus: 'https://schema.org/EventScheduled',
   location: { '@type': 'Place', name: e.data.place, address: e.data.place },
   organizer: { '@type': 'Organization', name: 'Start UC3M', url: 'https://www.startuc3m.es' },
@@ -78,7 +78,7 @@ const eventJsonLd = {
           <ul class="mt-4 flex flex-wrap items-center gap-4">
             {sponsorLogos.map((s) => (
               <li class="grid h-16 min-w-[120px] place-items-center rounded-brand bg-paper-2 px-5">
-                {'logo' in s && s.logo ? <img src={asset(s.logo)} alt={s.name} class="max-h-9 w-auto object-contain" loading="lazy" /> : <span class="text-lg font-bold uppercase tracking-wider text-cobalt">{s.name}</span>}
+                {'logo' in s && s.logo ? <img src={s.logo} alt={s.name} class="max-h-9 w-auto object-contain" loading="lazy" /> : <span class="text-lg font-bold uppercase tracking-wider text-cobalt">{s.name}</span>}
               </li>
             ))}
           </ul>

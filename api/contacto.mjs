@@ -54,7 +54,9 @@ export default async function handler(req, res) {
   if (datos.mensaje.length < 10) return sendJson(res, 400, { error: 'INVALID_MESSAGE' });
   if (body.privacidad !== true) return sendJson(res, 400, { error: 'PRIVACY_REQUIRED' });
 
-  const allowed = await rateLimit('contacto:' + clientIp(req), RATE_LIMIT, RATE_WINDOW_SECONDS);
+  const allowed = await rateLimit('contacto:' + clientIp(req), RATE_LIMIT, RATE_WINDOW_SECONDS, {
+    failOpen: false,
+  });
   if (!allowed) return sendJson(res, 429, { error: 'RATE_LIMITED' });
 
   const apiKey = process.env.RESEND_API_KEY;

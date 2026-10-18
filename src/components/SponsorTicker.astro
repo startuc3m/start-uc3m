@@ -1,5 +1,4 @@
 ---
-import { asset } from '../lib/url';
 // Marquesina de patrocinadores con logos reales; los que no tienen logo van en texto.
 import { site } from '../lib/site';
 const { tone = 'light' } = Astro.props;
@@ -9,7 +8,7 @@ const list = [...site.sponsors, ...site.sponsors];
   <div class="ticker">
     {list.map((s) => (
       <span class="flex items-center gap-12">
-        {s.logo ? <img src={asset(s.logo)} alt={s.name} class={tone === 'dark' ? 'brightness-0 invert' : ''} loading="lazy" /> : <span class="text-2xl font-bold uppercase tracking-wider">{s.name}</span>}
+        {s.logo ? <img src={s.logo} alt={s.name} class={tone === 'dark' ? 'brightness-0 invert' : ''} loading="lazy" /> : <span class="text-2xl font-bold uppercase tracking-wider">{s.name}</span>}
         <span class="font-mono text-cobalt">_</span>
       </span>
     ))}

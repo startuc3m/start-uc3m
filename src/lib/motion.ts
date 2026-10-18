@@ -39,7 +39,16 @@ export function initMotion() {
   // Titulares grandes: entran letra a letra por palabras
   document.querySelectorAll<HTMLElement>('[data-split]').forEach((el) => {
     const words = el.textContent!.trim().split(/\s+/);
-    el.innerHTML = words.map((w) => `<span class="inline-block overflow-hidden align-bottom pb-[0.12em] -mb-[0.12em]"><span class="inline-block will-change-transform">${w}</span></span>`).join(' ');
+    // Se construye con nodos (no innerHTML) para que un "<" o "&" del título siga siendo texto.
+    el.replaceChildren(...words.flatMap((w, i) => {
+      const outer = document.createElement('span');
+      outer.className = 'inline-block overflow-hidden align-bottom pb-[0.12em] -mb-[0.12em]';
+      const inner = document.createElement('span');
+      inner.className = 'inline-block will-change-transform';
+      inner.textContent = w;
+      outer.append(inner);
+      return i ? [' ', outer] : [outer];
+    }));
     gsap.from(el.querySelectorAll('span > span'), {
       yPercent: 110, duration: 1, ease: 'power4.out', stagger: 0.06,
       scrollTrigger: { trigger: el, start: 'top 90%', once: true },
@@ -97,11 +106,14 @@ export function initMotion() {
   }
 
 
-  // Contadores
+  // Contadores. Se respeta el formato del HTML: '3.000' lleva punto y '2013' (un año) no.
+  // A mano porque en es-ES toLocaleString no agrupa 4 cifras (daría 3000).
+  const miles = (n: number) => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
   document.querySelectorAll<HTMLElement>('[data-count]').forEach((el) => {
     const end = Number(el.dataset.count);
+    const fmt = el.textContent!.includes('.') ? miles : (n: number) => String(Math.round(n));
     const obj = { v: 0 };
     ScrollTrigger.create({ trigger: el, start: 'top 90%', once: true, onEnter: () =>
-      gsap.to(obj, { v: end, duration: 1.6, ease: 'power2.out', onUpdate: () => (el.textContent = Math.round(obj.v).toLocaleString('es-ES')) }) });
+      gsap.to(obj, { v: end, duration: 1.6, ease: 'power2.out', onUpdate: () => (el.textContent = fmt(obj.v)) }) });
   });
 }

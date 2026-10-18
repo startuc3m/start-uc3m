@@ -22,7 +22,7 @@ Todo lo que no encaja como "artículo individual" — listas cortas y globals �
 
 ## 3. Envíos de formularios (`submissions`)
 
-No es contenido editorial sino datos generados por usuarios. Ver `docs/forms.md`: se guardan en `data/submissions.json` (gitignored) y se exportan con `npm run export:submissions`.
+No es contenido editorial sino datos generados por usuarios, y la web no los guarda: contacto y patrocinio llegan por correo (ver `docs/web/forms.md`).
 
 ## Media
 

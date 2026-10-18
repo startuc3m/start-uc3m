@@ -1,6 +1,5 @@
 ---
 import Placeholder from '../components/Placeholder.astro';
-import { asset } from '../lib/url';
 import Base from '../layouts/Base.astro';
 import ContactForm from '../components/ContactForm.astro';
 import { site } from '../lib/site';
@@ -45,7 +44,7 @@ const others = site.tiers.slice(1);
       <ul class="mt-10 grid grid-cols-2 gap-4 md:grid-cols-4" data-stagger>
         {site.sponsors.map((s) => (
           <li class="grid aspect-[3/1.6] place-items-center rounded-brand border border-line bg-white p-8 transition-transform hover:-translate-y-1" data-reveal>
-            {s.logo ? <img src={asset(s.logo)} alt={s.name} class="max-h-16 w-auto max-w-full object-contain" loading="lazy" /> : <span class="text-2xl font-bold uppercase tracking-wider text-cobalt">{s.name}</span>}
+            {s.logo ? <img src={s.logo} alt={s.name} class="max-h-16 w-auto max-w-full object-contain" loading="lazy" /> : <span class="text-2xl font-bold uppercase tracking-wider text-cobalt">{s.name}</span>}
           </li>
         ))}
       </ul>
@@ -153,7 +152,7 @@ const others = site.tiers.slice(1);
             <p class="text-2xl font-semibold leading-snug text-cobalt md:text-3xl">{t.quote}</p>
             <div class="mt-8 flex items-center justify-between border-t border-line pt-6">
               <span class="mono opacity-70">{t.who}</span>
-              <img src={asset(t.logo)} alt="" class="max-h-10 w-auto object-contain" loading="lazy" />
+              <img src={t.logo} alt="" class="max-h-10 w-auto object-contain" loading="lazy" />
             </div>
           </li>
         ))}
