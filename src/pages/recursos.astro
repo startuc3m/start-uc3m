@@ -1,20 +1,20 @@
 ---
-import Placeholder from '../components/Placeholder.astro';
+import Photo from '../components/Photo.astro';
 import Base from '../layouts/Base.astro';
 import { site } from '../lib/site';
 // Versión reducida a lo que Start ofrece hoy (#29). Qué más se añade lo
 // decide la directiva (#9): mentores, incubadora, créditos, etc. quedan fuera.
 const ways = [
-  { t: 'Ven a los eventos', d: 'Buildathon, hackathones, StartXperience, Start Camp. Abiertos a toda la UC3M, sin ser socio.', cta: ['Ver eventos', '/eventos'] },
-  { t: 'Hazte socio', d: 'Pago único por curso: grupo de prácticas y empleo, comunidad, cañas y descuentos en nuestros eventos.', cta: ['Hazte socio', '/socios'] },
-  { t: 'Forma parte de Start', d: 'Únete a un departamento y organiza con nosotros. Es la forma de aprender construyendo.', cta: ['Cómo entrar', '/unete'] },
+  { t: 'Ven a los eventos', img: 'mentoria', d: 'Buildathon, hackathones, StartXperience, Start Camp. Abiertos a toda la UC3M, sin ser socio.', cta: ['Ver eventos', '/eventos'] },
+  { t: 'Hazte socio', img: 'cena-navidad', d: 'Pago único por curso: grupo de prácticas y empleo, comunidad, cañas y descuentos en nuestros eventos.', cta: ['Hazte socio', '/socios'] },
+  { t: 'Forma parte de Start', img: 'starters-pizarra', d: 'Únete a un departamento y organiza con nosotros. Es la forma de aprender construyendo.', cta: ['Cómo entrar', '/unete'] },
 ];
 const perks = ['Equipo multidisciplinar: ADE, ingenierías, derecho, diseño', 'Contacto directo con fundadores, inversores y empresas', 'Organizas eventos de principio a fin', 'Formaciones internas cada curso'];
 const cats = [...new Set(site.resources.map((r) => r.cat))];
 const audiences = [
   {
     id: 'eventos', n: '01', eyebrow: 'Quieres venir a eventos', title: 'Abiertos a toda la UC3M, sin ser socio_', tone: 'paper',
-    imgAlt: 'Un evento de Start UC3M',
+    imgAlt: 'Asistentes haciéndose un selfie en el Start Camp',
     p1: 'No hace falta tener una idea, ni ser starter, ni saber de startups. Los eventos de Start están abiertos a cualquier estudiante de la UC3M. Vienes, construyes o escuchas, conoces gente y te vas con algo: un prototipo, un contacto o simplemente ganas.',
     p2: 'Hay formatos de una tarde, como el Buildathon, y de un día entero, como StartXperience. En la ficha de cada evento tienes la fecha, el lugar y el enlace para apuntarte.',
     offers: [
@@ -46,7 +46,7 @@ const faqs = [
 <Base title="Recursos" description="Cómo participar en Start UC3M: eventos, comunidad, entrar en el equipo, preguntas frecuentes y enlaces útiles." tone="dark">
   <!-- HERO -->
   <section class="relative overflow-hidden bg-cobalt text-white">
-    <Placeholder class="absolute inset-0 h-full w-full object-cover opacity-50 mix-blend-luminosity" />
+    <Photo class="absolute inset-0 h-full w-full object-cover opacity-50 mix-blend-luminosity" name="start-camp-trabajo" eager />
     <div class="absolute inset-0 bg-gradient-to-b from-cobalt/30 via-cobalt/70 to-cobalt"></div>
     <div class="container-x relative pb-16 pt-24">
       <span class="eyebrow text-lavender">Recursos</span>
@@ -85,7 +85,7 @@ const faqs = [
               </div>
             </div>
             <div class="relative aspect-[4/5] overflow-hidden rounded-brand bg-cobalt-deep" data-reveal>
-              <Placeholder class="absolute inset-0 h-[120%] w-full object-cover" alt={a.imgAlt} />
+              <Photo class="absolute inset-0 h-[120%] w-full object-cover" name="selfie-asistentes" sizes="(min-width: 768px) 45vw, 100vw" alt={a.imgAlt} />
             </div>
           </div>
 
@@ -138,7 +138,7 @@ const faqs = [
     <div class="grid gap-8 md:grid-cols-3" data-stagger>
       {ways.map((w, i) => (
         <a href={w.cta[1]} class="group flex flex-col" data-reveal>
-          <div class="relative aspect-[4/5] overflow-hidden rounded-brand bg-cobalt" data-img-reveal><Placeholder class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" /><span class="display absolute left-5 top-4 text-6xl text-white">0{i + 1}</span></div>
+          <div class="relative aspect-[4/5] overflow-hidden rounded-brand bg-cobalt" data-img-reveal><Photo class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" name={w.img} sizes="(min-width: 768px) 33vw, 100vw" /><span class="display absolute left-5 top-4 text-6xl text-white">0{i + 1}</span></div>
           <h2 class="mt-5 text-3xl font-bold group-hover:underline">{w.t}</h2>
           <p class="mt-2 opacity-80">{w.d}</p>
           <span class="mono mt-4 text-cobalt">{w.cta[0]} →</span>

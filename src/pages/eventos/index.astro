@@ -1,5 +1,6 @@
 ---
-import Placeholder from '../../components/Placeholder.astro';
+import Photo from '../../components/Photo.astro';
+import { eventoFotos } from '../../lib/fotos';
 import Base from '../../layouts/Base.astro';
 import { eventos } from '../../lib/content';
 const all = await eventos();
@@ -14,7 +15,7 @@ const fmtLong = (d: Date) => d.toLocaleDateString('es-ES', { weekday: 'long', da
 <Base title="Eventos" description="Buildathon, hackathones, StartXperience, Start Camp. Todo lo que organiza Start UC3M, con inscripción propia." tone="dark">
   <!-- HERO con imagen fundida -->
   <section class="relative overflow-hidden bg-cobalt text-white">
-    <Placeholder class="absolute inset-0 h-full w-full object-cover object-[center_35%] opacity-70 mix-blend-luminosity" />
+    <Photo class="absolute inset-0 h-full w-full object-cover object-[center_35%] opacity-70 mix-blend-luminosity" name="start-camp-sala" eager />
     <div class="absolute inset-0 bg-gradient-to-b from-cobalt/30 via-cobalt/60 to-cobalt"></div>
     <div class="container-x relative flex min-h-[70vh] flex-col justify-end pb-16 pt-24">
       <span class="eyebrow text-lavender">Eventos · Curso 2026/27</span>
@@ -33,7 +34,7 @@ const fmtLong = (d: Date) => d.toLocaleDateString('es-ES', { weekday: 'long', da
       {next.map((e, i) => (
         <li data-reveal><a href={`/eventos/${e.id}`} class="group grid gap-0 overflow-hidden rounded-brand bg-navy text-white md:grid-cols-[1.25fr_1fr]">
           <div class="relative aspect-video md:aspect-auto md:min-h-[420px]">
-            <Placeholder class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" alt={e.data.title} />
+            <Photo class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" name={eventoFotos[e.id]?.card} sizes="(min-width: 768px) 55vw, 100vw" alt={e.data.title} />
             <div class="absolute inset-0 bg-gradient-to-t from-navy/80 to-transparent md:bg-gradient-to-r"></div>
             <span class="display absolute bottom-4 left-5 text-5xl md:text-6xl">{fmt(e.data.date)}<span class="ml-2 text-lg font-normal text-lavender">{e.data.date.getFullYear()}</span></span>
             <span class={`mono absolute right-4 top-4 rounded-full px-3 py-1.5 backdrop-blur ${e.data.status === 'sold-out' ? 'bg-white text-cobalt' : 'bg-navy/70 text-lavender'}`}>{e.data.status === 'sold-out' ? 'Sold out · lista de espera' : 'Inscripción abierta'}</span>
@@ -67,7 +68,7 @@ const fmtLong = (d: Date) => d.toLocaleDateString('es-ES', { weekday: 'long', da
             {list.map((e, i) => (
               <li data-reveal><a href={`/eventos/${e.id}`} class="group block">
                 <div class="relative aspect-[4/3] overflow-hidden rounded-brand bg-cobalt">
-                  <Placeholder class="absolute inset-0 h-full w-full object-cover opacity-90 transition-transform duration-700 group-hover:scale-105" />
+                  <Photo class="absolute inset-0 h-full w-full object-cover opacity-90 transition-transform duration-700 group-hover:scale-105" name={eventoFotos[e.id]?.card} sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" />
                   <div class="absolute inset-0 bg-gradient-to-t from-navy/70 to-transparent"></div>
                   <span class="display absolute bottom-3 left-4 text-4xl text-white">{fmt(e.data.date)}<span class="ml-2 text-base font-normal text-lavender">{e.data.date.getFullYear()}</span></span>
                   {e.data.edition && <span class="mono absolute right-3 top-3 rounded-full bg-navy/70 px-3 py-1.5 text-lavender backdrop-blur">{e.data.edition.replace(/^.*· /, '')}</span>}

@@ -1,5 +1,5 @@
 ---
-import Placeholder from '../components/Placeholder.astro';
+import Photo from '../components/Photo.astro';
 import Base from '../layouts/Base.astro';
 import ContactForm from '../components/ContactForm.astro';
 import { site } from '../lib/site';
@@ -12,9 +12,9 @@ const offers = [
 ];
 const contentThumb = 'https://img.youtube.com/vi/G2hVH1AGr38/hqdefault.jpg';
 const photos = [
-  ['/media/madrid-night.jpg', 'Buildathon', 'Arranque de curso · 60 personas construyendo en una tarde'],
-  ['/media/leganes-biblioteca-1.jpg', 'StartXperience', 'Un día con startups, inversores e incubadoras · 300 personas'],
-  ['/media/equipo/clemente_cebrian.jpeg', 'Start Camp', 'Dos días de trabajo en equipo, mentores y jurado'],
+  ['', 'Buildathon', 'Arranque de curso · 60 personas construyendo en una tarde'],
+  ['startxperience-escenario', 'StartXperience', 'Un día con startups, inversores e incubadoras · 300 personas'],
+  ['start-camp-mentor', 'Start Camp', 'Dos días de trabajo en equipo, mentores y jurado'],
 ];
 // Sin citas reales todavía — Partnerships tiene que conseguirlas de NomuLabs/Pitchless antes de publicar nada atribuido.
 const testimonials: { quote: string; who: string; logo: string }[] = [];
@@ -70,8 +70,8 @@ const others = site.tiers.slice(1);
   <!-- LO QUE OFRECEMOS: editorial con imagen -->
   <section class="bg-paper-2 text-ink"><div class="container-x grid gap-12 py-24 md:grid-cols-[1fr_1.2fr] md:items-center">
     <div class="relative aspect-[4/5] overflow-hidden rounded-brand" data-reveal>
-      <Placeholder class="absolute inset-0 h-[120%] w-full object-cover" alt="Auditorio de la UC3M" />
-      <span class="eyebrow absolute bottom-4 left-4 rounded-full bg-navy/70 px-3 py-2 text-lavender backdrop-blur">UC3M · Auditorio</span>
+      <Photo class="absolute inset-0 h-[120%] w-full object-cover" name="start-camp-asistentes" sizes="(min-width: 768px) 45vw, 100vw" alt="Público de un evento de Start: estudiantes, mentores y empresas" />
+      <span class="eyebrow absolute bottom-4 left-4 rounded-full bg-navy/70 px-3 py-2 text-lavender backdrop-blur">Start Camp 2025</span>
     </div>
     <div>
       <div data-reveal><span class="eyebrow text-cobalt">Lo que ofrecemos</span><h2 class="display mt-3 text-[clamp(32px,4.5vw,64px)] text-cobalt" data-split>Más que un logo en un cartel_</h2></div>
@@ -96,7 +96,7 @@ const others = site.tiers.slice(1);
     <ul class="mt-6 grid gap-6 md:grid-cols-3" data-stagger>
       {photos.map(([src, t, d]) => (
         <li class="group" data-reveal>
-          <div class="relative aspect-[4/3] overflow-hidden rounded-brand bg-cobalt"><Placeholder class="absolute inset-0 h-[120%] w-full object-cover transition-transform duration-700 group-hover:scale-105" alt={t} /></div>
+          <div class="relative aspect-[4/3] overflow-hidden rounded-brand bg-cobalt"><Photo class="absolute inset-0 h-[120%] w-full object-cover transition-transform duration-700 group-hover:scale-105" name={src || undefined} sizes="(min-width: 768px) 33vw, 100vw" alt={t} /></div>
           <h3 class="mt-4 text-2xl font-bold">{t}</h3><p class="mt-1 text-sm opacity-70">{d}</p>
         </li>
       ))}
@@ -114,7 +114,7 @@ const others = site.tiers.slice(1);
     <div class="relative mt-12 grid gap-0 overflow-hidden rounded-brand border-2 border-white bg-cobalt md:grid-cols-[1fr_1.2fr]" data-reveal>
       <span class="mono absolute right-6 top-6 z-10 rounded-full bg-white px-3 py-1 text-cobalt">Recomendado</span>
       <div class="relative aspect-[4/3] md:aspect-auto md:min-h-[460px]">
-        <Placeholder class="absolute inset-0 h-full w-full object-cover opacity-90" />
+        <Photo name="start-camp-mesa-redonda" position="15% center" sizes="(min-width: 768px) 45vw, 100vw" class="absolute inset-0 h-full w-full object-cover opacity-90" />
         <div class="absolute inset-0 bg-gradient-to-t from-cobalt via-transparent to-transparent md:bg-gradient-to-r"></div>
       </div>
       <div class="flex flex-col p-8 md:p-12">

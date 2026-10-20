@@ -1,5 +1,5 @@
 ---
-import Placeholder from '../components/Placeholder.astro';
+import Photo from '../components/Photo.astro';
 import Base from '../layouts/Base.astro';
 import ContactForm from '../components/ContactForm.astro';
 import { site } from '../lib/site';
@@ -32,8 +32,8 @@ const channels = [
   </section>
   <section class="container-x grid gap-12 py-20 md:grid-cols-[1.4fr_1fr] md:items-center">
     <div class="relative aspect-[16/9] overflow-hidden rounded-brand bg-cobalt" data-img-reveal>
-      <Placeholder class="absolute inset-0 h-[120%] w-full object-cover" alt="Campus Puerta de Toledo, UC3M" />
-      <span class="eyebrow absolute bottom-4 left-4 rounded-full bg-navy/70 px-3 py-2 text-lavender backdrop-blur">Campus Puerta de Toledo</span>
+      <Photo class="absolute inset-0 h-[120%] w-full object-cover" name="staff-bienvenida" sizes="(min-width: 768px) 60vw, 100vw" alt="Staff de Start recibiendo a los asistentes del Start Camp" />
+      <span class="eyebrow absolute bottom-4 left-4 rounded-full bg-navy/70 px-3 py-2 text-lavender backdrop-blur">Start Camp 2025</span>
     </div>
     <div data-reveal>
       <span class="eyebrow text-cobalt">Dónde estamos</span>

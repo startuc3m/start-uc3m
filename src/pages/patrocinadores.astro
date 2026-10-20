@@ -1,12 +1,12 @@
 ---
-import Placeholder from '../components/Placeholder.astro';
+import Photo from '../components/Photo.astro';
 import Base from '../layouts/Base.astro';
 import { site } from '../lib/site';
 const tiers = ['Partner', 'Evento', 'Colaborador'].map((t) => [t === 'Evento' ? 'Patrocinio de evento' : t === 'Partner' ? 'Partners fijos' : 'Colaboradores', site.sponsors.filter((s) => s.tier === t)] as const);
 ---
 <Base title="Patrocinadores" tone="dark">
   <section class="relative overflow-hidden bg-cobalt text-white">
-    <Placeholder class="absolute inset-0 h-full w-full object-cover opacity-60 mix-blend-luminosity" />
+    <Photo class="absolute inset-0 h-full w-full object-cover opacity-60 mix-blend-luminosity" name="start-camp-grupo-completo" eager />
     <div class="absolute inset-0 bg-gradient-to-b from-cobalt/30 via-cobalt/60 to-cobalt"></div>
     <div class="container-x relative flex min-h-[60vh] flex-col justify-end pb-16 pt-24">
       <span class="eyebrow text-lavender">Patrocinadores · Curso {site.course}</span>
@@ -30,7 +30,7 @@ const tiers = ['Partner', 'Evento', 'Colaborador'].map((t) => [t === 'Evento' ? 
     ))}
 
     <div class="mt-8 grid gap-0 overflow-hidden rounded-brand bg-cobalt text-white md:grid-cols-[1fr_1fr]" data-reveal>
-      <div class="relative aspect-[4/3] md:aspect-auto"><Placeholder class="absolute inset-0 h-full w-full object-cover" alt="Puerta de Toledo, Madrid" /></div>
+      <div class="relative aspect-[4/3] md:aspect-auto"><Photo class="absolute inset-0 h-full w-full object-cover" name="rollup-start" sizes="(min-width: 768px) 50vw, 100vw" alt="Roll-up de Start UC3M: la asociación nº1 de emprendimiento del país" /></div>
       <div class="p-10 md:p-16">
         <span class="eyebrow text-lavender">Para empresas</span>
         <h2 class="display mt-3 text-[clamp(32px,4vw,56px)]" data-split>¿Quieres aparecer aquí?</h2>
