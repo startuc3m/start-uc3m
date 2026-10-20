@@ -9,7 +9,7 @@ const path = Astro.url.pathname;
 ---
 <header class={`sticky top-0 z-50 ${dark ? 'bg-cobalt text-white' : 'bg-paper/85 text-ink backdrop-blur'} border-b ${dark ? 'border-cobalt-deep' : 'border-line'}`}>
   <div class="container-x flex h-[64px] items-center justify-between">
-    <Logo tone={dark ? 'white' : 'cobalt'} size={24} />
+    <Logo tone={dark ? 'white' : 'cobalt'} size={40} full />
     <nav class="hidden items-center gap-8 md:flex" aria-label="Principal">
       {nav.map((n) => (
         <a href={n.href} class={`text-[14px] font-semibold transition-opacity hover:opacity-70 ${path.startsWith(n.href) ? 'underline underline-offset-8 decoration-2' : ''}`}>{n.label}</a>
