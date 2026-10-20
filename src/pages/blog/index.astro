@@ -16,7 +16,7 @@ const fmt = (d: Date) => d.toLocaleDateString('es-ES', { day: 'numeric', month: 
     </div>
   </PageHead>
 
-  <section class="container-x py-20">
+  <section class="container-x py-12 md:py-20">
     {posts.length === 0 && <p class="max-w-xl text-lg">Muy pronto, las primeras crónicas del curso.</p>}
     <!-- Destacado: imagen a la izquierda, texto a la derecha -->
     {first && (
@@ -34,11 +34,11 @@ const fmt = (d: Date) => d.toLocaleDateString('es-ES', { day: 'numeric', month: 
       </a>
     )}
 
-    <div class="mt-20 flex items-end justify-between border-t border-line pt-8" data-reveal>
+    <div class="mt-12 md:mt-20 flex items-end justify-between border-t border-line pt-8" data-reveal>
       <span class="eyebrow text-cobalt">Todos los posts</span>
       <span class="mono opacity-60">{posts.length} artículos</span>
     </div>
-    <div class="mt-8 grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3" data-stagger>
+    <div class="mt-8 grid gap-x-8 gap-y-8 md:gap-y-14 sm:grid-cols-2 lg:grid-cols-3" data-stagger>
       {rest.map((p) => (
         <a href={`/blog/${p.id}`} class="group" data-reveal data-cat={p.data.category}>
           <div class="relative aspect-[16/10] overflow-hidden rounded-brand bg-cobalt">

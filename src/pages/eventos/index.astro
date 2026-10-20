@@ -17,7 +17,7 @@ const fmtLong = (d: Date) => d.toLocaleDateString('es-ES', { weekday: 'long', da
   <section class="relative overflow-hidden bg-cobalt text-white">
     <Photo class="absolute inset-0 h-full w-full object-cover object-[center_35%] opacity-70 mix-blend-luminosity" name="start-camp-sala" eager />
     <div class="absolute inset-0 bg-gradient-to-b from-cobalt/30 via-cobalt/60 to-cobalt"></div>
-    <div class="container-x relative flex min-h-[70vh] flex-col justify-end pb-16 pt-24">
+    <div class="container-x relative flex min-h-[70vh] flex-col justify-end pb-10 md:pb-16 pt-14 md:pt-24">
       <span class="eyebrow text-lavender">Eventos · Curso 2026/27</span>
       <h1 class="display mt-4 max-w-5xl text-[clamp(48px,9vw,140px)]" data-split>Una tarde para construir, no para escuchar</h1>
       <p class="mt-8 max-w-2xl text-xl text-lavender">Buildathon, hackathones, StartXperience, Start Camp. Formatos propios, inscripción propia, abiertos a toda la UC3M.</p>
@@ -25,7 +25,7 @@ const fmtLong = (d: Date) => d.toLocaleDateString('es-ES', { weekday: 'long', da
   </section>
 
   <!-- PRÓXIMOS: tarjetas grandes con imagen -->
-  <section class="container-x py-20">
+  <section class="container-x py-12 md:py-20">
     <div class="flex items-end justify-between" data-reveal>
       <div><span class="eyebrow text-cobalt">Próximos</span><h2 class="display mt-3 text-[clamp(32px,5vw,72px)] text-cobalt" data-split>Apúntate_</h2></div>
       <span class="mono hidden text-ink/60 md:block">{next.length} eventos con inscripción</span>
@@ -59,7 +59,7 @@ const fmtLong = (d: Date) => d.toLocaleDateString('es-ES', { weekday: 'long', da
 
   <!-- ANTERIORES: grid editorial por temporada -->
   <section class="bg-paper-2">
-    <div class="container-x py-20">
+    <div class="container-x py-12 md:py-20">
       <div data-reveal><span class="eyebrow text-cobalt">Anteriores</span><h2 class="display mt-3 text-[clamp(32px,5vw,72px)] text-cobalt" data-split>Lo que ya hemos construido_</h2></div>
       {groups.map(([s, list]) => (
         <div class="mt-14">

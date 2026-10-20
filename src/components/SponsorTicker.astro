@@ -7,7 +7,7 @@ const list = [...site.sponsors, ...site.sponsors];
 <div class={`overflow-hidden border-y py-6 ${tone === 'dark' ? 'border-cobalt-deep bg-navy text-white' : 'border-line bg-paper text-ink'}`}>
   <div class="ticker">
     {list.map((s) => (
-      <span class="flex items-center gap-12">
+      <span class="flex items-center gap-8 md:gap-12">
         {s.logo ? <img src={s.logo} alt={s.name} class={tone === 'dark' ? 'brightness-0 invert' : ''} loading="lazy" /> : <span class="text-2xl font-bold uppercase tracking-wider">{s.name}</span>}
         <span class="font-mono text-cobalt">_</span>
       </span>

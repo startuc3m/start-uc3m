@@ -18,12 +18,12 @@ const filterKeys = (m: (typeof site.team)[number]) => [...m.depts, ...(m.role ==
 ---
 <Base title="Equipo" tone="dark">
   <PageHead eyebrow="Equipo" title="Conoce a quien está detrás_" intro="Una asociación sin equipo no es nada. Detrás de Start UC3M hay un grupo de personas con ganas de cambiar las cosas." />
-  <section class="container-x py-16">
+  <section class="container-x py-10 md:py-16">
     <div class="flex flex-wrap gap-2" role="tablist">
       {depts.map((d, i) => <button data-filter={d} class={`eyebrow rounded-full border px-3 py-2 ${i === 0 ? 'bg-cobalt text-white border-cobalt' : 'border-line'}`}>{d}</button>)}
     </div>
     <p data-dept-desc class="mt-8 max-w-2xl text-lg opacity-80"></p>
-    <ul class="mt-10 grid gap-x-8 gap-y-12 sm:grid-cols-2 md:grid-cols-4" data-stagger>
+    <ul class="mt-10 grid gap-x-8 gap-y-8 md:gap-y-12 sm:grid-cols-2 md:grid-cols-4" data-stagger>
       {site.team.map((m) => (
         <li data-dept={filterKeys(m)} data-reveal>
           {m.linkedin ? (
@@ -46,10 +46,10 @@ const filterKeys = (m: (typeof site.team)[number]) => [...m.depts, ...(m.role ==
       ))}
     </ul>
     {site.alumni.length > 0 && (
-      <div class="mt-24 rounded-brand bg-paper-2 p-10 md:p-16">
+      <div class="mt-14 md:mt-24 rounded-brand bg-paper-2 p-10 md:p-16">
         <span class="eyebrow text-cobalt">Viejas glorias</span>
         <h2 class="display mt-3 text-[clamp(32px,4vw,56px)] text-cobalt">Alumni de Start_</h2>
-        <ul class="mt-10 grid gap-x-8 gap-y-12 sm:grid-cols-2 md:grid-cols-4" data-stagger>
+        <ul class="mt-10 grid gap-x-8 gap-y-8 md:gap-y-12 sm:grid-cols-2 md:grid-cols-4" data-stagger>
           {site.alumni.map((a) => (
             <li data-reveal>
               <h3 class="text-xl font-bold">{a.name}</h3>

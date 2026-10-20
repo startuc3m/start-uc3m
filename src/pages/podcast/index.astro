@@ -11,7 +11,7 @@ const UPLOADS = 'UUbfIppe2oCIZpT6eHvu6q1g';
   <PageHead eyebrow="Podcast · StartTheWeek" title="Todos los episodios_" intro="El canal de YouTube de Start UC3M entero, aquí. Dale al play o ábrelo en YouTube." />
 
   <section class="bg-navy text-white">
-    <div class="container-x py-16">
+    <div class="container-x py-10 md:py-16">
       <div class="flex flex-wrap items-end justify-between gap-6" data-reveal>
         <div><span class="eyebrow text-lavender">Último episodio</span><h2 class="display mt-3 text-[clamp(28px,4vw,56px)]">Reproducir el canal_</h2></div>
         <a href={site.social.youtube} class="btn btn-on-blue">Ver canal en YouTube <span class="font-mono">→</span></a>
@@ -22,9 +22,9 @@ const UPLOADS = 'UUbfIppe2oCIZpT6eHvu6q1g';
     </div>
   </section>
 
-  <section class="container-x py-20">
+  <section class="container-x py-12 md:py-20">
     <span class="eyebrow text-cobalt">{eps.length} episodios</span>
-    <div class="mt-8 grid gap-x-8 gap-y-12 sm:grid-cols-2 md:grid-cols-3">
+    <div class="mt-8 grid gap-x-8 gap-y-8 md:gap-y-12 sm:grid-cols-2 md:grid-cols-3">
       {eps.map((e) => {
         const id = e.data.youtubeId;
         return (

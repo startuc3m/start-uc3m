@@ -8,14 +8,14 @@ const tiers = ['Partner', 'Evento', 'Colaborador'].map((t) => [t === 'Evento' ? 
   <section class="relative overflow-hidden bg-cobalt text-white">
     <Photo class="absolute inset-0 h-full w-full object-cover opacity-60 mix-blend-luminosity" name="start-camp-grupo-completo" eager />
     <div class="absolute inset-0 bg-gradient-to-b from-cobalt/30 via-cobalt/60 to-cobalt"></div>
-    <div class="container-x relative flex min-h-[60vh] flex-col justify-end pb-16 pt-24">
+    <div class="container-x relative flex min-h-[60vh] flex-col justify-end pb-10 md:pb-16 pt-14 md:pt-24">
       <span class="eyebrow text-lavender">Patrocinadores · Curso {site.course}</span>
       <h1 class="display mt-4 max-w-5xl text-[clamp(44px,8vw,120px)]" data-split>Gracias a quienes lo hacen posible_</h1>
       <p class="mt-8 max-w-2xl text-xl text-lavender">Las empresas que apoyan a Start UC3M este curso. Sin ellas no hay Buildathon, ni StartXperience, ni Start Camp.</p>
     </div>
   </section>
 
-  <section class="container-x py-20">
+  <section class="container-x py-12 md:py-20">
     {tiers.map(([t, list]) => list.length > 0 && (
       <div class="border-t border-line py-12" data-reveal>
         <div class="flex items-baseline justify-between"><span class="eyebrow text-cobalt">{t}</span><span class="mono opacity-50">{list.length}</span></div>

@@ -18,4 +18,7 @@ export const eventoFotos: Record<string, EventoFotos> = {
   'start-camp': { card: 'start-camp-escenario', hero: 'start-camp-grupo', side: 'start-camp-mentor' },
   'start-camp-2025': { card: 'start-camp-equipos', hero: 'start-camp-escenario', side: 'start-camp-trabajo' },
   'startxperience': { card: 'startxperience-escenario', hero: 'startxperience-escenario' },
+  // Provisionales, con fotos de equipos del Start Camp 2025 hasta tener las de cada evento.
+  'buildathon-welcome-start': { card: 'equipos-portatiles', hero: 'sala-equipos', side: 'equipo-portatiles-chicas' },
+  'lovable-hackathon': { card: 'equipo-pitch', hero: 'sala-trabajo-staff', side: 'equipo-mesa' },
 };
