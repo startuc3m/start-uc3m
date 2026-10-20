@@ -1,12 +1,12 @@
 ---
 import Logo from './Logo.astro';
+import SocialIcons from './SocialIcons.astro';
 import { site } from '../lib/site';
 import { blogVisible } from '../lib/content';
 const conBlog = await blogVisible();
 const cols = [
   { h: 'Web', items: [['Hazte socio', '/socios'], ['Eventos', '/eventos'], ['Podcast', '/podcast'], ['Equipo', '/equipo'], ...(conBlog ? [['Blog', '/blog']] : []), ['Recursos', '/recursos'], ['Links', '/links']] },
   { h: 'Empresas', items: [['Patrocina', '/patrocina'], ['Patrocinadores', '/patrocinadores'], ['Contacto', '/contacto']] },
-  { h: 'Redes', items: [['Instagram', site.social.instagram], ['LinkedIn', site.social.linkedin], ['TikTok', site.social.tiktok], ['YouTube', site.social.youtube]] },
 ];
 ---
 <footer class="bg-navy text-white">
@@ -21,6 +21,10 @@ const cols = [
         {c.items.map(([l, h]) => <a href={h} class="text-[15px] hover:underline">{l}</a>)}
       </div>
     ))}
+    <div class="flex flex-col gap-2">
+      <span class="eyebrow text-lavender">Redes</span>
+      <SocialIcons class="-ml-3" />
+    </div>
   </div>
   <div class="container-x border-t border-cobalt-deep py-6 font-mono text-[11px] tracking-wider text-lavender/70">
     © 2026 START UC3M · ASOCIACIÓN DE EMPRENDEDORES DE LA UNIVERSIDAD CARLOS III DE MADRID · <a href="/contacto" class="hover:text-white">CONTACTO</a> · <a href="/privacidad" class="hover:text-white">PRIVACIDAD</a>
