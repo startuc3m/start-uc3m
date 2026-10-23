@@ -16,6 +16,8 @@ const fmt = (d: Date) => d.toLocaleDateString('es-ES', { weekday: 'long', day: '
 const open = e.data.status === 'abierto';
 const soldOut = e.data.status === 'sold-out';
 const past = e.data.status === 'pasado';
+// Plataforma de inscripción según el dominio de `external` (Luma, Neonpass…).
+const platform = e.data.external?.includes('neonpass') ? 'Neonpass' : 'Luma';
 const sponsorLogos = e.data.sponsors.map((n) => site.sponsors.find((s) => s.name.toLowerCase() === n.toLowerCase()) ?? { name: n });
 const icsHref = icsDataHref(eventToIcs({ title: e.data.title, description: e.data.subtitle, location: e.data.place, date: e.data.date, time: e.data.time, days: e.data.days }));
 const eventJsonLd = {
@@ -111,10 +113,10 @@ const eventJsonLd = {
         <div>
           <span class="eyebrow text-lavender">Inscripción</span>
           <h2 class="display mt-3 text-[clamp(32px,5vw,64px)]">Reserva tu plaza_</h2>
-          <p class="mt-4 max-w-xl text-lavender">{e.data.external ? 'La inscripción se hace en Luma. Si no tienes equipo, te lo montamos allí.' : 'Abrimos la inscripción muy pronto. Síguenos en Instagram para enterarte.'}</p>
+          <p class="mt-4 max-w-xl text-lavender">{e.data.external ? platform === 'Luma' ? 'La inscripción se hace en Luma. Si no tienes equipo, te lo montamos allí.' : `Las entradas se venden en ${platform}.` : 'Abrimos la inscripción muy pronto. Síguenos en Instagram para enterarte.'}</p>
         </div>
         {e.data.external
-          ? <a href={e.data.external} target="_blank" rel="noopener" class="btn btn-on-blue">Inscribirme en Luma <span class="font-mono">↗</span></a>
+          ? <a href={e.data.external} target="_blank" rel="noopener" class="btn btn-on-blue">{platform === 'Luma' ? 'Inscribirme en Luma' : `Comprar entrada en ${platform}`} <span class="font-mono">↗</span></a>
           : <a href={site.social.instagram} target="_blank" rel="noopener" class="btn btn-outline text-white">Instagram de Start <span class="font-mono">↗</span></a>}
       </div>
     </section>
