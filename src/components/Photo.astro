@@ -1,0 +1,27 @@
+---
+// Foto real de src/assets/fotos. Recibe las mismas clases que Placeholder; sin alt es decorativa.
+// Sin `name` (p. ej. un evento sin fotos todavía) pinta el hueco de marca.
+import { Picture } from 'astro:assets';
+import Placeholder from './Placeholder.astro';
+import { foto } from '../lib/fotos';
+interface Props { name?: string; class?: string; alt?: string; sizes?: string; position?: string; eager?: boolean }
+const { name, class: cls = '', alt = '', sizes = '100vw', position, eager = false } = Astro.props;
+const img = name ? foto(name) : null;
+const widths = img ? [480, 800, 1200, 1600, 2400].filter((w) => w <= img.width) : [];
+---
+{img ? (
+  <Picture
+    src={img}
+    alt={alt}
+    formats={['avif', 'webp']}
+    widths={widths}
+    sizes={sizes}
+    class={cls}
+    style={position ? `object-position: ${position}` : undefined}
+    loading={eager ? 'eager' : 'lazy'}
+    fetchpriority={eager ? 'high' : 'auto'}
+    aria-hidden={alt ? undefined : 'true'}
+  />
+) : (
+  <Placeholder class={cls} alt={alt} />
+)}

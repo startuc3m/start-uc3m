@@ -1,5 +1,6 @@
 ---
-import Placeholder from '../components/Placeholder.astro';
+import Photo from '../components/Photo.astro';
+import { eventoFotos } from '../lib/fotos';
 // Página de links para la bio de Instagram/TikTok (móvil-first, sin nav)
 import '../styles/global.css';
 import Logo from '../components/Logo.astro';
@@ -21,7 +22,7 @@ const ogImage = `${siteOrigin}/brand/logo-full-cobalt.png`;
     <p class="eyebrow mt-8 text-center text-lavender">Asociación de emprendedores · UC3M</p>
     {next && (
       <a href={`/eventos/${next.id}`} class="group relative mt-6 block aspect-[16/10] overflow-hidden rounded-brand bg-cobalt-deep">
-        <Placeholder class="absolute inset-0 h-full w-full object-cover opacity-80 transition-transform duration-700 group-hover:scale-105" />
+        <Photo class="absolute inset-0 h-full w-full object-cover opacity-80 transition-transform duration-700 group-hover:scale-105" name={eventoFotos[next.id]?.card} sizes="28rem" />
         <div class="absolute inset-0 bg-gradient-to-t from-navy via-navy/30 to-transparent"></div>
         <div class="absolute inset-x-0 bottom-0 p-4">
           <span class="mono rounded-full bg-white px-2.5 py-1 text-cobalt">Próximo evento · {next.data.date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}</span>

@@ -1,5 +1,6 @@
 ---
-import Placeholder from '../../components/Placeholder.astro';
+import Photo from '../../components/Photo.astro';
+import { eventoFotos } from '../../lib/fotos';
 import Base from '../../layouts/Base.astro';
 import { render } from 'astro:content';
 import { eventos, eventEnd } from '../../lib/content';
@@ -10,6 +11,7 @@ export async function getStaticPaths() {
 }
 const { e } = Astro.props;
 const { Content } = await render(e);
+const fotos = eventoFotos[e.id];
 const fmt = (d: Date) => d.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
 const open = e.data.status === 'abierto';
 const soldOut = e.data.status === 'sold-out';
@@ -33,9 +35,9 @@ const eventJsonLd = {
   <script type="application/ld+json" set:html={JSON.stringify(eventJsonLd)} />
   <!-- HERO: imagen del evento a sangre fundida con cobalto -->
   <section class="relative overflow-hidden bg-cobalt text-white">
-    <Placeholder class="absolute inset-0 h-full w-full object-cover opacity-70 mix-blend-luminosity" />
+    <Photo name={fotos?.hero} eager class="absolute inset-0 h-full w-full object-cover opacity-70 mix-blend-luminosity" />
     <div class="absolute inset-0 bg-gradient-to-b from-cobalt/30 via-cobalt/65 to-cobalt"></div>
-    <div class="container-x relative grid min-h-[80vh] gap-12 pb-16 pt-24 md:grid-cols-[1.4fr_1fr] md:items-end">
+    <div class="container-x relative grid min-h-[80vh] gap-8 md:gap-12 pb-10 md:pb-16 pt-14 md:pt-24 md:grid-cols-[1.4fr_1fr] md:items-end">
       <div>
         <span class="eyebrow text-lavender">{e.data.type}{e.data.edition && ` · ${e.data.edition}`}</span>
         <h1 class="display mt-4 text-[clamp(44px,8vw,120px)]" data-split>{e.data.title}</h1>
@@ -68,7 +70,7 @@ const eventJsonLd = {
     </section>
   )}
 
-  <section class="container-x grid gap-16 py-20 md:grid-cols-[1fr_1.2fr]">
+  <section class="container-x grid gap-10 md:gap-16 py-12 md:py-20 md:grid-cols-[1fr_1.2fr]">
     <div data-reveal>
       <span class="eyebrow text-cobalt">El evento</span>
       <div class="prose prose-lg mt-4 max-w-none text-ink prose-headings:font-bold prose-a:text-cobalt"><Content /></div>
@@ -100,12 +102,12 @@ const eventJsonLd = {
         </ol>
       </div>
     ) : (
-      <div class="relative aspect-[4/3] overflow-hidden rounded-brand" data-reveal><Placeholder class="absolute inset-0 h-[120%] w-full object-cover" /></div>
+      <div class="relative aspect-[4/3] overflow-hidden rounded-brand" data-reveal><Photo name={fotos?.side} sizes="(min-width: 768px) 50vw, 100vw" class="absolute inset-0 h-[120%] w-full object-cover" /></div>
     )}
   </section>
   {open ? (
     <section id="inscripcion" class="bg-navy text-white">
-      <div class="container-x flex flex-col gap-6 py-20 md:flex-row md:items-end md:justify-between" data-reveal>
+      <div class="container-x flex flex-col gap-6 py-12 md:py-20 md:flex-row md:items-end md:justify-between" data-reveal>
         <div>
           <span class="eyebrow text-lavender">Inscripción</span>
           <h2 class="display mt-3 text-[clamp(32px,5vw,64px)]">Reserva tu plaza_</h2>
@@ -118,7 +120,7 @@ const eventJsonLd = {
     </section>
   ) : soldOut ? (
     <section id="inscripcion" class="bg-navy text-white">
-      <div class="container-x py-20" data-reveal>
+      <div class="container-x py-12 md:py-20" data-reveal>
         <span class="eyebrow text-lavender">Sold out</span>
         <h2 class="display mt-3 text-[clamp(32px,5vw,64px)]">Plazas completas_</h2>
         <p class="mt-4 max-w-xl text-lavender">Si se libera alguna plaza lo anunciaremos en nuestras redes.</p>
@@ -126,7 +128,7 @@ const eventJsonLd = {
     </section>
   ) : (
     <section class="bg-navy text-white">
-      <div class="container-x flex flex-col gap-6 py-16 md:flex-row md:items-end md:justify-between" data-reveal>
+      <div class="container-x flex flex-col gap-6 py-10 md:py-16 md:flex-row md:items-end md:justify-between" data-reveal>
         <div><span class="eyebrow text-lavender">Evento celebrado</span><h2 class="display mt-3 text-[clamp(28px,4vw,56px)]">¿Te lo perdiste? El próximo, no_</h2></div>
         <div class="flex gap-3"><a href="/eventos" class="btn btn-on-blue">Próximos eventos <span class="font-mono">→</span></a><a href="/unete" class="btn btn-outline text-white">Entrar en Start</a></div>
       </div>
