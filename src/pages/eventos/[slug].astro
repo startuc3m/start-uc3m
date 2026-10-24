@@ -53,7 +53,9 @@ const eventJsonLd = {
         {(past || soldOut || e.data.seats) && <div><dt class="eyebrow text-lavender/70">Plazas</dt><dd class="text-2xl font-semibold">{past ? 'Evento celebrado' : soldOut ? 'Sold out' : e.data.seats}</dd></div>}
       </dl>
       <div class="flex flex-wrap gap-3 md:justify-end">
-          {open && <a href="#inscripcion" class="btn btn-on-blue">{e.data.external ? 'Reservar plaza' : 'Inscripción'} <span class="font-mono">→</span></a>}
+          {open && (e.data.external
+            ? <a href={e.data.external} target="_blank" rel="noopener" class="btn btn-on-blue">Reservar plaza <span class="font-mono">↗</span></a>
+            : <a href="#inscripcion" class="btn btn-on-blue">Inscripción <span class="font-mono">→</span></a>)}
           {!past && <a href={icsHref} download={`${e.id}.ics`} class="btn btn-outline text-white">Añadir al calendario <span class="font-mono">＋</span></a>}
           {past && <a href="/eventos" class="btn btn-outline text-white">Ver próximos eventos</a>}
       </div>
