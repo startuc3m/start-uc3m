@@ -11,20 +11,20 @@
 
 .socios,
 .socios-gracias {
-  --ground: #13133d;
+  --ground: var(--color-navy);
   --on-ground: #ffffff;
   --on-ground-soft: #bcc7ea;
   --on-ground-faint: #93a0cd;
 
   --card: #ffffff;
-  --card-ink: #13133d;
+  --card-ink: var(--color-navy);
   --card-soft: #5a648f;
   --card-faint: #98a0c0;
   --card-line: #d6dbee;
   --card-line-strong: #b9c1de;
   --card-sunk: #f2f4fc;
 
-  --accent: #8ee1e6;
+  --accent: var(--color-cyan);
   --accent-ink: #0a1338;
   --amarillo: #ffd966;
 }
@@ -206,7 +206,7 @@
   flex: none;
   width: 1.15rem;
   height: 1.15rem;
-  accent-color: #333399;
+  accent-color: var(--color-cobalt);
 }
 
 .socios__opcion-texto {

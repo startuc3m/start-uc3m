@@ -74,7 +74,12 @@ const eps = (await getCollection('podcast')).sort((a, b) => b.data.episode - a.d
       prev.disabled = track.scrollLeft <= 2;
       next.disabled = track.scrollLeft >= max() - 2;
     };
+    // Mientras el dedo o el ratón están sobre la pista manda el usuario: sin esto, cada scroll vertical de la
+    // página (en móvil se mezclan al deslizar) relanzaba el tween con el offset viejo y deshacía el arrastre.
+    let holding = false;
+    const grab = () => { gsap.killTweensOf(track); animating = false; };
     const go = (duration: number) => {
+      if (holding) return;
       animating = true;
       gsap.to(track, { scrollLeft: target(), duration, ease: 'power3.out', overwrite: true, onUpdate: arrows, onComplete: () => { animating = false; arrows(); } });
     };
@@ -83,6 +88,12 @@ const eps = (await getCollection('podcast')).sort((a, b) => b.data.episode - a.d
       if (!animating) offset = track.scrollLeft - progress * max();
       arrows();
     }, { passive: true });
+    const hold = () => { holding = true; grab(); };
+    const release = () => { holding = false; };
+    track.addEventListener('touchstart', hold, { passive: true });
+    track.addEventListener('mousedown', hold);
+    track.addEventListener('wheel', grab, { passive: true });
+    ['touchend', 'touchcancel', 'mouseup'].forEach((ev) => window.addEventListener(ev, release, { passive: true }));
     const nudge = (dir: 1 | -1) => {
       offset = gsap.utils.clamp(0, max(), track.scrollLeft + dir * step()) - progress * max();
       go(0.7);

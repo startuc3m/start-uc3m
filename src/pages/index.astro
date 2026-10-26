@@ -11,6 +11,7 @@ import Doodle from '../components/Doodle.astro';
 import HistoriaVideo from '../components/HistoriaVideo.astro';
 import Momentos from '../components/Momentos.astro';
 import StartcampLanyard from '../components/lanyard/startcamp-lanyard';
+import { STARTCAMP_END } from '../components/lanyard/startcamp_countdown.js';
 const eventos = await publicados();
 const next = eventos.find((e) => e.data.status !== 'pasado');
 const conBlog = await blogVisible();
@@ -19,14 +20,20 @@ const fmtLong = (d: Date) => d.toLocaleDateString('es-ES', { weekday: 'long', da
 const fmtShort = (d: Date) => d.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }).toUpperCase();
 ---
 <Base tone="dark">
+  <!-- Antes de pintar el hero: marca <html> si va a colgar el lanyard (misma regla que su shouldShow), para reservarle la columna -->
+  <script is:inline define:vars={{ end: STARTCAMP_END }}>
+    let closed = false;
+    try { closed = sessionStorage.getItem('startcamp-lanyard-dismissed') === '1'; } catch {}
+    if (!closed && Date.now() < end && matchMedia('(min-width: 1024px)').matches) document.documentElement.dataset.lanyard = '';
+  </script>
   <StartcampLanyard client:only="react" anchorX="calc(100% - 260px)" scale={1.4} showHint={false} />
   <!-- HERO: la sala llena del Start Camp, fundida con el azul de Start -->
   <section class="relative overflow-hidden bg-cobalt text-white">
     <Photo name="start-camp-sala-llena" eager class="absolute inset-0 h-full w-full object-cover object-[center_30%] opacity-80 mix-blend-luminosity" />
     <div class="absolute inset-0 bg-gradient-to-b from-cobalt/20 via-cobalt/55 to-cobalt"></div>
-    <div class="container-x relative flex flex-col justify-center pb-12 pt-12 md:pb-16 md:pt-16 lg:min-h-[800px]">
-      <!-- A partir de lg la columna derecha queda libre para el lanyard del Start Camp -->
-      <div class="lg:pr-[380px]">
+    <div class="container-x relative flex flex-col justify-center pb-12 pt-12 md:pb-16 md:pt-16 lg:[html[data-lanyard]_&]:min-h-[800px]">
+      <!-- A partir de lg, mientras cuelga el lanyard del Start Camp, la columna derecha queda libre para él -->
+      <div class="lg:[html[data-lanyard]_&]:pr-[380px]">
         <p class="marker -rotate-2 text-[clamp(20px,2.2vw,30px)] text-lime">Stop talking, Start walking</p>
         <h1 class="display relative mt-3 text-[clamp(56px,8vw,128px)]">
           Somos gente <span class="hl hl-lime">haciendo cosas</span>_

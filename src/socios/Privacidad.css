@@ -1,6 +1,6 @@
 /* Mismo fondo oscuro que el resto de paginas (ver Socios.css). */
 .privacidad {
-  background-color: #13133d;
+  background-color: var(--color-navy);
   padding: 3rem 1.25rem 5rem;
   font-family: inherit;
   color: #ffffff;
@@ -39,7 +39,7 @@
   margin: 0 0 0.75rem;
   font-size: 1.15rem;
   letter-spacing: 0.01em;
-  color: #8ee1e6;
+  color: var(--color-cyan);
 }
 
 .privacidad p,
@@ -67,7 +67,7 @@
 }
 
 .privacidad a {
-  color: #8ee1e6;
+  color: var(--color-cyan);
   text-underline-offset: 2px;
 }
 

@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import neonpassQRAsset from "../../assets/component_assets/startcamp-neonpass-qr.svg";
 const neonpassQR = typeof neonpassQRAsset === "string" ? neonpassQRAsset : (neonpassQRAsset as { src: string }).src;
 import { advanceLanyardClock, LANYARD_STEP, smoothLanyardAngle } from "./lanyard_motion.js";
-import { getStartcampCountdown, STARTCAMP_END } from "./startcamp_countdown.js";
+import { dismiss, getStartcampCountdown, isDismissed, STARTCAMP_END } from "./startcamp_countdown.js";
 
 const DISMISS_KEY = "startcamp-lanyard-dismissed";
 
@@ -12,11 +12,7 @@ const DISMISS_KEY = "startcamp-lanyard-dismissed";
 function shouldShow() {
         if (Date.now() >= STARTCAMP_END) return false;
         if (!window.matchMedia("(min-width: 1024px)").matches) return false;
-        try {
-                return sessionStorage.getItem(DISMISS_KEY) !== "1";
-        } catch {
-                return true;
-        }
+        return !isDismissed(DISMISS_KEY);
 }
 
 const EVENT_URL = "https://www.neonpass.es/event/ec3ee828-56d3-40d4-9636-ece85cfd383b";
@@ -64,11 +60,11 @@ export interface StartcampLanyardProps {
 const CSS = `
 .scl-root{
   --scl-ink-faint:#5b6270;
-  --scl-accent:#333399;
-  --scl-accent-dim:#24246f;
+  --scl-accent:var(--color-cobalt);
+  --scl-accent-dim:var(--color-cobalt-deep);
   --scl-card:#f5f7ff;
   --scl-card-2:#e4e9f8;
-  --scl-card-ink:#24246f;
+  --scl-card-ink:var(--color-cobalt-deep);
   --scl-card-soft:#5a6586;
   --scl-card-line:#cbd3ec;
   --scl-font-display:'Anton','Arial Narrow',sans-serif;
@@ -185,7 +181,7 @@ const CSS = `
   box-shadow:0 2px 6px rgba(0,0,0,.4), 0 0 0 3px var(--scl-card);
 }
 .scl-verified.scl-incognito{
-  background:linear-gradient(160deg, #5264b0, #24246f);
+  background:linear-gradient(160deg, #5264b0, var(--color-cobalt-deep));
   color:#fff;
   font-family:var(--scl-font-mono);
   font-size:11px;
@@ -212,7 +208,7 @@ const CSS = `
   margin-top:auto;
   border-radius:6px;
   /* Lima de resalto del brand kit (el de los botones de la web): el único toque de color de la tarjeta */
-  background:#d6ff4f;
+  background:var(--color-lime);
   color:var(--scl-card-ink);
   border:none;
   font-family:var(--scl-font-mono);
@@ -316,13 +312,15 @@ export function StartcampLanyard({
         const [interacted, setInteracted] = useState(false);
         const [dismissed, setDismissedState] = useState(() => !shouldShow());
         const setDismissed = (value: boolean) => {
-                try {
-                        if (value) sessionStorage.setItem(DISMISS_KEY, "1");
-                } catch {
-                        // Private mode: it only stays closed until reload
-                }
+                if (value) dismiss(DISMISS_KEY);
                 setDismissedState(value);
         };
+
+        // The hero reserves the right column only while the lanyard hangs (see index.astro)
+        useEffect(() => {
+                if (dismissed) delete document.documentElement.dataset.lanyard;
+                else document.documentElement.dataset.lanyard = "";
+        }, [dismissed]);
 
 
         useEffect(() => {
@@ -335,6 +333,8 @@ export function StartcampLanyard({
                 if (!scene || !canvas || !rail || !card || !flipper || !barcodeEl) return;
                 const ctx = canvas.getContext("2d");
                 if (!ctx) return;
+                // The canvas can't read CSS vars, so the ribbon takes the brand token once
+                const ribbon = getComputedStyle(document.documentElement).getPropertyValue("--color-cobalt").trim() || "#333399";
 
                 barcodeEl.innerHTML = "";
                 for (let i = 0; i < 30; i++) {
@@ -517,9 +517,9 @@ export function StartcampLanyard({
                         strokeRibbon("#000000", 16);
                         ctx!.restore();
 
-                        strokeRibbon("#333399", 16);
+                        strokeRibbon(ribbon, 16);
                         strokeRibbon("rgba(0,0,0,0.35)", 16.5);
-                        strokeRibbon("#333399", 13.5);
+                        strokeRibbon(ribbon, 13.5);
                         strokeRibbon("rgba(255,255,255,0.07)", 3);
 
                         const markIdx = Math.floor(points.length * 0.3);
