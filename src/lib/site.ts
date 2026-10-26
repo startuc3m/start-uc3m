@@ -1,6 +1,6 @@
 export const site = {
   name: 'Start UC3M',
-  claim: 'Piensa diferente, actúa con propósito',
+  claim: 'Somos gente haciendo cosas',
   description:
     'Start UC3M es la asociación de emprendedores de la Universidad Carlos III de Madrid: eventos, comunidad y proyectos para pasar de la idea a algo real.',
   email: 'startuc3m@gmail.com',
@@ -41,14 +41,14 @@ export const site = {
     { name: 'IT', short: 'Producto y web', desc: "Construye y mantiene todo lo que la asociación necesita en lo técnico. Desarrolla y actualiza la web, resuelve las incidencias que van surgiendo y se ocupa de las herramientas internas que el equipo usa en el día a día. También apoya al resto de departamentos en cualquier proyecto con componente tecnológica." },
   ],
   // Fuente: base Miembros del Notion de Start + web anterior (cargos y LinkedIn), cerrada el 16/10/2026 (#26).
-  // Fotos: las de la web anterior (src/assets/equipo) mientras llegan las del Drive (#17, #41).
+  // Fotos: las de la web anterior y, desde el 27/10/2026, las que cada uno ha subido a la base Miembros de Notion (#67).
   // Quien no tiene `photo` sale con sus iniciales.
   team: [
     { name: "Ioana Nedelcu", role: 'Presidenta', depts: ["Junta directiva"], linkedin: 'https://www.linkedin.com/in/ioananedelcu/', photo: 'ioana_nedelcu.jpeg' },
     { name: "Ana Giménez", role: 'Vicepresidenta', depts: ["Junta directiva"], linkedin: 'https://www.linkedin.com/in/ana-gimenez-de-luis-93a528293', photo: 'ana_gimenez.jpg' },
     { name: "Alejandro Ausina", role: 'Responsable', depts: ["IT"], linkedin: 'https://www.linkedin.com/in/alejandro-ausina/', photo: 'alejandro_ausina.jpg' },
     { name: "Lidia Wang", role: 'Responsable', depts: ["Marketing"], linkedin: 'https://www.linkedin.com/in/lidia-wang-058433389', photo: 'lidia_wang.jpg' },
-    { name: "Irene Ibáñez", role: 'Responsable', depts: ["RRHH"], linkedin: 'https://www.linkedin.com/in/ireneibanezcasao/', photo: 'irene_ibanez.jpeg' },
+    { name: "Irene Ibáñez", role: 'Responsable', depts: ["RRHH"], linkedin: 'https://www.linkedin.com/in/ireneibanezcasao/', photo: 'irene_ibanez_notion.jpeg' },
     { name: "Alicia Gascón", role: 'Responsable', depts: ["Eventos"], linkedin: 'https://www.linkedin.com/in/alicia-gasc%C3%B3n-valero-41a828387/', photo: 'alicia_gascon.jpg' },
     { name: "Uxio López", role: 'Responsable', depts: ["Comunicación"], linkedin: 'https://www.linkedin.com/in/uxio-lopez-0b6a09386/', photo: 'uxio_lopez.png' },
     { name: "María Martin", role: 'Responsable', depts: ["Legal"], linkedin: 'https://www.linkedin.com/in/maria-martin-dominguez-9569332a6/', photo: 'maria_martin.jpg' },
@@ -60,23 +60,23 @@ export const site = {
     { name: "Pablo Carreras", role: 'Asociado', depts: ["IT"], linkedin: 'https://www.linkedin.com/in/pablo-carreras-franca/' },
     { name: "Lion Abboud", role: 'Asociado', depts: ["Eventos"], linkedin: 'https://www.linkedin.com/in/lion-abboud-herbert/' },
     { name: "Juan Figueira", role: 'Asociado', depts: ["Comunicación"], linkedin: 'https://www.linkedin.com/in/juan-figueira-trujillo-7aa1b2297/', photo: 'juan_figueira.jpg' },
-    { name: "María del Puerto Saínz", role: 'Asociada', depts: ["Marketing"], linkedin: 'https://www.linkedin.com/in/mar%C3%ADa-del-puerto-sainz-alzueta-199866356' },
-    { name: "Álvaro Carpintero", role: 'Asociado', depts: ["IT"], linkedin: 'https://www.linkedin.com/in/alvaarocl/' },
+    { name: "María del Puerto Saínz", role: 'Asociada', depts: ["Marketing"], linkedin: 'https://www.linkedin.com/in/mar%C3%ADa-del-puerto-sainz-alzueta-199866356', photo: 'puerto_sainz.jpg' },
+    { name: "Álvaro Carpintero", role: 'Asociado', depts: ["IT"], linkedin: 'https://www.linkedin.com/in/alvaarocl/', photo: 'alvaro_carpintero_notion.jpg' },
     { name: "Alba Sanz", role: 'Asociada', depts: ["Marketing", "Legal"], linkedin: '' },
     { name: "Liliya Shulyak", role: 'Asociada', depts: ["Marketing"], linkedin: 'https://www.linkedin.com/in/liliya-shulyak-26077a3a1' },
-    { name: "Álvaro González", role: 'Asociado', depts: ["Eventos"], linkedin: '' },
+    { name: "Álvaro González", role: 'Asociado', depts: ["Eventos"], linkedin: '', photo: 'alvaro_gonzalez.jpg' },
     { name: "Fernando Lozano", role: 'Asociado', depts: ["Comunicación"], linkedin: 'https://www.linkedin.com/in/fernando-lozano1' },
     { name: "Alberto Freire", role: 'Asociado', depts: ["Partnerships"], linkedin: '' },
-    { name: "Claudia López", role: 'Asociada', depts: ["Marketing"], linkedin: '' },
+    { name: "Claudia López", role: 'Asociada', depts: ["Marketing"], linkedin: '', photo: 'claudia_lopez.jpg' },
     { name: "Claudia Carrillo", role: 'Asociada', depts: ["Partnerships"], linkedin: 'https://www.linkedin.com/in/claudia-carrillo-espinosa-493870291' },
-    { name: "Gema Crespo", role: 'Asociada', depts: ["Comunicación"], linkedin: 'https://www.linkedin.com/in/gemacrespo/' },
+    { name: "Gema Crespo", role: 'Asociada', depts: ["Comunicación"], linkedin: 'https://www.linkedin.com/in/gemacrespo/', photo: 'gema_crespo.jpg' },
     { name: "Sofía Mikhailo", role: 'Asociada', depts: ["Eventos"], linkedin: 'https://www.linkedin.com/in/sofmikh' },
     { name: "Guillermo Rodríguez", role: 'Asociado', depts: ["Comunicación"], linkedin: '' },
     { name: "Sofía Díez", role: 'Asociada', depts: ["Eventos"], linkedin: 'https://www.linkedin.com/in/sofia-diez-calvo-b8aa56265' },
-    { name: "Dimana Vasileva", role: 'Asociada', depts: ["Comunicación"], linkedin: '' },
+    { name: "Dimana Vasileva", role: 'Asociada', depts: ["Comunicación"], linkedin: '', photo: 'dimana_vasileva.jpg' },
     { name: "Lucas R. Kowalski", role: 'Asociado', depts: ["IT"], linkedin: 'https://www.linkedin.com/in/lucas-rodr%C3%ADguez-kowalski-136b3628b' },
-    { name: "Lucía Sáenz", role: 'Asociada', depts: ["Legal"], linkedin: 'https://www.linkedin.com/in/luc%C3%ADa-s%C3%A1enz-de-tejada-buesa-65bb84260' },
-    { name: "Estrella Trabanca", role: 'Asociada', depts: ["IT"], linkedin: 'https://www.linkedin.com/in/estrella-trabanca-pineda-a5835a391' },
+    { name: "Lucía Sáenz", role: 'Asociada', depts: ["Legal"], linkedin: 'https://www.linkedin.com/in/luc%C3%ADa-s%C3%A1enz-de-tejada-buesa-65bb84260', photo: 'lucia_saenz.jpg' },
+    { name: "Estrella Trabanca", role: 'Asociada', depts: ["IT"], linkedin: 'https://www.linkedin.com/in/estrella-trabanca-pineda-a5835a391', photo: 'estrella_trabanca.jpg' },
     { name: "Enrique Talavera", role: 'Asociado', depts: ["Partnerships"], linkedin: 'https://www.linkedin.com/in/enrique-talavera-cubells-359b64379' },
   ] as { name: string; role: string; depts: string[]; linkedin: string; photo?: string }[],
   // { name, role: cargo + años (ej. "Presidenta 2022-23"), linkedin? } — pendiente de contenido real de RRHH
@@ -100,7 +100,7 @@ export const site = {
     { title: 'Proyectos', desc: 'Formatos para pasar de una idea a un prototipo, y gente con quien hacerlo, sin esperar a terminar la carrera.' },
   ],
   links: [
-    { label: 'Hazte socio', href: '/socios' },
+    { label: 'Hazte socio', href: '/socios#alta' },
     { label: 'Quiero entrar en el equipo', href: '/unete' },
     { label: 'Podcast', href: '/podcast' },
     { label: 'Próximos eventos', href: '/eventos', featured: true },
