@@ -1,5 +1,6 @@
 ---
-// Banner del Start Camp (#61) encima del menú, en todas las páginas y tamaños: cuenta atrás en vivo
+// Banner del Start Camp (#61) encima del menú, en todas las páginas, solo en móvil y tablet (en PC está
+// el lanyard del hero): cuenta atrás en vivo
 // e inscripción directa a Neonpass. Se va con el scroll (el menú sí es fijo), se puede cerrar
 // durante la sesión y desaparece al acabar el evento. Fuera de la propia ficha del Camp.
 import { getEntry } from 'astro:content';
@@ -7,7 +8,7 @@ const camp = await getEntry('eventos', 'start-camp');
 const url = Astro.url.pathname.startsWith('/eventos/start-camp') ? undefined : camp?.data.external;
 ---
 {url && (
-  <div class="relative z-50 bg-lime text-ink" data-camp-banner hidden>
+  <div class="relative z-50 bg-lime text-ink lg:hidden" data-camp-banner hidden>
     <div class="container-x flex min-h-11 items-center gap-3 py-1.5 md:gap-6">
       <a href={url} target="_blank" rel="noopener" class="flex min-w-0 flex-1 items-center gap-3 md:gap-6">
         <span class="display shrink-0 text-[18px] md:text-[22px]">Start Camp 2026</span>

@@ -211,8 +211,9 @@ const CSS = `
   padding:10px 12px;
   margin-top:auto;
   border-radius:6px;
-  background:var(--scl-card-ink);
-  color:#ffffff;
+  /* Lima de resalto del brand kit (el de los botones de la web): el único toque de color de la tarjeta */
+  background:#d6ff4f;
+  color:var(--scl-card-ink);
   border:none;
   font-family:var(--scl-font-mono);
   font-size:11.5px;
@@ -227,7 +228,7 @@ const CSS = `
   transition:background .15s ease, transform .1s ease;
   box-shadow:0 3px 8px rgba(0,0,0,.2);
 }
-.scl-join-btn:hover{ background:var(--scl-accent-dim); transform:translateY(-1px); }
+.scl-join-btn:hover{ background:#c6f032; transform:translateY(-1px); }
 .scl-join-btn:focus-visible{ outline:3px solid var(--scl-accent); outline-offset:4px; }
 .scl-join-btn:active{ transform:translateY(1px); }
 
