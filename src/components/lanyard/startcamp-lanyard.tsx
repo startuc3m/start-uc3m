@@ -4,7 +4,20 @@ import React, { useEffect, useRef, useState } from "react";
 import neonpassQRAsset from "../../assets/component_assets/startcamp-neonpass-qr.svg";
 const neonpassQR = typeof neonpassQRAsset === "string" ? neonpassQRAsset : (neonpassQRAsset as { src: string }).src;
 import { advanceLanyardClock, LANYARD_STEP, smoothLanyardAngle } from "./lanyard_motion.js";
-import { getStartcampCountdown } from "./startcamp_countdown.js";
+import { getStartcampCountdown, STARTCAMP_END } from "./startcamp_countdown.js";
+
+const DISMISS_KEY = "startcamp-lanyard-dismissed";
+
+// Only on screens wide enough to hang beside the hero, and only until the event ends.
+function shouldShow() {
+        if (Date.now() >= STARTCAMP_END) return false;
+        if (!window.matchMedia("(min-width: 768px)").matches) return false;
+        try {
+                return sessionStorage.getItem(DISMISS_KEY) !== "1";
+        } catch {
+                return true;
+        }
+}
 
 const EVENT_URL = "https://www.neonpass.es/event/ec3ee828-56d3-40d4-9636-ece85cfd383b";
 
@@ -72,8 +85,9 @@ const CSS = `
 .scl-countdown-units small{ font-size:7.5px; letter-spacing:1px; color:var(--scl-card-soft); }
 
 .scl-stage{
-  position:fixed;
-  inset:0;
+  /* Hangs over the hero and scrolls away with it, under the sticky menu. */
+  position:absolute;
+  top:0; left:0; width:100%; height:100svh;
   z-index:var(--scl-z, 60);
   pointer-events:none;
   overflow:visible;
@@ -288,7 +302,7 @@ export function StartcampLanyard({
         anchorX = "50%",
         anchorY = 6,
         scale = 1.15,
-        zIndex = 60,
+        zIndex = 40,
         showHint = false,
         className = "",
 }: StartcampLanyardProps) {
@@ -299,7 +313,15 @@ export function StartcampLanyard({
         const flipperRef = useRef<HTMLDivElement>(null);
         const barcodeRef = useRef<HTMLDivElement>(null);
         const [interacted, setInteracted] = useState(false);
-	const [dismissed, setDismissed] = useState(false);
+        const [dismissed, setDismissedState] = useState(() => !shouldShow());
+        const setDismissed = (value: boolean) => {
+                try {
+                        if (value) sessionStorage.setItem(DISMISS_KEY, "1");
+                } catch {
+                        // Private mode: it only stays closed until reload
+                }
+                setDismissedState(value);
+        };
 
         useEffect(() => {
                 const id = "scl-fonts";
@@ -799,7 +821,7 @@ export function StartcampLanyard({
 
                                                         <div className="scl-idnum">
                                                                 <span>NO. {isLoggedIn ? idNumber : "••••••••"}</span>
-                                                                <em>{isLoggedIn ? `VALID ${validThru}` : "PASS: GUEST"}</em>
+                                                                <em>{isLoggedIn ? `VALID ${validThru}` : "PASE: INVITADO"}</em>
                                                         </div>
                                                         <div className="scl-barcode" ref={barcodeRef} />
 
@@ -845,8 +867,8 @@ export function StartcampLanyard({
                                                         )}
 
                                                         <div className="scl-sig">
-                                                                <div className="scl-script">{isLoggedIn ? name : "Anonymous"}</div>
-                                                                <small>{isLoggedIn ? "Authorized Signature" : "Guest Signature"}</small>
+                                                                <div className="scl-script">{isLoggedIn ? name : "Tu nombre"}</div>
+                                                                <small>{isLoggedIn ? "Authorized Signature" : "Firma del asistente"}</small>
                                                         </div>
                                                 </div>
                                         </div>
