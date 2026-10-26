@@ -1,0 +1,52 @@
+---
+// Vídeo de la historia de Start (#65), servido desde la propia web (sin YouTube).
+// En la página solo carga un avance de 8 s en bucle y sin sonido (~1 MB) con su póster;
+// el vídeo completo (1080p o 720p según la pantalla) no se descarga hasta pulsar play.
+// Fuente: "VIDEO START GLOBAL 2.mov" del Drive de Marketing, recodificado a H.264.
+interface Props { class?: string }
+const { class: cls = '' } = Astro.props;
+---
+<div class={`historia relative overflow-hidden rounded-brand bg-navy ${cls}`} data-historia>
+  <video class="absolute inset-0 h-full w-full object-cover" src="/video/historia-loop.mp4" poster="/video/historia-poster.jpg" muted loop playsinline preload="none" aria-hidden="true" data-historia-loop></video>
+  <div class="absolute inset-0 bg-gradient-to-t from-navy/85 via-navy/10 to-transparent"></div>
+  <button type="button" class="group absolute inset-0 flex flex-col items-start justify-end gap-3 p-6 text-left text-white md:p-8" data-historia-open aria-haspopup="dialog">
+    <span class="grid h-16 w-16 place-items-center rounded-full bg-lime text-xl text-ink transition-transform duration-300 group-hover:scale-110 md:h-20 md:w-20">▶</span>
+    <span class="display text-[clamp(28px,3.4vw,48px)]">Nuestra historia</span>
+    <span class="mono text-lavender">2:23 · desde 2015 hasta hoy</span>
+  </button>
+</div>
+<dialog class="historia-dialog m-auto w-[min(1200px,94vw)] bg-transparent p-0 backdrop:bg-navy/90" data-historia-dialog aria-label="Vídeo: nuestra historia">
+  <video class="aspect-video w-full rounded-brand bg-black" controls playsinline preload="none" poster="/video/historia-poster.jpg" data-historia-full></video>
+  <button type="button" class="mono absolute -top-10 right-0 text-white hover:text-lime" data-historia-close>Cerrar ×</button>
+</dialog>
+<style>
+  .historia-dialog { overflow: visible; }
+  .historia-dialog[open] { animation: historia-in .35s cubic-bezier(.2,.7,.2,1); }
+  @keyframes historia-in { from { opacity: 0; transform: scale(.97); } }
+  @media (prefers-reduced-motion: reduce) { .historia-dialog[open] { animation: none; } }
+</style>
+<script>
+  document.querySelectorAll<HTMLElement>('[data-historia]').forEach((box) => {
+    const loop = box.querySelector<HTMLVideoElement>('[data-historia-loop]')!;
+    const dialog = box.nextElementSibling as HTMLDialogElement;
+    const full = dialog.querySelector<HTMLVideoElement>('[data-historia-full]')!;
+
+    // El avance solo se descarga y reproduce cuando está a la vista, y nunca con movimiento reducido.
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      new IntersectionObserver(([entry]) => {
+        if (entry.isIntersecting) loop.play().catch(() => {});
+        else loop.pause();
+      }, { rootMargin: '200px' }).observe(box);
+    }
+
+    box.querySelector('[data-historia-open]')!.addEventListener('click', () => {
+      if (!full.src) full.src = window.innerWidth * devicePixelRatio >= 1600 ? '/video/historia-1080.mp4' : '/video/historia-720.mp4';
+      dialog.showModal();
+      full.play().catch(() => {});
+    });
+    const close = () => dialog.close();
+    dialog.querySelector('[data-historia-close]')!.addEventListener('click', close);
+    dialog.addEventListener('click', (e) => { if (e.target === dialog) close(); });
+    dialog.addEventListener('close', () => full.pause());
+  });
+</script>
