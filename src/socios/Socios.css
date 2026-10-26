@@ -1,7 +1,7 @@
 /*
  * La web tiene un `body { background-color: #2b2c8f }` global
  * (DividerOfSections.css) y las paginas ponen su propio fondo oscuro
- * encima: Equipo usa #0E1A52. Esta pagina hace lo mismo, en vez de
+ * encima: Equipo usa #13133d. Esta pagina hace lo mismo, en vez de
  * depender de lo que herede del body.
  *
  * De ahi el reparto: texto claro sobre el azul, y tarjetas blancas con
@@ -11,20 +11,20 @@
 
 .socios,
 .socios-gracias {
-  --ground: #0e1a52;
+  --ground: var(--color-navy);
   --on-ground: #ffffff;
   --on-ground-soft: #bcc7ea;
   --on-ground-faint: #93a0cd;
 
   --card: #ffffff;
-  --card-ink: #0e1a52;
+  --card-ink: var(--color-navy);
   --card-soft: #5a648f;
   --card-faint: #98a0c0;
   --card-line: #d6dbee;
   --card-line-strong: #b9c1de;
   --card-sunk: #f2f4fc;
 
-  --accent: #4cc9f0;
+  --accent: var(--color-cyan);
   --accent-ink: #0a1338;
   --amarillo: #ffd966;
 }
@@ -206,7 +206,7 @@
   flex: none;
   width: 1.15rem;
   height: 1.15rem;
-  accent-color: #2b3a91;
+  accent-color: var(--color-cobalt);
 }
 
 .socios__opcion-texto {

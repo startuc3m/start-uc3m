@@ -17,6 +17,7 @@ export function eventStartDate(date: Date, time: string): Date {
 
 // Genera un archivo .ics (RFC 5545) para el botón "Añadir al calendario" de la ficha de evento.
 // "18:00" es una hora; cualquier otra cosa ("2 días · 7 y 8 de noviembre") es un evento de día completo.
+// Los eventos de varios días también van como día completo, aunque tengan hora de inicio, para cubrir todos sus días.
 export const hasClockTime = (time: string) => /^\d{1,2}:\d{2}$/.test(time.trim());
 
 export function eventToIcs(event: {
@@ -31,7 +32,7 @@ export function eventToIcs(event: {
   const fmt = (d: Date) => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
   const day = (d: Date) => d.toISOString().slice(0, 10).replace(/-/g, '');
   let when: string[];
-  if (hasClockTime(event.time)) {
+  if (hasClockTime(event.time) && (event.days ?? 1) <= 1) {
     const start = eventStartDate(event.date, event.time);
     const end = new Date(start.getTime() + (event.durationHours ?? 3) * 60 * 60 * 1000);
     when = [`DTSTART:${fmt(start)}`, `DTEND:${fmt(end)}`];

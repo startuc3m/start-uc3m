@@ -2,7 +2,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 
-// Base de motion: scroll suave (Lenis) + reveals + scroll horizontal de podcasts.
+// Base de motion: scroll suave (Lenis) + reveals.
 // Todo se desactiva con prefers-reduced-motion.
 // Espera a que la cortina CSS termine (si se muestra) antes de arrancar los reveals.
 export function initLoader() {
@@ -42,7 +42,8 @@ export function initMotion() {
     // Se construye con nodos (no innerHTML) para que un "<" o "&" del título siga siendo texto.
     el.replaceChildren(...words.flatMap((w, i) => {
       const outer = document.createElement('span');
-      outer.className = 'inline-block overflow-hidden align-bottom pb-[0.12em] -mb-[0.12em]';
+      // Margen arriba para no recortar tildes ni la virgulilla de la Ñ en mayúsculas (Anton).
+      outer.className = 'inline-block overflow-hidden align-bottom pt-[0.2em] -mt-[0.2em] pb-[0.12em] -mb-[0.12em]';
       const inner = document.createElement('span');
       inner.className = 'inline-block will-change-transform';
       inner.textContent = w;
@@ -54,20 +55,6 @@ export function initMotion() {
       scrollTrigger: { trigger: el, start: 'top 90%', once: true },
     });
   });
-
-  // Podcasts: pista horizontal pineada que avanza con el scroll
-  const track = document.querySelector<HTMLElement>('[data-podcast-track]');
-  const pin = document.querySelector<HTMLElement>('[data-podcast-pin]');
-  if (track && pin) {
-    const distance = () => track.scrollWidth - window.innerWidth + 64;
-    gsap.to(track, {
-      x: () => -distance(), ease: 'none',
-      scrollTrigger: { trigger: pin, start: 'top top', end: () => `+=${distance()}`, pin: true, pinSpacing: true, scrub: 0.6, invalidateOnRefresh: true, anticipatePin: 1 },
-    });
-    track.querySelectorAll<HTMLElement>('[data-ep-number]').forEach((n) => {
-      gsap.to(n, { xPercent: -40, ease: 'none', scrollTrigger: { trigger: pin, start: 'top top', end: () => `+=${distance()}`, scrub: true } });
-    });
-  }
 
   // Parallax constante al scroll en imágenes y números grandes
   document.querySelectorAll<HTMLElement>('[data-parallax]').forEach((el) => {

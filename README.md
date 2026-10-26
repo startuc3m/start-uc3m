@@ -20,7 +20,8 @@ npm run dev:api    # (opcional) funciones de api/ en :3001; necesita .env.local
 
 | Qué | Dónde |
 |---|---|
-| Colores y tipografía | `src/styles/global.css` |
+| Colores y tipografía (brand kit de Marketing 26/27) | `src/styles/global.css` |
+| Garabatos del brand kit (estrella, flecha, subrayado, estallido) | `src/components/Doodle.astro` |
 | Textos globales, equipo, departamentos, tiers, links, recursos | `src/lib/site.ts` |
 | Eventos | `src/content/eventos/*.md` |
 | Posts del blog | `src/content/blog/*.md` |
@@ -40,6 +41,9 @@ npm run dev:api    # (opcional) funciones de api/ en :3001; necesita .env.local
 - **Post**: `src/content/blog/mi-post.md` con `title, excerpt, date, category`. El blog aparece en menú y home cuando hay 3 publicados.
 - **Episodio**: `src/content/podcast/ep-NN.md`.
 - **Miembro del equipo**: array `team` de `src/lib/site.ts`. `depts` admite varios departamentos.
+- **Foto del equipo**: cada uno la sube a su fila de la base *Miembros* del Notion de Start (campo *Foto*). Cada cierto tiempo, alguien de IT la pasa a mano a la web: descargarla, reducirla a 1200 px (`sips -Z 1200 foto.jpg --out src/assets/equipo/nombre_apellido.jpg`) y ponerla en `photo` de su entrada en `team`. Si cambias una foto, usa un nombre de archivo nuevo: en local el navegador guarda las imágenes y seguiría enseñando la vieja. Quien no tiene foto sale con sus iniciales.
+- **Fotos de eventos**: carpeta *FOTOS EVENTOS* del Drive de Marketing, reducidas a 2400 px en `src/assets/fotos/`; cuáles usa cada evento (y su galería "Así fue") en `src/lib/fotos.ts`.
+- **Start Camp**: el horario de la cuenta atrás (lanyard, banner y barra móvil) está en `src/components/lanyard/startcamp_countdown.js`; las tres piezas desaparecen solas al acabar el evento.
 
 Regla: **no se publica nada que no esté confirmado** (cifras, eventos, promesas a empresas). Lo pendiente está en los issues con la etiqueta `bloqueado: directiva`.
 

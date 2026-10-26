@@ -6,3 +6,12 @@ export function getStartcampCountdown(now = Date.now()) {
   const seconds = Math.max(0, Math.ceil((STARTCAMP_START - now) / 1000))
   return [Math.floor(seconds / 86400), Math.floor(seconds / 3600) % 24, Math.floor(seconds / 60) % 60, seconds % 60]
 }
+
+// Avisos del Camp que se cierran durante la sesión. En modo privado sessionStorage falla y vuelven al recargar.
+export function isDismissed(key) {
+  try { return sessionStorage.getItem(key) === '1' } catch { return false }
+}
+
+export function dismiss(key) {
+  try { sessionStorage.setItem(key, '1') } catch {}
+}

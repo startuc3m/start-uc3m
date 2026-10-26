@@ -4,19 +4,15 @@ import React, { useEffect, useRef, useState } from "react";
 import neonpassQRAsset from "../../assets/component_assets/startcamp-neonpass-qr.svg";
 const neonpassQR = typeof neonpassQRAsset === "string" ? neonpassQRAsset : (neonpassQRAsset as { src: string }).src;
 import { advanceLanyardClock, LANYARD_STEP, smoothLanyardAngle } from "./lanyard_motion.js";
-import { getStartcampCountdown, STARTCAMP_END } from "./startcamp_countdown.js";
+import { dismiss, getStartcampCountdown, isDismissed, STARTCAMP_END } from "./startcamp_countdown.js";
 
 const DISMISS_KEY = "startcamp-lanyard-dismissed";
 
 // Only on screens wide enough to hang beside the hero, and only until the event ends.
 function shouldShow() {
         if (Date.now() >= STARTCAMP_END) return false;
-        if (!window.matchMedia("(min-width: 768px)").matches) return false;
-        try {
-                return sessionStorage.getItem(DISMISS_KEY) !== "1";
-        } catch {
-                return true;
-        }
+        if (!window.matchMedia("(min-width: 1024px)").matches) return false;
+        return !isDismissed(DISMISS_KEY);
 }
 
 const EVENT_URL = "https://www.neonpass.es/event/ec3ee828-56d3-40d4-9636-ece85cfd383b";
@@ -64,17 +60,17 @@ export interface StartcampLanyardProps {
 const CSS = `
 .scl-root{
   --scl-ink-faint:#5b6270;
-  --scl-accent:#2e3e91;
-  --scl-accent-dim:#202d72;
+  --scl-accent:var(--color-cobalt);
+  --scl-accent-dim:var(--color-cobalt-deep);
   --scl-card:#f5f7ff;
   --scl-card-2:#e4e9f8;
-  --scl-card-ink:#202e73;
+  --scl-card-ink:var(--color-cobalt-deep);
   --scl-card-soft:#5a6586;
   --scl-card-line:#cbd3ec;
-  --scl-font-display:'Archivo','Arial Narrow',sans-serif;
+  --scl-font-display:'Anton','Arial Narrow',sans-serif;
   --scl-font-mono:'JetBrains Mono','Consolas',monospace;
-  --scl-font-script:'Caveat',cursive;
-  font-family:'Work Sans',system-ui,sans-serif;
+  --scl-font-script:'Permanent Marker',cursive;
+  font-family:'Titillium Web',system-ui,sans-serif;
 }
 .scl-root *{ box-sizing:border-box; }
 .scl-countdown{ width:100%; margin:auto 0 0; padding:10px 0 4px; color:var(--scl-card-ink); font-family:var(--scl-font-mono); pointer-events:none; text-align:center; border-top:1px solid var(--scl-card-line); }
@@ -166,7 +162,7 @@ const CSS = `
 .scl-header{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; }
 .scl-brand{ display:flex; align-items:flex-start; gap:6px; }
 .scl-brand-text{ display:flex; flex-direction:column; }
-.scl-brand-text b{ font-family:var(--scl-font-display); font-weight:800; font-size:25px; letter-spacing:.01em; color:var(--scl-card-ink); line-height:1.1; }
+.scl-brand-text b{ font-family:var(--scl-font-display); font-weight:400; font-size:25px; letter-spacing:.01em; color:var(--scl-card-ink); line-height:1.1; }
 .scl-brand-text small{ font-family:var(--scl-font-mono); font-size:8px; letter-spacing:.09em; text-transform:uppercase; color:var(--scl-card-soft); }
 .scl-pillars{ display:flex; flex-direction:column; align-items:flex-end; gap:1px; }
 .scl-pillars span{ font-family:var(--scl-font-mono); font-size:8px; letter-spacing:.1em; text-transform:none; color:var(--scl-card-soft); }
@@ -185,7 +181,7 @@ const CSS = `
   box-shadow:0 2px 6px rgba(0,0,0,.4), 0 0 0 3px var(--scl-card);
 }
 .scl-verified.scl-incognito{
-  background:linear-gradient(160deg, #5264b0, #202e73);
+  background:linear-gradient(160deg, #5264b0, var(--color-cobalt-deep));
   color:#fff;
   font-family:var(--scl-font-mono);
   font-size:11px;
@@ -193,11 +189,11 @@ const CSS = `
 }
 .scl-verified svg{ width:11px; height:11px; }
 
-.scl-name{ margin:0 0 2px; font-family:var(--scl-font-display); font-weight:800; font-size:18px; color:var(--scl-card-ink); letter-spacing:-.01em; }
+.scl-name{ margin:0 0 2px; font-family:var(--scl-font-display); font-weight:400; font-size:18px; color:var(--scl-card-ink); letter-spacing:-.01em; }
 .scl-role{ margin:0 0 8px; font-size:10px; color:var(--scl-card-soft); font-weight:600; letter-spacing:.09em; text-transform:uppercase; }
 
 .scl-divider{ width:100%; height:1px; background:var(--scl-card-line); margin-bottom:8px; }
-.scl-status-banner{ width:100%; margin:auto 0; padding:10px 0; border-top:1px solid var(--scl-card-line); border-bottom:1px solid var(--scl-card-line); font-family:var(--scl-font-display); font-weight:800; font-size:17px; letter-spacing:.06em; text-align:center; text-transform:uppercase; color:var(--scl-card-ink); }
+.scl-status-banner{ width:100%; margin:auto 0; padding:10px 0; border-top:1px solid var(--scl-card-line); border-bottom:1px solid var(--scl-card-line); font-family:var(--scl-font-display); font-weight:400; font-size:17px; letter-spacing:.06em; text-align:center; text-transform:uppercase; color:var(--scl-card-ink); }
 
 .scl-idrow{ width:100%; display:flex; justify-content:space-between; align-items:center; gap:10px; margin:auto 0; }
 .scl-idrow-labels{ display:flex; flex-direction:column; justify-content:space-between; height:80px; font-family:var(--scl-font-mono); }
@@ -211,8 +207,9 @@ const CSS = `
   padding:10px 12px;
   margin-top:auto;
   border-radius:6px;
-  background:var(--scl-card-ink);
-  color:#ffffff;
+  /* Lima de resalto del brand kit (el de los botones de la web): el único toque de color de la tarjeta */
+  background:var(--color-lime);
+  color:var(--scl-card-ink);
   border:none;
   font-family:var(--scl-font-mono);
   font-size:11.5px;
@@ -227,7 +224,7 @@ const CSS = `
   transition:background .15s ease, transform .1s ease;
   box-shadow:0 3px 8px rgba(0,0,0,.2);
 }
-.scl-join-btn:hover{ background:var(--scl-accent-dim); transform:translateY(-1px); }
+.scl-join-btn:hover{ background:#c6f032; transform:translateY(-1px); }
 .scl-join-btn:focus-visible{ outline:3px solid var(--scl-accent); outline-offset:4px; }
 .scl-join-btn:active{ transform:translateY(1px); }
 
@@ -315,24 +312,16 @@ export function StartcampLanyard({
         const [interacted, setInteracted] = useState(false);
         const [dismissed, setDismissedState] = useState(() => !shouldShow());
         const setDismissed = (value: boolean) => {
-                try {
-                        if (value) sessionStorage.setItem(DISMISS_KEY, "1");
-                } catch {
-                        // Private mode: it only stays closed until reload
-                }
+                if (value) dismiss(DISMISS_KEY);
                 setDismissedState(value);
         };
 
+        // The hero reserves the right column only while the lanyard hangs (see index.astro)
         useEffect(() => {
-                const id = "scl-fonts";
-                if (document.getElementById(id)) return;
-                const link = document.createElement("link");
-                link.id = id;
-                link.rel = "stylesheet";
-                link.href =
-                        "https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Caveat:wght@600;700&display=swap";
-                document.head.appendChild(link);
-        }, []);
+                if (dismissed) delete document.documentElement.dataset.lanyard;
+                else document.documentElement.dataset.lanyard = "";
+        }, [dismissed]);
+
 
         useEffect(() => {
                 const scene = sceneRef.current;
@@ -344,6 +333,8 @@ export function StartcampLanyard({
                 if (!scene || !canvas || !rail || !card || !flipper || !barcodeEl) return;
                 const ctx = canvas.getContext("2d");
                 if (!ctx) return;
+                // The canvas can't read CSS vars, so the ribbon takes the brand token once
+                const ribbon = getComputedStyle(document.documentElement).getPropertyValue("--color-cobalt").trim() || "#333399";
 
                 barcodeEl.innerHTML = "";
                 for (let i = 0; i < 30; i++) {
@@ -526,9 +517,9 @@ export function StartcampLanyard({
                         strokeRibbon("#000000", 16);
                         ctx!.restore();
 
-                        strokeRibbon("#2e3e91", 16);
+                        strokeRibbon(ribbon, 16);
                         strokeRibbon("rgba(0,0,0,0.35)", 16.5);
-                        strokeRibbon("#2e3e91", 13.5);
+                        strokeRibbon(ribbon, 13.5);
                         strokeRibbon("rgba(255,255,255,0.07)", 3);
 
                         const markIdx = Math.floor(points.length * 0.3);

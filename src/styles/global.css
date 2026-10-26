@@ -1,21 +1,27 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
-/* Tokens: colores de la web actual de startuc3m.es, nada inventado.
-   Tipografía: Titillium Web (familia del logo) + JetBrains Mono para etiquetas. */
+/* Tokens: brand kit de Marketing 26/27 (Lidia Wang). Principal #333399; secundarios lavanda,
+   amarillo y cian; lima solo para resaltar. Los tonos oscuros salen del principal.
+   Tipografía: Titillium Web (familia del logo, Sansation) para el texto, Anton (la condensada
+   del kit) para los titulares grandes, Permanent Marker para las notas a mano y
+   JetBrains Mono para etiquetas. */
 @theme {
-  --color-cobalt: #2b3a91;
-  --color-cobalt-deep: #0e1a52;
-  --color-navy: #070d22;
-  --color-ink: #0b1233;
-  --color-paper: #f8fafc;
-  --color-paper-2: #f3f4f6;
-  --color-line: #e0e0e0;
-  --color-lavender: #cddaff;
-  --color-cyan: #4cc9f0;
-  --color-accent: #f6c700;
+  --color-cobalt: #333399;
+  --color-cobalt-deep: #24246f;
+  --color-navy: #13133d;
+  --color-ink: #12123a;
+  --color-paper: #f8f8fc;
+  --color-paper-2: #efeff8;
+  --color-line: #dedeee;
+  --color-lavender: #b6b8e7;
+  --color-cyan: #8ee1e6;
+  --color-accent: #f5e443;
+  --color-lime: #d6ff4f;
 
   --font-sans: "Titillium Web", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Anton", "Titillium Web", ui-sans-serif, sans-serif;
+  --font-marker: "Permanent Marker", "Titillium Web", cursive;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
   --radius-brand: 4px;
@@ -31,14 +37,23 @@ html { scroll-behavior: auto; }
 .eyebrow::after { content: "_"; }
 .mono { @apply font-mono text-[12px] tracking-[0.12em] uppercase; }
 
-/* Titulares */
-.display { @apply font-sans font-bold leading-[0.9] tracking-[-0.03em]; }
+/* Titulares: la condensada del kit, en mayúsculas como en sus piezas */
+.display { @apply font-display font-normal uppercase leading-[0.95] tracking-[0.005em]; }
+
+/* Nota a mano (kit: "acompañar texto") */
+.marker { @apply font-marker leading-tight normal-case tracking-normal; }
+
+/* Texto sobre recuadro de color (kit: pulsar "R" en Canva) */
+/* El fondo solo cubre la franja de las letras: con Anton la caja de línea es muy alta y taparía la línea de arriba. */
+.hl { @apply px-[0.12em] text-ink; background: linear-gradient(transparent 14%, var(--hl, var(--color-cyan)) 14% 94%, transparent 94%); box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.hl-lime { --hl: var(--color-lime); }
 
 /* Botones */
 .btn { @apply inline-flex items-center gap-2.5 rounded-brand px-7 py-4 text-[15px] font-semibold transition-transform duration-200 will-change-transform; }
 .btn:hover { transform: translateY(-1px); }
 .btn-primary { @apply bg-cobalt text-white; }
 .btn-on-blue { @apply bg-white text-cobalt; }
+.btn-lime { @apply bg-lime text-ink; }
 .btn-outline { @apply border border-current; }
 
 .container-x { @apply mx-auto w-full max-w-[1312px] px-4 md:px-8 lg:px-16; }

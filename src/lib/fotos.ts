@@ -10,12 +10,17 @@ export function foto(name: string): ImageMetadata {
   return f.default;
 }
 
-type EventoFotos = { card: string; hero: string; side?: string };
+// gallery: mosaico "Así fue" de la ficha (#64); galleryTitle lo cambia (p. ej. edición anterior).
+type EventoFotos = { card: string; hero: string; side?: string; gallery?: string[]; galleryTitle?: string };
 
 // Fotos por evento (id = nombre del .md). Sin entrada, la ficha usa el hueco de marca.
 // Start Camp 2026 todavía no se ha celebrado: usa fotos de la edición 2025.
 export const eventoFotos: Record<string, EventoFotos> = {
-  'start-camp': { card: 'start-camp-escenario', hero: 'start-camp-grupo', side: 'start-camp-mentor' },
+  'start-camp': {
+    card: 'start-camp-escenario', hero: 'start-camp-grupo', side: 'start-camp-mentor',
+    galleryTitle: 'Así fueron otros Start Camp',
+    gallery: ['start-camp-principio', 'start-camp-sonrisas', 'start-camp-ponencia', 'start-camp-equipo-trabajo', 'start-camp-amigas', 'start-camp-pitch', 'start-camp-mesa', 'start-camp-publico-2', 'start-camp-staff', 'start-camp-portatiles'],
+  },
   'start-camp-2025': { card: 'start-camp-equipos', hero: 'start-camp-escenario', side: 'start-camp-trabajo' },
   'startxperience': { card: 'startxperience-escenario', hero: 'startxperience-escenario' },
   // Fotos del post de Instagram de Start sobre el Buildathon (17/09/2026).

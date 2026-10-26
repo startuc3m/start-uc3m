@@ -1,19 +1,25 @@
 ---
-// Podcast StartTheWeek: pista horizontal pineada que avanza con el scroll (ver lib/motion.ts).
+// Podcast StartTheWeek (#66). Los episodios avanzan en horizontal mientras la sección cruza la
+// pantalla, pero sin pinear: la página nunca deja de bajar (antes se bloqueaba y al terminar
+// parecía que se acababa la web). Las flechas pasan episodio a episodio y en móvil se puede arrastrar.
 // Cada tarjeta es un vídeo de YouTube real: carátula del canal + play; al pulsar carga el iframe.
 import { getCollection } from 'astro:content';
 import { site } from '../lib/site';
 const eps = (await getCollection('podcast')).sort((a, b) => b.data.episode - a.data.episode).slice(0, 4);
 ---
-<section data-podcast-pin class="relative flex h-screen flex-col justify-center overflow-hidden bg-navy pt-[72px] text-white">
+<section data-podcast-pin class="relative overflow-hidden bg-navy py-16 text-white md:py-20">
   <div class="container-x flex items-end justify-between gap-6">
     <div>
       <span class="eyebrow text-lavender">Podcast · StartTheWeek</span>
       <h2 class="display mt-3 text-[clamp(36px,6vw,84px)]" data-split>Conversaciones con gente que construye</h2>
     </div>
-    <a href="/podcast" class="btn btn-on-blue hidden md:inline-flex">Todos los episodios <span class="font-mono">→</span></a>
+    <div class="flex shrink-0 items-center gap-3">
+      <button type="button" class="grid h-12 w-12 place-items-center rounded-full border border-white/50 font-mono text-lg transition-colors hover:border-lime hover:bg-lime hover:text-ink disabled:pointer-events-none disabled:opacity-30 md:h-14 md:w-14" data-podcast-prev aria-label="Episodio anterior">←</button>
+      <button type="button" class="grid h-12 w-12 place-items-center rounded-full border border-white/50 font-mono text-lg transition-colors hover:border-lime hover:bg-lime hover:text-ink disabled:pointer-events-none disabled:opacity-30 md:h-14 md:w-14" data-podcast-next aria-label="Episodio siguiente">→</button>
+      <a href="/podcast" class="btn btn-on-blue ml-2 hidden md:inline-flex">Todos los episodios <span class="font-mono">→</span></a>
+    </div>
   </div>
-  <div data-podcast-track class="mt-10 flex items-stretch gap-8 pl-4 md:pl-16 will-change-transform">
+  <div data-podcast-track class="podcast-track mt-14 flex items-stretch gap-8 overflow-x-auto overscroll-x-contain px-4 pb-6 pt-10 md:px-16">
     {eps.map((e) => {
       const id = e.data.youtubeId;
       return (
@@ -43,7 +49,63 @@ const eps = (await getCollection('podcast')).sort((a, b) => b.data.episode - a.d
     </a>
   </div>
 </section>
+<style>
+  .podcast-track { scrollbar-width: none; }
+  .podcast-track::-webkit-scrollbar { display: none; }
+</style>
 <script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  const section = document.querySelector<HTMLElement>('[data-podcast-pin]');
+  const track = section?.querySelector<HTMLElement>('[data-podcast-track]');
+  if (section && track) {
+    gsap.registerPlugin(ScrollTrigger);
+    const prev = section.querySelector<HTMLButtonElement>('[data-podcast-prev]')!;
+    const next = section.querySelector<HTMLButtonElement>('[data-podcast-next]')!;
+    const max = () => track.scrollWidth - track.clientWidth;
+    const step = () => (track.querySelector('article')?.getBoundingClientRect().width ?? 600) + 32;
+    // Posición = parte que marca el scroll de la página + desplazamiento manual (flechas o arrastre).
+    let progress = 0;
+    let offset = 0;
+    let animating = false;
+    const target = () => gsap.utils.clamp(0, max(), progress * max() + offset);
+    const arrows = () => {
+      prev.disabled = track.scrollLeft <= 2;
+      next.disabled = track.scrollLeft >= max() - 2;
+    };
+    // Mientras el dedo o el ratón están sobre la pista manda el usuario: sin esto, cada scroll vertical de la
+    // página (en móvil se mezclan al deslizar) relanzaba el tween con el offset viejo y deshacía el arrastre.
+    let holding = false;
+    const grab = () => { gsap.killTweensOf(track); animating = false; };
+    const go = (duration: number) => {
+      if (holding) return;
+      animating = true;
+      gsap.to(track, { scrollLeft: target(), duration, ease: 'power3.out', overwrite: true, onUpdate: arrows, onComplete: () => { animating = false; arrows(); } });
+    };
+    // Si mueve la pista a mano, el scroll de la página continúa desde ahí en vez de volver atrás.
+    track.addEventListener('scroll', () => {
+      if (!animating) offset = track.scrollLeft - progress * max();
+      arrows();
+    }, { passive: true });
+    const hold = () => { holding = true; grab(); };
+    const release = () => { holding = false; };
+    track.addEventListener('touchstart', hold, { passive: true });
+    track.addEventListener('mousedown', hold);
+    track.addEventListener('wheel', grab, { passive: true });
+    ['touchend', 'touchcancel', 'mouseup'].forEach((ev) => window.addEventListener(ev, release, { passive: true }));
+    const nudge = (dir: 1 | -1) => {
+      offset = gsap.utils.clamp(0, max(), track.scrollLeft + dir * step()) - progress * max();
+      go(0.7);
+    };
+    prev.addEventListener('click', () => nudge(-1));
+    next.addEventListener('click', () => nudge(1));
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      ScrollTrigger.create({ trigger: section, start: 'top 80%', end: 'bottom 20%', onUpdate: (st) => { progress = st.progress; go(0.5); } });
+    }
+    arrows();
+  }
+
   document.querySelectorAll<HTMLElement>('[data-video]').forEach((box) => {
     const id = box.dataset.video; if (!id) return;
     box.querySelector('[data-play]')?.addEventListener('click', () => {
