@@ -7,6 +7,9 @@ import SponsorTicker from '../components/SponsorTicker.astro';
 import { eventos as publicados, posts as postsPublicados, blogVisible } from '../lib/content';
 import { site } from '../lib/site';
 import ContactForm from '../components/ContactForm.astro';
+import Doodle from '../components/Doodle.astro';
+import HistoriaVideo from '../components/HistoriaVideo.astro';
+import Momentos from '../components/Momentos.astro';
 import StartcampLanyard from '../components/lanyard/startcamp-lanyard';
 const eventos = await publicados();
 const next = eventos.find((e) => e.data.status !== 'pasado');
@@ -16,26 +19,29 @@ const fmtLong = (d: Date) => d.toLocaleDateString('es-ES', { weekday: 'long', da
 const fmtShort = (d: Date) => d.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }).toUpperCase();
 ---
 <Base tone="dark">
-  <StartcampLanyard client:only="react" anchorX="calc(100% - 300px)" scale={1.4} showHint={false} />
-  <!-- HERO: público del Start Camp 2025 fundido con el cobalto -->
+  <StartcampLanyard client:only="react" anchorX="calc(100% - 260px)" scale={1.4} showHint={false} />
+  <!-- HERO: la sala llena del Start Camp, fundida con el azul de Start -->
   <section class="relative overflow-hidden bg-cobalt text-white">
-    <Photo name="start-camp-publico" eager class="absolute inset-0 h-full w-full object-cover object-[center_30%] opacity-80 mix-blend-luminosity" />
+    <Photo name="start-camp-sala-llena" eager class="absolute inset-0 h-full w-full object-cover object-[center_30%] opacity-80 mix-blend-luminosity" />
     <div class="absolute inset-0 bg-gradient-to-b from-cobalt/20 via-cobalt/55 to-cobalt"></div>
-    <div class="container-x relative flex min-h-[calc(100vh-64px)] flex-col justify-end pb-10 md:pb-16 pt-14 md:pt-24">
-      <h1 class="display max-w-6xl text-[clamp(52px,9.5vw,152px)]" data-split>Piensa diferente, actúa con propósito_</h1>
-      <div class="mt-10 grid gap-10 md:grid-cols-[1fr_auto] md:items-end">
-        <div class="max-w-xl">
-          <p class="text-xl leading-snug text-lavender md:text-2xl">La asociación de emprendedores de la Universidad Carlos III de Madrid. Eventos, comunidad y proyectos para pasar de la idea a algo real.</p>
-          <div class="mt-8 flex flex-wrap gap-3">
-            <a href="/socios" class="btn btn-on-blue">Hazte socio <span class="font-mono">→</span></a>
-            <a href="/eventos" class="btn btn-outline text-white">Ver eventos</a>
-            <a href="/patrocina" class="btn btn-outline text-white">Soy una empresa</a>
-          </div>
+    <div class="container-x relative flex flex-col justify-center pb-12 pt-12 md:pb-16 md:pt-16 lg:min-h-[800px]">
+      <!-- A partir de lg la columna derecha queda libre para el lanyard del Start Camp -->
+      <div class="lg:pr-[380px]">
+        <p class="marker -rotate-2 text-[clamp(20px,2.2vw,30px)] text-lime">Stop talking, Start walking</p>
+        <h1 class="display relative mt-3 text-[clamp(56px,8vw,128px)]">
+          Somos gente <span class="hl hl-lime">haciendo cosas</span>_
+          <Doodle name="star" class="absolute -top-12 right-0 hidden w-[clamp(56px,6vw,96px)] rotate-12 md:block lg:-right-6" />
+        </h1>
+        <p class="mt-8 max-w-xl text-xl leading-snug text-lavender md:text-2xl">La asociación de emprendedores de la Universidad Carlos III de Madrid. Proyectos, eventos, empresas, cañas y viajes: ideas que empiezan como una conversación y acaban siendo algo real.</p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a href="/socios#alta" class="btn btn-lime">Hazte socio <span class="font-mono">→</span></a>
+          <a href="/eventos" class="btn btn-outline text-white">Ver eventos</a>
+          <a href="/patrocina" class="btn btn-outline text-white">Soy una empresa</a>
         </div>
-        <div class="flex flex-wrap gap-6 md:gap-10">
-          {[['2013', 'Desde', 2013], ['8', 'Departamentos', 8], ['3.000', 'Comunidad', 3000]].map(([n, l, c]) => (
+        <div class="mt-10 flex flex-wrap gap-6 md:gap-10">
+          {[['', '2013', 'Desde', 2013], ['', '8', 'Departamentos', 8], ['+', '3.000', 'Estudiantes', 3000]].map(([pre, n, l, c]) => (
             <div class="border-l-2 border-white/40 pl-4">
-              <div class="display text-5xl md:text-6xl" data-count={c}>{n}</div>
+              <div class="display text-5xl md:text-6xl">{pre && <span class="text-lime">{pre}</span>}<span data-count={c}>{n}</span></div>
               <div class="eyebrow mt-1 text-lavender/80">{l}</div>
             </div>
           ))}
@@ -48,7 +54,7 @@ const fmtShort = (d: Date) => d.toLocaleDateString('es-ES', { day: '2-digit', mo
 
   <!-- EVENTOS: próximo con imagen + tarjetas con imagen -->
   <section class="bg-navy text-white">
-    <div class="container-x py-14 md:py-24">
+    <div class="container-x py-14 md:py-20">
       {next && <a href={`/eventos/${next.id}`} class="group grid gap-0 overflow-hidden rounded-brand bg-cobalt md:grid-cols-[1.1fr_1fr]" data-reveal>
         <div class="relative aspect-[4/3] md:aspect-auto md:min-h-[480px]" data-img-reveal>
           <Photo class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" name={eventoFotos[next.id]?.card} sizes="(min-width: 768px) 55vw, 100vw" alt={next.data.title} />
@@ -62,7 +68,7 @@ const fmtShort = (d: Date) => d.toLocaleDateString('es-ES', { day: '2-digit', mo
             <ul class="mt-5 flex flex-wrap gap-2">{next.data.tags.slice(0, 3).map((t) => <li class="mono rounded-full border border-white/40 px-3 py-1.5">{t}</li>)}</ul>
           </div>
           <div class="flex items-center justify-between">
-            <span class="btn btn-on-blue">{next.data.external ? 'Reservar plaza' : 'Ver el evento'} <span class="font-mono">→</span></span>
+            <span class="btn btn-lime">{next.data.external ? 'Reservar plaza' : 'Ver el evento'} <span class="font-mono">→</span></span>
             {next.data.seats && <span class="mono text-lavender">{next.data.seats} plazas</span>}
           </div>
         </div>
@@ -74,12 +80,12 @@ const fmtShort = (d: Date) => d.toLocaleDateString('es-ES', { day: '2-digit', mo
 
   <!-- QUIÉNES SOMOS: pilares + hitos + foto -->
   <section class="bg-paper text-ink">
-    <div class="container-x py-16 md:py-28">
+    <div class="container-x py-16 md:py-20">
       <div class="grid gap-10 md:gap-16 md:grid-cols-[1fr_1.4fr]" data-reveal>
         <div>
           <span class="eyebrow text-cobalt">¿Quiénes somos?</span>
-          <h2 class="display mt-4 text-[clamp(36px,4.5vw,64px)] text-cobalt">De la idea a algo real, antes de terminar la carrera.</h2>
-          <p class="mt-6 max-w-md text-lg leading-relaxed">Start UC3M nació en 2013 cuando seis alumnos de ADE se dieron cuenta de que en la universidad faltaba una iniciativa que conectara el talento técnico, de diseño y de negocio.</p>
+          <h2 class="display mt-4 text-[clamp(40px,5vw,72px)] text-cobalt">Todo esto lo hacen <span class="hl">estudiantes</span>_</h2>
+          <p class="mt-6 max-w-md text-lg leading-relaxed">Start UC3M nació en 2013, cuando seis alumnos de ADE vieron que en la Carlos III faltaba algo que juntara a gente técnica, de diseño y de negocio. Hoy organizamos eventos con fundadores, inversores y marcas, y detrás de cada uno hay un equipo de estudiantes de la UC3M.</p>
           <a href="/equipo" class="btn btn-primary mt-8">Conoce al equipo <span class="font-mono">→</span></a>
         </div>
         <div class="grid gap-6 sm:grid-cols-3" data-stagger>
@@ -89,8 +95,9 @@ const fmtShort = (d: Date) => d.toLocaleDateString('es-ES', { day: '2-digit', mo
         </div>
       </div>
       <div class="mt-12 md:mt-20 grid gap-8 md:gap-12 md:grid-cols-[1fr_1fr] md:items-center">
-        <div class="relative aspect-[4/3] overflow-hidden rounded-brand" data-reveal>
-          <Photo class="absolute inset-0 h-[120%] w-full object-cover" name="equipo-grupo" sizes="(min-width: 768px) 50vw, 100vw" alt="Equipo de Start UC3M delante de la pizarra con el logo de Start" />
+        <div class="relative" data-reveal>
+          <p class="marker mb-3 flex items-end gap-2 text-2xl text-cobalt">Así empezó todo <Doodle name="arrow" class="h-12 w-12 translate-y-4 rotate-[25deg]" /></p>
+          <HistoriaVideo class="aspect-video" />
         </div>
         <ol class="border-t border-line" data-stagger>
           {site.milestones.map((m) => (
@@ -106,11 +113,13 @@ const fmtShort = (d: Date) => d.toLocaleDateString('es-ES', { day: '2-digit', mo
     </div>
   </section>
 
+  <Momentos />
+
   <PodcastTrack />
 
   <!-- STARTER -->
   <section class="bg-paper text-ink">
-    <div class="container-x grid gap-8 md:gap-12 py-16 md:py-28 md:grid-cols-[1fr_1.2fr] md:items-end" data-reveal>
+    <div class="container-x grid gap-8 md:gap-12 py-16 md:py-20 md:grid-cols-[1fr_1.2fr] md:items-end" data-reveal>
       <div class="relative aspect-[4/5] overflow-hidden rounded-brand">
         <Photo class="absolute inset-0 h-[120%] w-full object-cover" name="starters-pizarra" sizes="(min-width: 768px) 45vw, 100vw" alt="Starters de Start UC3M delante de la pizarra con el logo de Start" />
       </div>
@@ -126,7 +135,7 @@ const fmtShort = (d: Date) => d.toLocaleDateString('es-ES', { day: '2-digit', mo
   <!-- BLOG -->
   {conBlog && (
   <section class="bg-paper-2 text-ink">
-    <div class="container-x py-14 md:py-24" data-reveal>
+    <div class="container-x py-14 md:py-20" data-reveal>
       <div class="flex items-end justify-between">
         <div><span class="eyebrow text-cobalt">Blog</span><h2 class="display mt-3 text-[clamp(32px,4vw,56px)]">Lo último de la comunidad</h2></div>
         <a href="/blog" class="btn btn-outline hidden md:inline-flex">Ver todos los posts</a>
@@ -146,7 +155,7 @@ const fmtShort = (d: Date) => d.toLocaleDateString('es-ES', { day: '2-digit', mo
 
   <!-- PATROCINA -->
   <section class="bg-cobalt text-white">
-    <div class="container-x grid gap-10 md:gap-16 py-16 md:py-28 md:grid-cols-[1.3fr_1fr] md:items-center" data-reveal>
+    <div class="container-x grid gap-10 md:gap-16 py-16 md:py-20 md:grid-cols-[1.3fr_1fr] md:items-center" data-reveal>
       <div>
         <span class="eyebrow text-lavender">Para empresas</span>
         <h2 class="display mt-4 text-[clamp(40px,6vw,88px)]">Este año puedes estar del otro lado_</h2>
@@ -162,7 +171,7 @@ const fmtShort = (d: Date) => d.toLocaleDateString('es-ES', { day: '2-digit', mo
   </section>
   <!-- CTA FINAL + FORMULARIO -->
   <section class="bg-paper text-ink">
-    <div class="container-x grid gap-8 md:gap-12 py-16 md:py-28 md:grid-cols-[1fr_1.2fr]">
+    <div class="container-x grid gap-8 md:gap-12 py-16 md:py-20 md:grid-cols-[1fr_1.2fr]">
       <div data-reveal>
         <span class="eyebrow text-cobalt">Hablemos</span>
         <h2 class="display mt-4 text-[clamp(40px,6vw,88px)] text-cobalt">¿Construimos algo juntos?</h2>

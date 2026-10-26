@@ -5,7 +5,7 @@ import { site } from '../lib/site';
 import { blogVisible } from '../lib/content';
 const conBlog = await blogVisible();
 const cols = [
-  { h: 'Web', items: [['Hazte socio', '/socios'], ['Eventos', '/eventos'], ['Podcast', '/podcast'], ['Equipo', '/equipo'], ...(conBlog ? [['Blog', '/blog']] : []), ['Recursos', '/recursos'], ['Links', '/links']] },
+  { h: 'Web', items: [['Hazte socio', '/socios#alta'], ['Eventos', '/eventos'], ['Podcast', '/podcast'], ['Equipo', '/equipo'], ...(conBlog ? [['Blog', '/blog']] : []), ['Recursos', '/recursos'], ['Links', '/links']] },
   { h: 'Empresas', items: [['Patrocina', '/patrocina'], ['Patrocinadores', '/patrocinadores'], ['Contacto', '/contacto']] },
 ];
 ---

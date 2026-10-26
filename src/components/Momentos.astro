@@ -1,0 +1,50 @@
+---
+// "Así se vive Start": muro de momentos con personas (brand kit: más personas, feed cercano).
+// Polaroids algo giradas con cinta y pie a mano, como el collage de la portada del kit.
+// Fotos del Drive de Marketing (FOTOS EVENTOS), en src/assets/fotos.
+import Photo from './Photo.astro';
+import Doodle from './Doodle.astro';
+import { site } from '../lib/site';
+const momentos = [
+  { foto: 'onboarding-manos', pie: 'Onboarding 26', alt: 'Starters levantando la mano en el onboarding de 2026' },
+  { foto: 'start-camp-selfie', pie: 'Start Camp', alt: 'Cuatro asistentes haciéndose un selfie en el Start Camp' },
+  { foto: 'casa-rural', pie: 'Casa rural', alt: 'Foto de grupo del equipo de Start en la casa rural' },
+  { foto: 'start-camp-staff', pie: 'El staff del Camp', alt: 'Staff de Start con camiseta azul recibiendo a los asistentes del Start Camp' },
+  { foto: 'cena-navidad-grupo', pie: 'Cena de Navidad', alt: 'El equipo de Start en la cena de Navidad' },
+  { foto: 'start-camp-portatiles', pie: 'Construyendo', alt: 'Equipo trabajando con portátiles durante el Start Camp' },
+  { foto: 'startxperience-equipo', pie: 'StartXperience', alt: 'El equipo de Start en el escenario de StartXperience' },
+  { foto: 'start-camp-asistentes', pie: 'Start Camp', alt: 'Dos asistentes sonriendo en el Start Camp' },
+];
+const giros = ['-rotate-3', 'rotate-2', '-rotate-1', 'rotate-3', '-rotate-2', 'rotate-1', '-rotate-3', 'rotate-2'];
+---
+<section class="overflow-hidden bg-cobalt text-white">
+  <div class="container-x py-16 md:py-20">
+    <div class="flex flex-wrap items-end justify-between gap-6" data-reveal>
+      <div>
+        <span class="eyebrow text-lavender">Momentos</span>
+        <h2 class="display relative mt-4 text-[clamp(44px,6vw,96px)]">Así se vive <span class="hl hl-lime">Start</span>_</h2>
+      </div>
+      <p class="marker max-w-xs rotate-2 text-xl text-lime md:text-2xl">Eventos, viajes, cañas… y mucha gente con ganas de hacer cosas</p>
+    </div>
+    <ul class="momentos mt-12 flex snap-x snap-mandatory gap-6 overflow-x-auto pb-6 pt-4 md:grid md:grid-cols-4 md:gap-8 md:overflow-visible md:pb-0" data-stagger>
+      {momentos.map((m, i) => (
+        <li class={`relative w-[68vw] shrink-0 snap-center bg-white p-2.5 pb-12 text-ink shadow-2xl transition-transform duration-300 hover:rotate-0 hover:scale-[1.03] md:w-auto ${giros[i]}`}>
+          <span class="absolute -top-3 left-1/2 h-6 w-20 -translate-x-1/2 rotate-[-4deg] bg-lavender/80" aria-hidden="true"></span>
+          <div class="relative aspect-[4/5] overflow-hidden bg-paper-2">
+            <Photo name={m.foto} alt={m.alt} sizes="(min-width: 768px) 25vw, 68vw" class="absolute inset-0 h-full w-full object-cover" />
+          </div>
+          <span class="marker absolute inset-x-0 bottom-3 text-center text-lg text-cobalt">{m.pie}</span>
+        </li>
+      ))}
+    </ul>
+    <div class="mt-10 flex flex-wrap items-center gap-4" data-reveal>
+      <a href={site.social.instagram} target="_blank" rel="noopener" class="btn btn-lime">Más en Instagram <span class="font-mono">↗</span></a>
+      <a href={site.social.tiktok} target="_blank" rel="noopener" class="btn btn-outline text-white">TikTok <span class="font-mono">↗</span></a>
+      <Doodle name="burst" class="h-12 w-12 text-lime" />
+    </div>
+  </div>
+</section>
+<style>
+  .momentos { scrollbar-width: none; }
+  .momentos::-webkit-scrollbar { display: none; }
+</style>
