@@ -100,6 +100,7 @@ const CSS = `
   transform-origin:50% 20px;
   will-change:transform;
   pointer-events:auto;
+  visibility:hidden; /* until the first frame positions it */
 }
 .scl-card:active{ cursor:grabbing; }
 
@@ -333,9 +334,10 @@ export function StartcampLanyard({
                         const rect = scene!.getBoundingClientRect();
                         const v = anchorX.trim();
                         const calcMatch = v.match(/^calc\(\s*100%\s*-\s*([\d.]+)px\s*\)$/);
-                        if (calcMatch) return rect.width - parseFloat(calcMatch[1]);
-                        if (v.endsWith("%")) return rect.width * (parseFloat(v) / 100);
-                        return parseFloat(v);
+                        const x = calcMatch ? rect.width - parseFloat(calcMatch[1]) : v.endsWith("%") ? rect.width * (parseFloat(v) / 100) : parseFloat(v);
+                        // Keep the whole badge on screen on narrow viewports.
+                        const half = (card!.offsetWidth * scale) / 2 + 8;
+                        return Math.max(half, Math.min(rect.width - half, x));
                 }
 
                 const anchor = { x: resolveAnchorX(), y: anchorY };
@@ -368,6 +370,30 @@ export function StartcampLanyard({
                 const previousPoints = points.map(p => ({ x: p.x, y: p.y }));
                 const renderPoints = points.map(p => ({ x: p.x, y: p.y }));
                 let cardAngle = 0;
+
+                // Entrance: the badge free-falls from above the viewport and the ribbon catches it.
+                // The offset only shifts the rendered ribbon and card; the physics points already hang at rest.
+                const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+                const dropHeight = anchor.y + REST_LENGTH + card.offsetHeight * scale + 40;
+                const drop = { active: !reduceMotion, offset: reduceMotion ? 0 : -dropHeight, previous: reduceMotion ? 0 : -dropHeight, velocity: 0 };
+
+                function updateDrop() {
+                        drop.previous = drop.offset;
+                        // Wait for the site's intro curtain (Base.astro) so the fall is actually seen.
+                        if (!drop.active || document.documentElement.classList.contains("is-loading")) return;
+                        drop.velocity += GRAVITY;
+                        drop.offset += drop.velocity;
+                        if (drop.offset < 0) return;
+                        drop.offset = 0;
+                        drop.active = false;
+                        // Hand the landing speed to the ribbon so it stretches, bounces and swings a little.
+                        const impulse = Math.min(drop.velocity * 0.5, 12);
+                        points.forEach((p, i) => {
+                                const t = i / (points.length - 1);
+                                p.oldy = p.y - impulse * t;
+                                p.oldx = p.x + 3 * t;
+                        });
+                }
 
                 let dragging = false;
                 let flipped = false;
@@ -537,6 +563,7 @@ export function StartcampLanyard({
                         const angle = Math.atan2(last.y - prev.y, last.x - prev.x) - Math.PI / 2;
                         cardAngle = smoothLanyardAngle(cardAngle, angle, elapsed);
                         card!.style.transform = `translate3d(${last.x}px, ${last.y - 20}px, 0) translateX(-50%) rotate(${cardAngle}rad) scale(${scale})`;
+                        card!.style.visibility = "visible";
                 }
 
                 function updateTiltAndSheen(elapsed: number) {
@@ -584,11 +611,13 @@ export function StartcampLanyard({
                                 });
                                 updatePoints();
                                 applyConstraints();
+                                updateDrop();
                         }
                         // Interpolate both the ribbon and badge between fixed physics steps.
+                        const dropOffset = drop.previous + (drop.offset - drop.previous) * blend;
                         points.forEach((p, i) => {
                                 renderPoints[i].x = previousPoints[i].x + (p.x - previousPoints[i].x) * blend;
-                                renderPoints[i].y = previousPoints[i].y + (p.y - previousPoints[i].y) * blend;
+                                renderPoints[i].y = previousPoints[i].y + (p.y - previousPoints[i].y) * blend + (i === 0 ? 0 : dropOffset);
                         });
                         drawRope();
                         drawClip();
@@ -600,6 +629,7 @@ export function StartcampLanyard({
                 const onCardDown = (e: PointerEvent) => {
                         // Prevent drag initiation when clicking buttons or links
                         if ((e.target as HTMLElement).closest("a, button")) return;
+                        if (drop.active) return;
                         e.preventDefault();
                         dragging = true;
                         setInteracted(true);
