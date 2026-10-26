@@ -7,6 +7,7 @@ import SponsorTicker from '../components/SponsorTicker.astro';
 import { eventos as publicados, posts as postsPublicados, blogVisible } from '../lib/content';
 import { site } from '../lib/site';
 import ContactForm from '../components/ContactForm.astro';
+import StartcampLanyard from '../components/lanyard/startcamp-lanyard';
 const eventos = await publicados();
 const next = eventos.find((e) => e.data.status !== 'pasado');
 const conBlog = await blogVisible();
@@ -15,6 +16,7 @@ const fmtLong = (d: Date) => d.toLocaleDateString('es-ES', { weekday: 'long', da
 const fmtShort = (d: Date) => d.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }).toUpperCase();
 ---
 <Base tone="dark">
+  <StartcampLanyard client:only="react" anchorX="calc(100% - 150px)" showHint={false} />
   <!-- HERO: público del Start Camp 2025 fundido con el cobalto -->
   <section class="relative overflow-hidden bg-cobalt text-white">
     <Photo name="start-camp-publico" eager class="absolute inset-0 h-full w-full object-cover object-[center_30%] opacity-80 mix-blend-luminosity" />
