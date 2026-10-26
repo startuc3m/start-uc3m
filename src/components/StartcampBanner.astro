@@ -1,0 +1,48 @@
+---
+// Banner del Start Camp (#61) encima del menú, en todas las páginas y tamaños: cuenta atrás en vivo
+// e inscripción directa a Neonpass. Se va con el scroll (el menú sí es fijo), se puede cerrar
+// durante la sesión y desaparece al acabar el evento. Fuera de la propia ficha del Camp.
+import { getEntry } from 'astro:content';
+const camp = await getEntry('eventos', 'start-camp');
+const url = Astro.url.pathname.startsWith('/eventos/start-camp') ? undefined : camp?.data.external;
+---
+{url && (
+  <div class="relative z-50 bg-lime text-ink" data-camp-banner hidden>
+    <div class="container-x flex min-h-11 items-center gap-3 py-1.5 md:gap-6">
+      <a href={url} target="_blank" rel="noopener" class="flex min-w-0 flex-1 items-center gap-3 md:gap-6">
+        <span class="display shrink-0 text-[18px] md:text-[22px]">Start Camp 2026</span>
+        <span class="mono hidden text-[11px] lg:inline">7 y 8 nov · Mad Tech Campus</span>
+        <span class="flex items-baseline gap-1.5 font-mono text-[13px] font-medium tabular-nums md:text-[15px]" role="timer" aria-label="Tiempo hasta el Start Camp"><span class="whitespace-nowrap" data-camp-clock></span><span class="hidden whitespace-nowrap sm:inline" data-camp-sec></span></span>
+        <span class="ml-auto hidden shrink-0 rounded-brand bg-ink px-4 py-1.5 text-[13px] font-semibold text-lime sm:inline-flex">Reserva tu plaza ↗</span>
+        <span class="ml-auto shrink-0 text-[13px] font-semibold underline underline-offset-4 sm:hidden">Reservar ↗</span>
+      </a>
+      <button type="button" class="shrink-0 px-1 font-mono text-lg leading-none" aria-label="Cerrar el aviso del Start Camp" data-camp-banner-close>×</button>
+    </div>
+  </div>
+)}
+<script>
+  import { STARTCAMP_END, getStartcampCountdown } from './lanyard/startcamp_countdown.js';
+  const banner = document.querySelector<HTMLElement>('[data-camp-banner]');
+  const KEY = 'startcamp-banner-dismissed';
+  let dismissed = false;
+  try { dismissed = sessionStorage.getItem(KEY) === '1'; } catch {}
+  if (banner && !dismissed && Date.now() < STARTCAMP_END) {
+    banner.hidden = false;
+    const clock = banner.querySelector<HTMLElement>('[data-camp-clock]')!;
+    const sec = banner.querySelector<HTMLElement>('[data-camp-sec]')!; // los segundos no caben en móvil
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const tick = () => {
+      const [d, h, m, s] = getStartcampCountdown();
+      const left = d + h + m + s > 0;
+      clock.textContent = left ? `${d}d ${pad(h)}h ${pad(m)}m` : '¡Hoy!';
+      sec.textContent = left ? ` ${pad(s)}s` : '';
+    };
+    tick();
+    const timer = setInterval(tick, 1000);
+    banner.querySelector('[data-camp-banner-close]')!.addEventListener('click', () => {
+      banner.hidden = true;
+      clearInterval(timer);
+      try { sessionStorage.setItem(KEY, '1'); } catch {}
+    });
+  }
+</script>

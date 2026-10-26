@@ -1,5 +1,6 @@
 ---
 import Photo from '../../components/Photo.astro';
+import Doodle from '../../components/Doodle.astro';
 import { eventoFotos } from '../../lib/fotos';
 import Base from '../../layouts/Base.astro';
 import { render } from 'astro:content';
@@ -54,7 +55,7 @@ const eventJsonLd = {
       </dl>
       <div class="flex flex-wrap gap-3 md:justify-end">
           {open && (e.data.external
-            ? <a href={e.data.external} target="_blank" rel="noopener" class="btn btn-on-blue">Reservar plaza <span class="font-mono">↗</span></a>
+            ? <a href={e.data.external} target="_blank" rel="noopener" class="btn btn-lime">Reservar plaza <span class="font-mono">↗</span></a>
             : <a href="#inscripcion" class="btn btn-on-blue">Inscripción <span class="font-mono">→</span></a>)}
           {!past && <a href={icsHref} download={`${e.id}.ics`} class="btn btn-outline text-white">Añadir al calendario <span class="font-mono">＋</span></a>}
           {past && <a href="/eventos" class="btn btn-outline text-white">Ver próximos eventos</a>}
@@ -109,6 +110,24 @@ const eventJsonLd = {
       <div class="relative aspect-[4/3] overflow-hidden rounded-brand" data-reveal><Photo name={fotos?.side} sizes="(min-width: 768px) 50vw, 100vw" class="absolute inset-0 h-[120%] w-full object-cover" /></div>
     )}
   </section>
+  <!-- GALERÍA: fotos reales del evento (#64), en mosaico -->
+  {fotos?.gallery && fotos.gallery.length > 0 && (
+    <section class="bg-paper-2">
+      <div class="container-x py-12 md:py-20">
+        <div class="flex items-end justify-between gap-6" data-reveal>
+          <h2 class="display text-[clamp(32px,5vw,64px)] text-cobalt">{fotos.galleryTitle ?? 'Así fue'}_</h2>
+          <Doodle name="burst" class="hidden h-14 w-14 text-cobalt md:block" />
+        </div>
+        <ul class="mt-8 grid auto-rows-[160px] grid-cols-2 gap-3 md:auto-rows-[220px] md:grid-cols-4" data-stagger>
+          {fotos.gallery.map((g, i) => (
+            <li class={`relative overflow-hidden rounded-brand ${i % 5 === 0 ? 'col-span-2 row-span-2' : ''}`}>
+              <Photo name={g} sizes={i % 5 === 0 ? '(min-width: 768px) 50vw, 100vw' : '(min-width: 768px) 25vw, 50vw'} class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 hover:scale-105" />
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )}
   {open ? (
     <section id="inscripcion" class="bg-navy text-white">
       <div class="container-x flex flex-col gap-6 py-12 md:py-20 md:flex-row md:items-end md:justify-between" data-reveal>
@@ -118,7 +137,7 @@ const eventJsonLd = {
           <p class="mt-4 max-w-xl text-lavender">{e.data.external ? platform === 'Luma' ? 'La inscripción se hace en Luma. Si no tienes equipo, te lo montamos allí.' : `Las entradas se venden en ${platform}.` : 'Abrimos la inscripción muy pronto. Síguenos en Instagram para enterarte.'}</p>
         </div>
         {e.data.external
-          ? <a href={e.data.external} target="_blank" rel="noopener" class="btn btn-on-blue">{platform === 'Luma' ? 'Inscribirme en Luma' : `Comprar entrada en ${platform}`} <span class="font-mono">↗</span></a>
+          ? <a href={e.data.external} target="_blank" rel="noopener" class="btn btn-lime">{platform === 'Luma' ? 'Inscribirme en Luma' : `Comprar entrada en ${platform}`} <span class="font-mono">↗</span></a>
           : <a href={site.social.instagram} target="_blank" rel="noopener" class="btn btn-outline text-white">Instagram de Start <span class="font-mono">↗</span></a>}
       </div>
     </section>

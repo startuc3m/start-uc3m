@@ -1,0 +1,47 @@
+---
+// Start Camp en móvil y tablet (#61): barra fija abajo con cuenta atrás e inscripción directa a Neonpass.
+// Desde 1024 px ya está el lanyard en el hero. Sale al bajar, cuando el banner de arriba ya no se ve.
+// Desaparece al acabar el evento y se puede cerrar (sesión).
+import { getEntry } from 'astro:content';
+const camp = await getEntry('eventos', 'start-camp');
+// Fuera de /socios (taparía el botón de pago) y de la propia ficha del Camp, donde ya está la inscripción.
+const path = Astro.url.pathname;
+const url = path.startsWith('/socios') || path.startsWith('/eventos/start-camp') ? undefined : camp?.data.external;
+---
+{url && (
+  <div class="fixed inset-x-3 z-40 flex items-center gap-3 rounded-brand bg-navy/95 p-2 pl-4 text-white shadow-2xl backdrop-blur lg:hidden" style="bottom: calc(12px + env(safe-area-inset-bottom, 0px))" data-camp-bar hidden>
+    <div class="min-w-0 flex-1 leading-tight">
+      <span class="display block text-[19px]">Start Camp 2026</span>
+      <span class="mono block text-[11px] text-lavender" data-camp-left>7 y 8 de noviembre</span>
+    </div>
+    <a href={url} target="_blank" rel="noopener" class="btn btn-lime shrink-0 px-4 py-3 text-[14px]">Reserva plaza</a>
+    <button type="button" class="px-1 font-mono text-lg text-lavender" aria-label="Cerrar" data-camp-close>×</button>
+  </div>
+)}
+<script>
+  import { STARTCAMP_END, getStartcampCountdown } from './lanyard/startcamp_countdown.js';
+  const bar = document.querySelector<HTMLElement>('[data-camp-bar]');
+  const KEY = 'startcamp-bar-dismissed';
+  let dismissed = false;
+  try { dismissed = sessionStorage.getItem(KEY) === '1'; } catch {}
+  if (bar && !dismissed && Date.now() < STARTCAMP_END) {
+    let closed = false;
+    const show = () => { bar.hidden = closed || window.scrollY < 500; };
+    show();
+    window.addEventListener('scroll', show, { passive: true });
+    const left = bar.querySelector<HTMLElement>('[data-camp-left]')!;
+    const tick = () => {
+      const [d, h, m] = getStartcampCountdown();
+      if (d + h + m > 0) left.textContent = d > 0 ? `Empieza en ${d} d ${h} h` : `Empieza en ${h} h ${m} min`;
+    };
+    tick();
+    const timer = setInterval(tick, 30_000);
+    bar.querySelector('[data-camp-close]')!.addEventListener('click', () => {
+      closed = true;
+      bar.hidden = true;
+      clearInterval(timer);
+      window.removeEventListener('scroll', show);
+      try { sessionStorage.setItem(KEY, '1'); } catch {}
+    });
+  }
+</script>
