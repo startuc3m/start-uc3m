@@ -42,6 +42,7 @@ export interface StartcampLanyardProps {
         instagramUrl?: string;
         anchorX?: string;
         anchorY?: number;
+        scale?: number;
         zIndex?: number;
         showHint?: boolean;
         className?: string;
@@ -63,12 +64,12 @@ const CSS = `
   font-family:'Work Sans',system-ui,sans-serif;
 }
 .scl-root *{ box-sizing:border-box; }
-.scl-countdown{ width:100%; margin:auto 0; padding:12px 0; color:var(--scl-card-ink); font-family:var(--scl-font-mono); pointer-events:none; text-align:center; }
+.scl-countdown{ width:100%; margin:auto 0 0; padding:10px 0 4px; color:var(--scl-card-ink); font-family:var(--scl-font-mono); pointer-events:none; text-align:center; border-top:1px solid var(--scl-card-line); }
 .scl-countdown-units{ display:grid; grid-template-columns:repeat(4,1fr); }
 .scl-countdown-units>span{ position:relative; display:flex; flex-direction:column; gap:2px; }
-.scl-countdown-units>span:not(:last-child)::after{ content:':'; position:absolute; right:-3px; top:0; font-size:21px; line-height:1; }
-.scl-countdown-units b{ font-size:21px; line-height:1; font-variant-numeric:tabular-nums; }
-.scl-countdown-units small{ font-size:6px; letter-spacing:1px; color:var(--scl-card-soft); }
+.scl-countdown-units>span:not(:last-child)::after{ content:':'; position:absolute; right:-3px; top:0; font-size:25px; line-height:1; }
+.scl-countdown-units b{ font-size:25px; line-height:1; font-variant-numeric:tabular-nums; }
+.scl-countdown-units small{ font-size:7.5px; letter-spacing:1px; color:var(--scl-card-soft); }
 
 .scl-stage{
   position:fixed;
@@ -150,10 +151,10 @@ const CSS = `
 .scl-header{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; }
 .scl-brand{ display:flex; align-items:flex-start; gap:6px; }
 .scl-brand-text{ display:flex; flex-direction:column; }
-.scl-brand-text b{ font-family:var(--scl-font-display); font-weight:800; font-size:21px; letter-spacing:.01em; color:var(--scl-card-ink); line-height:1.2; }
-.scl-brand-text small{ font-family:var(--scl-font-mono); font-size:6.3px; letter-spacing:.09em; text-transform:uppercase; color:var(--scl-card-soft); }
+.scl-brand-text b{ font-family:var(--scl-font-display); font-weight:800; font-size:25px; letter-spacing:.01em; color:var(--scl-card-ink); line-height:1.1; }
+.scl-brand-text small{ font-family:var(--scl-font-mono); font-size:8px; letter-spacing:.09em; text-transform:uppercase; color:var(--scl-card-soft); }
 .scl-pillars{ display:flex; flex-direction:column; align-items:flex-end; gap:1px; }
-.scl-pillars span{ font-family:var(--scl-font-mono); font-size:7px; letter-spacing:.1em; text-transform:none; color:var(--scl-card-soft); }
+.scl-pillars span{ font-family:var(--scl-font-mono); font-size:8px; letter-spacing:.1em; text-transform:none; color:var(--scl-card-soft); }
 .scl-pillars i{ width:16px; height:2px; background:var(--scl-card-ink); margin-top:3px; }
 
 .scl-photo{
@@ -181,24 +182,25 @@ const CSS = `
 .scl-role{ margin:0 0 8px; font-size:10px; color:var(--scl-card-soft); font-weight:600; letter-spacing:.09em; text-transform:uppercase; }
 
 .scl-divider{ width:100%; height:1px; background:var(--scl-card-line); margin-bottom:8px; }
+.scl-status-banner{ width:100%; margin:auto 0; padding:10px 0; border-top:1px solid var(--scl-card-line); border-bottom:1px solid var(--scl-card-line); font-family:var(--scl-font-display); font-weight:800; font-size:17px; letter-spacing:.06em; text-align:center; text-transform:uppercase; color:var(--scl-card-ink); }
 
-.scl-idrow{ width:100%; display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:10px; }
-.scl-idrow-labels{ display:grid; grid-template-rows:repeat(4,1fr); height:80px; align-items:center; font-family:var(--scl-font-mono); }
-.scl-idrow-labels div{ display:flex; gap:4px; align-items:baseline; }
-.scl-idrow-labels span{ width:36px; flex-shrink:0; font-size:6.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--scl-card-soft); }
-.scl-idrow-labels b{ font-size:8px; font-weight:600; color:var(--scl-card-ink); white-space:nowrap; }
+.scl-idrow{ width:100%; display:flex; justify-content:space-between; align-items:center; gap:10px; margin:auto 0; }
+.scl-idrow-labels{ display:flex; flex-direction:column; justify-content:space-between; height:80px; font-family:var(--scl-font-mono); }
+.scl-idrow-labels div{ display:flex; flex-direction:column; gap:1px; }
+.scl-idrow-labels span{ font-size:7.5px; line-height:1; letter-spacing:.08em; text-transform:uppercase; color:var(--scl-card-soft); }
+.scl-idrow-labels b{ font-size:11px; font-weight:700; color:var(--scl-card-ink); white-space:nowrap; line-height:1.1; }
 
 .scl-join-btn{
   width:100%;
   text-decoration:none;
-  padding:7px 10px;
-  margin-top:2px;
+  padding:10px 12px;
+  margin-top:auto;
   border-radius:6px;
   background:var(--scl-card-ink);
   color:#ffffff;
   border:none;
   font-family:var(--scl-font-mono);
-  font-size:10.5px;
+  font-size:11.5px;
   font-weight:700;
   letter-spacing:.06em;
   text-transform:uppercase;
@@ -284,6 +286,7 @@ export function StartcampLanyard({
         instagramUrl,
         anchorX = "50%",
         anchorY = 6,
+        scale = 1.15,
         zIndex = 60,
         showHint = false,
         className = "",
@@ -533,7 +536,7 @@ export function StartcampLanyard({
                         const prev = renderPoints[renderPoints.length - 2];
                         const angle = Math.atan2(last.y - prev.y, last.x - prev.x) - Math.PI / 2;
                         cardAngle = smoothLanyardAngle(cardAngle, angle, elapsed);
-                        card!.style.transform = `translate3d(${last.x}px, ${last.y - 20}px, 0) translateX(-50%) rotate(${cardAngle}rad)`;
+                        card!.style.transform = `translate3d(${last.x}px, ${last.y - 20}px, 0) translateX(-50%) rotate(${cardAngle}rad) scale(${scale})`;
                 }
 
                 function updateTiltAndSheen(elapsed: number) {
@@ -688,7 +691,7 @@ export function StartcampLanyard({
                         window.removeEventListener("resize", onResize);
                         document.removeEventListener("pointerout", onPointerOut);
                 };
-        }, [anchorX, anchorY, isLoggedIn, dismissed]);
+        }, [anchorX, anchorY, scale, isLoggedIn, dismissed]);
 
 	if (dismissed) return null;
 
@@ -722,51 +725,7 @@ export function StartcampLanyard({
                                                                         <i />
                                                                 </div>
                                                         </div>
-
-                                                        {/* Photo: Custom SVG avatar or Incognito silhouette */}
-                                                        <div className="scl-photo">
-                                                                {isLoggedIn ? (
-                                                                        <svg viewBox="0 0 182 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-                                                                                <defs>
-                                                                                        <linearGradient id="scl-faceGrad" x1="0" y1="0" x2="1" y2="1">
-                                                                                                <stop offset="0" stopColor="#8fb0ff" />
-                                                                                                <stop offset="1" stopColor="#3f5fd8" />
-                                                                                        </linearGradient>
-                                                                                        <pattern id="scl-dots" width="6" height="6" patternUnits="userSpaceOnUse">
-                                                                                                <circle cx="3" cy="3" r="0.8" fill="#ffffff" opacity="0.35" />
-                                                                                        </pattern>
-                                                                                </defs>
-                                                                                <rect width="182" height="100" fill="#142052" />
-                                                                                <circle cx="91" cy="62" r="46" fill="url(#scl-faceGrad)" />
-                                                                                <path d="M42,46 Q91,-18 140,46 L140,66 Q91,38 42,66 Z" fill="#1c2029" />
-                                                                                <circle cx="72" cy="62" r="3.6" fill="#142052" />
-                                                                                <circle cx="110" cy="62" r="3.6" fill="#142052" />
-                                                                                <path d="M75,78 Q91,86 107,78" stroke="#12151c" strokeWidth="2.8" fill="none" strokeLinecap="round" />
-                                                                                <rect width="182" height="100" fill="url(#scl-dots)" />
-                                                                        </svg>
-                                                                ) : (
-                                                                        <svg viewBox="0 0 182 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-                                                                                <rect width="182" height="100" fill="#202e73" />
-                                                                                <circle cx="91" cy="46" r="22" fill="#5264b0" />
-                                                                                <path d="M46,96 Q91,62 136,96 Z" fill="#5264b0" />
-                                                                                <rect x="73" y="42" width="36" height="8" rx="4" fill="#142052" />
-                                                                        </svg>
-                                                                )}
-
-                                                                <span className={`scl-verified ${!isLoggedIn ? "scl-incognito" : ""}`}>
-                                                                        {isLoggedIn ? (
-                                                                                <svg viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
-                                                                                        <path d="M4 12l5 5L20 6" />
-                                                                                </svg>
-                                                                        ) : (
-                                                                                "?"
-                                                                        )}
-                                                                </span>
-                                                        </div>
-
-                                                        <h2 className="scl-name" style={!isLoggedIn ? { marginBottom: 8 } : undefined}>{isLoggedIn ? name : "Aún no registrado"}</h2>
-							{isLoggedIn && <p className="scl-role">{role}</p>}
-                                                        <div className="scl-divider" />
+							<div className="scl-status-banner">PLAZAS ABIERTAS</div>
 
                                                         <div className="scl-idrow">
                                                                 <div className="scl-idrow-labels">
@@ -781,10 +740,6 @@ export function StartcampLanyard({
                                                                         <div>
                                                                                 <span>Fecha</span>
                                                                                 <b>{isLoggedIn ? validThru : "07/08 NOVIEMBRE"}</b>
-                                                                        </div>
-                                                                        <div>
-                                                                                <span>Status</span>
-                                                                                <b>PLAZAS ABIERTAS</b>
                                                                         </div>
                                                                 </div>
                                                                 <a className="scl-qr" href={EVENT_URL} target="_blank" rel="noopener noreferrer"><img src={neonpassQR} alt="QR de reserva de STARTCAMP en Neonpass" width="80" height="80" /></a>
