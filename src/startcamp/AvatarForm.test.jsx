@@ -88,12 +88,57 @@ describe('Entrar', () => {
     expect(api.pedirEnlace).toHaveBeenCalledWith('ana@uc3m.es');
   });
 
-  test('correo que no está: «No encontramos tu entrada…»', async () => {
-    api.pedirEnlace.mockRejectedValue(new ApiError('CORREO_NO_ENCONTRADO'));
-    render(<AvatarForm />);
-    userEvent.type(await screen.findByLabelText('Tu correo'), 'nadie@uc3m.es');
-    userEvent.click(screen.getByRole('button', { name: 'Enviar enlace' }));
-    expect(await screen.findByRole('alert')).toHaveTextContent(MENSAJES.correoNoEncontrado);
+  describe('correo que no está', () => {
+    async function noEncontrado(correo = 'nadie@uc3m.es') {
+      api.pedirEnlace.mockRejectedValue(new ApiError('CORREO_NO_ENCONTRADO'));
+      render(<AvatarForm />);
+      userEvent.type(await screen.findByLabelText('Tu correo'), correo);
+      userEvent.click(screen.getByRole('button', { name: 'Enviar enlace' }));
+      return screen.findByRole('heading', { name: 'No encontramos tu entrada_' });
+    }
+
+    test('título con el foco, el correo en negrita y las dos causas con su solución', async () => {
+      const titulo = await noEncontrado();
+      expect(titulo).toHaveFocus();
+      const correo = screen.getByText('nadie@uc3m.es');
+      expect(correo.tagName).toBe('STRONG');
+      const causas = within(screen.getByRole('list')).getAllByRole('listitem');
+      expect(causas).toHaveLength(2);
+      expect(causas[0]).toHaveTextContent('Usaste otro correo en NeonPass.');
+      expect(causas[0]).toHaveTextContent('Búscalo en el correo de confirmación de tu entrada y prueba con ese.');
+      expect(causas[1]).toHaveTextContent('Has comprado hace poco.');
+      expect(causas[1]).toHaveTextContent('Cargamos las entradas una vez al día; vuelve a intentarlo mañana.');
+      expect(
+        screen.getByText(/¿Sigue sin funcionar\? Escríbenos a/).textContent.replace(/\s+/g, ' ')
+      ).toBe(
+        '¿Sigue sin funcionar? Escríbenos a startuc3m@gmail.com con el nombre y el correo de tu entrada y lo miramos.'
+      );
+      expect(screen.queryByLabelText('Tu correo')).not.toBeInTheDocument();
+    });
+
+    test('el correo se pinta como texto, no como HTML', async () => {
+      await noEncontrado('a<i>b</i>@uc3m.es');
+      const correo = screen.getByText('a<i>b</i>@uc3m.es');
+      expect(correo.tagName).toBe('STRONG');
+      expect(correo.querySelector('i')).toBeNull();
+    });
+
+    test('«Escribirnos» abre un correo a startuc3m@gmail.com con el asunto', async () => {
+      await noEncontrado();
+      expect(screen.getByRole('link', { name: 'Escribirnos' })).toHaveAttribute(
+        'href',
+        'mailto:startuc3m@gmail.com?subject=No%20encuentro%20mi%20entrada%20del%20Start%20Camp'
+      );
+    });
+
+    test('«Probar con otro correo» vuelve al campo con el correo escrito y el foco', async () => {
+      await noEncontrado();
+      userEvent.click(screen.getByRole('button', { name: 'Probar con otro correo' }));
+      const campo = screen.getByLabelText('Tu correo');
+      expect(campo).toHaveValue('nadie@uc3m.es');
+      await waitFor(() => expect(campo).toHaveFocus());
+      expect(screen.queryByRole('heading', { name: 'No encontramos tu entrada_' })).not.toBeInTheDocument();
+    });
   });
 
   test('un correo mal escrito no se envía', async () => {

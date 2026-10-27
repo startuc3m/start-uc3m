@@ -6,6 +6,8 @@
 //   db     texto EXACTO que guarda la base de datos, tildes incluidas. Si no
 //          coincide carácter por carácter, la base de datos rechaza el perfil.
 
+import { site } from '../lib/site';
+
 export const ESTADOS_GRUPO = [
   { id: 'busco', label: 'Busco grupo', db: 'Busco grupo', ayuda: 'Vengo solo o sola y quiero encontrar equipo.' },
   { id: 'tengo', label: 'Tengo grupo', db: 'Tengo grupo', ayuda: 'Ya tengo equipo cerrado.' },
@@ -44,6 +46,11 @@ export const CONSENTIMIENTO_VERSION = 'v1';
 
 // Absoluta: la página de perfil vive en startcamp.startuc3m.es, donde /privacidad no existe.
 export const URL_PRIVACIDAD = 'https://www.startuc3m.es/privacidad';
+
+// Contacto cuando no aparece la entrada (pantalla «No encontramos tu entrada»).
+export const EMAIL_CONTACTO = site.email;
+export const ASUNTO_ENTRADA_NO_ENCONTRADA = 'No encuentro mi entrada del Start Camp';
+export const MAILTO_ENTRADA_NO_ENCONTRADA = `mailto:${EMAIL_CONTACTO}?subject=${encodeURIComponent(ASUNTO_ENTRADA_NO_ENCONTRADA)}`;
 
 /** Con estos estados tiene sentido pedir el nombre del grupo. */
 export function tieneGrupo(estado) {

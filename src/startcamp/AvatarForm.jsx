@@ -12,8 +12,10 @@ import {
   varianteDemo,
 } from './api.js';
 import {
+  EMAIL_CONTACTO,
   ESTADOS_GRUPO,
   INTERESES,
+  MAILTO_ENTRADA_NO_ENCONTRADA,
   MAX_DESCRIPCION,
   MAX_INTERESES,
   ROLES,
@@ -35,7 +37,6 @@ export const MENSAJES = {
   carga: 'No hemos podido cargar tu perfil. Revisa tu conexión e inténtalo otra vez.',
   sesionCaducada: 'Tu sesión ha caducado. Pide otro enlace',
   enlaceEnviado: 'Revisa tu correo (te llega en unos minutos)',
-  correoNoEncontrado: 'No encontramos tu entrada. Si has comprado hoy, puede tardar hasta un día en aparecer',
   guardado: 'Guardado. Puedes volver cuando quieras; te pediremos tu correo.',
   borrado: 'Tu perfil se ha borrado. Ya no apareces en el directorio.',
   confirmarBorrado: 'Se borrará tu perfil y dejarás de aparecer en el directorio',
@@ -105,12 +106,81 @@ function BarraDemo({ variante }) {
   );
 }
 
+/** Por qué puede no aparecer una entrada y qué hacer en cada caso. */
+export const CAUSAS_NO_ENCONTRADO = [
+  {
+    causa: 'Usaste otro correo en NeonPass.',
+    solucion: 'Búscalo en el correo de confirmación de tu entrada y prueba con ese.',
+  },
+  {
+    causa: 'Has comprado hace poco.',
+    solucion: 'Cargamos las entradas una vez al día; vuelve a intentarlo mañana.',
+  },
+];
+
+/** El correo no está entre las entradas: causas, soluciones y contacto. */
+function PantallaNoEncontrado({ correo, onProbarOtro, tituloRef }) {
+  return (
+    <section className="mx-auto max-w-lg" aria-labelledby="av-no-encontrado-titulo">
+      <h2 id="av-no-encontrado-titulo" ref={tituloRef} tabIndex={-1} className="display text-[40px] outline-none">
+        No encontramos tu entrada_
+      </h2>
+      <p className="mt-4 text-lg leading-snug text-ink/80">
+        Hemos buscado <strong className="break-all font-semibold text-ink">{correo}</strong> y no aparece entre las
+        entradas del Start Camp. Suele ser por una de estas dos cosas:
+      </p>
+      <ol className="mt-6 flex flex-col gap-3">
+        {CAUSAS_NO_ENCONTRADO.map(({ causa, solucion }, i) => (
+          <li key={causa} className="rounded-brand border border-line bg-white p-5">
+            <span className="mono text-cobalt" aria-hidden="true">
+              {String(i + 1).padStart(2, '0')}_
+            </span>
+            <p className="mt-2 text-lg font-semibold leading-snug text-ink">{causa}</p>
+            <p className="mt-1 leading-snug text-ink/80">{solucion}</p>
+          </li>
+        ))}
+      </ol>
+      <p className="mt-6 leading-snug text-ink/80">
+        ¿Sigue sin funcionar? Escríbenos a <strong className="font-semibold text-ink">{EMAIL_CONTACTO}</strong> con el
+        nombre y el correo de tu entrada y lo miramos.
+      </p>
+      <div className="mt-8 flex flex-wrap gap-3">
+        <button type="button" className={`btn btn-primary ${focoCls}`} onClick={onProbarOtro}>
+          Probar con otro correo
+        </button>
+        <a href={MAILTO_ENTRADA_NO_ENCONTRADA} className={`btn btn-outline text-cobalt ${focoCls}`}>
+          Escribirnos
+        </a>
+      </div>
+    </section>
+  );
+}
+
 /** Pantalla «Entrar»: se pide el correo y se manda el enlace de acceso. */
 function PantallaEntrar() {
   const [email, setEmail] = useState('');
   const [error, setError] = useState(null);
   const [enviando, setEnviando] = useState(false);
   const [resultado, setResultado] = useState(null); // enviado | no-encontrado | red
+  const [correoBuscado, setCorreoBuscado] = useState('');
+  const campoCorreo = useRef(null);
+  const tituloNoEncontrado = useRef(null);
+  const volverAlCampo = useRef(false);
+
+  // «No encontramos tu entrada»: el foco va al título. «Probar con otro
+  // correo»: vuelve al campo, con el correo aún escrito.
+  useEffect(() => {
+    if (resultado === 'no-encontrado') tituloNoEncontrado.current?.focus();
+    else if (volverAlCampo.current) {
+      volverAlCampo.current = false;
+      campoCorreo.current?.focus();
+    }
+  }, [resultado]);
+
+  function probarOtroCorreo() {
+    volverAlCampo.current = true;
+    setResultado(null);
+  }
 
   async function enviar(event) {
     event.preventDefault();
@@ -125,10 +195,15 @@ function PantallaEntrar() {
       await pedirEnlace(email.trim());
       setResultado('enviado');
     } catch (err) {
+      if (err?.codigo === 'CORREO_NO_ENCONTRADO') setCorreoBuscado(email.trim());
       setResultado(err?.codigo === 'CORREO_NO_ENCONTRADO' ? 'no-encontrado' : 'red');
     } finally {
       setEnviando(false);
     }
+  }
+
+  if (resultado === 'no-encontrado') {
+    return <PantallaNoEncontrado correo={correoBuscado} onProbarOtro={probarOtroCorreo} tituloRef={tituloNoEncontrado} />;
   }
 
   return (
@@ -144,6 +219,7 @@ function PantallaEntrar() {
           </label>
           <input
             id="av-email"
+            ref={campoCorreo}
             className={inputCls}
             type="email"
             inputMode="email"
@@ -166,11 +242,6 @@ function PantallaEntrar() {
             <p className="rounded-brand bg-lime p-4 font-semibold text-ink">{MENSAJES.enlaceEnviado}</p>
           )}
         </div>
-        {resultado === 'no-encontrado' && (
-          <p className="rounded-brand border border-red-600 bg-white p-4 font-semibold text-red-700" role="alert">
-            {MENSAJES.correoNoEncontrado}
-          </p>
-        )}
         {resultado === 'red' && (
           <p className="rounded-brand border border-red-600 bg-white p-4 font-semibold text-red-700" role="alert">
             No hemos podido mandar el enlace. Revisa tu conexión e inténtalo otra vez.
