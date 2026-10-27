@@ -15,8 +15,12 @@ export default defineConfig({
   // react: solo para las páginas de socios y privacidad (src/socios), que
   // vienen de la web anterior y se montan tal cual como islas.
   integrations: [
-    // Fuera del sitemap: páginas de paso de socios (vuelta de Stripe, enlace personal).
-    sitemap({ filter: (page) => !/\/socios\/(gracias|telefono)\/?$/.test(page) }),
+    // Fuera del sitemap: páginas de paso de socios (vuelta de Stripe, enlace personal)
+    // y del avatar del Start Camp (enlace personal y su página de error).
+    sitemap({
+      filter: (page) =>
+        !/\/(socios\/(gracias|telefono)|eventos\/start-camp\/(avatar|enlace-no-valido))\/?$/.test(page),
+    }),
     react(),
   ],
   vite: {
