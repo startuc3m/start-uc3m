@@ -705,8 +705,8 @@ export default function AvatarForm() {
                   />
                   {/* PENDIENTE: texto de Legal */}
                   <label htmlFor="av-consentimiento" className="leading-snug">
-                    Acepto que Start UC3M use mi perfil (nombre, rol, intereses, LinkedIn y descripción) para el
-                    Start Camp 2026 y para formar grupos. Solo lo verán otros asistentes, se borrará al acabar el
+                    Acepto que Start UC3M use mi perfil (nombre, estado de grupo, rol, intereses, LinkedIn,
+                    descripción y nombre del grupo) para el Start Camp 2026 y para formar grupos. Solo lo verán otros asistentes, se borrará al acabar el
                     Start Camp y puedo borrarlo antes con el botón «Borrar mi perfil». Más información en la{' '}
                     <a
                       href={URL_PRIVACIDAD}

@@ -295,6 +295,18 @@ describe('LinkedIn', () => {
 });
 
 describe('guardar', () => {
+  test('el consentimiento nombra todo lo que ven otros asistentes', async () => {
+    renderConSesion(null);
+    await cargado();
+    const texto = screen.getByText(/^Acepto que Start UC3M use mi perfil/).textContent.replace(/\s+/g, ' ');
+    expect(texto).toContain(
+      '(nombre, estado de grupo, rol, intereses, LinkedIn, descripción y nombre del grupo)'
+    );
+    expect(texto).toContain('Solo lo verán otros asistentes');
+    expect(texto).toContain('se borrará al acabar el Start Camp');
+    expect(texto).toContain('«Borrar mi perfil»');
+  });
+
   test('al crear sin consentimiento no se envía', async () => {
     renderConSesion(null);
     await cargado();
