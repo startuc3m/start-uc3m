@@ -48,7 +48,8 @@ const fmtLong = (d: Date) => d.toLocaleDateString('es-ES', { weekday: 'long', da
               <ul class="mt-5 flex flex-wrap gap-2">{e.data.tags.slice(0, 4).map((t) => <li class="mono rounded-full border border-white/30 px-3 py-1.5">{t}</li>)}</ul>
             </div>
             <div class="flex flex-wrap items-center gap-3">
-              {e.data.external && <a href={e.data.external} target="_blank" rel="noopener" class="btn btn-lime relative z-10">{e.data.status === 'sold-out' ? 'Lista de espera' : 'Reservar plaza'} <span class="font-mono">↗</span></a>}
+              {/* Igual que en la ficha: el enlace a la inscripción solo con el evento abierto (sold out → ficha) */}
+              {e.data.status === 'abierto' && e.data.external && <a href={e.data.external} target="_blank" rel="noopener" class="btn btn-lime relative z-10">Reservar plaza <span class="font-mono">↗</span></a>}
               <a href={`/eventos/${e.id}`} class="btn btn-on-blue relative z-10">Ver evento <span class="font-mono">→</span></a>
               {e.data.seats && <span class="mono ml-auto text-lavender">{e.data.seats} plazas</span>}
             </div>

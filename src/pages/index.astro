@@ -76,7 +76,7 @@ const fmtShort = (d: Date) => d.toLocaleDateString('es-ES', { day: '2-digit', mo
             <ul class="mt-5 flex flex-wrap gap-2">{next.data.tags.slice(0, 3).map((t) => <li class="mono rounded-full border border-white/40 px-3 py-1.5">{t}</li>)}</ul>
           </div>
           <div class="flex flex-wrap items-center gap-3">
-            {next.data.external && <a href={next.data.external} target="_blank" rel="noopener" class="btn btn-lime relative z-10">Reservar plaza <span class="font-mono">↗</span></a>}
+            {next.data.status === 'abierto' && next.data.external && <a href={next.data.external} target="_blank" rel="noopener" class="btn btn-lime relative z-10">Reservar plaza <span class="font-mono">↗</span></a>}
             <a href={`/eventos/${next.id}`} class="btn btn-outline relative z-10 text-white">Ver evento <span class="font-mono">→</span></a>
             {next.data.seats && <span class="mono ml-auto text-lavender">{next.data.seats} plazas</span>}
           </div>
