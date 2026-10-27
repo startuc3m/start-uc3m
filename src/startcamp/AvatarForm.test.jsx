@@ -1,5 +1,5 @@
 import { vi } from 'vitest';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import AvatarForm, { MENSAJE_RED } from './AvatarForm';
 import { CONSENTIMIENTO_VERSION } from './opciones';
@@ -47,6 +47,16 @@ function renderForm(opciones) {
 const cargado = () => screen.findByLabelText('Nombre');
 const llamadasPut = () => global.fetch.mock.calls.filter(([, init]) => init?.method === 'PUT');
 const botonGuardar = () => screen.getByRole('button', { name: /Guardar/ });
+
+/**
+ * Pegar como en el navegador. userEvent.paste (v13) inserta el texto aunque
+ * el componente haga preventDefault; un navegador no, así que se dispara el
+ * evento a mano.
+ */
+function pegar(input, texto) {
+  input.focus();
+  fireEvent.paste(input, { clipboardData: { getData: () => texto } });
+}
 
 function rellenarMinimo() {
   userEvent.click(screen.getByRole('radio', { name: /Busco grupo/ }));
@@ -182,19 +192,23 @@ describe('LinkedIn', () => {
     renderForm();
     await cargado();
     const input = screen.getByLabelText(/^LinkedIn/);
-    userEvent.paste(input, 'https://www.linkedin.com/in/ana-garcia/?trk=public_profile');
+    pegar(input, 'https://www.linkedin.com/in/ana-garcia/?trk=public_profile');
     expect(input).toHaveValue('ana-garcia');
   });
 
-  test('una URL sin barra final se recorta al salir del campo', async () => {
-    renderForm();
-    await cargado();
-    const input = screen.getByLabelText(/^LinkedIn/);
-    userEvent.type(input, 'es.linkedin.com/in/ana-garcia');
-    userEvent.tab();
-    expect(input).toHaveValue('ana-garcia');
-    expect(screen.queryByText('Eso no parece un perfil de LinkedIn')).not.toBeInTheDocument();
-  });
+  test.each(['es.linkedin.com/in/ana-garcia', 'https://www.linkedin.com/in/ana-garcia/?trk=public_profile'])(
+    'una URL tecleada entera (%s) se recorta al salir del campo',
+    async (url) => {
+      renderForm();
+      await cargado();
+      const input = screen.getByLabelText(/^LinkedIn/);
+      userEvent.type(input, url);
+      expect(input).toHaveValue(url);
+      userEvent.tab();
+      expect(input).toHaveValue('ana-garcia');
+      expect(screen.queryByText('Eso no parece un perfil de LinkedIn')).not.toBeInTheDocument();
+    }
+  );
 
   test('un perfil inválido avisa y no deja guardar', async () => {
     renderForm();
@@ -231,7 +245,7 @@ describe('guardar', () => {
     userEvent.type(screen.getByLabelText(/Nombre del grupo/), 'Pixel Club');
     userEvent.click(screen.getByRole('radio', { name: 'Diseño' }));
     userEvent.click(screen.getByRole('checkbox', { name: 'Educación' }));
-    userEvent.paste(screen.getByLabelText(/^LinkedIn/), 'https://es.linkedin.com/in/ana-garcia/');
+    pegar(screen.getByLabelText(/^LinkedIn/), 'https://es.linkedin.com/in/ana-garcia/');
     userEvent.type(screen.getByLabelText(/Sobre ti/), 'Diseño producto.');
     userEvent.click(screen.getByRole('checkbox', { name: /Acepto/ }));
     userEvent.click(botonGuardar());

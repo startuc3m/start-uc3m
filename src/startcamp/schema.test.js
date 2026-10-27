@@ -13,6 +13,7 @@ describe('extraerUsuarioLinkedin', () => {
     ['https://es.linkedin.com/in/ana-garcia', 'ana-garcia'],
     ['es.linkedin.com/in/ana-garcia?originalSubdomain=es', 'ana-garcia'],
     ['HTTPS://WWW.LINKEDIN.COM/in/AnaGarcia#experiencia', 'AnaGarcia'],
+    ['ana-garcia/?trk=public_profile', 'ana-garcia'],
   ])('%s → %s', (entrada, usuario) => {
     expect(extraerUsuarioLinkedin(entrada)).toBe(usuario);
   });

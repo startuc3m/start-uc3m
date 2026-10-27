@@ -28,7 +28,9 @@ export function extraerUsuarioLinkedin(texto) {
   const valor = String(texto ?? '').trim();
   const url = valor.match(URL_LINKEDIN_RE);
   // Sin usuario detrás de /in/ se devuelve tal cual, para que no pase por vacío.
-  return url && url[1] ? url[1] : valor;
+  if (url) return url[1] || valor;
+  // Usuario suelto con restos de la URL detrás (usuario/?trk=…).
+  return valor.replace(/[/?#].*$/, '') || valor;
 }
 
 export function linkedinUrl(usuario) {

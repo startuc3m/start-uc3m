@@ -31,9 +31,6 @@ const MENSAJE_CARGA = 'No hemos podido cargar tu avatar. Revisa tu conexión e i
 // Orden de los campos: el foco va al primero con error.
 const CAMPOS = ['nombre', 'estado_grupo', 'rol', 'intereses', 'linkedin', 'descripcion', 'nombre_grupo', 'consentimiento'];
 
-// Una URL de LinkedIn completa (con algo detrás del usuario) se recorta al vuelo.
-const URL_COMPLETA_RE = /linkedin\.com\/in\/[^/?#\s]+[/?#]/i;
-
 function irAEnlaceNoValido() {
   window.location.replace(ENLACE_NO_VALIDO);
 }
@@ -126,8 +123,13 @@ export default function AvatarForm({ onEnlaceInvalido = irAEnlaceNoValido }) {
     else if (actuales.length < MAX_INTERESES) cambiar('intereses', [...actuales, id]);
   }
 
-  function cambiarLinkedin(texto) {
-    cambiar('linkedin', URL_COMPLETA_RE.test(texto) ? extraerUsuarioLinkedin(texto) : texto);
+  // Al pegar la URL entera se queda solo el usuario. Si se teclea, se recorta
+  // al salir del campo (recortar a mitad de escritura rompe lo que se teclea).
+  function pegarLinkedin(event) {
+    const texto = event.clipboardData?.getData('text');
+    if (!texto || !/linkedin\.com\//i.test(texto)) return;
+    event.preventDefault();
+    cambiar('linkedin', extraerUsuarioLinkedin(texto));
   }
 
   function salirLinkedin() {
@@ -337,7 +339,8 @@ export default function AvatarForm({ onEnlaceInvalido = irAEnlaceNoValido }) {
               spellCheck={false}
               placeholder="tu-usuario"
               value={valores.linkedin}
-              onChange={(e) => cambiarLinkedin(e.target.value)}
+              onChange={(e) => cambiar('linkedin', e.target.value)}
+              onPaste={pegarLinkedin}
               onBlur={salirLinkedin}
               aria-invalid={Boolean(errores.linkedin)}
               aria-describedby={`av-linkedin-ayuda${errores.linkedin ? ' av-linkedin-error' : ''}`}
