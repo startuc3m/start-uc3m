@@ -414,6 +414,71 @@ describe('guardar', () => {
   });
 });
 
+describe('salir del grupo', () => {
+  const botonSalir = () => screen.queryByRole('button', { name: 'Salir del grupo' });
+  const AVISO = 'Guarda los cambios para salir del grupo.';
+
+  test('solo aparece al editar con estado de grupo y nombre de grupo', async () => {
+    renderConSesion(PERFIL_BD);
+    await cargado();
+    expect(botonSalir()).toBeInTheDocument();
+
+    // Sin nombre de grupo, no.
+    userEvent.clear(screen.getByLabelText(/Nombre del grupo/));
+    expect(botonSalir()).not.toBeInTheDocument();
+  });
+
+  test('no aparece al crear el perfil', async () => {
+    renderConSesion(null);
+    await cargado();
+    userEvent.click(screen.getByRole('radio', { name: /Tengo grupo/ }));
+    userEvent.type(screen.getByLabelText(/Nombre del grupo/), 'Pixel Club');
+    expect(botonSalir()).not.toBeInTheDocument();
+  });
+
+  test('no aparece con «Busco grupo»', async () => {
+    renderConSesion({ ...PERFIL_BD, estado_grupo: 'Busco grupo', nombre_grupo: null });
+    await cargado();
+    expect(screen.queryByLabelText(/Nombre del grupo/)).not.toBeInTheDocument();
+    expect(botonSalir()).not.toBeInTheDocument();
+  });
+
+  test('deja «Busco grupo» y el nombre vacío; al guardar manda nombre_grupo null', async () => {
+    renderConSesion(PERFIL_BD);
+    await cargado();
+    userEvent.click(botonSalir());
+
+    const busco = screen.getByRole('radio', { name: /Busco grupo/ });
+    expect(busco).toBeChecked();
+    expect(busco).toHaveFocus();
+    expect(screen.queryByLabelText(/Nombre del grupo/)).not.toBeInTheDocument();
+    expect(screen.getByText(AVISO)).toBeInTheDocument();
+    expect(api.guardarPerfil).not.toHaveBeenCalled();
+
+    // Si vuelve a elegir un estado con grupo, el nombre sigue vacío.
+    userEvent.click(screen.getByRole('radio', { name: /Abierto a sumar gente/ }));
+    expect(screen.getByLabelText(/Nombre del grupo/)).toHaveValue('');
+    expect(screen.queryByText(AVISO)).not.toBeInTheDocument();
+    userEvent.click(screen.getByRole('radio', { name: /Busco grupo/ }));
+
+    userEvent.click(botonGuardar());
+    await screen.findByText(MENSAJES.guardado);
+    const [datos, opciones] = api.guardarPerfil.mock.calls[0];
+    expect(opciones).toEqual({ crear: false });
+    expect(datos).toMatchObject({ estado_grupo: 'Busco grupo', nombre_grupo: null });
+  });
+
+  test('tras salir y guardar, el aviso desaparece', async () => {
+    renderConSesion(PERFIL_BD);
+    await cargado();
+    userEvent.click(botonSalir());
+    userEvent.click(botonGuardar());
+    await screen.findByText(MENSAJES.guardado);
+    expect(screen.queryByText(AVISO)).not.toBeInTheDocument();
+    expect(api.guardarPerfil.mock.calls[0][0]).toMatchObject({ estado_grupo: 'Busco grupo', nombre_grupo: null });
+  });
+});
+
 describe('confeti', () => {
   // El confeti se carga con import() después del guardado: se da margen
   // antes de comprobar que no ha salido.

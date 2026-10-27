@@ -296,6 +296,7 @@ export default function AvatarForm() {
   const [borrando, setBorrando] = useState(false);
   const [errorBorrado, setErrorBorrado] = useState(null);
   const [cerrando, setCerrando] = useState(false);
+  const [saliendoGrupo, setSaliendoGrupo] = useState(false); // «Salir del grupo» pulsado, falta guardar
   const enviando = useRef(false);
   const confirmacion = useRef(null);
   const botonBorrar = useRef(null);
@@ -313,6 +314,7 @@ export default function AvatarForm() {
       setErrorEnvio(null);
       setSesionCaducada(false);
       setConfirmando(false);
+      setSaliendoGrupo(false);
       setPantalla('formulario');
     } catch (err) {
       const codigo = err?.codigo;
@@ -344,6 +346,16 @@ export default function AvatarForm() {
     setErrores((e) => (e[campo] ? { ...e, [campo]: undefined } : e));
     setAviso(null);
     setErrorEnvio(null);
+    if (campo === 'estado_grupo') setSaliendoGrupo(false);
+  }
+
+  // Deja el formulario en «Busco grupo» sin nombre de grupo. Se aplica al
+  // guardar (group_id null). El foco pasa a «Busco grupo», porque el botón
+  // desaparece con el campo del grupo.
+  function salirDelGrupo() {
+    cambiar('estado_grupo', 'busco');
+    setSaliendoGrupo(true);
+    document.getElementById('av-estado_grupo-busco')?.focus();
   }
 
   function alternarInteres(id) {
@@ -406,6 +418,7 @@ export default function AvatarForm() {
       await guardarPerfil(datos, { crear: creando });
       setValores((v) => ({ ...v, linkedin: urlAUsuario(v.linkedin) }));
       setTeniaPerfil(true);
+      setSaliendoGrupo(false);
       setAviso('guardado');
       if (creando) lanzarConfeti();
     } catch (err) {
@@ -571,6 +584,11 @@ export default function AvatarForm() {
                 ))}
               </div>
               <ErrorCampo id="av-estado_grupo-error">{errores.estado_grupo}</ErrorCampo>
+              <div role="status">
+                {saliendoGrupo && (
+                  <p className="mt-3 text-sm font-semibold text-cobalt">Guarda los cambios para salir del grupo.</p>
+                )}
+              </div>
             </fieldset>
 
             {conGrupo && (
@@ -578,16 +596,27 @@ export default function AvatarForm() {
                 <label htmlFor="av-nombre_grupo" className={labelCls}>
                   Nombre del grupo <span className={opcionalCls}>(opcional)</span>
                 </label>
-                <input
-                  id="av-nombre_grupo"
-                  className={inputCls}
-                  type="text"
-                  maxLength={MAX_NOMBRE_GRUPO}
-                  value={valores.nombre_grupo}
-                  onChange={(e) => cambiar('nombre_grupo', e.target.value)}
-                  aria-invalid={Boolean(errores.nombre_grupo)}
-                  aria-describedby={err('nombre_grupo')}
-                />
+                <div className="flex flex-col gap-3 sm:flex-row">
+                  <input
+                    id="av-nombre_grupo"
+                    className={inputCls}
+                    type="text"
+                    maxLength={MAX_NOMBRE_GRUPO}
+                    value={valores.nombre_grupo}
+                    onChange={(e) => cambiar('nombre_grupo', e.target.value)}
+                    aria-invalid={Boolean(errores.nombre_grupo)}
+                    aria-describedby={err('nombre_grupo')}
+                  />
+                  {!creando && valores.nombre_grupo.trim() && (
+                    <button
+                      type="button"
+                      className={`btn btn-outline shrink-0 self-start px-5 py-3 text-cobalt ${focoCls}`}
+                      onClick={salirDelGrupo}
+                    >
+                      Salir del grupo
+                    </button>
+                  )}
+                </div>
                 <ErrorCampo id="av-nombre_grupo-error">{errores.nombre_grupo}</ErrorCampo>
               </div>
             )}
