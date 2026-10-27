@@ -3,6 +3,7 @@ import { fireEvent, render, screen, waitFor, within } from '@testing-library/rea
 import userEvent from '@testing-library/user-event';
 import AvatarForm, { MENSAJES } from './AvatarForm';
 import * as api from './api.js';
+import confetti from 'canvas-confetti';
 
 // Las funciones de datos se sustituyen por espías; el resto (ApiError,
 // varianteDemo…) es el real.
@@ -18,6 +19,9 @@ vi.mock('./api.js', async (importOriginal) => {
     leerErrorEnlace: vi.fn(),
   };
 });
+
+// La librería del confeti se sustituye por un espía (jsdom no tiene canvas).
+vi.mock('canvas-confetti', () => ({ default: vi.fn() }));
 
 const { ApiError } = api;
 
@@ -347,6 +351,54 @@ describe('guardar', () => {
     userEvent.click(botonGuardar());
     expect(await screen.findByText('Revisa este campo.')).toBeInTheDocument();
     expect(screen.getByLabelText(/Sobre ti/)).toHaveAttribute('aria-invalid', 'true');
+  });
+});
+
+describe('confeti', () => {
+  // El confeti se carga con import() después del guardado: se da margen
+  // antes de comprobar que no ha salido.
+  const dejarPasar = () => new Promise((r) => setTimeout(r, 50));
+
+  test('sale al crear el perfil', async () => {
+    renderConSesion(null);
+    await cargado();
+    rellenarMinimo();
+    userEvent.click(botonGuardar());
+    await screen.findByText(MENSAJES.guardado);
+    await waitFor(() => expect(confetti).toHaveBeenCalled());
+  });
+
+  test('no sale al editar', async () => {
+    renderConSesion(PERFIL_BD);
+    await cargado();
+    userEvent.click(botonGuardar());
+    await screen.findByText(MENSAJES.guardado);
+    await dejarPasar();
+    expect(confetti).not.toHaveBeenCalled();
+  });
+
+  test('no sale si el guardado falla', async () => {
+    api.guardarPerfil.mockRejectedValue(new ApiError('RED'));
+    renderConSesion(null);
+    await cargado();
+    rellenarMinimo();
+    userEvent.click(botonGuardar());
+    await screen.findByRole('alert');
+    await dejarPasar();
+    expect(confetti).not.toHaveBeenCalled();
+  });
+
+  test('si la librería falla, el guardado y el mensaje siguen igual', async () => {
+    confetti.mockImplementation(() => {
+      throw new Error('sin canvas');
+    });
+    renderConSesion(null);
+    await cargado();
+    rellenarMinimo();
+    userEvent.click(botonGuardar());
+    expect(await screen.findByText(MENSAJES.guardado)).toBeInTheDocument();
+    await waitFor(() => expect(confetti).toHaveBeenCalled());
+    expect(botonGuardar()).toHaveTextContent('Guardar cambios');
   });
 });
 

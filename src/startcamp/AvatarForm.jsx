@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import AvatarCard from './AvatarCard.jsx';
+import { lanzarConfeti } from './confeti.js';
 import {
   VARIANTES_DEMO,
   borrarPerfil,
@@ -334,6 +335,7 @@ export default function AvatarForm() {
       setValores((v) => ({ ...v, linkedin: urlAUsuario(v.linkedin) }));
       setTeniaPerfil(true);
       setAviso('guardado');
+      if (creando) lanzarConfeti();
     } catch (err) {
       const codigo = err?.codigo ?? 'RED';
       if (codigo === 'SESION_CADUCADA' || codigo === 'SIN_SESION') {
@@ -674,7 +676,8 @@ export default function AvatarForm() {
                 </div>
               )}
 
-              <div role="status">
+              {/* relative z-40: por encima del confeti (confeti.js) */}
+              <div role="status" className="relative z-40">
                 {aviso && (
                   <p className="rounded-brand bg-lime p-4 font-semibold text-ink">
                     {aviso === 'guardado' ? MENSAJES.guardado : MENSAJES.borrado}
