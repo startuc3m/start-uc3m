@@ -9,31 +9,30 @@ const url = await startcampPromoUrl(Astro.url.pathname);
 {url && (
   <div class="relative z-50 bg-lime text-ink lg:hidden" data-camp-banner hidden>
     <div class="container-x flex min-h-11 items-center gap-3 py-1.5 md:gap-6">
-      <a href={url} target="_blank" rel="noopener" class="flex min-w-0 flex-1 items-center gap-3 md:gap-6">
-        <span class="display shrink-0 text-[18px] md:text-[22px]">Start Camp 2026</span>
+      <div class="flex min-w-0 flex-1 items-center gap-3 md:gap-6">
+        <a href="/eventos/start-camp" class="display shrink-0 text-[18px] md:text-[22px]">Start Camp 2026</a>
         <span class="mono hidden text-[11px] md:inline">7 y 8 nov · Mad Tech Campus</span>
         <span class="flex items-baseline gap-1.5 font-mono text-[13px] font-medium tabular-nums md:text-[15px]" role="timer" aria-label="Tiempo hasta el Start Camp"><span class="whitespace-nowrap" data-camp-clock></span><span class="hidden whitespace-nowrap sm:inline" data-camp-sec></span></span>
-        <span class="ml-auto hidden shrink-0 rounded-brand bg-ink px-4 py-1.5 text-[13px] font-semibold text-lime sm:inline-flex">Reserva tu plaza ↗</span>
-        <span class="ml-auto shrink-0 text-[13px] font-semibold underline underline-offset-4 sm:hidden">Reservar ↗</span>
-      </a>
+        <a href="/eventos/start-camp" class="ml-auto hidden shrink-0 text-[13px] font-semibold underline underline-offset-4 sm:inline">Ver evento</a>
+        <a href={url} target="_blank" rel="noopener" class="ml-auto shrink-0 rounded-brand bg-ink px-3 py-1.5 text-[13px] font-semibold text-lime sm:ml-0 sm:px-4">Reservar<span class="hidden sm:inline"> plaza</span> ↗</a>
+      </div>
       <button type="button" class="shrink-0 px-1 font-mono text-lg leading-none" aria-label="Cerrar el aviso del Start Camp" data-camp-banner-close>×</button>
     </div>
   </div>
 )}
 <script>
-  import { STARTCAMP_END, getStartcampCountdown, isDismissed, dismiss } from './lanyard/startcamp_countdown.js';
+  import { STARTCAMP_END, getStartcampCountdown, formatClock, pad, isDismissed, dismiss } from './lanyard/startcamp_countdown.js';
   const banner = document.querySelector<HTMLElement>('[data-camp-banner]');
   const KEY = 'startcamp-banner-dismissed';
   if (banner && !isDismissed(KEY) && Date.now() < STARTCAMP_END) {
     banner.hidden = false;
     const clock = banner.querySelector<HTMLElement>('[data-camp-clock]')!;
     const sec = banner.querySelector<HTMLElement>('[data-camp-sec]')!; // los segundos no caben en móvil
-    const pad = (n: number) => String(n).padStart(2, '0');
     const tick = () => {
-      const [d, h, m, s] = getStartcampCountdown();
-      const left = d + h + m + s > 0;
-      clock.textContent = left ? `${d}d ${pad(h)}h ${pad(m)}m` : '¡Hoy!';
-      sec.textContent = left ? ` ${pad(s)}s` : '';
+      const t = getStartcampCountdown();
+      const left = t.some((n) => n > 0);
+      clock.textContent = left ? formatClock(t) : '¡Hoy!';
+      sec.textContent = left ? ` ${pad(t[3])}s` : '';
     };
     tick();
     const timer = setInterval(tick, 1000);
