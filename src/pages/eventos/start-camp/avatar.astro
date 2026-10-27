@@ -1,0 +1,23 @@
+---
+import Base from '../../../layouts/Base.astro';
+import AvatarForm from '../../../startcamp/AvatarForm.jsx';
+// Enlace personal de cada asistente: /eventos/start-camp/avatar?t=<token>.
+// client:only porque lee el token de la URL y llama a /api.
+// Con ?t=demo (fuera de producción) funciona contra un mock: ver src/startcamp/api.js.
+---
+<Base title="Tu avatar del Start Camp" tone="dark" noindex>
+  <section class="bg-cobalt text-white">
+    <div class="container-x py-12 md:py-20">
+      <span class="eyebrow text-lavender">Start Camp 2026 · 7 y 8 de noviembre</span>
+      <h1 class="display mt-4 text-[clamp(56px,10vw,128px)]">Tu avatar_</h1>
+      <p class="mt-6 max-w-2xl text-xl leading-snug text-lavender">
+        Cuéntale al resto quién eres y cómo vienes. Con esto formamos los equipos del Camp: es un minuto.
+      </p>
+    </div>
+  </section>
+  <section class="bg-paper">
+    <div class="container-x py-12 md:py-16">
+      <AvatarForm client:only="react" />
+    </div>
+  </section>
+</Base>
