@@ -114,7 +114,7 @@ export const CAUSAS_NO_ENCONTRADO = [
   },
   {
     causa: 'Has comprado hace poco.',
-    solucion: 'Cargamos las entradas una vez al día; vuelve a intentarlo mañana.',
+    solucion: 'Tu entrada puede tardar hasta un día en aparecer. Cuando esté lista, te llegará un correo para crear tu perfil; no tienes que hacer nada más.',
   },
 ];
 

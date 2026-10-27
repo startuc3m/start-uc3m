@@ -107,7 +107,7 @@ describe('Entrar', () => {
       expect(causas[0]).toHaveTextContent('Usaste otro correo en NeonPass.');
       expect(causas[0]).toHaveTextContent('Búscalo en el correo de confirmación de tu entrada y prueba con ese.');
       expect(causas[1]).toHaveTextContent('Has comprado hace poco.');
-      expect(causas[1]).toHaveTextContent('Cargamos las entradas una vez al día; vuelve a intentarlo mañana.');
+      expect(causas[1]).toHaveTextContent('Tu entrada puede tardar hasta un día en aparecer. Cuando esté lista, te llegará un correo para crear tu perfil; no tienes que hacer nada más.');
       expect(
         screen.getByText(/¿Sigue sin funcionar\? Escríbenos a/).textContent.replace(/\s+/g, ' ')
       ).toBe(
