@@ -24,7 +24,7 @@ Las inscripciones están cerradas (#31) y `/unete` no tiene formulario. Para la 
 
 ## Correo de acceso al perfil del Start Camp
 
-El perfil del Start Camp (`/eventos/start-camp/avatar`) no tiene formulario en `api/`: se entra con un enlace de un solo uso que manda Supabase (magic link). La plantilla de ese correo es `docs/correo-enlace-startcamp.html`.
+El perfil del Start Camp (`/eventos/start-camp/avatar`) no tiene formulario en `api/`: se entra con un enlace de un solo uso que manda Supabase (magic link). La plantilla de ese correo es `docs/correo-enlace-startcamp.html`. Todo el perfil está documentado en [`docs/startcamp-perfil.md`](../startcamp-perfil.md).
 
 - **Dónde va:** Supabase → Authentication → Emails → Templates → **Magic Link**. La pega quien administra Supabase; no se despliega con la web.
 - **Asunto:** `Tu enlace para entrar en tu perfil del Start Camp`

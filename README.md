@@ -31,6 +31,7 @@ npm run dev:api    # (opcional) funciones de api/ en :3001; necesita .env.local
 | Socios y privacidad (React, vienen de la web anterior) | `src/socios/` + `src/pages/socios/`, `src/pages/privacidad.astro` |
 | Funciones de socios | `api/` |
 | Esquema de la BD y scripts de socios | `db/` |
+| Perfil del Start Camp (React + Supabase; ver [`docs/startcamp-perfil.md`](docs/startcamp-perfil.md)) | `src/startcamp/` + `src/pages/eventos/start-camp/` |
 | Animaciones | `src/lib/motion.ts` |
 | Hueco de imagen mientras no haya fotos | `src/components/Placeholder.astro` |
 
