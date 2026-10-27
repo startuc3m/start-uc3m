@@ -15,7 +15,8 @@ priceNote: "10 % de descuento para socios de Start"
 sponsors: []
 tags: ["2 días", "Mentores", "Jurado", "Premios"]
 edition: "Curso 2026/27"
-highlights: ["7 y 8 de noviembre", "12 mentores", "7 jurados"]
+# Sin cifras ni fechas: ya salen en la cabecera y en las secciones de mentores y jurado.
+highlights: ["Un reto real", "Mentores en sala", "Final ante jurado"]
 prizes:
   - { place: "1.er premio", prize: "Plaza asegurada en la UNEC", note: "Con premios de 2.000 €" }
   - { place: "2.º premio" }
@@ -31,11 +32,9 @@ info:
     text: "Mad Tech Campus está en la Nave 14 de Matadero Madrid (Paseo de la Chopera, 14). Metro más cercano: Legazpi (L3 y L6)."
     link: { href: "https://www.google.com/maps/search/?api=1&query=Mad+Tech+Campus%2C+Paseo+de+la+Chopera+14%2C+28045+Madrid", label: "Abrir en Google Maps" }
   - title: "Horario"
-    text: "Empieza el sábado 7 a las 9:00 y termina el domingo 8 a las 20:00. No se duerme allí: cada noche vuelves a casa."
+    text: "Son dos jornadas presenciales. No se duerme allí: cada noche vuelves a casa."
   - title: "¿Sin equipo?"
     text: "Sin problema: puedes apuntarte aunque no tengas equipo."
 external: "https://www.neonpass.es/event/ec3ee828-56d3-40d4-9636-ece85cfd383b"
 ---
-El formato más intenso del curso: dos días de trabajo en equipo para pasar de una idea a un proyecto, con doce mentores acompañando a los equipos y un jurado de siete personas en la final.
-
-Empieza el sábado 7 de noviembre a las 9:00 y termina el domingo 8 a las 20:00, en Mad Tech Campus. La entrada general cuesta 35 € en Neonpass, y los socios de Start tienen un 10 % de descuento.
+El formato más intenso del curso: dos días de trabajo en equipo para pasar de una idea a un proyecto, con mentores acompañando a los equipos y un jurado que elige a los ganadores en la final.

@@ -21,19 +21,18 @@ const url = await startcampPromoUrl(Astro.url.pathname);
   </div>
 )}
 <script>
-  import { STARTCAMP_END, getStartcampCountdown, isDismissed, dismiss } from './lanyard/startcamp_countdown.js';
+  import { STARTCAMP_END, getStartcampCountdown, formatClock, pad, isDismissed, dismiss } from './lanyard/startcamp_countdown.js';
   const banner = document.querySelector<HTMLElement>('[data-camp-banner]');
   const KEY = 'startcamp-banner-dismissed';
   if (banner && !isDismissed(KEY) && Date.now() < STARTCAMP_END) {
     banner.hidden = false;
     const clock = banner.querySelector<HTMLElement>('[data-camp-clock]')!;
     const sec = banner.querySelector<HTMLElement>('[data-camp-sec]')!; // los segundos no caben en móvil
-    const pad = (n: number) => String(n).padStart(2, '0');
     const tick = () => {
-      const [d, h, m, s] = getStartcampCountdown();
-      const left = d + h + m + s > 0;
-      clock.textContent = left ? `${d}d ${pad(h)}h ${pad(m)}m` : '¡Hoy!';
-      sec.textContent = left ? ` ${pad(s)}s` : '';
+      const t = getStartcampCountdown();
+      const left = t.some((n) => n > 0);
+      clock.textContent = left ? formatClock(t) : '¡Hoy!';
+      sec.textContent = left ? ` ${pad(t[3])}s` : '';
     };
     tick();
     const timer = setInterval(tick, 1000);

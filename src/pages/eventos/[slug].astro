@@ -16,13 +16,20 @@ const fotos = eventoFotos[e.id];
 const fmt = (d: Date) => d.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
 const lastDay = new Date(e.data.date.getTime() + (e.data.days - 1) * 86400000);
 const fmtDay = (d: Date) => d.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric' });
-const dateLabel = e.data.days > 1 ? `${fmtDay(e.data.date)} y ${fmt(lastDay).replace(',', '')}` : fmt(e.data.date);
+// "sábado 7 y domingo 8 de noviembre"; con 3+ días "del … al …"; si cambia de mes, el primer día lleva el suyo.
+const firstDay = lastDay.getUTCMonth() === e.data.date.getUTCMonth() ? fmtDay(e.data.date) : fmt(e.data.date).replace(',', '');
+const dateLabel = e.data.days === 1 ? fmt(e.data.date)
+  : e.data.days === 2 ? `${firstDay} y ${fmt(lastDay).replace(',', '')}`
+  : `del ${firstDay} al ${fmt(lastDay).replace(',', '')}`;
 const timeLabel = e.data.endTime ? (e.data.days > 1 ? `${e.data.time} (${fmtDay(e.data.date).split(' ')[0]}) – ${e.data.endTime} (${fmtDay(lastDay).split(' ')[0]})` : `${e.data.time} – ${e.data.endTime}`) : e.data.time;
 const { prizes, mentors, jury, info } = e.data;
+// Si se confirman más nombres que el total previsto, mandan los nombres.
+const mentorsTotal = mentors ? Math.max(mentors.total, mentors.names.length) : 0;
+const juryTotal = jury ? Math.max(jury.total, jury.names.length) : 0;
 const initials = (n: string) => n.split(' ').filter((w) => w.length > 2).slice(0, 2).map((w) => w[0]).join('');
 const open = e.data.status === 'abierto';
-// Cuenta atrás en vivo solo para el Camp (misma fecha que el banner y el lanyard).
-const countdown = e.id === 'start-camp' && open;
+// Cuenta atrás en vivo hasta la hora de inicio del frontmatter (solo si es una hora, no "Todo el día").
+const countdownStart = open && hasClockTime(e.data.time) ? eventStartDate(e.data.date, e.data.time).getTime() : null;
 const soldOut = e.data.status === 'sold-out';
 const past = e.data.status === 'pasado';
 // Plataforma de inscripción según el dominio de `external` (Luma, Neonpass…).
@@ -57,7 +64,7 @@ const eventJsonLd = {
       </div>
       <div class="flex flex-col gap-5" data-reveal>
       <dl class="flex flex-col gap-5 rounded-brand border border-white/20 bg-cobalt/50 p-6 backdrop-blur md:text-right">
-        {countdown && <div hidden data-camp-countdown><dt class="eyebrow text-lavender/70">Empieza en</dt><dd class="font-mono text-3xl font-medium tabular-nums text-lime" role="timer" data-camp-countdown-clock></dd></div>}
+        {countdownStart && <div hidden data-countdown={countdownStart}><dt class="eyebrow text-lavender/70">Empieza en</dt><dd class="font-mono text-3xl font-medium tabular-nums text-lime" role="timer" data-countdown-clock></dd></div>}
         <div><dt class="eyebrow text-lavender/70">Fecha</dt><dd class="text-2xl font-semibold first-letter:uppercase">{dateLabel}</dd><dd class="mt-1 text-lavender">{timeLabel}</dd></div>
         <div><dt class="eyebrow text-lavender/70">Lugar</dt><dd class="text-2xl font-semibold">{e.data.place}</dd></div>
         {e.data.price && <div><dt class="eyebrow text-lavender/70">Entrada</dt><dd class="text-2xl font-semibold">{e.data.price}</dd>{e.data.priceNote && <dd class="mt-1 text-lavender">{e.data.priceNote}</dd>}</div>}
@@ -179,8 +186,8 @@ const eventJsonLd = {
         {mentors && (
           <div data-reveal>
             <span class="eyebrow text-lavender">Te acompañan</span>
-            <h2 class="display mt-3 text-[clamp(32px,5vw,64px)]">{mentors.total} mentores_</h2>
-            <p class="mt-4 max-w-md text-lavender">Acompañan a los equipos durante los dos días para ayudarte a aterrizar la idea.</p>
+            <h2 class="display mt-3 text-[clamp(32px,5vw,64px)]">{mentorsTotal} mentores_</h2>
+            <p class="mt-4 max-w-md text-lavender">Acompañan a los equipos durante el evento para ayudarte a aterrizar la idea.</p>
             <ul class="mt-8 grid gap-3 sm:grid-cols-2" data-stagger>
               {mentors.names.map((n) => (
                 <li class="flex items-center gap-4 rounded-brand bg-white/10 p-3 pr-5" data-reveal>
@@ -188,9 +195,9 @@ const eventJsonLd = {
                   <span class="text-lg font-semibold leading-tight">{n}</span>
                 </li>
               ))}
-              {mentors.total > mentors.names.length && (
+              {mentorsTotal > mentors.names.length && (
                 <li class="flex items-center gap-4 rounded-brand border-2 border-dashed border-white/30 p-3 pr-5" data-reveal>
-                  <span class="grid h-12 w-12 shrink-0 place-items-center rounded-full border-2 border-dashed border-white/40 font-mono" aria-hidden="true">+{mentors.total - mentors.names.length}</span>
+                  <span class="grid h-12 w-12 shrink-0 place-items-center rounded-full border-2 border-dashed border-white/40 font-mono" aria-hidden="true">+{mentorsTotal - mentors.names.length}</span>
                   <span class="text-lg leading-tight text-lavender">Más mentores muy pronto</span>
                 </li>
               )}
@@ -199,13 +206,12 @@ const eventJsonLd = {
         )}
         {jury && (
           <div data-reveal>
-            <span class="eyebrow text-lavender">La final</span>
-            <h2 class="display mt-3 text-[clamp(32px,5vw,64px)]">{jury.total} jurados_</h2>
-            <p class="mt-4 max-w-md text-lavender">Escuchan los pitch de la final y eligen a los ganadores.{jury.names.length < jury.total && ' Desvelamos los nombres muy pronto.'}</p>
-            <ul class="mt-8 flex flex-wrap gap-3" aria-label={`${jury.total} jurados`}>
-              {Array.from({ length: jury.total }, (_, i) => jury.names[i]).map((n) => n
-                ? <li class="rounded-full bg-white/10 px-4 py-2 font-semibold">{n}</li>
-                : <li class="h-14 w-14 rounded-full border-2 border-dashed border-white/40" aria-hidden="true"></li>)}
+            <span class="eyebrow text-lavender">Jurado</span>
+            <h2 class="display mt-3 text-[clamp(32px,5vw,64px)]">{juryTotal} jurados_</h2>
+            <p class="mt-4 max-w-md text-lavender">Valoran los proyectos y eligen a los ganadores.{jury.names.length < juryTotal && ' Desvelamos los nombres muy pronto.'}</p>
+            <ul class="mt-8 flex flex-wrap gap-3" aria-label={`${juryTotal} jurados`}>
+              {jury.names.map((n) => <li class="rounded-full bg-white/10 px-4 py-2 font-semibold">{n}</li>)}
+              {Array.from({ length: juryTotal - jury.names.length }, () => <li class="h-14 w-14 rounded-full border-2 border-dashed border-white/40" aria-hidden="true"></li>)}
             </ul>
           </div>
         )}
@@ -262,17 +268,19 @@ const eventJsonLd = {
   )}
 </Base>
 <script>
-  import { STARTCAMP_END, getStartcampCountdown } from '../../components/lanyard/startcamp_countdown.js';
-  const box = document.querySelector<HTMLElement>('[data-camp-countdown]');
-  if (box && Date.now() < STARTCAMP_END) {
+  import { countdownTo, formatClock, pad } from '../../components/lanyard/startcamp_countdown.js';
+  // "Empieza en" solo tiene sentido antes del inicio: al llegar a 0 la caja se oculta y el reloj se para.
+  const box = document.querySelector<HTMLElement>('[data-countdown]');
+  const start = Number(box?.dataset.countdown);
+  if (box && Date.now() < start) {
     box.hidden = false;
-    const clock = box.querySelector<HTMLElement>('[data-camp-countdown-clock]')!;
-    const pad = (n: number) => String(n).padStart(2, '0');
+    const clock = box.querySelector<HTMLElement>('[data-countdown-clock]')!;
     const tick = () => {
-      const [d, h, m, s] = getStartcampCountdown();
-      clock.textContent = d + h + m + s > 0 ? `${d}d ${pad(h)}h ${pad(m)}m ${pad(s)}s` : '¡Ya ha empezado!';
+      const t = countdownTo(start);
+      if (t.some((n) => n > 0)) clock.textContent = `${formatClock(t)} ${pad(t[3])}s`;
+      else { box.hidden = true; clearInterval(timer); }
     };
+    const timer = setInterval(tick, 1000);
     tick();
-    setInterval(tick, 1000);
   }
 </script>

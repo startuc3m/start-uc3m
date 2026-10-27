@@ -7,13 +7,12 @@ import { startcampPromoUrl } from '../lib/startcamp';
 const url = await startcampPromoUrl(Astro.url.pathname, ['/socios']);
 ---
 {url && (
-  <div class="fixed inset-x-3 z-40 flex items-center gap-2 rounded-brand bg-navy/95 p-2 pl-4 text-white shadow-2xl backdrop-blur lg:hidden" style="bottom: calc(12px + env(safe-area-inset-bottom, 0px))" data-camp-bar hidden>
+  <div class="fixed inset-x-3 z-40 flex items-center gap-3 rounded-brand bg-navy/95 p-2 pl-4 text-white shadow-2xl backdrop-blur lg:hidden" style="bottom: calc(12px + env(safe-area-inset-bottom, 0px))" data-camp-bar hidden>
     <a href="/eventos/start-camp" class="min-w-0 flex-1 leading-tight">
       <span class="display block truncate text-[19px]">Start Camp 2026</span>
       <span class="mono block truncate text-[11px] text-lavender" data-camp-left>7 y 8 de noviembre</span>
     </a>
-    <a href="/eventos/start-camp" class="btn btn-outline shrink-0 px-3 py-3 text-[13px] text-white">Ver evento</a>
-    <a href={url} target="_blank" rel="noopener" class="btn btn-lime shrink-0 px-3 py-3 text-[13px]">Reservar ↗</a>
+    <a href={url} target="_blank" rel="noopener" class="btn btn-lime shrink-0 px-4 py-3 text-[14px]">Reservar ↗</a>
     <button type="button" class="px-1 font-mono text-lg text-lavender" aria-label="Cerrar" data-camp-close>×</button>
   </div>
 )}
