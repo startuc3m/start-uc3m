@@ -1,10 +1,10 @@
 // Datos del perfil del Start Camp.
 //
-// La interfaz solo usa las funciones de este archivo. Cada una está marcada
-// con «PENDIENTE: conectar» y lleva en el comentario la llamada de Supabase
-// que le toca (brief del perfil, §6). Hasta entonces, fuera del modo demo:
-// obtenerPerfil dice que no hay sesión (se ve «Entrar») y el resto falla
-// como error de red.
+// La interfaz solo usa las funciones de este archivo. Hablan directamente con
+// Supabase (supabase-js + clave publishable; la seguridad la pone RLS) con
+// las llamadas del brief del perfil, §6. Sin PUBLIC_SUPABASE_URL o
+// PUBLIC_SUPABASE_PUBLISHABLE_KEY: obtenerPerfil dice que no hay sesión (se
+// ve «Entrar») y el resto falla como error de red.
 //
 // Modo demo: con ?demo=<variante>, y nunca en los hosts de producción, todo
 // funciona contra un mock en memoria. Variantes en VARIANTES_DEMO.
@@ -52,68 +52,173 @@ export function usaMock(loc = window.location) {
   return varianteDemo(loc) !== null;
 }
 
+// ---------------------------------------------------------------- Supabase
+
+/** Columnas del perfil propio. Nunca select('*'): da error de permisos. */
+const COLUMNAS_PERFIL = 'nombre, estado_grupo, rol, intereses, linkedin_url, descripcion, group_id, groups(nombre)';
+
+/** Texto de la base de datos para «Busco grupo»: sin grupo, group_id null. */
+const BUSCO_GRUPO = 'Busco grupo';
+
+/** Veces que se vuelve a buscar el grupo si otra persona lo crea a la vez (23505). */
+const INTENTOS_GRUPO = 3;
+
+let clienteSupabase = null;
+
+/**
+ * Cliente de Supabase, o null si faltan las variables de entorno. Se carga
+ * al primer uso: el modo demo y la pantalla de carga no lo descargan. Al
+ * crearse lee la sesión que trae la URL al volver del enlace del correo.
+ */
+function supabase() {
+  const url = import.meta.env.PUBLIC_SUPABASE_URL;
+  const clave = import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  if (!url || !clave) return Promise.resolve(null);
+  clienteSupabase ??= import('@supabase/supabase-js').then(({ createClient }) => createClient(url, clave));
+  return clienteSupabase;
+}
+
+/** Olvida el cliente de Supabase (tests). */
+export function reiniciarClienteSupabase() {
+  clienteSupabase = null;
+}
+
+async function sesionActual(sb) {
+  const { data } = await sb.auth.getSession();
+  return data?.session ?? null;
+}
+
+/** Ejecuta `fn`; lo que no sea un ApiError (red, excepciones) sale como RED. */
+async function llamar(fn) {
+  try {
+    return await fn();
+  } catch (err) {
+    throw err instanceof ApiError ? err : new ApiError('RED');
+  }
+}
+
+const normalizarGrupo = (nombre) => String(nombre ?? '').trimEnd().toLowerCase();
+
+/**
+ * Nombre del grupo → group_id (brief §6): null con «Busco grupo» (o sin
+ * nombre); si no, se busca en groups ignorando mayúsculas y espacios al
+ * final; si no está, se inserta con origen 'manual'. Si el insert choca
+ * (23505, otra persona lo ha creado a la vez), se vuelve a buscar.
+ */
+export async function resolverGrupo(sb, estadoGrupo, nombreGrupo) {
+  if (estadoGrupo === BUSCO_GRUPO) return null;
+  const nombre = String(nombreGrupo ?? '').trimEnd();
+  if (!nombre) return null;
+  const buscado = normalizarGrupo(nombre);
+
+  for (let intento = 0; intento < INTENTOS_GRUPO; intento++) {
+    const { data: grupos, error } = await sb.from('groups').select('id, nombre');
+    if (error) throw new ApiError(traducirErrorBD(error));
+    const existente = (grupos ?? []).find((g) => normalizarGrupo(g.nombre) === buscado);
+    if (existente) return existente.id;
+
+    const { data: nuevo, error: errorAlta } = await sb
+      .from('groups')
+      .insert({ nombre, origen: 'manual' })
+      .select('id')
+      .single();
+    if (!errorAlta) return nuevo.id;
+    if (errorAlta.code !== '23505') throw new ApiError(traducirErrorBD(errorAlta));
+  }
+  throw new ApiError('RED');
+}
+
 // ---------------------------------------------------------------- interfaz
 
 /** Manda el enlace de acceso al correo. */
 export async function pedirEnlace(email) {
   if (usaMock()) return mock.pedirEnlace(email);
-  // PENDIENTE: conectar
-  // const { error } = await supabase.auth.signInWithOtp({
-  //   email,
-  //   options: { shouldCreateUser: false, emailRedirectTo: window.location.origin + RUTA_PERFIL },
-  // });
-  // if (error) throw new ApiError(traducirErrorEnlace(error));
-  throw new ApiError('RED');
+  return llamar(async () => {
+    const sb = await supabase();
+    if (!sb) throw new ApiError('RED');
+    const { error } = await sb.auth.signInWithOtp({
+      email,
+      options: { shouldCreateUser: false, emailRedirectTo: window.location.origin + RUTA_PERFIL },
+    });
+    if (error) throw new ApiError(traducirErrorEnlace(error));
+    return { ok: true };
+  });
 }
 
 /**
  * Perfil de la sesión abierta: { nombre, perfil | null }. `nombre` es el
  * precargado (user_metadata.nombre); `perfil` va con la forma de la base de
- * datos y el nombre del grupo en `nombre_grupo` (o `groups.nombre`).
+ * datos y el nombre del grupo en `groups.nombre` (el mock usa `nombre_grupo`).
  * Sin sesión lanza SIN_SESION.
  */
 export async function obtenerPerfil() {
   if (usaMock()) return mock.obtenerPerfil();
-  // PENDIENTE: conectar
-  // const { data: { session } } = await supabase.auth.getSession();
-  // if (!session) throw new ApiError('SIN_SESION');
-  // const { data: perfil, error } = await supabase.from('profiles')
-  //   .select('nombre, estado_grupo, rol, intereses, linkedin_url, descripcion, group_id, groups(nombre)')
-  //   .eq('user_id', session.user.id).maybeSingle();
-  // if (error) throw new ApiError(traducirErrorBD(error));
-  // return { nombre: session.user.user_metadata.nombre ?? '', perfil };
-  throw new ApiError('SIN_SESION');
+  return llamar(async () => {
+    const sb = await supabase();
+    if (!sb) throw new ApiError('SIN_SESION');
+    const session = await sesionActual(sb);
+    if (!session) throw new ApiError('SIN_SESION');
+    const { data: perfil, error } = await sb
+      .from('profiles')
+      .select(COLUMNAS_PERFIL)
+      .eq('user_id', session.user.id)
+      .maybeSingle();
+    if (error) throw new ApiError(traducirErrorBD(error));
+    return { nombre: session.user.user_metadata?.nombre ?? '', perfil: perfil ?? null };
+  });
 }
 
 /**
  * Guarda el perfil. `datos` sale de aPayload (schema.js). Con `crear`,
- * insert con consent_at y consent_version; si no, update sin consent_*.
+ * insert con consent_at y consent_version; si no, update sin consent_* (no
+ * upsert: falla). Ninguno pide columnas de vuelta.
  */
 export async function guardarPerfil(datos, { crear = false } = {}) {
   if (usaMock()) return mock.guardarPerfil(datos, { crear });
-  // PENDIENTE: conectar
-  // 1. datos.nombre_grupo → group_id (brief §6: null con «Busco grupo»; si no,
-  //    buscar en groups ignorando mayúsculas y espacios, o insertarlo; con
-  //    23505, volver a buscar). Quitar nombre_grupo del objeto.
-  // 2. crear ? insert({ user_id, ...datos }) : update(datos).eq('user_id', user.id)
-  // 3. if (error) throw new ApiError(traducirErrorBD(error));
-  throw new ApiError('RED');
+  return llamar(async () => {
+    const sb = await supabase();
+    if (!sb) throw new ApiError('RED');
+    const session = await sesionActual(sb);
+    if (!session) throw new ApiError('SESION_CADUCADA');
+
+    const group_id = await resolverGrupo(sb, datos.estado_grupo, datos.nombre_grupo);
+    const { nombre, estado_grupo, rol, intereses, linkedin_url, descripcion } = datos;
+    const campos = { nombre, estado_grupo, rol, intereses, linkedin_url, descripcion, group_id };
+
+    const { error } = crear
+      ? await sb.from('profiles').insert({
+          user_id: session.user.id,
+          ...campos,
+          consent_at: datos.consent_at,
+          consent_version: datos.consent_version,
+        })
+      : await sb.from('profiles').update(campos).eq('user_id', session.user.id);
+    if (error) throw new ApiError(traducirErrorBD(error));
+    return { ok: true };
+  });
 }
 
 /** Borra el perfil de la sesión abierta. */
 export async function borrarPerfil() {
   if (usaMock()) return mock.borrarPerfil();
-  // PENDIENTE: conectar
-  // const { error } = await supabase.from('profiles').delete().eq('user_id', session.user.id);
-  // if (error) throw new ApiError(traducirErrorBD(error));
-  throw new ApiError('RED');
+  return llamar(async () => {
+    const sb = await supabase();
+    if (!sb) throw new ApiError('RED');
+    const session = await sesionActual(sb);
+    if (!session) throw new ApiError('SESION_CADUCADA');
+    const { error } = await sb.from('profiles').delete().eq('user_id', session.user.id);
+    if (error) throw new ApiError(traducirErrorBD(error));
+    return { ok: true };
+  });
 }
 
 /** Cierra la sesión. */
 export async function cerrarSesion() {
   if (usaMock()) return mock.cerrarSesion();
-  // PENDIENTE: conectar
-  // await supabase.auth.signOut();
+  return llamar(async () => {
+    const sb = await supabase();
+    if (sb) await sb.auth.signOut();
+  });
 }
 
 /**
@@ -137,8 +242,8 @@ export function leerErrorEnlace(loc = window.location) {
 // ---------------------------------------------------------------- errores de Supabase
 
 /**
- * Error de la base de datos → código de la interfaz (brief §7). Para quien
- * conecte el back.
+ * Error de la base de datos → código de la interfaz (brief §7). El 23505
+ * de groups lo resuelve resolverGrupo antes de llegar aquí.
  *   23514 + profiles_<campo>_check → INVALID_<CAMPO>
  *   42501 (o 401)                  → SESION_CADUCADA
  *   lo demás                       → RED
