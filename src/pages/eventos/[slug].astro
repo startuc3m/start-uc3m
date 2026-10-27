@@ -14,7 +14,15 @@ const { e } = Astro.props;
 const { Content } = await render(e);
 const fotos = eventoFotos[e.id];
 const fmt = (d: Date) => d.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+const lastDay = new Date(e.data.date.getTime() + (e.data.days - 1) * 86400000);
+const fmtDay = (d: Date) => d.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric' });
+const dateLabel = e.data.days > 1 ? `${fmtDay(e.data.date)} y ${fmt(lastDay).replace(',', '')}` : fmt(e.data.date);
+const timeLabel = e.data.endTime ? (e.data.days > 1 ? `${e.data.time} (${fmtDay(e.data.date).split(' ')[0]}) – ${e.data.endTime} (${fmtDay(lastDay).split(' ')[0]})` : `${e.data.time} – ${e.data.endTime}`) : e.data.time;
+const { prizes, mentors, jury } = e.data;
+const initials = (n: string) => n.split(' ').filter((w) => w.length > 2).slice(0, 2).map((w) => w[0]).join('');
 const open = e.data.status === 'abierto';
+// Cuenta atrás en vivo solo para el Camp (misma fecha que el banner y el lanyard).
+const countdown = e.id === 'start-camp' && open;
 const soldOut = e.data.status === 'sold-out';
 const past = e.data.status === 'pasado';
 // Plataforma de inscripción según el dominio de `external` (Luma, Neonpass…).
@@ -49,8 +57,10 @@ const eventJsonLd = {
       </div>
       <div class="flex flex-col gap-5" data-reveal>
       <dl class="flex flex-col gap-5 rounded-brand border border-white/20 bg-cobalt/50 p-6 backdrop-blur md:text-right">
-        <div><dt class="eyebrow text-lavender/70">Fecha</dt><dd class="text-2xl font-semibold  first-letter:uppercase">{fmt(e.data.date)} · {e.data.time}</dd></div>
+        {countdown && <div hidden data-camp-countdown><dt class="eyebrow text-lavender/70">Empieza en</dt><dd class="font-mono text-3xl font-medium tabular-nums text-lime" role="timer" data-camp-countdown-clock></dd></div>}
+        <div><dt class="eyebrow text-lavender/70">Fecha</dt><dd class="text-2xl font-semibold first-letter:uppercase">{dateLabel}</dd><dd class="mt-1 text-lavender">{timeLabel}</dd></div>
         <div><dt class="eyebrow text-lavender/70">Lugar</dt><dd class="text-2xl font-semibold">{e.data.place}</dd></div>
+        {e.data.price && <div><dt class="eyebrow text-lavender/70">Entrada</dt><dd class="text-2xl font-semibold">{e.data.price}</dd>{e.data.priceNote && <dd class="mt-1 text-lavender">{e.data.priceNote}</dd>}</div>}
         {(past || soldOut || e.data.seats) && <div><dt class="eyebrow text-lavender/70">Plazas</dt><dd class="text-2xl font-semibold">{past ? 'Evento celebrado' : soldOut ? 'Sold out' : e.data.seats}</dd></div>}
       </dl>
       <div class="flex flex-wrap gap-3 md:justify-end">
@@ -110,6 +120,77 @@ const eventJsonLd = {
       <div class="relative aspect-[4/3] overflow-hidden rounded-brand" data-reveal><Photo name={fotos?.side} sizes="(min-width: 768px) 50vw, 100vw" class="absolute inset-0 h-[120%] w-full object-cover" /></div>
     )}
   </section>
+  <!-- PREMIOS: los que no están confirmados salen como "por anunciar" -->
+  {prizes.length > 0 && (
+    <section class="border-t border-line bg-paper">
+      <div class="container-x py-12 md:py-20">
+        <div class="flex items-end justify-between gap-6" data-reveal>
+          <div>
+            <span class="eyebrow text-cobalt">Qué te llevas</span>
+            <h2 class="display mt-3 text-[clamp(32px,5vw,64px)] text-cobalt">Premios_</h2>
+          </div>
+          <Doodle name="star" class="hidden h-16 w-16 md:block" />
+        </div>
+        <ol class="mt-8 grid gap-4 md:grid-cols-[1.6fr_1fr_1fr]" data-stagger>
+          {prizes.map((p, i) => (
+            <li class={`flex min-h-[200px] flex-col justify-between gap-6 rounded-brand p-6 md:p-8 ${p.prize ? 'bg-lime text-ink' : 'border-2 border-dashed border-cobalt/30 text-cobalt'}`} data-reveal>
+              <span class="mono">{p.place}</span>
+              {p.prize ? (
+                <div>
+                  <p class={`font-bold leading-tight ${i === 0 ? 'text-[clamp(28px,3.4vw,44px)]' : 'text-2xl'}`}>{p.prize}</p>
+                  {p.note && <p class="mt-2 text-lg">{p.note}</p>}
+                </div>
+              ) : (
+                <p class="text-2xl font-bold opacity-60">Por anunciar</p>
+              )}
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+  )}
+
+  <!-- MENTORES Y JURADO: nombres confirmados + huecos por confirmar hasta el total previsto -->
+  {(mentors || jury) && (
+    <section class="bg-cobalt text-white">
+      <div class="container-x grid gap-12 py-12 md:grid-cols-[1.4fr_1fr] md:gap-16 md:py-20">
+        {mentors && (
+          <div data-reveal>
+            <span class="eyebrow text-lavender">Te acompañan</span>
+            <h2 class="display mt-3 text-[clamp(32px,5vw,64px)]">{mentors.total} mentores_</h2>
+            <p class="mt-4 max-w-md text-lavender">Acompañan a los equipos durante los dos días para ayudarte a aterrizar la idea.</p>
+            <ul class="mt-8 grid gap-3 sm:grid-cols-2" data-stagger>
+              {mentors.names.map((n) => (
+                <li class="flex items-center gap-4 rounded-brand bg-white/10 p-3 pr-5" data-reveal>
+                  <span class="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-lime font-mono font-semibold text-ink" aria-hidden="true">{initials(n)}</span>
+                  <span class="text-lg font-semibold leading-tight">{n}</span>
+                </li>
+              ))}
+              {mentors.total > mentors.names.length && (
+                <li class="flex items-center gap-4 rounded-brand border-2 border-dashed border-white/30 p-3 pr-5" data-reveal>
+                  <span class="grid h-12 w-12 shrink-0 place-items-center rounded-full border-2 border-dashed border-white/40 font-mono" aria-hidden="true">+{mentors.total - mentors.names.length}</span>
+                  <span class="text-lg leading-tight text-lavender">Más mentores muy pronto</span>
+                </li>
+              )}
+            </ul>
+          </div>
+        )}
+        {jury && (
+          <div data-reveal>
+            <span class="eyebrow text-lavender">La final</span>
+            <h2 class="display mt-3 text-[clamp(32px,5vw,64px)]">{jury.total} jurados_</h2>
+            <p class="mt-4 max-w-md text-lavender">Escuchan los pitch de la final y eligen a los ganadores.{jury.names.length < jury.total && ' Desvelamos los nombres muy pronto.'}</p>
+            <ul class="mt-8 flex flex-wrap gap-3" aria-label={`${jury.total} jurados`}>
+              {Array.from({ length: jury.total }, (_, i) => jury.names[i]).map((n) => n
+                ? <li class="rounded-full bg-white/10 px-4 py-2 font-semibold">{n}</li>
+                : <li class="h-14 w-14 rounded-full border-2 border-dashed border-white/40" aria-hidden="true"></li>)}
+            </ul>
+          </div>
+        )}
+      </div>
+    </section>
+  )}
+
   <!-- GALERÍA: fotos reales del evento (#64), en mosaico -->
   {fotos?.gallery && fotos.gallery.length > 0 && (
     <section class="bg-paper-2">
@@ -158,3 +239,18 @@ const eventJsonLd = {
     </section>
   )}
 </Base>
+<script>
+  import { STARTCAMP_END, getStartcampCountdown } from '../../components/lanyard/startcamp_countdown.js';
+  const box = document.querySelector<HTMLElement>('[data-camp-countdown]');
+  if (box && Date.now() < STARTCAMP_END) {
+    box.hidden = false;
+    const clock = box.querySelector<HTMLElement>('[data-camp-countdown-clock]')!;
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const tick = () => {
+      const [d, h, m, s] = getStartcampCountdown();
+      clock.textContent = d + h + m + s > 0 ? `${d}d ${pad(h)}h ${pad(m)}m ${pad(s)}s` : '¡Ya ha empezado!';
+    };
+    tick();
+    setInterval(tick, 1000);
+  }
+</script>
