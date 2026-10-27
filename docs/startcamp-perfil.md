@@ -226,7 +226,7 @@ Ya está desplegada: cada push genera un preview en `start-uc3m-ej5u`. El enlace
 **Para que funcione también el login real**:
 
 1. **Quien gestione el Vercel de Start:** en `start-uc3m-ej5u` → Settings → Environment Variables, añadir `PUBLIC_SUPABASE_URL` y `PUBLIC_SUPABASE_PUBLISHABLE_KEY` (§8.1) en **Preview** y **Production**. En Preview se pueden limitar a la rama `feat/avatares-startcamp` si no se quieren en todas.
-2. **Pablo:** añadir a las Redirect URLs de Supabase los previews de Start: `https://*-start-065e.vercel.app/**`, o solo `https://start-uc3m-ej5u-git-feat-avatares-startcamp-start-065e.vercel.app/**`.
+2. ✅ **Hecho.** **Pablo:** añadir a las Redirect URLs de Supabase los previews de Start: `https://*-start-065e.vercel.app/**`, o solo `https://start-uc3m-ej5u-git-feat-avatares-startcamp-start-065e.vercel.app/**`. Pablo ya ha registrado las del Vercel de Start (previews y producción).
 3. **Volver a desplegar** la rama en Start (Deployments → el último de la rama → «Redeploy», o cualquier push), porque las variables se meten al compilar.
 4. Abrir `https://start-uc3m-ej5u-git-feat-avatares-startcamp-start-065e.vercel.app/eventos/start-camp/avatar`, **sin `?demo`**, con sesión en el Vercel de Start, y repetir las pruebas de §10.2.
 
@@ -306,7 +306,7 @@ Si al guardar o borrar sale «Tu sesión ha caducado» con la sesión recién ab
 | Quién | Qué |
 |---|---|
 | Quien gestione el Vercel de Start | Variables de Supabase en `start-uc3m-ej5u` (Preview y Production) y dominio `startcamp.startuc3m.es` |
-| Pablo | Redirect URLs (previews de Start y producción) |
+| Pablo | ✅ **Hecho:** Redirect URLs (previews de Start y producción) |
 | Pablo | Pegar la plantilla Magic Link y configurar el remitente «Start UC3M» en el SMTP (Resend) |
 | Pablo | Confirmar si `groups.origen` se puede leer desde el cliente, para avisar del grupo asignado |
 | Pablo | Confirmar el límite del nombre del grupo (`MAX_NOMBRE_GRUPO = 60`) con la base de datos |
