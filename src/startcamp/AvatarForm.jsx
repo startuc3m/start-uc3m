@@ -36,7 +36,8 @@ export const MENSAJES = {
   red: 'No se ha podido guardar. Revisa tu conexión e inténtalo otra vez.',
   carga: 'No hemos podido cargar tu perfil. Revisa tu conexión e inténtalo otra vez.',
   sesionCaducada: 'Tu sesión ha caducado. Pide otro enlace',
-  enlaceEnviado: 'Revisa tu correo (te llega en unos minutos)',
+  enlaceEnviado:
+    'Revisa tu correo (te llega en unos minutos). El enlace caduca en 1 hora; si no lo ves, mira en spam o correo no deseado.',
   guardado: 'Guardado. Puedes volver cuando quieras; te pediremos tu correo.',
   borrado: 'Tu perfil se ha borrado. Ya no apareces en el directorio.',
   confirmarBorrado: 'Se borrará tu perfil y dejarás de aparecer en el directorio',

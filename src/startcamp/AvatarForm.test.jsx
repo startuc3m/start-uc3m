@@ -85,6 +85,9 @@ describe('Entrar', () => {
     userEvent.type(correo, 'ana@uc3m.es');
     userEvent.click(screen.getByRole('button', { name: 'Enviar enlace' }));
     expect(await screen.findByText(MENSAJES.enlaceEnviado)).toBeInTheDocument();
+    expect(MENSAJES.enlaceEnviado).toBe(
+      'Revisa tu correo (te llega en unos minutos). El enlace caduca en 1 hora; si no lo ves, mira en spam o correo no deseado.'
+    );
     expect(api.pedirEnlace).toHaveBeenCalledWith('ana@uc3m.es');
   });
 
