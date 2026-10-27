@@ -8,11 +8,11 @@ const url = await startcampPromoUrl(Astro.url.pathname, ['/socios']);
 ---
 {url && (
   <div class="fixed inset-x-3 z-40 flex items-center gap-3 rounded-brand bg-navy/95 p-2 pl-4 text-white shadow-2xl backdrop-blur lg:hidden" style="bottom: calc(12px + env(safe-area-inset-bottom, 0px))" data-camp-bar hidden>
-    <div class="min-w-0 flex-1 leading-tight">
-      <span class="display block text-[19px]">Start Camp 2026</span>
-      <span class="mono block text-[11px] text-lavender" data-camp-left>7 y 8 de noviembre</span>
-    </div>
-    <a href={url} target="_blank" rel="noopener" class="btn btn-lime shrink-0 px-4 py-3 text-[14px]">Reserva plaza</a>
+    <a href="/eventos/start-camp" class="min-w-0 flex-1 leading-tight">
+      <span class="display block truncate text-[19px]">Start Camp 2026</span>
+      <span class="mono block truncate text-[11px] text-lavender" data-camp-left>7 y 8 de noviembre</span>
+    </a>
+    <a href={url} target="_blank" rel="noopener" class="btn btn-lime shrink-0 px-4 py-3 text-[14px]">Reservar ↗</a>
     <button type="button" class="px-1 font-mono text-lg text-lavender" aria-label="Cerrar" data-camp-close>×</button>
   </div>
 )}
@@ -28,7 +28,7 @@ const url = await startcampPromoUrl(Astro.url.pathname, ['/socios']);
     const left = bar.querySelector<HTMLElement>('[data-camp-left]')!;
     const tick = () => {
       const [d, h, m] = getStartcampCountdown();
-      if (d + h + m > 0) left.textContent = d > 0 ? `Empieza en ${d} d ${h} h` : `Empieza en ${h} h ${m} min`;
+      if (d + h + m > 0) left.textContent = d > 0 ? `Faltan ${d} d ${h} h` : `Faltan ${h} h ${m} min`;
     };
     tick();
     const timer = setInterval(tick, 30_000);
