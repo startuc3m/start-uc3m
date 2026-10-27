@@ -18,7 +18,7 @@ const lastDay = new Date(e.data.date.getTime() + (e.data.days - 1) * 86400000);
 const fmtDay = (d: Date) => d.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric' });
 const dateLabel = e.data.days > 1 ? `${fmtDay(e.data.date)} y ${fmt(lastDay).replace(',', '')}` : fmt(e.data.date);
 const timeLabel = e.data.endTime ? (e.data.days > 1 ? `${e.data.time} (${fmtDay(e.data.date).split(' ')[0]}) – ${e.data.endTime} (${fmtDay(lastDay).split(' ')[0]})` : `${e.data.time} – ${e.data.endTime}`) : e.data.time;
-const { prizes, mentors, jury } = e.data;
+const { prizes, mentors, jury, info } = e.data;
 const initials = (n: string) => n.split(' ').filter((w) => w.length > 2).slice(0, 2).map((w) => w[0]).join('');
 const open = e.data.status === 'abierto';
 // Cuenta atrás en vivo solo para el Camp (misma fecha que el banner y el lanyard).
@@ -146,6 +146,28 @@ const eventJsonLd = {
             </li>
           ))}
         </ol>
+      </div>
+    </section>
+  )}
+
+  <!-- INFO PRÁCTICA: cómo llegar, horario, equipo… (solo lo confirmado) -->
+  {info.length > 0 && (
+    <section class="border-t border-line bg-paper-2">
+      <div class="container-x py-12 md:py-20">
+        <div data-reveal>
+          <span class="eyebrow text-cobalt">Antes de ir</span>
+          <h2 class="display mt-3 text-[clamp(32px,5vw,64px)] text-cobalt">Info práctica_</h2>
+        </div>
+        <ul class="mt-8 grid gap-4 md:grid-cols-3" data-stagger>
+          {info.map((it, i) => (
+            <li class="flex flex-col gap-3 rounded-brand bg-paper p-6 md:p-8" data-reveal>
+              <span class="mono text-cobalt">0{i + 1}</span>
+              <h3 class="text-2xl font-bold">{it.title}</h3>
+              <p class="text-lg opacity-80">{it.text}</p>
+              {it.link && <a href={it.link.href} target="_blank" rel="noopener" class="mt-auto pt-2 font-semibold text-cobalt underline underline-offset-4">{it.link.label} <span class="font-mono">↗</span></a>}
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   )}

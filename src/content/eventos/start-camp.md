@@ -25,6 +25,15 @@ mentors:
   names: ["Darío Méndez Fernández", "Carmen Vázquez de Castro", "Juan Fernández", "Monique Maley"]
 jury:
   total: 7
+# Comida: pendiente de confirmar por Eventos; no se publica hasta entonces.
+info:
+  - title: "Cómo llegar"
+    text: "Mad Tech Campus está en la Nave 14 de Matadero Madrid (Paseo de la Chopera, 14). Metro más cercano: Legazpi (L3 y L6)."
+    link: { href: "https://www.google.com/maps/search/?api=1&query=Mad+Tech+Campus%2C+Paseo+de+la+Chopera+14%2C+28045+Madrid", label: "Abrir en Google Maps" }
+  - title: "Horario"
+    text: "Empieza el sábado 7 a las 9:00 y termina el domingo 8 a las 20:00. No se duerme allí: cada noche vuelves a casa."
+  - title: "¿Sin equipo?"
+    text: "Sin problema: puedes apuntarte aunque no tengas equipo."
 external: "https://www.neonpass.es/event/ec3ee828-56d3-40d4-9636-ece85cfd383b"
 ---
 El formato más intenso del curso: dos días de trabajo en equipo para pasar de una idea a un proyecto, con doce mentores acompañando a los equipos y un jurado de siete personas en la final.

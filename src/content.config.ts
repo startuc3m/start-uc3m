@@ -41,6 +41,8 @@ const eventos = defineCollection({
     prizes: z.array(z.object({ place: z.string(), prize: z.string().optional(), note: z.string().optional() })).default([]),
     mentors: z.object({ total: z.number(), names: z.array(z.string()).default([]) }).optional(),
     jury: z.object({ total: z.number(), names: z.array(z.string()).default([]) }).optional(),
+    // Info práctica (cómo llegar, horario, equipo…): una tarjeta por punto, con enlace opcional.
+    info: z.array(z.object({ title: z.string(), text: z.string(), link: z.object({ href: z.string(), label: z.string() }).optional() })).default([]),
     draft: z.boolean().default(false),
   }),
 });
