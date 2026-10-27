@@ -21,3 +21,13 @@ El alta de socios (`/socios`) va por `api/membership/*` y Stripe; está document
 ## Únete
 
 Las inscripciones están cerradas (#31) y `/unete` no tiene formulario. Para la próxima convocatoria hay que crear un handler en `api/` (como `api/contacto.mjs`) y su formulario.
+
+## Correo de acceso al perfil del Start Camp
+
+El perfil del Start Camp (`/eventos/start-camp/avatar`) no tiene formulario en `api/`: se entra con un enlace de un solo uso que manda Supabase (magic link). La plantilla de ese correo es `docs/correo-enlace-startcamp.html`.
+
+- **Dónde va:** Supabase → Authentication → Emails → Templates → **Magic Link**. La pega quien administra Supabase; no se despliega con la web.
+- **Asunto:** `Tu enlace para entrar en tu perfil del Start Camp`
+- **Variables:** `{{ .ConfirmationURL }}` (el enlace, caduca en 1 hora) y `{{ .Data.nombre }}` (`user_metadata.nombre`, lo carga el script de entradas). Se pegan tal cual, sin sustituirlas.
+- **Saludo:** si `user_metadata.nombre` no existe, queda en «Hola:».
+- **Remitente:** no está en la plantilla; se configura aparte en el SMTP personalizado de Supabase (Resend).
