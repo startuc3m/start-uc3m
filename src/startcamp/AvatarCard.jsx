@@ -1,6 +1,18 @@
+// Tarjeta de un asistente del Start Camp: vista previa del formulario y ficha
+// del directorio. Solo pinta (todo como texto, nunca como HTML).
+//
+// Props, con la forma de la base de datos (tabla profiles):
+//   nombre        string
+//   estado_grupo  'Busco grupo' | 'Tengo grupo' | 'Abierto a sumar gente'
+//   rol           'Negocio' | 'Tecnología' | 'Diseño' | 'Otro'
+//   intereses     string[] con los textos de INTERESES (opciones.js)
+//   linkedin_url  'https://www.linkedin.com/in/<usuario>' | null
+//   descripcion   string | null
+//   nombre_grupo  string | null   (o `groups: { nombre }`, como lo da el select)
+//   preview       true en el formulario: rellena huecos con textos de ejemplo
 import React from 'react';
-import { ETIQUETA_ESTADO, ETIQUETA_INTERES, ETIQUETA_ROL, tieneGrupo } from './opciones.js';
-import { LINKEDIN_RE, linkedinUrl } from './schema.js';
+import { ESTADOS_GRUPO, textoAId } from './opciones.js';
+import { esUrlLinkedinValida, urlAUsuario } from './schema.js';
 
 // Color del distintivo según el estado de grupo (tokens del brand kit).
 const COLOR_ESTADO = {
@@ -19,31 +31,27 @@ export function iniciales(nombre) {
     .join('');
 }
 
-/**
- * Tarjeta de un asistente del Start Camp: la vista previa del formulario y,
- * más adelante, cada ficha del directorio. Solo pinta: no tiene estado.
- *
- * `preview` rellena los huecos vacíos con textos de ejemplo.
- */
 export default function AvatarCard({
   nombre,
   estado_grupo,
   rol,
   intereses = [],
-  linkedin,
+  linkedin_url,
   descripcion,
   nombre_grupo,
+  groups,
   preview = false,
 }) {
   const nombreVisible = nombre?.trim() || (preview ? 'Tu nombre' : '');
-  const linkedinValido = linkedin && LINKEDIN_RE.test(linkedin);
-  const grupo = tieneGrupo(estado_grupo) && nombre_grupo?.trim();
+  const estado = textoAId(ESTADOS_GRUPO, estado_grupo);
+  const grupo = estado !== 'busco' && (nombre_grupo ?? groups?.nombre)?.trim();
   const texto = descripcion?.trim();
+  const linkedin = esUrlLinkedinValida(linkedin_url) ? linkedin_url : null;
 
   return (
     <article
       className="overflow-hidden rounded-brand border border-line bg-white text-ink shadow-sm"
-      aria-label={nombreVisible ? `Avatar de ${nombreVisible}` : 'Avatar'}
+      aria-label={nombreVisible ? `Perfil de ${nombreVisible}` : 'Perfil'}
     >
       <div className="flex items-center gap-4 bg-cobalt p-5 text-white">
         <div
@@ -55,19 +63,15 @@ export default function AvatarCard({
         <div className="min-w-0">
           <p className={`display break-words text-[28px] ${nombre?.trim() ? '' : 'opacity-60'}`}>{nombreVisible}</p>
           {(rol || preview) && (
-            <p className={`eyebrow mt-1 text-lavender ${rol ? '' : 'opacity-60'}`}>
-              {rol ? ETIQUETA_ROL[rol] : 'Tu rol'}
-            </p>
+            <p className={`eyebrow mt-1 text-lavender ${rol ? '' : 'opacity-60'}`}>{rol || 'Tu rol'}</p>
           )}
         </div>
       </div>
 
       <div className="flex flex-col gap-4 p-5">
-        {estado_grupo ? (
+        {estado ? (
           <div className="flex flex-wrap items-center gap-2">
-            <span className={`mono rounded-full px-3 py-1 text-[11px] ${COLOR_ESTADO[estado_grupo]}`}>
-              {ETIQUETA_ESTADO[estado_grupo]}
-            </span>
+            <span className={`mono rounded-full px-3 py-1 text-[11px] ${COLOR_ESTADO[estado]}`}>{estado_grupo}</span>
             {grupo && <span className="text-sm font-semibold">{grupo}</span>}
           </div>
         ) : (
@@ -82,22 +86,22 @@ export default function AvatarCard({
 
         {intereses.length > 0 && (
           <ul className="flex flex-wrap gap-2" aria-label="Intereses">
-            {intereses.map((id) => (
-              <li key={id} className="rounded-full border border-line px-3 py-1 text-sm">
-                {ETIQUETA_INTERES[id] ?? id}
+            {intereses.map((t) => (
+              <li key={t} className="rounded-full border border-line px-3 py-1 text-sm">
+                {t}
               </li>
             ))}
           </ul>
         )}
 
-        {linkedinValido && (
+        {linkedin && (
           <a
-            href={linkedinUrl(linkedin)}
+            href={linkedin}
             target="_blank"
             rel="noopener noreferrer"
             className="break-all text-sm font-semibold text-cobalt underline underline-offset-2"
           >
-            linkedin.com/in/{linkedin} <span aria-hidden="true">↗</span>
+            linkedin.com/in/{urlAUsuario(linkedin)} <span aria-hidden="true">↗</span>
           </a>
         )}
       </div>
