@@ -2,8 +2,10 @@
 import Photo from '../../../components/Photo.astro';
 import Base from '../../../layouts/Base.astro';
 import Logo from '../../../components/Logo.astro';
-// Destino del formulario del avatar cuando falta el token o el back lo rechaza.
-// Misma estructura que la 404.
+// Enlace de acceso al perfil del Start Camp caducado o incorrecto. Misma
+// estructura que la 404. Vivirá en startcamp.startuc3m.es, donde / no es la
+// web: los enlaces a la web son absolutos. «Pedir otro enlace» es de la
+// misma app (pantalla «Entrar» del perfil).
 ---
 <Base title="Enlace no válido" tone="dark" noindex>
   <section class="relative overflow-hidden bg-cobalt text-white">
@@ -15,8 +17,9 @@ import Logo from '../../../components/Logo.astro';
       <h1 class="display mt-4 text-[clamp(56px,12vw,180px)]" data-split>¿Te has perdido?_</h1>
       <p class="mt-6 max-w-md text-xl text-lavender" data-reveal>Este enlace ha caducado o no es correcto. Esta es nuestra web; creemos que querías ir aquí:</p>
       <div class="mt-8 flex flex-wrap gap-3" data-reveal>
-        <a href="/" class="btn btn-on-blue">Ir a startuc3m.es <span class="font-mono">→</span></a>
-        <a href="/eventos/start-camp" class="btn btn-outline text-white">Volver al Start Camp</a>
+        <a href="/eventos/start-camp/avatar" class="btn btn-on-blue">Pedir otro enlace</a>
+        <a href="https://www.startuc3m.es/" class="btn btn-outline text-white">Ir a startuc3m.es <span class="font-mono">→</span></a>
+        <a href="https://www.startuc3m.es/eventos/start-camp" class="btn btn-outline text-white">Volver al Start Camp</a>
       </div>
     </div>
   </section>
