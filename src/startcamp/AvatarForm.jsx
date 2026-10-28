@@ -1,14 +1,19 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import AvatarCard from './AvatarCard.jsx';
+import AvatarCard, { iniciales } from './AvatarCard.jsx';
 import { lanzarConfeti } from './confeti.js';
+import { ErrorFoto, MENSAJES_FOTO, procesarFoto } from './foto.js';
 import {
   VARIANTES_DEMO,
+  VARIANTE_DEMO_FOTO,
   borrarPerfil,
   cerrarSesion,
+  fotosActivas,
   guardarPerfil,
   leerErrorEnlace,
   obtenerPerfil,
   pedirEnlace,
+  quitarFoto,
+  subirFoto,
   varianteDemo,
 } from './api.js';
 import {
@@ -19,6 +24,7 @@ import {
   MAX_DESCRIPCION,
   MAX_INTERESES,
   ROLES,
+  TIPOS_FOTO,
   URL_PRIVACIDAD,
   tieneGrupo,
 } from './opciones.js';
@@ -42,7 +48,19 @@ export const MENSAJES = {
   borrado: 'Tu perfil se ha borrado. Ya no apareces en el directorio.',
   confirmarBorrado: 'Se borrará tu perfil y dejarás de aparecer en el directorio',
   borrarRed: 'No se ha podido borrar. Revisa tu conexión e inténtalo otra vez.',
+  // Solo con las fotos activas.
+  foto: 'No se ha podido subir la foto. Prueba con otra imagen.',
+  avisoFoto: 'Tu foto solo la verán otros asistentes con sesión iniciada y se borra con tu perfil.',
 };
+
+// Lo que enseña el perfil, en el texto del consentimiento.
+const DATOS_CONSENTIMIENTO = 'nombre, estado de grupo, rol, intereses, LinkedIn, descripción y nombre del grupo';
+const DATOS_CONSENTIMIENTO_FOTOS =
+  'nombre, foto (si la subes), estado de grupo, rol, intereses, LinkedIn, descripción y nombre del grupo';
+
+// Foto en el formulario: `url` es lo que se ve (URL firmada o de objeto),
+// `nueva` el Blob que falta subir y `guardada` si hay foto en Storage.
+const SIN_FOTO = { url: null, nueva: null, guardada: false };
 
 // Orden de los campos: el foco va al primero con error.
 const CAMPOS = ['nombre', 'estado_grupo', 'rol', 'intereses', 'linkedin', 'descripcion', 'nombre_grupo', 'consentimiento'];
@@ -83,18 +101,22 @@ function OpcionRadio({ name, opcion, checked, onChange }) {
   );
 }
 
-/** Solo en modo demo: enlaces para saltar entre variantes del mock. */
-function BarraDemo({ variante }) {
+/**
+ * Solo en modo demo: enlaces para saltar entre variantes del mock. Con las
+ * fotos activas añade «Con foto» y los enlaces siguen con &fotos=1.
+ */
+function BarraDemo({ variante, conFotos }) {
+  const variantes = conFotos ? [...VARIANTES_DEMO, VARIANTE_DEMO_FOTO] : VARIANTES_DEMO;
   return (
     <nav
       aria-label="Modo demo"
       className="mb-8 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-brand border border-dashed border-cobalt/40 bg-paper-2 px-4 py-3"
     >
       <span className="mono text-cobalt">Modo demo</span>
-      {VARIANTES_DEMO.map((v) => (
+      {variantes.map((v) => (
         <a
           key={v.id}
-          href={`?demo=${v.id}`}
+          href={`?demo=${v.id}${conFotos && v.id !== VARIANTE_DEMO_FOTO.id ? '&fotos=1' : ''}`}
           aria-current={v.id === variante ? 'page' : undefined}
           className={`text-sm underline-offset-2 hover:underline ${focoCls} ${
             v.id === variante ? 'font-semibold text-cobalt underline' : 'text-ink/70'
@@ -154,6 +176,69 @@ function PantallaNoEncontrado({ correo, onProbarOtro, tituloRef }) {
         </a>
       </div>
     </section>
+  );
+}
+
+// HEIC por extensión también: hay navegadores que no le dan tipo.
+const ACEPTA_FOTO = [...TIPOS_FOTO, '.heic', '.heif'].join(',');
+
+/** Foto opcional (solo con las fotos activas): subir, cambiar y quitar, con vista previa redonda. */
+function CampoFoto({ foto, nombre, procesando, error, onElegir, onQuitar, botonRef }) {
+  const campo = useRef(null);
+  const [rota, setRota] = useState(null); // URL que no ha cargado: se ven las iniciales
+  const url = foto.url && foto.url !== rota ? foto.url : null;
+  const describe = `av-foto-ayuda${error ? ' av-foto-error' : ''}`;
+
+  return (
+    <div>
+      <span id="av-foto-etiqueta" className={labelCls}>
+        Foto <span className={opcionalCls}>(opcional)</span>
+      </span>
+      <div className="flex flex-wrap items-center gap-4">
+        <div className="grid h-20 w-20 shrink-0 place-items-center overflow-hidden rounded-full border-2 border-line bg-white font-display text-2xl text-cobalt">
+          {url ? (
+            <img src={url} alt="Vista previa de tu foto" className="h-full w-full object-cover" onError={() => setRota(url)} />
+          ) : (
+            <span aria-hidden="true">{iniciales(nombre) || '?'}</span>
+          )}
+        </div>
+        <input
+          ref={campo}
+          id="av-foto"
+          type="file"
+          accept={ACEPTA_FOTO}
+          className="hidden"
+          tabIndex={-1}
+          aria-labelledby="av-foto-etiqueta"
+          onChange={onElegir}
+        />
+        <div className="flex flex-wrap gap-3">
+          <button
+            ref={botonRef}
+            type="button"
+            className={`btn btn-outline px-5 py-3 text-cobalt aria-busy:cursor-wait aria-busy:opacity-70 ${focoCls}`}
+            onClick={() => !procesando && campo.current?.click()}
+            aria-busy={procesando || undefined}
+            aria-describedby={describe}
+          >
+            {procesando ? 'Preparando la foto…' : foto.url ? 'Cambiar' : 'Subir foto'}
+          </button>
+          {foto.url && !procesando && (
+            <button
+              type="button"
+              className={`rounded-brand border border-line px-5 py-3 text-[15px] font-semibold text-ink/70 hover:border-red-600 hover:text-red-700 ${focoCls}`}
+              onClick={onQuitar}
+            >
+              Quitar
+            </button>
+          )}
+        </div>
+      </div>
+      <p id="av-foto-ayuda" className="mt-2 text-sm text-ink/60">
+        {MENSAJES.avisoFoto}
+      </p>
+      <ErrorCampo id="av-foto-error">{error}</ErrorCampo>
+    </div>
   );
 }
 
@@ -282,6 +367,7 @@ function PantallaEnlaceCaducado({ onPedirOtro }) {
  */
 export default function AvatarForm() {
   const [variante] = useState(() => varianteDemo());
+  const [conFotos] = useState(() => fotosActivas());
 
   const [pantalla, setPantalla] = useState('cargando'); // cargando | entrar | enlace-caducado | error-carga | formulario
   const [nombrePrecargado, setNombrePrecargado] = useState('');
@@ -297,10 +383,22 @@ export default function AvatarForm() {
   const [errorBorrado, setErrorBorrado] = useState(null);
   const [cerrando, setCerrando] = useState(false);
   const [saliendoGrupo, setSaliendoGrupo] = useState(false); // «Salir del grupo» pulsado, falta guardar
+  const [foto, setFoto] = useState(SIN_FOTO); // solo con las fotos activas
+  const [procesandoFoto, setProcesandoFoto] = useState(false);
+  const [errorFoto, setErrorFoto] = useState(null);
   const enviando = useRef(false);
   const confirmacion = useRef(null);
   const botonBorrar = useRef(null);
   const focoABorrar = useRef(false);
+  const botonFoto = useRef(null);
+  const urlLocal = useRef(null); // URL de objeto de la vista previa, para soltarla
+
+  const soltarUrlLocal = useCallback(() => {
+    if (urlLocal.current) URL.revokeObjectURL(urlLocal.current);
+    urlLocal.current = null;
+  }, []);
+
+  useEffect(() => soltarUrlLocal, [soltarUrlLocal]);
 
   const cargar = useCallback(async () => {
     setPantalla('cargando');
@@ -309,6 +407,11 @@ export default function AvatarForm() {
       setNombrePrecargado(data.nombre ?? '');
       setValores(valoresIniciales(data.nombre, data.perfil));
       setTeniaPerfil(Boolean(data.perfil));
+      if (conFotos) {
+        soltarUrlLocal();
+        setFoto({ url: data.perfil?.foto_url ?? null, nueva: null, guardada: Boolean(data.perfil?.foto_path) });
+        setErrorFoto(null);
+      }
       setErrores({});
       setAviso(null);
       setErrorEnvio(null);
@@ -320,7 +423,7 @@ export default function AvatarForm() {
       const codigo = err?.codigo;
       setPantalla(codigo === 'SIN_SESION' || codigo === 'SESION_CADUCADA' ? 'entrar' : 'error-carga');
     }
-  }, []);
+  }, [conFotos, soltarUrlLocal]);
 
   useEffect(() => {
     if (leerErrorEnlace()) setPantalla('enlace-caducado');
@@ -356,6 +459,37 @@ export default function AvatarForm() {
     cambiar('estado_grupo', 'busco');
     setSaliendoGrupo(true);
     document.getElementById('av-estado_grupo-busco')?.focus();
+  }
+
+  // La foto se prepara al elegirla (recorte, 400x400, sin EXIF) y se sube al guardar.
+  async function elegirFoto(event) {
+    const archivo = event.target.files?.[0];
+    event.target.value = ''; // para poder volver a elegir el mismo archivo
+    if (!archivo) return;
+    setErrorFoto(null);
+    setAviso(null);
+    setErrorEnvio(null);
+    setProcesandoFoto(true);
+    try {
+      const blob = await procesarFoto(archivo);
+      soltarUrlLocal();
+      urlLocal.current = URL.createObjectURL(blob);
+      setFoto((f) => ({ ...f, url: urlLocal.current, nueva: blob }));
+    } catch (err) {
+      setErrorFoto(err instanceof ErrorFoto ? err.message : MENSAJES_FOTO.lectura);
+    } finally {
+      setProcesandoFoto(false);
+    }
+  }
+
+  // Se aplica al guardar (quitarFoto). El foco se queda en «Subir foto».
+  function quitarFotoElegida() {
+    soltarUrlLocal();
+    setFoto((f) => ({ ...f, url: null, nueva: null }));
+    setErrorFoto(null);
+    setAviso(null);
+    setErrorEnvio(null);
+    botonFoto.current?.focus();
   }
 
   function alternarInteres(id) {
@@ -414,8 +548,16 @@ export default function AvatarForm() {
     setErrorEnvio(null);
     setSesionCaducada(false);
     try {
-      const datos = aPayload(valores, { creando });
+      const datos = aPayload(valores, { creando, fotos: conFotos });
+      if (conFotos && foto.nueva) {
+        // Primero el archivo; su ruta va en el mismo insert/update del perfil.
+        datos.foto_path = (await subirFoto(foto.nueva)).foto_path;
+      } else if (conFotos && foto.guardada && !foto.url) {
+        await quitarFoto();
+        setFoto((f) => ({ ...f, guardada: false }));
+      }
       await guardarPerfil(datos, { crear: creando });
+      if (conFotos) setFoto((f) => ({ ...f, nueva: null, guardada: Boolean(f.url) }));
       setValores((v) => ({ ...v, linkedin: urlAUsuario(v.linkedin) }));
       setTeniaPerfil(true);
       setSaliendoGrupo(false);
@@ -432,6 +574,8 @@ export default function AvatarForm() {
           enfocar(campo);
         }
         setErrorEnvio('Hay algo que revisar en el formulario.');
+      } else if (codigo === 'FOTO') {
+        setErrorEnvio(MENSAJES.foto);
       } else {
         setErrorEnvio(MENSAJES.red);
       }
@@ -447,6 +591,11 @@ export default function AvatarForm() {
     setErrorBorrado(null);
     try {
       await borrarPerfil();
+      if (conFotos) {
+        soltarUrlLocal();
+        setFoto(SIN_FOTO);
+        setErrorFoto(null);
+      }
       setValores(valoresIniciales(valores.nombre.trim() || nombrePrecargado));
       setTeniaPerfil(false);
       setConfirmando(false);
@@ -483,7 +632,7 @@ export default function AvatarForm() {
     }
   }
 
-  const barra = variante && <BarraDemo variante={variante} />;
+  const barra = variante && <BarraDemo variante={variante} conFotos={conFotos} />;
 
   if (pantalla === 'cargando') {
     return (
@@ -552,6 +701,18 @@ export default function AvatarForm() {
       <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-16">
         <div className="flex min-w-0 flex-col gap-10">
           <form onSubmit={enviar} noValidate className="flex flex-col gap-8" aria-label="Tu perfil">
+            {conFotos && (
+              <CampoFoto
+                foto={foto}
+                nombre={valores.nombre}
+                procesando={procesandoFoto}
+                error={errorFoto}
+                onElegir={elegirFoto}
+                onQuitar={quitarFotoElegida}
+                botonRef={botonFoto}
+              />
+            )}
+
             <div>
               <label htmlFor="av-nombre" className={labelCls}>
                 Nombre
@@ -733,10 +894,9 @@ export default function AvatarForm() {
                     aria-invalid={Boolean(errores.consentimiento)}
                     aria-describedby={err('consentimiento')}
                   />
-                  {/* PENDIENTE: texto de Legal */}
+                  {/* PENDIENTE: texto de Legal (con fotos, versión CONSENTIMIENTO_VERSION_FOTOS) */}
                   <label htmlFor="av-consentimiento" className="leading-snug">
-                    Acepto que Start UC3M use mi perfil (nombre, estado de grupo, rol, intereses, LinkedIn,
-                    descripción y nombre del grupo) para el Start Camp 2026 y para formar grupos. Solo lo verán otros asistentes, se borrará al acabar el
+                    Acepto que Start UC3M use mi perfil ({conFotos ? DATOS_CONSENTIMIENTO_FOTOS : DATOS_CONSENTIMIENTO}) para el Start Camp 2026 y para formar grupos. Solo lo verán otros asistentes, se borrará al acabar el
                     Start Camp y puedo borrarlo antes con el botón «Borrar mi perfil». Más información en la{' '}
                     <a
                       href={URL_PRIVACIDAD}
@@ -757,7 +917,7 @@ export default function AvatarForm() {
               <button
                 type="submit"
                 className="btn btn-primary self-start disabled:cursor-wait disabled:opacity-70"
-                disabled={guardando}
+                disabled={guardando || procesandoFoto}
               >
                 {guardando ? 'Guardando…' : creando ? 'Guardar mi perfil' : 'Guardar cambios'}
               </button>
@@ -843,7 +1003,7 @@ export default function AvatarForm() {
           <h2 id="av-vista-previa" className="eyebrow mb-4 text-ink/70">
             Así te verán los demás
           </h2>
-          <AvatarCard {...aPayload(valores)} preview />
+          <AvatarCard {...aPayload(valores)} foto_url={conFotos ? foto.url : undefined} preview />
         </aside>
       </div>
     </>

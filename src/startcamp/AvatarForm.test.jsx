@@ -3,6 +3,7 @@ import { fireEvent, render, screen, waitFor, within } from '@testing-library/rea
 import userEvent from '@testing-library/user-event';
 import AvatarForm, { MENSAJES } from './AvatarForm';
 import * as api from './api.js';
+import * as foto from './foto.js';
 import confetti from 'canvas-confetti';
 
 // Las funciones de datos se sustituyen por espías; el resto (ApiError,
@@ -17,11 +18,29 @@ vi.mock('./api.js', async (importOriginal) => {
     borrarPerfil: vi.fn(),
     cerrarSesion: vi.fn(),
     leerErrorEnlace: vi.fn(),
+    subirFoto: vi.fn(),
+    quitarFoto: vi.fn(),
   };
 });
 
 // La librería del confeti se sustituye por un espía (jsdom no tiene canvas).
 vi.mock('canvas-confetti', () => ({ default: vi.fn() }));
+
+// FOTOS_ACTIVAS se puede encender por test (flags.fotos = true).
+const flags = vi.hoisted(() => ({ fotos: false }));
+vi.mock('./opciones.js', async (importOriginal) => {
+  const real = await importOriginal();
+  return {
+    ...real,
+    get FOTOS_ACTIVAS() {
+      return flags.fotos;
+    },
+  };
+});
+
+// procesarFoto necesita canvas: se sustituye por uno que valida de verdad
+// (tipo y tamaño) y devuelve un WebP falso. Lo de dentro se prueba en foto.test.js.
+vi.mock('./foto.js', async (importOriginal) => ({ ...(await importOriginal()), procesarFoto: vi.fn() }));
 
 const { ApiError } = api;
 
@@ -65,6 +84,7 @@ function rellenarMinimo({ consentir = true } = {}) {
 }
 
 beforeEach(() => {
+  flags.fotos = false;
   irA('/eventos/start-camp/avatar');
   vi.resetAllMocks();
   api.leerErrorEnlace.mockReturnValue(null);
@@ -612,5 +632,243 @@ describe('barra demo', () => {
     renderConSesion(PERFIL_BD);
     await cargado();
     expect(screen.queryByRole('navigation', { name: 'Modo demo' })).not.toBeInTheDocument();
+  });
+});
+
+// ---------------------------------------------------------------- fotos
+
+describe('fotos', () => {
+  const WEBP = new Blob(['webp'], { type: 'image/webp' });
+  const original = { crear: URL.createObjectURL, soltar: URL.revokeObjectURL };
+  let urls;
+
+  const campoFoto = () => document.getElementById('av-foto');
+  const imagen = (nombre, tipo = 'image/jpeg', tamano) => {
+    const f = new File(['x'], nombre, { type: tipo });
+    if (tamano) Object.defineProperty(f, 'size', { value: tamano });
+    return f;
+  };
+  const vistaPrevia = () => screen.getByRole('complementary', { name: 'Así te verán los demás' });
+
+  beforeEach(() => {
+    urls = 0;
+    URL.createObjectURL = vi.fn(() => `blob:foto-${++urls}`);
+    URL.revokeObjectURL = vi.fn();
+    foto.procesarFoto.mockImplementation(async (archivo) => {
+      const motivo = foto.validarArchivoFoto(archivo);
+      if (motivo) throw new foto.ErrorFoto(motivo);
+      return WEBP;
+    });
+    api.subirFoto.mockResolvedValue({ foto_path: 'u-1/foto.webp', foto_url: 'https://firmada/foto' });
+    api.quitarFoto.mockResolvedValue({ ok: true });
+  });
+
+  afterEach(() => {
+    URL.createObjectURL = original.crear;
+    URL.revokeObjectURL = original.soltar;
+  });
+
+  describe('con FOTOS_ACTIVAS = false no cambia nada', () => {
+    test('ni campo ni aviso ni foto en la tarjeta', async () => {
+      renderConSesion({ ...PERFIL_BD, foto_path: 'u-1/foto.webp', foto_url: 'https://firmada/foto' });
+      await cargado();
+      expect(campoFoto()).toBeNull();
+      expect(screen.queryByRole('button', { name: /Subir foto|Cambiar/ })).not.toBeInTheDocument();
+      expect(screen.queryByText(MENSAJES.avisoFoto)).not.toBeInTheDocument();
+      expect(screen.queryByRole('img')).not.toBeInTheDocument();
+    });
+
+    test('guardar no sube nada ni manda foto_path; consentimiento v1 sin foto', async () => {
+      renderConSesion(null);
+      await cargado();
+      expect(screen.getByText(/^Acepto/).textContent).not.toMatch(/foto/);
+      rellenarMinimo();
+      userEvent.click(botonGuardar());
+      await screen.findByText(MENSAJES.guardado);
+      const [datos] = api.guardarPerfil.mock.calls[0];
+      expect(datos).not.toHaveProperty('foto_path');
+      expect(datos.consent_version).toBe('v1');
+      expect(api.subirFoto).not.toHaveBeenCalled();
+      expect(api.quitarFoto).not.toHaveBeenCalled();
+    });
+
+    test('la barra demo no enseña «Con foto»', async () => {
+      irA('/eventos/start-camp/avatar?demo=con-perfil');
+      renderConSesion(PERFIL_BD);
+      await cargado();
+      const barra = screen.getByRole('navigation', { name: 'Modo demo' });
+      expect(within(barra).queryByRole('link', { name: 'Con foto' })).not.toBeInTheDocument();
+      expect(within(barra).getByRole('link', { name: 'Sin perfil' })).toHaveAttribute('href', '?demo=sin-perfil');
+    });
+  });
+
+  describe('con FOTOS_ACTIVAS = true', () => {
+    beforeEach(() => {
+      flags.fotos = true;
+    });
+
+    test('campo opcional encima del nombre, con el aviso de quién la ve', async () => {
+      renderConSesion(null);
+      await cargado();
+      const boton = screen.getByRole('button', { name: 'Subir foto' });
+      expect(boton.compareDocumentPosition(screen.getByLabelText('Nombre')) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+      expect(boton).toHaveAccessibleDescription(MENSAJES.avisoFoto);
+      expect(MENSAJES.avisoFoto).toBe(
+        'Tu foto solo la verán otros asistentes con sesión iniciada y se borra con tu perfil.'
+      );
+      expect(campoFoto()).toHaveAttribute('accept', expect.stringContaining('image/heic'));
+      expect(screen.queryByRole('button', { name: 'Quitar' })).not.toBeInTheDocument();
+    });
+
+    test('al elegir una foto: vista previa redonda, «Cambiar» y «Quitar», y sale en la tarjeta', async () => {
+      renderConSesion(null);
+      await cargado();
+      const archivo = imagen('yo.jpg');
+      userEvent.upload(campoFoto(), archivo);
+
+      expect(await screen.findByRole('img', { name: 'Vista previa de tu foto' })).toHaveAttribute('src', 'blob:foto-1');
+      expect(foto.procesarFoto).toHaveBeenCalledWith(archivo);
+      expect(URL.createObjectURL).toHaveBeenCalledWith(WEBP);
+      expect(screen.getByRole('button', { name: 'Cambiar' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Quitar' })).toBeInTheDocument();
+      expect(within(vistaPrevia()).getByRole('img', { name: 'Ana García' })).toHaveAttribute('src', 'blob:foto-1');
+      expect(api.subirFoto).not.toHaveBeenCalled(); // se sube al guardar
+    });
+
+    test('subir: al guardar, primero la foto y su ruta va en el mismo insert (consentimiento v2)', async () => {
+      renderConSesion(null);
+      await cargado();
+      expect(screen.getByText(/^Acepto/).textContent.replace(/\s+/g, ' ')).toContain(
+        '(nombre, foto (si la subes), estado de grupo, rol, intereses, LinkedIn, descripción y nombre del grupo)'
+      );
+      userEvent.upload(campoFoto(), imagen('yo.png', 'image/png'));
+      await screen.findByRole('img', { name: 'Vista previa de tu foto' });
+      rellenarMinimo();
+      userEvent.click(botonGuardar());
+
+      await screen.findByText(MENSAJES.guardado);
+      expect(api.subirFoto).toHaveBeenCalledWith(WEBP);
+      expect(api.subirFoto.mock.invocationCallOrder[0]).toBeLessThan(api.guardarPerfil.mock.invocationCallOrder[0]);
+      const [datos, opciones] = api.guardarPerfil.mock.calls[0];
+      expect(opciones).toEqual({ crear: true });
+      expect(datos).toMatchObject({ foto_path: 'u-1/foto.webp', consent_version: 'v2' });
+    });
+
+    test('si no cambia la foto, no se sube ni se manda foto_path', async () => {
+      renderConSesion({ ...PERFIL_BD, foto_path: 'u-1/foto.webp', foto_url: 'https://firmada/foto' });
+      await cargado();
+      expect(screen.getByRole('img', { name: 'Vista previa de tu foto' })).toHaveAttribute('src', 'https://firmada/foto');
+      userEvent.click(botonGuardar());
+      await screen.findByText(MENSAJES.guardado);
+      expect(api.subirFoto).not.toHaveBeenCalled();
+      expect(api.quitarFoto).not.toHaveBeenCalled();
+      expect(api.guardarPerfil.mock.calls[0][0]).not.toHaveProperty('foto_path');
+    });
+
+    test('quitar: vuelven las iniciales, el foco a «Subir foto» y al guardar se borra', async () => {
+      renderConSesion({ ...PERFIL_BD, foto_path: 'u-1/foto.webp', foto_url: 'https://firmada/foto' });
+      await cargado();
+      userEvent.click(screen.getByRole('button', { name: 'Quitar' }));
+
+      expect(screen.queryByRole('img')).not.toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Subir foto' })).toHaveFocus();
+      expect(api.quitarFoto).not.toHaveBeenCalled();
+
+      userEvent.click(botonGuardar());
+      await screen.findByText(MENSAJES.guardado);
+      expect(api.quitarFoto).toHaveBeenCalledTimes(1);
+      expect(api.guardarPerfil.mock.calls[0][0]).not.toHaveProperty('foto_path');
+
+      // Ya quitada: guardar otra vez no la vuelve a borrar.
+      userEvent.click(botonGuardar());
+      await waitFor(() => expect(api.guardarPerfil).toHaveBeenCalledTimes(2));
+      expect(api.quitarFoto).toHaveBeenCalledTimes(1);
+    });
+
+    test('cambiar sustituye la vista previa y suelta la URL anterior', async () => {
+      renderConSesion(null);
+      await cargado();
+      userEvent.upload(campoFoto(), imagen('una.jpg'));
+      await screen.findByRole('img', { name: 'Vista previa de tu foto' });
+      userEvent.upload(campoFoto(), imagen('otra.webp', 'image/webp'));
+      await waitFor(() =>
+        expect(screen.getByRole('img', { name: 'Vista previa de tu foto' })).toHaveAttribute('src', 'blob:foto-2')
+      );
+      expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:foto-1');
+    });
+
+    test.each([
+      ['un tipo que no es imagen', () => imagen('cv.pdf', 'application/pdf'), foto.MENSAJES_FOTO.tipo],
+      ['un GIF', () => imagen('risa.gif', 'image/gif'), foto.MENSAJES_FOTO.tipo],
+      ['más de 5 MB', () => imagen('enorme.jpg', 'image/jpeg', 5 * 1024 * 1024 + 1), foto.MENSAJES_FOTO.tamano],
+    ])('rechaza %s con un mensaje claro', async (_, archivo, mensaje) => {
+      renderConSesion(null);
+      await cargado();
+      userEvent.upload(campoFoto(), archivo());
+      expect(await screen.findByText(mensaje)).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Subir foto' })).toHaveAccessibleDescription(
+        `${MENSAJES.avisoFoto} ${mensaje}`
+      );
+      expect(screen.queryByRole('img')).not.toBeInTheDocument();
+      rellenarMinimo();
+      userEvent.click(botonGuardar());
+      await screen.findByText(MENSAJES.guardado);
+      expect(api.subirFoto).not.toHaveBeenCalled();
+    });
+
+    test('si Storage la rechaza: «No se ha podido subir la foto…» y no se guarda el perfil', async () => {
+      api.subirFoto.mockRejectedValue(new ApiError('FOTO'));
+      renderConSesion(null);
+      await cargado();
+      userEvent.upload(campoFoto(), imagen('yo.jpg'));
+      await screen.findByRole('img', { name: 'Vista previa de tu foto' });
+      rellenarMinimo();
+      userEvent.click(botonGuardar());
+      expect(await screen.findByRole('alert')).toHaveTextContent(MENSAJES.foto);
+      expect(MENSAJES.foto).toBe('No se ha podido subir la foto. Prueba con otra imagen.');
+      expect(api.guardarPerfil).not.toHaveBeenCalled();
+    });
+
+    test.each([
+      ['SESION_CADUCADA', MENSAJES.sesionCaducada],
+      ['RED', MENSAJES.red],
+    ])('error %s de Storage → su mensaje de siempre', async (codigo, mensaje) => {
+      api.subirFoto.mockRejectedValue(new ApiError(codigo));
+      renderConSesion(PERFIL_BD);
+      await cargado();
+      userEvent.upload(campoFoto(), imagen('yo.jpg'));
+      await screen.findByRole('img', { name: 'Vista previa de tu foto' });
+      userEvent.click(botonGuardar());
+      expect(await screen.findByText(mensaje)).toBeInTheDocument();
+    });
+
+    test('al borrar el perfil, la foto desaparece del formulario', async () => {
+      renderConSesion({ ...PERFIL_BD, foto_path: 'u-1/foto.webp', foto_url: 'https://firmada/foto' });
+      await cargado();
+      userEvent.click(screen.getByRole('button', { name: 'Borrar mi perfil' }));
+      userEvent.click(screen.getByRole('button', { name: 'Sí, borrar mi perfil' }));
+      await screen.findByText(MENSAJES.borrado);
+      expect(api.borrarPerfil).toHaveBeenCalledTimes(1);
+      expect(screen.queryByRole('img')).not.toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Subir foto' })).toBeInTheDocument();
+    });
+
+    test('si la URL firmada no carga, se ven las iniciales en el campo y en la tarjeta', async () => {
+      renderConSesion({ ...PERFIL_BD, foto_path: 'u-1/foto.webp', foto_url: 'https://firmada/caducada' });
+      await cargado();
+      fireEvent.error(screen.getByRole('img', { name: 'Vista previa de tu foto' }));
+      fireEvent.error(within(vistaPrevia()).getByRole('img', { name: 'Ana García' }));
+      expect(screen.queryByRole('img')).not.toBeInTheDocument();
+      expect(within(vistaPrevia()).getByRole('article')).toHaveTextContent('AG');
+    });
+
+    test('la barra demo enseña «Con foto» y mantiene &fotos=1', async () => {
+      irA('/eventos/start-camp/avatar?demo=con-perfil&fotos=1');
+      renderConSesion(PERFIL_BD);
+      await cargado();
+      const barra = screen.getByRole('navigation', { name: 'Modo demo' });
+      expect(within(barra).getByRole('link', { name: 'Con foto' })).toHaveAttribute('href', '?demo=con-foto');
+      expect(within(barra).getByRole('link', { name: 'Sin perfil' })).toHaveAttribute('href', '?demo=sin-perfil&fotos=1');
+    });
   });
 });

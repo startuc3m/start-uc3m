@@ -167,6 +167,13 @@ describe('aPayload: forma de la base de datos', () => {
       consent_version: 'v1',
     });
   });
+
+  test('con las fotos activas, el consentimiento va con la versión de las fotos', () => {
+    const v = { ...valoresIniciales('Ana'), estado_grupo: 'busco', rol: 'otro', consentimiento: true };
+    expect(aPayload(v, { creando: true, ahora, fotos: true }).consent_version).toBe('v2');
+    expect(aPayload(v, { creando: true, ahora, fotos: false }).consent_version).toBe('v1');
+    expect(aPayload(v, { fotos: true })).not.toHaveProperty('consent_version');
+  });
 });
 
 describe('valoresIniciales: desde la base de datos', () => {

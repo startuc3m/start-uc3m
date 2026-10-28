@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import {
   CONSENTIMIENTO_VERSION,
+  CONSENTIMIENTO_VERSION_FOTOS,
   ESTADOS_GRUPO,
   INTERESES,
   MAX_DESCRIPCION,
@@ -128,9 +129,10 @@ const textoONull = (v) => {
  * Perfil con la forma de la base de datos (brief §5): textos en vez de ids,
  * linkedin_url completa y opcionales vacíos como null. `nombre_grupo` va
  * aparte: quien conecte el back lo convierte en group_id (null con «Busco
- * grupo»). Al crear se añaden consent_at y consent_version.
+ * grupo»). Al crear se añaden consent_at y consent_version (con `fotos`,
+ * la versión del texto que nombra la foto).
  */
-export function aPayload(valores, { creando = false, ahora = new Date() } = {}) {
+export function aPayload(valores, { creando = false, ahora = new Date(), fotos = false } = {}) {
   const usuario = urlAUsuario(valores.linkedin);
   const datos = {
     nombre: valores.nombre.trim(),
@@ -143,7 +145,7 @@ export function aPayload(valores, { creando = false, ahora = new Date() } = {}) 
   };
   if (creando) {
     datos.consent_at = ahora.toISOString();
-    datos.consent_version = CONSENTIMIENTO_VERSION;
+    datos.consent_version = fotos ? CONSENTIMIENTO_VERSION_FOTOS : CONSENTIMIENTO_VERSION;
   }
   return datos;
 }
