@@ -9,8 +9,11 @@
 //   linkedin_url  'https://www.linkedin.com/in/<usuario>' | null
 //   descripcion   string | null
 //   nombre_grupo  string | null   (o `groups: { nombre }`, como lo da el select)
+//   foto_url      string | null   URL (firmada o de objeto) de la foto. Opcional: solo
+//                 llega con FOTOS_ACTIVAS. Sale en el círculo en vez de las
+//                 iniciales, con el nombre como alt; si no carga, vuelven las iniciales
 //   preview       true en el formulario: rellena huecos con textos de ejemplo
-import React from 'react';
+import React, { useState } from 'react';
 import { ESTADOS_GRUPO, textoAId } from './opciones.js';
 import { esUrlLinkedinValida, urlAUsuario } from './schema.js';
 
@@ -40,9 +43,13 @@ export default function AvatarCard({
   descripcion,
   nombre_grupo,
   groups,
+  foto_url,
   preview = false,
 }) {
+  // URL que no ha cargado: se vuelve a las iniciales hasta que llegue otra.
+  const [fotoFallida, setFotoFallida] = useState(null);
   const nombreVisible = nombre?.trim() || (preview ? 'Tu nombre' : '');
+  const foto = foto_url && foto_url !== fotoFallida ? foto_url : null;
   const estado = textoAId(ESTADOS_GRUPO, estado_grupo);
   const grupo = estado !== 'busco' && (nombre_grupo ?? groups?.nombre)?.trim();
   const texto = descripcion?.trim();
@@ -54,12 +61,23 @@ export default function AvatarCard({
       aria-label={nombreVisible ? `Perfil de ${nombreVisible}` : 'Perfil'}
     >
       <div className="flex items-center gap-4 bg-cobalt p-5 text-white">
-        <div
-          className="grid h-16 w-16 shrink-0 place-items-center rounded-full bg-white font-display text-2xl text-cobalt"
-          aria-hidden="true"
-        >
-          {iniciales(nombreVisible) || '?'}
-        </div>
+        {foto ? (
+          <img
+            src={foto}
+            alt={nombreVisible}
+            className="h-16 w-16 shrink-0 rounded-full bg-white object-cover"
+            width="64"
+            height="64"
+            onError={() => setFotoFallida(foto)}
+          />
+        ) : (
+          <div
+            className="grid h-16 w-16 shrink-0 place-items-center rounded-full bg-white font-display text-2xl text-cobalt"
+            aria-hidden="true"
+          >
+            {iniciales(nombreVisible) || '?'}
+          </div>
+        )}
         <div className="min-w-0">
           <p className={`display break-words text-[28px] ${nombre?.trim() ? '' : 'opacity-60'}`}>{nombreVisible}</p>
           {(rol || preview) && (
