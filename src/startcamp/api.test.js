@@ -1,9 +1,14 @@
 import { vi } from 'vitest';
 import {
+  FOTO_EJEMPLO,
   MOCK_RETARDO_MS,
   borrarPerfil,
   cerrarSesion,
+  fotosActivas,
   guardarPerfil,
+  quitarFoto,
+  subirFoto,
+  traducirErrorStorage,
   leerErrorEnlace,
   obtenerPerfil,
   pedirEnlace,
@@ -19,9 +24,39 @@ import { createClient } from '@supabase/supabase-js';
 
 // Supabase falso: cada from(tabla) saca la siguiente respuesta de su cola y
 // apunta la cadena de llamadas (método + argumentos) para comprobarla.
-const sb = vi.hoisted(() => ({ auth: {}, from: null, colas: {}, consultas: [] }));
+// Storage apunta sus llamadas en `storage`; `orden` mezcla las dos cosas.
+const sb = vi.hoisted(() => ({ auth: {}, from: null, colas: {}, consultas: [], storage: null, orden: [] }));
 
 vi.mock('@supabase/supabase-js', () => ({ createClient: vi.fn(() => sb) }));
+
+// FOTOS_ACTIVAS se puede encender por test (flags.fotos = true).
+const flags = vi.hoisted(() => ({ fotos: false }));
+vi.mock('./opciones.js', async (importOriginal) => {
+  const real = await importOriginal();
+  return {
+    ...real,
+    get FOTOS_ACTIVAS() {
+      return flags.fotos;
+    },
+  };
+});
+
+/** Storage falso: { upload, remove, createSignedUrl } → { data, error } de cada método. */
+function storage(resp = {}) {
+  const llamadas = [];
+  const metodo = (nombre, porDefecto) =>
+    vi.fn(async (...args) => {
+      llamadas.push([nombre, ...args]);
+      sb.orden.push(`storage.${nombre}`);
+      return resp[nombre] ?? porDefecto;
+    });
+  const api = {
+    upload: metodo('upload', { data: { path: 'u-1/foto.webp' }, error: null }),
+    remove: metodo('remove', { data: [], error: null }),
+    createSignedUrl: metodo('createSignedUrl', { data: { signedUrl: 'https://firmada/foto' }, error: null }),
+  };
+  sb.storage = { from: vi.fn((bucket) => (llamadas.push(['from', bucket]), api)), llamadas };
+}
 
 function consulta(tabla, resultado) {
   const llamadas = [];
@@ -40,7 +75,8 @@ function consulta(tabla, resultado) {
 function respuestas(colas) {
   sb.colas = colas;
   sb.consultas = [];
-  sb.from = vi.fn((tabla) => consulta(tabla, sb.colas[tabla].shift()));
+  sb.orden = [];
+  sb.from = vi.fn((tabla) => (sb.orden.push(tabla), consulta(tabla, sb.colas[tabla].shift())));
 }
 
 const SESION = { user: { id: 'u-1', user_metadata: { nombre: 'Ana García' } } };
@@ -86,6 +122,7 @@ async function conMock(promesa) {
 }
 
 beforeEach(() => {
+  flags.fotos = false;
   vi.useFakeTimers();
   reiniciarMock();
   reiniciarClienteSupabase();
@@ -419,5 +456,248 @@ describe('Supabase (brief §6)', () => {
     vi.useFakeTimers();
     await conMock(obtenerPerfil());
     expect(createClient).not.toHaveBeenCalled();
+  });
+});
+
+// ---------------------------------------------------------------- fotos
+
+describe('fotos: interruptor', () => {
+  const loc = (host, search) => ({ hostname: host, search });
+
+  test('apagado por defecto; en demo se fuerza con &fotos=1 o ?demo=con-foto', () => {
+    expect(fotosActivas(loc('localhost', ''))).toBe(false);
+    expect(fotosActivas(loc('localhost', '?demo=con-perfil'))).toBe(false);
+    expect(fotosActivas(loc('localhost', '?demo=con-perfil&fotos=1'))).toBe(true);
+    expect(fotosActivas(loc('localhost', '?demo=con-foto'))).toBe(true);
+    expect(varianteDemo(loc('localhost', '?demo=con-foto'))).toBe('con-foto');
+  });
+
+  test('&fotos=1 no hace nada sin modo demo ni en producción', () => {
+    expect(fotosActivas(loc('localhost', '?fotos=1'))).toBe(false);
+    expect(fotosActivas(loc('startcamp.startuc3m.es', '?demo=con-foto&fotos=1'))).toBe(false);
+  });
+
+  test('con FOTOS_ACTIVAS = true, siempre', () => {
+    flags.fotos = true;
+    expect(fotosActivas(loc('startcamp.startuc3m.es', ''))).toBe(true);
+  });
+});
+
+describe('fotos: errores de Storage → interfaz', () => {
+  test.each([
+    [{ statusCode: '403', message: 'new row violates row-level security policy' }, true, 'SESION_CADUCADA'],
+    [{ status: 401, message: 'Unauthorized' }, false, 'SESION_CADUCADA'],
+    [{ statusCode: '400', message: 'jwt expired' }, true, 'SESION_CADUCADA'],
+    [{ statusCode: '413', message: 'Payload too large' }, true, 'FOTO'],
+    [{ statusCode: '415', message: 'mime type image/gif is not supported' }, true, 'FOTO'],
+    [{ statusCode: '400', message: 'Invalid key' }, true, 'FOTO'],
+    [{ statusCode: '400', message: 'Invalid key' }, false, 'RED'],
+    [{ statusCode: '500', message: 'Internal' }, true, 'RED'],
+    [{ name: 'StorageUnknownError', message: 'Failed to fetch' }, true, 'RED'],
+  ])('%o (subiendo: %s) → %s', (error, subiendo, codigo) => {
+    expect(traducirErrorStorage(error, { subiendo })).toBe(codigo);
+  });
+});
+
+describe('fotos en Supabase', () => {
+  const BLOB = new Blob(['x'], { type: 'image/webp' });
+
+  beforeEach(() => {
+    vi.useRealTimers();
+    vi.stubEnv('PUBLIC_SUPABASE_URL', 'https://proyecto.supabase.co');
+    vi.stubEnv('PUBLIC_SUPABASE_PUBLISHABLE_KEY', 'sb_publishable_prueba');
+    irA('/eventos/start-camp/avatar');
+    conSesion();
+    respuestas({ profiles: [], groups: [] });
+    storage();
+  });
+
+  describe('con FOTOS_ACTIVAS = false no cambia nada', () => {
+    test('obtenerPerfil no pide foto_path ni firma URLs', async () => {
+      respuestas({ profiles: [{ data: { ...CAMPOS_BD, foto_path: 'u-1/foto.webp' }, error: null }] });
+      const { perfil } = await obtenerPerfil();
+      expect(sb.consultas[0].llamadas[0][1]).not.toMatch(/foto_path/);
+      expect(perfil).not.toHaveProperty('foto_url');
+      expect(sb.storage.from).not.toHaveBeenCalled();
+    });
+
+    test('guardarPerfil no manda foto_path aunque venga en los datos', async () => {
+      respuestas({ profiles: [{ data: null, error: null }, { data: null, error: null }], groups: [] });
+      const datos = { ...PAYLOAD, estado_grupo: 'Busco grupo', foto_path: 'u-1/foto.webp' };
+      await guardarPerfil({ ...datos, consent_at: 'x', consent_version: 'v1' }, { crear: true });
+      await guardarPerfil(datos, { crear: false });
+      expect(sb.consultas[0].llamadas[0][1]).not.toHaveProperty('foto_path');
+      expect(sb.consultas[1].llamadas[0][1]).not.toHaveProperty('foto_path');
+    });
+
+    test('borrarPerfil no toca Storage', async () => {
+      respuestas({ profiles: [{ data: null, error: null }] });
+      await borrarPerfil();
+      expect(sb.storage.from).not.toHaveBeenCalled();
+      expect(sb.orden).toEqual(['profiles']);
+    });
+
+    test('subirFoto y quitarFoto no llaman a Supabase', async () => {
+      await expect(subirFoto(BLOB)).rejects.toMatchObject({ codigo: 'FOTO' });
+      await expect(quitarFoto()).resolves.toEqual({ ok: true });
+      expect(createClient).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('con FOTOS_ACTIVAS = true', () => {
+    beforeEach(() => {
+      flags.fotos = true;
+    });
+
+    test('obtenerPerfil pide foto_path y da una URL firmada de 1 hora', async () => {
+      respuestas({ profiles: [{ data: { ...CAMPOS_BD, foto_path: 'u-1/foto.webp' }, error: null }] });
+      const { perfil } = await obtenerPerfil();
+      expect(sb.consultas[0].llamadas[0]).toEqual([
+        'select',
+        'nombre, estado_grupo, rol, intereses, linkedin_url, descripcion, group_id, groups(nombre), foto_path',
+      ]);
+      expect(sb.storage.llamadas).toEqual([
+        ['from', 'fotos-perfil'],
+        ['createSignedUrl', 'u-1/foto.webp', 3600],
+      ]);
+      expect(perfil.foto_url).toBe('https://firmada/foto');
+    });
+
+    test('sin foto no firma nada; si la firma falla, foto_url null', async () => {
+      respuestas({ profiles: [{ data: { ...CAMPOS_BD, foto_path: null }, error: null }] });
+      expect((await obtenerPerfil()).perfil.foto_url).toBeNull();
+      expect(sb.storage.from).not.toHaveBeenCalled();
+
+      storage({ createSignedUrl: { data: null, error: { statusCode: '404', message: 'Object not found' } } });
+      respuestas({ profiles: [{ data: { ...CAMPOS_BD, foto_path: 'u-1/foto.webp' }, error: null }] });
+      expect((await obtenerPerfil()).perfil.foto_url).toBeNull();
+    });
+
+    test('subirFoto: upload con upsert a <user_id>/foto.webp en el bucket privado', async () => {
+      await expect(subirFoto(BLOB)).resolves.toEqual({ foto_path: 'u-1/foto.webp', foto_url: 'https://firmada/foto' });
+      expect(sb.storage.llamadas[0]).toEqual(['from', 'fotos-perfil']);
+      expect(sb.storage.llamadas[1]).toEqual([
+        'upload',
+        'u-1/foto.webp',
+        BLOB,
+        { upsert: true, contentType: 'image/webp', cacheControl: '3600' },
+      ]);
+    });
+
+    test('subirFoto con JPEG (navegador sin WebP) manda su tipo', async () => {
+      await subirFoto(new Blob(['x'], { type: 'image/jpeg' }));
+      expect(sb.storage.llamadas[1][3]).toMatchObject({ contentType: 'image/jpeg' });
+    });
+
+    test('foto_path va en el mismo insert y update del perfil', async () => {
+      respuestas({ profiles: [{ data: null, error: null }, { data: null, error: null }], groups: [] });
+      const datos = { ...PAYLOAD, estado_grupo: 'Busco grupo', nombre_grupo: null, foto_path: 'u-1/foto.webp' };
+      await guardarPerfil({ ...datos, consent_at: 'x', consent_version: 'v2' }, { crear: true });
+      await guardarPerfil(datos, { crear: false });
+      expect(sb.consultas[0].llamadas[0]).toEqual([
+        'insert',
+        expect.objectContaining({ user_id: 'u-1', foto_path: 'u-1/foto.webp', consent_version: 'v2' }),
+      ]);
+      expect(sb.consultas[1].llamadas[0][1]).toMatchObject({ foto_path: 'u-1/foto.webp' });
+    });
+
+    test('si no cambia la foto, el update no toca foto_path', async () => {
+      respuestas({ profiles: [{ data: null, error: null }], groups: [] });
+      await guardarPerfil({ ...PAYLOAD, estado_grupo: 'Busco grupo' });
+      expect(sb.consultas[0].llamadas[0][1]).not.toHaveProperty('foto_path');
+    });
+
+    test('quitarFoto borra el archivo y deja foto_path a null', async () => {
+      respuestas({ profiles: [{ data: null, error: null }] });
+      await expect(quitarFoto()).resolves.toEqual({ ok: true });
+      expect(sb.storage.llamadas).toEqual([['from', 'fotos-perfil'], ['remove', ['u-1/foto.webp']]]);
+      expect(sb.consultas[0].llamadas).toEqual([['update', { foto_path: null }], ['eq', 'user_id', 'u-1']]);
+      expect(sb.orden).toEqual(['storage.remove', 'profiles']);
+    });
+
+    test('borrarPerfil borra la foto antes que la fila', async () => {
+      respuestas({ profiles: [{ data: null, error: null }] });
+      await borrarPerfil();
+      expect(sb.storage.llamadas).toContainEqual(['remove', ['u-1/foto.webp']]);
+      expect(sb.orden).toEqual(['storage.remove', 'profiles']);
+      expect(sb.consultas[0].llamadas).toEqual([['delete'], ['eq', 'user_id', 'u-1']]);
+    });
+
+    test('si no se puede borrar la foto, la fila no se borra', async () => {
+      storage({ remove: { data: null, error: { statusCode: '500', message: 'Internal' } } });
+      await expect(borrarPerfil()).rejects.toMatchObject({ codigo: 'RED' });
+      expect(sb.from).not.toHaveBeenCalled();
+    });
+
+    test.each([
+      [{ statusCode: '413', message: 'Payload too large' }, 'FOTO'],
+      [{ statusCode: '403', message: 'new row violates row-level security policy' }, 'SESION_CADUCADA'],
+      [{ statusCode: '503', message: 'Service unavailable' }, 'RED'],
+    ])('subirFoto con %o → %s', async (error, codigo) => {
+      storage({ upload: { data: null, error } });
+      await expect(subirFoto(BLOB)).rejects.toMatchObject({ codigo });
+    });
+
+    test('subirFoto sin sesión → SESION_CADUCADA, sin subir nada', async () => {
+      conSesion(null);
+      await expect(subirFoto(BLOB)).rejects.toMatchObject({ codigo: 'SESION_CADUCADA' });
+      expect(sb.storage.from).not.toHaveBeenCalled();
+    });
+
+    test('si Storage lanza (red) → RED', async () => {
+      sb.storage.from = vi.fn(() => ({ upload: vi.fn(() => Promise.reject(new TypeError('Failed to fetch'))) }));
+      await expect(subirFoto(BLOB)).rejects.toMatchObject({ codigo: 'RED' });
+    });
+  });
+});
+
+describe('fotos en el mock', () => {
+  const original = { crear: URL.createObjectURL, soltar: URL.revokeObjectURL };
+
+  beforeEach(() => {
+    URL.createObjectURL = vi.fn(() => 'blob:demo/1');
+    URL.revokeObjectURL = vi.fn();
+  });
+
+  afterEach(() => {
+    URL.createObjectURL = original.crear;
+    URL.revokeObjectURL = original.soltar;
+  });
+
+  test('?demo=con-foto: perfil con la foto de ejemplo', async () => {
+    irA('/?demo=con-foto');
+    const { ok } = await conMock(obtenerPerfil());
+    expect(ok.perfil).toMatchObject({ nombre: 'Lucía Fernández', foto_path: 'demo/foto.webp', foto_url: FOTO_EJEMPLO });
+  });
+
+  test('sin &fotos=1 las otras variantes no traen foto', async () => {
+    irA('/?demo=con-perfil');
+    const { ok } = await conMock(obtenerPerfil());
+    expect(ok.perfil).not.toHaveProperty('foto_url');
+  });
+
+  test('subir guarda una URL de objeto en memoria; quitar y borrar la sueltan', async () => {
+    irA('/?demo=sin-perfil&fotos=1');
+    const blob = new Blob(['x'], { type: 'image/webp' });
+    expect((await conMock(subirFoto(blob))).ok).toEqual({ foto_path: 'demo/foto.webp', foto_url: 'blob:demo/1' });
+    expect(URL.createObjectURL).toHaveBeenCalledWith(blob);
+
+    const datos = { nombre: 'Alex', estado_grupo: 'Busco grupo', rol: 'Otro', intereses: [], linkedin_url: null, descripcion: null, nombre_grupo: null };
+    await conMock(guardarPerfil({ ...datos, foto_path: 'demo/foto.webp' }, { crear: true }));
+    expect((await conMock(obtenerPerfil())).ok.perfil.foto_url).toBe('blob:demo/1');
+
+    await conMock(quitarFoto());
+    expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:demo/1');
+    expect((await conMock(obtenerPerfil())).ok.perfil).toMatchObject({ foto_path: null, foto_url: null });
+
+    await conMock(subirFoto(blob));
+    await conMock(borrarPerfil());
+    expect(URL.revokeObjectURL).toHaveBeenCalledTimes(2);
+    expect((await conMock(obtenerPerfil())).ok.perfil).toBeNull();
+  });
+
+  test('?demo=error-red&fotos=1: subir falla por red', async () => {
+    irA('/?demo=error-red&fotos=1');
+    expect(await conMock(subirFoto(new Blob(['x'])))).toEqual({ error: 'RED' });
   });
 });

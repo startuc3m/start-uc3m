@@ -44,6 +44,27 @@ export const MAX_DESCRIPCION = 280;
 // Versión del texto de consentimiento. Si cambia el texto, sube la versión.
 export const CONSENTIMIENTO_VERSION = 'v1';
 
+// ---------------------------------------------------------------- fotos (apagado)
+
+// Foto opcional del perfil. El spec deja fuera los avatares visuales, así que
+// va APAGADA: con false la página es exactamente la de siempre (ni campo ni
+// foto_path en las llamadas a Supabase). Para encenderla, ver «Fotos
+// (desactivado)» en docs/startcamp-perfil.md. En modo demo se fuerza con
+// &fotos=1 (o con ?demo=con-foto).
+export const FOTOS_ACTIVAS = false;
+
+// Versión del consentimiento cuando el texto nombra la foto (FOTOS_ACTIVAS).
+// PENDIENTE: texto de Legal
+export const CONSENTIMIENTO_VERSION_FOTOS = 'v2';
+
+/** Tipos de imagen que se aceptan. HEIC/HEIF solo si el navegador sabe abrirlo. */
+export const TIPOS_FOTO = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
+/** Tamaño máximo del archivo que elige la persona (antes de reducirlo). */
+export const MAX_FOTO_BYTES = 5 * 1024 * 1024;
+/** Lado de la foto que se sube (cuadrada) y peso objetivo. */
+export const LADO_FOTO = 400;
+export const OBJETIVO_FOTO_BYTES = 150 * 1024;
+
 // Absoluta: la página de perfil vive en startcamp.startuc3m.es, donde /privacidad no existe.
 export const URL_PRIVACIDAD = 'https://www.startuc3m.es/privacidad';
 
