@@ -15,7 +15,8 @@ Página donde cada asistente del Start Camp (7 y 8 de noviembre de 2026) crea un
 
 | Qué | Estado | Cómo se ha comprobado |
 |---|---|---|
-| Tests (`npm test`) | ✅ 159 pasan (148 del perfil) | En local y en el CI de la PR |
+| Tests (`npm test`) | ✅ 239 pasan (228 del perfil) | En local y en el CI de la PR |
+| Foto de perfil | ⏸️ Hecha pero **apagada** (`FOTOS_ACTIVAS = false`) | Tests con el interruptor apagado y encendido. Ver [§16](#16-fotos-desactivado) |
 | Build (`npm run build`) | ✅ | En local, en el CI y en los dos proyectos de Vercel |
 | Modo demo, 7 variantes | ✅ | En el preview publicado, una a una |
 | Conexión real con Supabase | ✅ | La clave es válida; un correo que no está da `otp_disabled` → «No encontramos tu entrada_» |
@@ -77,10 +78,11 @@ Detalles de comportamiento:
 | `src/pages/eventos/start-camp/avatar.astro` | La página. Monta `AvatarForm` con `client:only="react"` y lleva `noindex` |
 | `src/pages/eventos/start-camp/enlace-no-valido.astro` | Página de enlace no válido, con `noindex` |
 | `src/startcamp/AvatarForm.jsx` | Todas las pantallas y el formulario. Solo habla con `api.js` |
-| `src/startcamp/AvatarCard.jsx` | Tarjeta del perfil: vista previa en el formulario y ficha para el directorio de Lucas. Recibe los datos con la forma de la base de datos |
-| `src/startcamp/api.js` | Toda la comunicación con Supabase y el modo demo. Única puerta a los datos |
+| `src/startcamp/AvatarCard.jsx` | Tarjeta del perfil: vista previa en el formulario y ficha para el directorio de Lucas. Recibe los datos con la forma de la base de datos (y `foto_url`, opcional, ver §16) |
+| `src/startcamp/api.js` | Toda la comunicación con Supabase (base de datos y, con las fotos activas, Storage) y el modo demo. Única puerta a los datos |
 | `src/startcamp/schema.js` | Validación (zod), conversión formulario ↔ base de datos (`aPayload`, `valoresIniciales`) y LinkedIn (usuario ↔ URL) |
-| `src/startcamp/opciones.js` | Listas (estados, roles, intereses) con el texto exacto de la base de datos, límites, versión del consentimiento, URL de privacidad y correo de contacto |
+| `src/startcamp/opciones.js` | Listas (estados, roles, intereses) con el texto exacto de la base de datos, límites, versión del consentimiento, URL de privacidad, correo de contacto y el interruptor `FOTOS_ACTIVAS` |
+| `src/startcamp/foto.js` | Solo con las fotos activas: comprueba la imagen y la recorta, reduce y vuelve a codificar en el navegador (sin EXIF). Ver §16 |
 | `src/startcamp/confeti.js` | Confeti al crear. Se quita borrando el archivo y su llamada en `AvatarForm.jsx` |
 | `src/startcamp/*.test.js(x)` | Tests (ver §10) |
 | `src/lib/startcamp.ts` | `startcampPromoUrl`: quita el banner de inscripción en `/eventos/start-camp/*` |
@@ -169,6 +171,8 @@ Para enseñar y probar todas las pantallas sin Supabase: los datos viven en memo
 
 Cualquier otro valor de `?demo=` cae en `?demo=1`. `PERFILES_EJEMPLO` en `api.js` tiene tres perfiles con la forma de la base de datos, útiles para maquetar el directorio.
 
+**Fotos en el modo demo** (aunque `FOTOS_ACTIVAS` esté a `false`): añade `&fotos=1` a cualquier variante (p. ej. `?demo=sin-perfil&fotos=1`), o usa `?demo=con-foto`, que es «Con perfil y grupo» con una foto de ejemplo. La foto que se sube se guarda en memoria (URL de objeto) y se pierde al recargar. Con las fotos activas, la barra «Modo demo» enseña también «Con foto» y sus enlaces mantienen `&fotos=1`.
+
 ---
 
 ## 8. Configuración
@@ -254,9 +258,11 @@ Si `startcamp.startuc3m.es` se añade como otro dominio del mismo proyecto, toda
 
 | Archivo | Tests | Qué cubre |
 |---|---|---|
-| `src/startcamp/schema.test.js` | 49 | Validación, ids ↔ textos de la base de datos, LinkedIn (usuario ↔ URL), `aPayload` y `valoresIniciales` |
-| `src/startcamp/api.test.js` | 51 | Modo demo y sus hosts, variantes del mock, `leerErrorEnlace`, traducción de errores, cada llamada a Supabase con sus argumentos exactos (con un Supabase falso) y `resolverGrupo` (incluido el 23505) |
-| `src/startcamp/AvatarForm.test.jsx` | 43 | Pantallas, «No encontramos tu entrada_», enlace caducado, carga, campos, LinkedIn, guardar (crear/editar/errores), consentimiento, «Salir del grupo», confeti, borrar y barra demo |
+| `src/startcamp/schema.test.js` | 50 | Validación, ids ↔ textos de la base de datos, LinkedIn (usuario ↔ URL), `aPayload` (y la versión del consentimiento con fotos) y `valoresIniciales` |
+| `src/startcamp/api.test.js` | 85 | Modo demo y sus hosts, variantes del mock, `leerErrorEnlace`, traducción de errores, cada llamada a Supabase con sus argumentos exactos (con un Supabase falso), `resolverGrupo` (incluido el 23505) y las fotos: interruptor apagado (ni `foto_path` ni Storage) y encendido (subir, quitar, borrar perfil borra la foto, URL firmada, errores de Storage, mock) |
+| `src/startcamp/AvatarForm.test.jsx` | 61 | Pantallas, «No encontramos tu entrada_», enlace caducado, carga, campos, LinkedIn, guardar (crear/editar/errores), consentimiento, «Salir del grupo», confeti, borrar, barra demo y el campo de foto (apagado: no aparece; encendido: subir, cambiar, quitar, rechazo por tipo y tamaño, errores) |
+| `src/startcamp/AvatarCard.test.jsx` | 5 | Foto en la tarjeta: iniciales sin foto, foto con el nombre como alt y vuelta a las iniciales si no carga |
+| `src/startcamp/foto.test.js` | 22 | Tipos y tamaño aceptados, recorte centrado, 400x400, WebP o JPEG, objetivo de 150 KB y que no pasa nada del original (EXIF y GPS) |
 | `src/startcamp/confeti.test.js` | 5 | Colores, ráfaga desde las dos esquinas, `prefers-reduced-motion`, librería que falla o no carga |
 
 El CI de GitHub (`.github/workflows/build.yml`) ejecuta `npm run build` y `npm test` en cada PR contra `main`.
@@ -313,6 +319,8 @@ Si al guardar o borrar sale «Tu sesión ha caducado» con la sesión recién ab
 | Pablo y Lucas | Confirmar el horario de carga de entradas y que el correo de campaña llega también a quien compra tarde |
 | Lucas | URL de producción en el botón «Crea tu perfil» del correo de campaña, **antes del 29-30/10** |
 | Alejandro | Texto de consentimiento y página `/privacidad` (luego subir `CONSENTIMIENTO_VERSION`) |
+| Pablo | **Solo si se deciden las fotos:** bucket, columna `foto_path` y políticas de Storage (§16), y confirmar los nombres marcados con `PENDIENTE: confirmar con Pablo` en `api.js` |
+| Alejandro | **Solo si se deciden las fotos:** texto del consentimiento con la foto (`CONSENTIMIENTO_VERSION_FOTOS = 'v2'`) |
 | Organización del Start Camp | Cerrar la lista de intereses y los roles (`opciones.js`) |
 | Web | Enlace a la página de perfil desde la ficha del Start Camp, cuando esté la URL definitiva |
 
@@ -330,6 +338,7 @@ Si al guardar o borrar sale «Tu sesión ha caducado» con la sesión recién ab
 | Quitar el confeti | Borrar `src/startcamp/confeti.js`, `confeti.test.js` y su import y llamada en `AvatarForm.jsx`; desinstalar `canvas-confetti` |
 | Cambiar la ruta | `RUTA_PERFIL` en `api.js` + mover `avatar.astro` + Redirect URLs de Supabase + correo de campaña |
 | Reutilizar la tarjeta en el directorio | `AvatarCard` recibe una fila de `profiles` tal cual (con `groups: { nombre }`) |
+| Encender las fotos | §16. Al final, `FOTOS_ACTIVAS = true` en `opciones.js` |
 
 ---
 
@@ -344,3 +353,93 @@ Si al guardar o borrar sale «Tu sesión ha caducado» con la sesión recién ab
 | El correo no llega | Límite de envíos del SMTP de Supabase, o está en spam | SMTP propio (Resend) |
 | `?demo=` no hace nada | Es un dominio de producción (a propósito) | Probar en localhost o en un preview |
 | El preview pide iniciar sesión en Vercel | La protección de despliegues de Vercel | Entrar con una cuenta del equipo, o un enlace para compartir |
+
+---
+
+## 16. Fotos (desactivado)
+
+Foto opcional en el perfil. **Está hecha pero apagada**, porque el spec deja fuera de alcance los avatares visuales. Con `FOTOS_ACTIVAS = false` (en `src/startcamp/opciones.js`) la página se ve y se comporta exactamente igual que sin fotos: no sale el campo, ninguna llamada pide ni manda `foto_path` y no se toca Storage. Hay tests que lo comprueban.
+
+Para enseñarla sin encender nada: modo demo con `&fotos=1` o `?demo=con-foto` (§7).
+
+### 16.1 Qué hace cuando se enciende
+
+- **Formulario:** campo «Foto (opcional)» encima del nombre: «Subir foto», vista previa redonda, «Cambiar» y «Quitar». Debajo: «Tu foto solo la verán otros asistentes con sesión iniciada y se borra con tu perfil.»
+- **Archivos aceptados:** JPG, PNG, WebP y HEIC/HEIF (este último solo en los navegadores que lo abren, como Safari). Máximo 5 MB. Si no cumple, sale un mensaje claro y no se sube nada.
+- **En el navegador, antes de subirla** (`foto.js`): recorte cuadrado centrado, 400x400 y WebP (JPEG si el navegador no sabe hacer WebP), bajando la calidad hasta < 150 KB. Como se vuelve a codificar desde un canvas, **el archivo nuevo no lleva los metadatos EXIF, ni la ubicación GPS**. Nunca se sube el archivo original (hay un test).
+- **Al guardar:** primero se sube la foto (`subirFoto`) y su ruta va en el **mismo** `insert`/`update` del perfil (`foto_path`). «Quitar» se aplica al guardar (`quitarFoto`: borra el archivo y deja `foto_path` a `null`). «Borrar mi perfil» borra antes la foto y después la fila; si no puede borrar la foto, no borra la fila.
+- **Para verla:** URL firmada de 1 hora (`createSignedUrl`), nunca pública. Si no carga (p. ej. ha caducado), la tarjeta vuelve a las iniciales.
+- **Consentimiento:** añade «foto (si la subes)» a la lista y se guarda con `consent_version = 'v2'` (`CONSENTIMIENTO_VERSION_FOTOS`, pendiente del texto de Legal).
+- **Errores:** sesión caducada y red dan los mensajes de siempre; si Storage rechaza el archivo, «No se ha podido subir la foto. Prueba con otra imagen.»
+
+| Función (`api.js`) | Llamada |
+|---|---|
+| `subirFoto(blob)` | `storage.from('fotos-perfil').upload('<user_id>/foto.webp', blob, { upsert: true, contentType, cacheControl: '3600' })` |
+| `obtenerPerfil()` | Añade `foto_path` al `select` y, si hay foto, `createSignedUrl(foto_path, 3600)` → `perfil.foto_url` |
+| `guardarPerfil(datos)` | Si `datos.foto_path` viene, va en el `insert`/`update`. Si no cambia la foto, no se toca |
+| `quitarFoto()` | `storage…remove(['<user_id>/foto.webp'])` y `update({ foto_path: null }).eq('user_id', id)` |
+| `borrarPerfil()` | `storage…remove([…])` y después el `delete` de siempre |
+
+El nombre del archivo es siempre `foto.webp`, aunque se suba JPEG (el tipo real va en `contentType`): así otra foto sobrescribe la anterior. El `upsert` es del **archivo** en Storage; en la tabla sigue sin usarse `upsert`.
+
+### 16.2 Qué tiene que hacer Pablo para encenderlo
+
+Los nombres del bucket, la columna y la caducidad están en `api.js` (`BUCKET_FOTOS`, `COLUMNA_FOTO`, `CADUCIDAD_URL_FOTO_S`) con `PENDIENTE: confirmar con Pablo`. Si cambian, se cambian ahí.
+
+1. **Bucket privado `fotos-perfil`:** Storage → New bucket, **Public bucket desactivado**. Recomendado: límite de 1 MB por archivo y tipos permitidos `image/webp, image/jpeg` (lo que sube la página).
+2. **Columna `foto_path`** en `profiles` (`text`, admite `null`):
+
+   ```sql
+   alter table public.profiles add column foto_path text null;
+   ```
+
+   `profiles` tiene permisos por columna (por eso `select('*')` falla): hay que dar también permiso sobre la columna nueva, igual que sobre las demás. Por ejemplo:
+
+   ```sql
+   grant select (foto_path), insert (foto_path), update (foto_path) on public.profiles to authenticated;
+   ```
+
+3. **Políticas de Storage** (en `storage.objects`): cada persona solo escribe y borra en su carpeta `<user_id>/`, y solo pueden ver fotos los usuarios con sesión que estén en `attendees`. El `upsert` necesita las tres de escritura (`insert`, `update`) y la de lectura (`select`); `createSignedUrl` necesita la de lectura.
+
+   ```sql
+   -- Escribir y borrar: solo en su carpeta <user_id>/
+   create policy "fotos-perfil: subir la propia" on storage.objects
+     for insert to authenticated
+     with check (bucket_id = 'fotos-perfil' and (storage.foldername(name))[1] = (select auth.uid())::text);
+
+   create policy "fotos-perfil: cambiar la propia" on storage.objects
+     for update to authenticated
+     using (bucket_id = 'fotos-perfil' and (storage.foldername(name))[1] = (select auth.uid())::text)
+     with check (bucket_id = 'fotos-perfil' and (storage.foldername(name))[1] = (select auth.uid())::text);
+
+   create policy "fotos-perfil: borrar la propia" on storage.objects
+     for delete to authenticated
+     using (bucket_id = 'fotos-perfil' and (storage.foldername(name))[1] = (select auth.uid())::text);
+
+   -- Leer: solo usuarios con sesión que estén en attendees.
+   -- PENDIENTE: confirmar con Pablo cómo enlaza attendees con auth.users
+   -- (aquí se supone attendees.user_id; si es por correo, usar auth.jwt() ->> 'email').
+   create policy "fotos-perfil: ver si eres asistente" on storage.objects
+     for select to authenticated
+     using (
+       bucket_id = 'fotos-perfil'
+       and exists (select 1 from public.attendees a where a.user_id = (select auth.uid()))
+     );
+   ```
+
+   Ninguna política para `anon`: sin sesión no se ve ninguna foto.
+
+4. **Borrado al acabar el Start Camp:** el script que borre los perfiles al acabar tiene que **vaciar también el bucket** `fotos-perfil` (borrar la fila no borra el archivo). Lo mismo si se borra un usuario de `auth.users` a mano.
+5. **Encender:** `FOTOS_ACTIVAS = true` en `src/startcamp/opciones.js`, con el texto de Legal del consentimiento ya puesto (`PENDIENTE: texto de Legal` en `AvatarForm.jsx`). Commit, push y despliegue.
+
+### 16.3 Comprobar después de encenderlo
+
+Sin `?demo`, con un correo de attendees:
+
+1. Subir una foto hecha con el móvil (con ubicación). Guardar. En Storage aparece `<user_id>/foto.webp`, de 400x400 y menos de 150 KB. Descargarla y comprobar que no tiene EXIF ni GPS (p. ej. con `exiftool`).
+2. Recargar: la foto sale en el campo y en la tarjeta.
+3. Con otra cuenta de attendees, la URL firmada se ve; sin sesión, la ruta del bucket da error.
+4. Intentar subir a la carpeta de otra persona (p. ej. desde la consola con su `user_id`): Storage lo rechaza.
+5. «Quitar» y guardar: el archivo desaparece y `foto_path` queda en `null`.
+6. «Borrar mi perfil»: desaparecen la fila y el archivo.
+7. Un GIF o una imagen de más de 5 MB: mensaje claro y no se sube nada.
