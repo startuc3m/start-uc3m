@@ -4,6 +4,7 @@ import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import StartcampBar from '../components/StartcampBar.astro';
 import StartcampBanner from '../components/StartcampBanner.astro';
+import Analytics from '@vercel/analytics/astro';
 import { site } from '../lib/site';
 const { title, description = site.description, tone = 'light', image, noindex = false } = Astro.props;
 const fullTitle = title ? `${title} | Start UC3M` : 'Start UC3M | Asociación de emprendedores de la UC3M';
@@ -53,6 +54,8 @@ const organizationJsonLd = {
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Permanent+Marker&family=Titillium+Web:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <!-- Vercel Web Analytics (#62): visitas sin cookies. Los clics (eventos) solo cuentan en plan Pro. -->
+    <Analytics />
   </head>
   <body>
     <div class="loader" aria-hidden="true"><img src="/brand/logo-full-white.png" alt="" width="816" height="342" /><div class="loader-bar"></div></div>
@@ -64,6 +67,25 @@ const organizationJsonLd = {
     <script>
       import { initLoader, initMotion } from '../lib/motion';
       initLoader().then(initMotion);
+    </script>
+    <script>
+      // Clics en "Hazte socio" y en reservar plaza (#62), con el sitio desde el que se pulsan.
+      import { track } from '@vercel/analytics';
+      const zona = (a: Element) => {
+        if (a.closest('[data-camp-banner]')) return 'banner Start Camp';
+        if (a.closest('[data-camp-bar]')) return 'barra Start Camp';
+        if (a.closest('.scl-root')) return 'lanyard';
+        if (a.closest('header, nav')) return 'menú';
+        if (a.closest('footer')) return 'pie';
+        return 'página';
+      };
+      document.addEventListener('click', (ev) => {
+        const a = (ev.target as Element).closest?.('a[href]');
+        if (!a) return;
+        const href = a.getAttribute('href')!;
+        const name = href.includes('/socios#alta') ? 'Hazte socio' : href.includes('neonpass.es') ? 'Reservar plaza' : null;
+        if (name) track(name, { desde: zona(a), pagina: location.pathname });
+      }, { capture: true });
     </script>
   </body>
 </html>

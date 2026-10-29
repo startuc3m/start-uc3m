@@ -88,7 +88,7 @@ Detalles de comportamiento:
 | `src/lib/startcamp.ts` | `startcampPromoUrl`: quita el banner de inscripción en `/eventos/start-camp/*` |
 | `astro.config.mjs` | Saca las dos páginas del sitemap |
 | `docs/correo-enlace-startcamp.html` | Plantilla del correo de acceso (Magic Link de Supabase) |
-| `docs/web/forms.md` | Dónde se pega esa plantilla, asunto y remitente |
+| `docs/07-formularios.md` | Dónde se pega esa plantilla, asunto y remitente |
 | `.env.example` | Las dos variables de Supabase |
 
 ---
