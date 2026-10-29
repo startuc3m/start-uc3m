@@ -3,7 +3,7 @@ title: "Start Camp 2026"
 subtitle: "Dos días, un reto real y un equipo para convertir una idea de negocio en realidad"
 # Fuente: proyecto StartCamp en el Notion de Start ("Confirmado hasta la fecha", 27/10/2026) y Neonpass.
 # Premios según Notion (29/10): el 3.º sigue sin confirmar.
-# Pendiente de Eventos (#44): 2.º y 3.er premio, resto de mentores, nombres del jurado y agenda.
+# Pendiente de Eventos (#44): 3.er premio, comida, resto de mentores, nombres del jurado y agenda.
 date: 2026-11-07
 days: 2
 time: "9:00"
