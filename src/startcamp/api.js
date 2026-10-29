@@ -76,12 +76,9 @@ export function fotosActivas(loc = window.location) {
 const COLUMNAS_PERFIL = 'nombre, estado_grupo, rol, intereses, linkedin_url, descripcion, group_id, groups(nombre)';
 
 // Fotos en Supabase Storage (solo con fotosActivas()).
-// PENDIENTE: confirmar con Pablo
 export const BUCKET_FOTOS = 'fotos-perfil';
-// PENDIENTE: confirmar con Pablo
 export const COLUMNA_FOTO = 'foto_path';
 // Segundos que vale la URL firmada para ver una foto (el bucket es privado).
-// PENDIENTE: confirmar con Pablo
 export const CADUCIDAD_URL_FOTO_S = 60 * 60;
 
 /**

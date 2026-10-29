@@ -384,7 +384,7 @@ El nombre del archivo es siempre `foto.webp`, aunque se suba JPEG (el tipo real 
 
 ### 16.2 Qué tiene que hacer Pablo para encenderlo
 
-Los nombres del bucket, la columna y la caducidad están en `api.js` (`BUCKET_FOTOS`, `COLUMNA_FOTO`, `CADUCIDAD_URL_FOTO_S`) con `PENDIENTE: confirmar con Pablo`. Si cambian, se cambian ahí.
+Los nombres del bucket, la columna y la caducidad están en `api.js` (`BUCKET_FOTOS`, `COLUMNA_FOTO`, `CADUCIDAD_URL_FOTO_S`), confirmados con Pablo. Si cambian, se cambian ahí.
 
 1. **Bucket privado `fotos-perfil`:** Storage → New bucket, **Public bucket desactivado**. Recomendado: límite de 1 MB por archivo y tipos permitidos `image/webp, image/jpeg` (lo que sube la página).
 2. **Columna `foto_path`** en `profiles` (`text`, admite `null`):
@@ -401,31 +401,7 @@ Los nombres del bucket, la columna y la caducidad están en `api.js` (`BUCKET_FO
 
 3. **Políticas de Storage** (en `storage.objects`): cada persona solo escribe y borra en su carpeta `<user_id>/`, y solo pueden ver fotos los usuarios con sesión que estén en `attendees`. El `upsert` necesita las tres de escritura (`insert`, `update`) y la de lectura (`select`); `createSignedUrl` necesita la de lectura.
 
-   ```sql
-   -- Escribir y borrar: solo en su carpeta <user_id>/
-   create policy "fotos-perfil: subir la propia" on storage.objects
-     for insert to authenticated
-     with check (bucket_id = 'fotos-perfil' and (storage.foldername(name))[1] = (select auth.uid())::text);
-
-   create policy "fotos-perfil: cambiar la propia" on storage.objects
-     for update to authenticated
-     using (bucket_id = 'fotos-perfil' and (storage.foldername(name))[1] = (select auth.uid())::text)
-     with check (bucket_id = 'fotos-perfil' and (storage.foldername(name))[1] = (select auth.uid())::text);
-
-   create policy "fotos-perfil: borrar la propia" on storage.objects
-     for delete to authenticated
-     using (bucket_id = 'fotos-perfil' and (storage.foldername(name))[1] = (select auth.uid())::text);
-
-   -- Leer: solo usuarios con sesión que estén en attendees.
-   -- PENDIENTE: confirmar con Pablo cómo enlaza attendees con auth.users
-   -- (aquí se supone attendees.user_id; si es por correo, usar auth.jwt() ->> 'email').
-   create policy "fotos-perfil: ver si eres asistente" on storage.objects
-     for select to authenticated
-     using (
-       bucket_id = 'fotos-perfil'
-       and exists (select 1 from public.attendees a where a.user_id = (select auth.uid()))
-     );
-   ```
+   Las políticas están en [`migrations/003_fotos.sql`](https://github.com/startuc3m/Startcamp/blob/main/migrations/003_fotos.sql) del repo de Pablo (`startuc3m/Startcamp`; hasta que se fusione, en su [PR #6](https://github.com/startuc3m/Startcamp/pull/6)). La de lectura usa `private.is_attendee()`: **no** puede consultar `attendees.user_id`, porque esa columna no existe (`attendees` va por correo) y el cliente no puede leer `attendees`.
 
    Ninguna política para `anon`: sin sesión no se ve ninguna foto.
 
