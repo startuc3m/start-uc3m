@@ -115,6 +115,6 @@ export const site = {
     { cat: 'Ecosistema', title: 'TeamLabs', desc: 'Laboratorio de aprendizaje radical y espacio de eventos en Madrid.', url: 'https://teamlabs.es' },
     { cat: 'Ecosistema', title: 'Madrid Startup Bar', desc: 'Comunidad y eventos del ecosistema madrileño.', url: 'https://www.instagram.com/madridstartupbar/' },
     { cat: 'Financiación', title: 'ENISA · Jóvenes Emprendedores', desc: 'Préstamos participativos para proyectos de menores de 40 años, sin aval.', url: 'https://www.enisa.es' },
-    { cat: 'Ecosistema', title: 'South Summit', desc: 'Uno de los grandes encuentros de startups e inversores de Europa, en Madrid.', url: 'https://www.southsummit.co' },
+    { cat: 'Ecosistema', title: 'South Summit', desc: 'Uno de los grandes encuentros de startups e inversores de Europa, en Madrid.', url: 'https://www.southsummit.io/e/madrid' },
   ],
 };

@@ -64,7 +64,7 @@ const eventJsonLd = {
       </div>
       <div class="flex flex-col gap-5" data-reveal>
       <dl class="flex flex-col gap-5 rounded-brand border border-white/20 bg-cobalt/50 p-6 backdrop-blur md:text-right">
-        {countdownStart && <div hidden data-countdown={countdownStart}><dt class="eyebrow text-lavender/70">Empieza en</dt><dd class="font-mono text-3xl font-medium tabular-nums text-lime" role="timer" data-countdown-clock></dd></div>}
+        {countdownStart && <div hidden data-countdown={countdownStart}><dt class="eyebrow text-lavender/70">Empieza en</dt><dd class="font-mono text-3xl font-medium tabular-nums text-lime"><span role="timer" aria-live="off" data-countdown-clock></span></dd></div>}
         <div><dt class="eyebrow text-lavender/70">Fecha</dt><dd class="text-2xl font-semibold first-letter:uppercase">{dateLabel}</dd><dd class="mt-1 text-lavender">{timeLabel}</dd></div>
         <div><dt class="eyebrow text-lavender/70">Lugar</dt><dd class="text-2xl font-semibold">{e.data.place}</dd></div>
         {e.data.price && <div><dt class="eyebrow text-lavender/70">Entrada</dt><dd class="text-2xl font-semibold">{e.data.price}</dd>{e.data.priceNote && <dd class="mt-1 text-lavender">{e.data.priceNote}</dd>}</div>}
