@@ -19,7 +19,7 @@ edition: "Curso 2026/27"
 # Sin cifras ni fechas: ya salen en la cabecera y en las secciones de mentores y jurado.
 highlights: ["Un reto real", "Mentores en sala", "Final ante jurado"]
 prizes:
-  - { place: "1.er premio", prize: "Plaza asegurada en la UNEC" }
+  - { place: "1.er premio", prize: "Plaza asegurada en la UNEC", note: "Con la posibilidad de ganar 1 millón de euros" }
   - { place: "2.º premio", prize: "Plaza en la competición Impact Social Cup", note: "Con premios de 2.000 €" }
   - { place: "3.er premio" }
 mentors:
