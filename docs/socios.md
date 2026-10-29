@@ -1,5 +1,7 @@
 # Registro y pago de socios
 
+> Parte de la [documentación de la web](README.md). Antes de tocar nada de esto, lee el documento entero: aquí se cobra dinero real.
+
 Flujo completo: el invitado entra en `/socios`, elige modalidad, paga por Stripe y
 el webhook le asigna un número de socio, le manda el correo de bienvenida y crea
 su ficha en el Notion de Start.
@@ -12,9 +14,37 @@ su ficha en el Notion de Start.
 | `api/membership/availability.mjs` | `GET` — estado de las 4 modalidades |
 | `api/membership/premium-eligibility.mjs` | `POST` — `{email}` → `{eligible}`, con rate limiting |
 | `api/membership/checkout.mjs` | `POST` — reserva plaza y abre Stripe Checkout |
+| `api/membership/telefono.mjs` | `POST` — guarda el teléfono del socio desde su enlace personal |
 | `api/stripe/webhook.mjs` | `POST` — confirma pago, asigna ID, correo y Notion |
-| `src/pages/Socios.js` | Formulario público |
-| `src/pages/SociosGracias.js` | Vuelta desde Stripe |
+| `api/_lib/*.mjs` | BD, correo (Resend), Notion y utilidades HTTP / rate limit |
+| `src/socios/Socios.jsx` | Formulario público (isla React en `src/pages/socios/index.astro`) |
+| `src/socios/SociosGracias.jsx` | Vuelta desde Stripe (`/socios/gracias`) |
+| `src/socios/SociosTelefono.jsx` | Enlace personal para dejar el teléfono (`/socios/telefono?t=…`) |
+| `db/dev-api.js` | Servidor local de `api/` en el 3001 (`npm run dev:api`) |
+| `db/invitar.js`, `db/corregir-email.js`, `db/pedir-telefonos.js` | Scripts de operativa (`npm run invitar`, etc.) |
+
+```mermaid
+sequenceDiagram
+  participant U as Socio
+  participant W as /socios
+  participant A as api/membership
+  participant DB as Neon
+  participant S as Stripe
+  participant H as api/stripe/webhook
+
+  W->>A: GET availability (modalidades y plazas)
+  U->>W: elige modalidad y rellena
+  W->>A: POST checkout
+  A->>DB: reserva plaza (reserved_until)
+  A->>S: crea Checkout Session
+  S-->>U: página de pago
+  U->>S: paga
+  S->>H: checkout.session.completed
+  H->>DB: confirm_membership_payment → nº de socio
+  H->>H: correo de bienvenida (Resend) y ficha en Notion
+  S-->>U: vuelta a /socios/gracias
+  Note over S,H: Si la sesión caduca: checkout.session.expired libera la plaza
+```
 
 ## Variables de entorno
 
@@ -148,7 +178,8 @@ DATABASE_URL="postgres://postgres:test@localhost:55432/socios_test" npm run test
 ## Prueba end-to-end en modo test
 
 ```bash
-stripe listen --forward-to localhost:3000/api/stripe/webhook
+npm run dev:api   # funciones de api/ en el 3001
+stripe listen --forward-to localhost:3001/api/stripe/webhook
 ```
 
 Tarjeta `4242 4242 4242 4242`, cualquier fecha futura y CVC. Comprobar que llega
