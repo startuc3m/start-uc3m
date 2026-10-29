@@ -19,8 +19,8 @@ const filterKeys = (m: (typeof site.team)[number]) => [...m.depts, ...(m.role ==
 <Base title="Equipo" tone="dark">
   <PageHead eyebrow="Equipo" title="Conoce a quien está detrás_" intro="Una asociación sin equipo no es nada. Detrás de Start UC3M hay un grupo de personas con ganas de cambiar las cosas." />
   <section class="container-x py-10 md:py-16">
-    <div class="flex flex-wrap gap-2" role="tablist">
-      {depts.map((d, i) => <button data-filter={d} class={`eyebrow rounded-full border px-3 py-2 ${i === 0 ? 'bg-cobalt text-white border-cobalt' : 'border-line'}`}>{d}</button>)}
+    <div class="flex flex-wrap gap-2" role="group" aria-label="Filtrar por departamento">
+      {depts.map((d, i) => <button type="button" data-filter={d} aria-pressed={String(i === 0)} class={`eyebrow rounded-full border px-3 py-2 ${i === 0 ? 'bg-cobalt text-white border-cobalt' : 'border-line'}`}>{d}</button>)}
     </div>
     <p data-dept-desc class="mt-8 max-w-2xl text-lg opacity-80"></p>
     <ul class="mt-10 grid gap-x-8 gap-y-8 md:gap-y-12 sm:grid-cols-2 md:grid-cols-4" data-stagger>
@@ -33,13 +33,13 @@ const filterKeys = (m: (typeof site.team)[number]) => [...m.depts, ...(m.role ==
                 <span class="mono absolute bottom-3 left-3 rounded-full bg-white px-3 py-1 text-cobalt opacity-0 transition-opacity group-hover:opacity-100">LinkedIn ↗</span>
               </div>
               <h2 class="mt-4 text-xl font-bold group-hover:underline">{m.name}</h2>
-              <p class="text-sm opacity-70">{m.role} · {m.depts.join(' y ')}</p>
+              <p class="text-sm opacity-80">{m.role} · {m.depts.join(' y ')}</p>
             </a>
           ) : (
             <div>
               <div class="relative aspect-[4/5] overflow-hidden rounded-brand bg-cobalt">{m.photo ? <Image src={foto(m.photo)} alt={m.name} width={480} class="absolute inset-0 h-full w-full object-cover" /> : <span class="display absolute inset-0 grid place-items-center text-6xl text-white/80">{initials(m.name)}</span>}</div>
               <h2 class="mt-4 text-xl font-bold">{m.name}</h2>
-              <p class="text-sm opacity-70">{m.role} · {m.depts.join(' y ')}</p>
+              <p class="text-sm opacity-80">{m.role} · {m.depts.join(' y ')}</p>
             </div>
           )}
         </li>
@@ -53,7 +53,7 @@ const filterKeys = (m: (typeof site.team)[number]) => [...m.depts, ...(m.role ==
           {site.alumni.map((a) => (
             <li data-reveal>
               <h3 class="text-xl font-bold">{a.name}</h3>
-              <p class="text-sm opacity-70">{a.role}</p>
+              <p class="text-sm opacity-80">{a.role}</p>
               {a.linkedin && <a href={a.linkedin} class="eyebrow mt-2 inline-block text-cobalt">LinkedIn</a>}
             </li>
           ))}
@@ -67,7 +67,12 @@ const filterKeys = (m: (typeof site.team)[number]) => [...m.depts, ...(m.role ==
   const items = document.querySelectorAll('[data-dept]');
   const desc = document.querySelector('[data-dept-desc]');
   const apply = (d) => {
-    buttons.forEach((b) => b.classList.toggle('bg-cobalt', b.dataset.filter === d) || b.classList.toggle('text-white', b.dataset.filter === d) || b.classList.toggle('border-cobalt', b.dataset.filter === d));
+    buttons.forEach((b) => {
+      const on = b.dataset.filter === d;
+      ['bg-cobalt', 'text-white', 'border-cobalt'].forEach((c) => b.classList.toggle(c, on));
+      b.classList.toggle('border-line', !on);
+      b.setAttribute('aria-pressed', String(on));
+    });
     items.forEach((it) => (it.style.display = d === 'Todos' || it.dataset.dept.split('|').includes(d) ? '' : 'none'));
     desc.textContent = departments.find((x) => x.name === d)?.desc ?? '';
     history.replaceState(null, '', d === 'Todos' ? location.pathname : `?dept=${encodeURIComponent(d)}`);
