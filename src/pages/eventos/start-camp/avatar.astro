@@ -1,0 +1,29 @@
+---
+import Base from '../../../layouts/Base.astro';
+import AvatarForm from '../../../startcamp/AvatarForm.jsx';
+// Perfil de cada asistente del Start Camp (vivirá en startcamp.startuc3m.es).
+// Se entra con un enlace de un solo uso que llega por correo (sesión de
+// Supabase, sin token en la URL). Esta ruta hay que registrarla en Supabase
+// como URL de vuelta del enlace.
+// client:only porque lee la sesión y la URL en el navegador.
+// Modo demo, fuera de producción: ?demo=1 (ver VARIANTES_DEMO en src/startcamp/api.js).
+// El banner y la barra de «Reserva plaza» no salen aquí: los excluye
+// startcampPromoUrl (src/lib/startcamp.ts) en todo /eventos/start-camp/*.
+---
+<Base title="Tu perfil del Start Camp" tone="dark" noindex>
+  <section class="bg-cobalt text-white">
+    <div class="container-x py-12 md:py-20">
+      <span class="eyebrow text-lavender">Start Camp 2026 · 7 y 8 de noviembre</span>
+      <h1 class="display mt-4 text-[clamp(56px,10vw,128px)]">Tu perfil_</h1>
+      <p class="mt-6 max-w-2xl text-xl leading-snug text-lavender">
+        Conoce a otros asistentes antes del Camp y forma tu grupo. Crea un perfil corto con lo que sabes hacer y lo que te
+        interesa: es opcional y tardas un minuto.
+      </p>
+    </div>
+  </section>
+  <section class="bg-paper">
+    <div class="container-x py-12 md:py-16">
+      <AvatarForm client:only="react" />
+    </div>
+  </section>
+</Base>

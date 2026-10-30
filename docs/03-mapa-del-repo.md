@@ -21,6 +21,7 @@ start-uc3m/
 │   ├── lib/              Datos y lógica: site.ts, content.ts, fotos.ts, motion.ts…
 │   ├── pages/            Una página por archivo (la ruta sale del nombre)
 │   ├── socios/           Islas React de socios y privacidad (vienen de la web anterior)
+│   ├── startcamp/        Perfil del Start Camp (React + Supabase). Ver [startcamp-perfil.md](startcamp-perfil.md)
 │   └── styles/global.css Tokens de marca, utilidades y animaciones base
 ├── .github/workflows/    CI: build y tests en cada PR
 ├── astro.config.mjs      Configuración de Astro (sitio, sitemap, React, proxy de /api)

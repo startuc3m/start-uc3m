@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Entra en tu perfil del Start Camp</title>
+  </head>
+  <!--
+    Plantilla del correo de ACCESO al perfil del Start Camp (magic link de Supabase).
+    Dónde va: Supabase → Authentication → Emails → Templates → «Magic Link».
+    Asunto: Tu enlace para entrar en tu perfil del Start Camp
+
+    Variables de Supabase (no tocar):
+      {{ .ConfirmationURL }}  enlace de un solo uso (caduca en 1 hora)
+      {{ .Data.nombre }}      nombre precargado desde NeonPass (user_metadata.nombre)
+
+    Compatible con Gmail y Outlook: tablas, estilos inline, sin <style>, sin imágenes de fondo.
+    Colores del brand kit 26/27: cobalto #333399, navy #13133d, lavanda #b6b8e7, lima #d6ff4f.
+  -->
+  <body style="margin:0;padding:0;background:#efeff8;">
+    <!-- Texto de vista previa en la bandeja de entrada -->
+    <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#efeff8;">
+      Pulsa el botón para entrar y crear tu perfil. El enlace caduca en 1 hora.
+    </div>
+
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#efeff8;padding:32px 12px;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:520px;background:#ffffff;border-radius:6px;overflow:hidden;font-family:'Titillium Web',Helvetica,Arial,sans-serif;">
+
+            <!-- Cabecera cobalto -->
+            <tr>
+              <td bgcolor="#333399" style="background:#333399;padding:28px 32px 30px 32px;">
+                <img src="https://www.startuc3m.es/brand/logo-full-white.png" width="120" alt="Start UC3M" style="display:block;border:0;width:120px;height:auto;margin:0 0 26px 0;color:#ffffff;font-family:Helvetica,Arial,sans-serif;font-size:20px;font-weight:bold;" />
+                <p style="margin:0 0 10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#b6b8e7;">
+                  Start Camp 2026 &middot; 7 y 8 de noviembre
+                </p>
+                <h1 style="margin:0;font-family:Impact,'Arial Narrow',Helvetica,Arial,sans-serif;font-size:38px;line-height:1.05;font-weight:normal;letter-spacing:.01em;text-transform:uppercase;color:#ffffff;">
+                  Tu perfil te espera_
+                </h1>
+              </td>
+            </tr>
+
+            <!-- Texto -->
+            <tr>
+              <td style="padding:30px 32px 6px 32px;">
+                <p style="margin:0 0 14px 0;font-size:17px;line-height:1.5;color:#13133d;font-weight:bold;">
+                  {{ if .Data.nombre }}Hola, {{ .Data.nombre }}:{{ else }}Hola:{{ end }}
+                </p>
+                <p style="margin:0 0 14px 0;font-size:15px;line-height:1.6;color:#3d3d6b;">
+                  Pulsa el botón para entrar en tu perfil del Start Camp. Cuéntale al resto qué se te da bien y qué te interesa,
+                  y encuentra a tu grupo antes del evento.
+                </p>
+              </td>
+            </tr>
+
+            <!-- Botón -->
+            <tr>
+              <td style="padding:16px 32px 8px 32px;" align="left">
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td align="center" bgcolor="#333399" style="border-radius:4px;">
+                      <a href="{{ .ConfirmationURL }}"
+                         style="display:inline-block;padding:16px 30px;font-family:Helvetica,Arial,sans-serif;font-size:16px;font-weight:bold;color:#ffffff;text-decoration:none;border-radius:4px;">
+                        Entrar en mi perfil &rarr;
+                      </a>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <!-- Aviso de caducidad -->
+            <tr>
+              <td style="padding:18px 32px 6px 32px;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td bgcolor="#d6ff4f" style="background:#d6ff4f;border-radius:4px;padding:12px 16px;font-size:14px;line-height:1.5;color:#13133d;">
+                      <strong>El enlace caduca en 1 hora</strong> y solo sirve una vez. Si se te pasa, pide otro desde la página del perfil.
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <!-- Enlace de respaldo -->
+            <tr>
+              <td style="padding:18px 32px 28px 32px;">
+                <p style="margin:0 0 6px 0;font-size:13px;line-height:1.6;color:#6b6b8f;">
+                  Si el botón no funciona, copia este enlace en tu navegador:
+                </p>
+                <p style="margin:0;font-size:12px;line-height:1.5;word-break:break-all;">
+                  <a href="{{ .ConfirmationURL }}" style="color:#333399;">{{ .ConfirmationURL }}</a>
+                </p>
+              </td>
+            </tr>
+
+            <!-- Pie -->
+            <tr>
+              <td style="padding:20px 32px 26px 32px;border-top:1px solid #dedeee;">
+                <p style="margin:0 0 8px 0;font-size:12px;line-height:1.6;color:#6b6b8f;">
+                  Te llega este correo porque alguien ha pedido entrar en el perfil del Start Camp con esta dirección.
+                  Si no has sido tú, ignóralo: sin pulsar el enlace no pasa nada.
+                </p>
+                <p style="margin:0;font-family:'Courier New',Courier,monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#9a9ab8;">
+                  Start UC3M &middot; <a href="https://www.startuc3m.es" style="color:#9a9ab8;text-decoration:none;">startuc3m.es</a>
+                </p>
+              </td>
+            </tr>
+
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

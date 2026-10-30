@@ -55,6 +55,16 @@ Las inscripciones están cerradas (#31) y `/unete` no tiene formulario. Para la 
 2. Crear el formulario en `/unete`, basado en `ContactForm.astro`.
 3. Revisar con Legal qué datos se piden y actualizar `/privacidad`.
 
+## Correo de acceso al perfil del Start Camp
+
+El perfil del Start Camp (`/eventos/start-camp/avatar`) no tiene formulario en `api/`: se entra con un enlace de un solo uso que manda Supabase (magic link). La plantilla de ese correo es `docs/correo-enlace-startcamp.html`. Todo el perfil está documentado en [`startcamp-perfil.md`](startcamp-perfil.md).
+
+- **Dónde va:** Supabase → Authentication → Emails → Templates → **Magic Link**. La pega quien administra Supabase; no se despliega con la web.
+- **Asunto:** `Tu enlace para entrar en tu perfil del Start Camp`
+- **Variables:** `{{ .ConfirmationURL }}` (el enlace, caduca en 1 hora) y `{{ .Data.nombre }}` (`user_metadata.nombre`, lo carga el script de entradas). Se pegan tal cual, sin sustituirlas.
+- **Saludo:** si `user_metadata.nombre` no existe, queda en «Hola:».
+- **Remitente:** no está en la plantilla; se configura aparte en el SMTP personalizado de Supabase (Resend).
+
 ## Newsletter
 
 Se quitó de toda la web (#35). Si vuelve, hace falta decidir el proveedor y el texto legal antes de escribir código.

@@ -129,7 +129,7 @@ Guía completa, campo a campo, en **[04 · Contenido](docs/04-contenido.md)**. S
   </tr>
 </table>
 
-Y además: [decisiones técnicas y de producto](docs/decisiones.md), con fecha y su porqué.
+Y además: [decisiones técnicas y de producto](docs/decisiones.md), con fecha y su porqué, y el [perfil del Start Camp](docs/startcamp-perfil.md) (React + Supabase).
 
 ## 🗂️ El repo de un vistazo
 
@@ -144,6 +144,7 @@ src/
 ├─ pages/       Una página por archivo
 ├─ components/  Piezas reutilizables y Start Camp
 ├─ socios/      Alta de socios (React)
+├─ startcamp/   Perfil del Start Camp (React + Supabase)
 └─ styles/      Brand kit: colores y tipografías
 ```
 
