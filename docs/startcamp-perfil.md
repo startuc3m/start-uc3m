@@ -5,7 +5,7 @@ Página donde cada asistente del Start Camp (7 y 8 de noviembre de 2026) crea un
 - **Ruta:** `/eventos/start-camp/avatar`. Vivirá en `https://startcamp.startuc3m.es/eventos/start-camp/avatar`.
 - **Página de error del enlace:** `/eventos/start-camp/enlace-no-valido`.
 - **Rama:** `feat/avatares-startcamp`. PR en borrador: [#71](https://github.com/startuc3m/start-uc3m/pull/71).
-- **Base de datos, login y scripts:** Pablo (Supabase). **Directorio de perfiles:** Lucas, que reutiliza `AvatarCard`. **Correo de campaña:** Lucas. **Textos legales:** Alejandro.
+- **Base de datos, login y scripts:** Pablo (Supabase). **Directorio de perfiles:** Lucas, con el carrusel curved arc. **Correo de campaña:** Lucas. **Textos legales:** Alejandro.
 
 > «Avatar» es el nombre antiguo. En todo lo que se ve se dice «perfil»; «avatar» solo queda en la ruta y en los nombres de los componentes.
 
@@ -35,7 +35,7 @@ Página donde cada asistente del Start Camp (7 y 8 de noviembre de 2026) crea un
 2. **Entrar:** escribe el correo con el que compró la entrada y pulsa «Enviar enlace».
 3. Supabase le manda el **correo de acceso** (plantilla `docs/correo-enlace-startcamp.html`), con un enlace de un solo uso que **caduca en 1 hora**.
 4. Abre el enlace y **vuelve a la página con la sesión abierta**. `supabase-js` lee la sesión de la URL y la guarda en el navegador.
-5. **Sin perfil:** formulario vacío con el nombre ya puesto (`user_metadata.nombre`) y la casilla de consentimiento. **Con perfil:** formulario relleno para editar, sin consentimiento.
+5. Con sesión aparecen **Mi perfil** y **Ver participantes**. En Mi perfil, **sin perfil:** formulario vacío con el nombre ya puesto (`user_metadata.nombre`) y la casilla de consentimiento. **Con perfil:** formulario relleno para editar, sin consentimiento. El directorio no exige haber creado un perfil propio.
 6. Guarda. Al **crear** sale confeti. Después puede editar, **salir del grupo**, **borrar** el perfil o **cerrar sesión**.
 
 Si vuelve otro día, la sesión de Supabase sigue en ese navegador y entra directamente. En otro navegador, o si cierra sesión, vuelve a pedir el enlace.
@@ -44,7 +44,7 @@ Si vuelve otro día, la sesión de Supabase sigue en ese navegador y entra direc
 
 ## 3. Pantallas
 
-Todas están en `src/startcamp/AvatarForm.jsx`.
+Las pantallas de acceso y edición están en `src/startcamp/AvatarForm.jsx`; `StartCampProfile.jsx` controla la sesión y la navegación al directorio.
 
 | Pantalla | Cuándo sale | Qué enseña | En demo |
 |---|---|---|---|
@@ -75,7 +75,9 @@ Detalles de comportamiento:
 
 | Archivo | Qué hace |
 |---|---|
-| `src/pages/eventos/start-camp/avatar.astro` | La página. Monta `AvatarForm` con `client:only="react"` y lleva `noindex` |
+| `src/pages/eventos/start-camp/avatar.astro` | La página. Monta `StartCampProfile` con `client:only="react"` y lleva `noindex` |
+| `src/startcamp/StartCampProfile.jsx` | Acceso a Mi perfil y Ver participantes, carga del directorio y renovación de fotos |
+| `src/components/curved_arc/` | Carrusel de participantes, filtros y ficha de tamaño fijo |
 | `src/pages/eventos/start-camp/enlace-no-valido.astro` | Página de enlace no válido, con `noindex` |
 | `src/startcamp/AvatarForm.jsx` | Todas las pantallas y el formulario. Solo habla con `api.js` |
 | `src/startcamp/AvatarCard.jsx` | Tarjeta del perfil: vista previa en el formulario y ficha para el directorio de Lucas. Recibe los datos con la forma de la base de datos (y `foto_url`, opcional, ver §16) |
@@ -358,7 +360,7 @@ Si al guardar o borrar sale «Tu sesión ha caducado» con la sesión recién ab
 
 ## 16. Fotos (desactivado)
 
-Foto opcional en el perfil. **Está hecha pero apagada**, porque el spec deja fuera de alcance los avatares visuales. Con `FOTOS_ACTIVAS = false` (en `src/startcamp/opciones.js`) la página se ve y se comporta exactamente igual que sin fotos: no sale el campo, ninguna llamada pide ni manda `foto_path` y no se toca Storage. Hay tests que lo comprueban.
+La **edición** de fotos sigue apagada con `FOTOS_ACTIVAS = false` (en `src/startcamp/opciones.js`): el formulario no enseña el campo ni sube, cambia o borra imágenes. El directorio sí lee las fotos que ya existan: pide `foto_path` y firma las rutas del bucket privado por lotes con `createSignedUrls(paths, 3600)`. Hay tests separados de edición y lectura del directorio.
 
 Para enseñarla sin encender nada: modo demo con `&fotos=1` o `?demo=con-foto` (§7).
 

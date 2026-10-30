@@ -365,7 +365,7 @@ function PantallaEnlaceCaducado({ onPedirOtro }) {
  * Página de perfil del Start Camp: entrar con el correo, crear y editar el
  * perfil, borrarlo y cerrar sesión. Con ?demo=… funciona contra el mock.
  */
-export default function AvatarForm() {
+export default function AvatarForm({ onSesionCerrada }) {
   const [variante] = useState(() => varianteDemo());
   const [conFotos] = useState(() => fotosActivas());
 
@@ -629,6 +629,7 @@ export default function AvatarForm() {
     } finally {
       setCerrando(false);
       setPantalla('entrar');
+      onSesionCerrada?.();
     }
   }
 

@@ -9,8 +9,8 @@
 // Modo demo: con ?demo=<variante>, y nunca en los hosts de producción, todo
 // funciona contra un mock en memoria. Variantes en VARIANTES_DEMO.
 //
-// Fotos: solo con FOTOS_ACTIVAS (opciones.js) o, en modo demo, con &fotos=1.
-// Apagado, ninguna llamada pide ni manda foto_path ni toca Storage.
+// Edición de fotos: FOTOS_ACTIVAS (opciones.js) o &fotos=1 en demo.
+// El directorio lee las fotos existentes sin habilitar su edición.
 
 import { FOTOS_ACTIVAS } from './opciones.js';
 
@@ -75,7 +75,7 @@ export function fotosActivas(loc = window.location) {
 /** Columnas del perfil propio. Nunca select('*'): da error de permisos. */
 const COLUMNAS_PERFIL = 'nombre, estado_grupo, rol, intereses, linkedin_url, descripcion, group_id, groups(nombre)';
 
-// Fotos en Supabase Storage (solo con fotosActivas()).
+// Fotos existentes en el bucket privado de Supabase Storage.
 export const BUCKET_FOTOS = 'fotos-perfil';
 export const COLUMNA_FOTO = 'foto_path';
 // Segundos que vale la URL firmada para ver una foto (el bucket es privado).
@@ -129,6 +129,53 @@ async function sesionActual(sb) {
   return data?.session ?? null;
 }
 
+/** Comparte los cambios de sesión sin crear otro cliente. */
+export async function observarSesion(onSesion) {
+  if (usaMock()) {
+    onSesion(estado().sesion);
+    return () => {};
+  }
+  const sb = await supabase();
+  if (!sb) {
+    onSesion(false);
+    return () => {};
+  }
+  const { data } = sb.auth.onAuthStateChange((_event, session) => onSesion(Boolean(session)));
+  return () => data.subscription.unsubscribe();
+}
+
+export async function obtenerParticipantes() {
+  if (usaMock()) {
+    if (!estado().sesion) throw new ApiError('SIN_SESION');
+    return PERFILES_EJEMPLO.map((p, i) => ({ ...p, user_id: `demo-${i}`, group_nombre: p.nombre_grupo,
+      foto_url: fotosActivas() && i === 0 ? FOTO_EJEMPLO : null }));
+  }
+  return llamar(async () => {
+    const sb = await supabase();
+    if (!sb || !(await sesionActual(sb))) throw new ApiError('SIN_SESION');
+    const { data, error } = await sb.from('profiles').select(`user_id, ${COLUMNAS_PERFIL}, ${COLUMNA_FOTO}`);
+    if (error) throw new ApiError(traducirErrorBD(error));
+    const paths = [...new Set((data ?? []).map((p) => p.foto_path).filter(Boolean))];
+    const fotos = new Map();
+    if (paths.length) {
+      try {
+        const { data: firmadas } = await sb.storage.from(BUCKET_FOTOS).createSignedUrls(paths, CADUCIDAD_URL_FOTO_S);
+        for (const foto of firmadas ?? []) {
+          if (!foto.error && foto.path && foto.signedUrl) fotos.set(foto.path, foto.signedUrl);
+        }
+      } catch {
+        // Si Storage falla, los perfiles siguen disponibles con iniciales.
+      }
+    }
+    return (data ?? []).map(({ groups, ...p }) => ({
+      ...p,
+      intereses: p.intereses ?? [],
+      group_nombre: (Array.isArray(groups) ? groups[0] : groups)?.nombre ?? null,
+      foto_url: fotos.get(p.foto_path) ?? null,
+    }));
+  });
+}
+
 /** Ejecuta `fn`; lo que no sea un ApiError (red, excepciones) sale como RED. */
 async function llamar(fn) {
   try {
@@ -179,7 +226,11 @@ export async function pedirEnlace(email) {
     if (!sb) throw new ApiError('RED');
     const { error } = await sb.auth.signInWithOtp({
       email,
-      options: { shouldCreateUser: false, emailRedirectTo: window.location.origin + RUTA_PERFIL },
+      options: {
+        shouldCreateUser: false,
+        emailRedirectTo: window.location.origin + RUTA_PERFIL +
+          (new URLSearchParams(window.location.search).get('vista') === 'participantes' ? '?vista=participantes' : ''),
+      },
     });
     if (error) throw new ApiError(traducirErrorEnlace(error));
     return { ok: true };
