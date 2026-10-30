@@ -11,6 +11,8 @@ import {
   traducirErrorStorage,
   leerErrorEnlace,
   obtenerPerfil,
+  obtenerParticipantes,
+  observarSesion,
   pedirEnlace,
   reiniciarClienteSupabase,
   reiniciarMock,
@@ -54,6 +56,7 @@ function storage(resp = {}) {
     upload: metodo('upload', { data: { path: 'u-1/foto.webp' }, error: null }),
     remove: metodo('remove', { data: [], error: null }),
     createSignedUrl: metodo('createSignedUrl', { data: { signedUrl: 'https://firmada/foto' }, error: null }),
+    createSignedUrls: metodo('createSignedUrls', { data: [], error: null }),
   };
   sb.storage = { from: vi.fn((bucket) => (llamadas.push(['from', bucket]), api)), llamadas };
 }
@@ -133,6 +136,81 @@ afterEach(() => {
   vi.useRealTimers();
   vi.unstubAllEnvs();
   irA('/');
+});
+
+describe('directorio autenticado', () => {
+  beforeEach(() => {
+    irA('/eventos/start-camp/avatar');
+    vi.stubEnv('PUBLIC_SUPABASE_URL', 'https://proyecto.supabase.co');
+    vi.stubEnv('PUBLIC_SUPABASE_PUBLISHABLE_KEY', 'sb_publishable_prueba');
+    conSesion();
+    respuestas({ profiles: [] });
+  });
+
+  test('sin sesión no consulta la tabla', async () => {
+    conSesion(null);
+    await expect(obtenerParticipantes()).rejects.toMatchObject({ codigo: 'SIN_SESION' });
+    expect(sb.from).not.toHaveBeenCalled();
+  });
+
+  test('selecciona solo columnas del directorio y normaliza el grupo', async () => {
+    respuestas({ profiles: [{ data: [{ user_id: 'u-2', nombre: 'Eva', intereses: null, groups: [{ nombre: 'Equipo' }] }], error: null }] });
+    await expect(obtenerParticipantes()).resolves.toEqual([{ user_id: 'u-2', nombre: 'Eva', intereses: [], group_nombre: 'Equipo', foto_url: null }]);
+    expect(sb.consultas[0].llamadas).toEqual([['select', 'user_id, nombre, estado_grupo, rol, intereses, linkedin_url, descripcion, group_id, groups(nombre), foto_path']]);
+  });
+
+  test('firma las fotos en lote, sin duplicados, y las asocia por ruta', async () => {
+    respuestas({ profiles: [{ data: [
+      { user_id: '1', foto_path: 'a/foto.webp' },
+      { user_id: '2', foto_path: 'b/foto.webp' },
+      { user_id: '3', foto_path: 'a/foto.webp' },
+      { user_id: '4', foto_path: null },
+    ], error: null }] });
+    storage({ createSignedUrls: { data: [
+      { path: 'b/foto.webp', signedUrl: 'https://firmada/b', error: null },
+      { path: 'a/foto.webp', signedUrl: 'https://firmada/a', error: null },
+    ], error: null } });
+    const perfiles = await obtenerParticipantes();
+    expect(perfiles.map((p) => p.foto_url)).toEqual(['https://firmada/a', 'https://firmada/b', 'https://firmada/a', null]);
+    expect(sb.storage.llamadas).toEqual([['from', 'fotos-perfil'], ['createSignedUrls', ['a/foto.webp', 'b/foto.webp'], 3600]]);
+  });
+
+  test.each([
+    { data: null, error: { message: 'Storage no disponible' } },
+    { data: [{ path: 'a/foto.webp', signedUrl: null, error: 'Not found' }], error: null },
+  ])('los errores de Storage conservan los perfiles sin foto', async (response) => {
+    respuestas({ profiles: [{ data: [{ user_id: '1', foto_path: 'a/foto.webp' }], error: null }] });
+    storage({ createSignedUrls: response });
+    const perfiles = await obtenerParticipantes();
+    expect(perfiles).toHaveLength(1);
+    expect(perfiles[0].foto_url).toBeNull();
+  });
+
+  test('un error de permisos no devuelve perfiles de ejemplo', async () => {
+    respuestas({ profiles: [{ data: null, error: { code: '42501' } }] });
+    await expect(obtenerParticipantes()).rejects.toMatchObject({ codigo: 'SESION_CADUCADA' });
+  });
+
+  test('el enlace de acceso conserva el destino del directorio', async () => {
+    irA('/eventos/start-camp/avatar?vista=participantes');
+    await pedirEnlace('ana@uc3m.es');
+    expect(sb.auth.signInWithOtp).toHaveBeenCalledWith({ email: 'ana@uc3m.es', options: {
+      shouldCreateUser: false, emailRedirectTo: window.location.origin + '/eventos/start-camp/avatar?vista=participantes',
+    } });
+  });
+
+  test('comparte el cliente y libera la suscripción de autenticación', async () => {
+    const unsubscribe = vi.fn();
+    sb.auth.onAuthStateChange = vi.fn(() => ({ data: { subscription: { unsubscribe } } }));
+    const callback = vi.fn();
+    const limpiar = await observarSesion(callback);
+    const evento = sb.auth.onAuthStateChange.mock.calls[0][0];
+    evento('SIGNED_IN', SESION);
+    evento('SIGNED_OUT', null);
+    expect(callback.mock.calls).toEqual([[true], [false]]);
+    limpiar();
+    expect(unsubscribe).toHaveBeenCalledOnce();
+  });
 });
 
 describe('modo demo', () => {

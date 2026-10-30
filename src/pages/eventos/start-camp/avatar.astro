@@ -1,6 +1,6 @@
 ---
 import Base from '../../../layouts/Base.astro';
-import AvatarForm from '../../../startcamp/AvatarForm.jsx';
+import StartCampProfile from '../../../startcamp/StartCampProfile.jsx';
 // Perfil de cada asistente del Start Camp (vivirá en startcamp.startuc3m.es).
 // Se entra con un enlace de un solo uso que llega por correo (sesión de
 // Supabase, sin token en la URL). Esta ruta hay que registrarla en Supabase
@@ -23,7 +23,7 @@ import AvatarForm from '../../../startcamp/AvatarForm.jsx';
   </section>
   <section class="bg-paper">
     <div class="container-x py-12 md:py-16">
-      <AvatarForm client:only="react" />
+      <StartCampProfile client:only="react" />
     </div>
   </section>
 </Base>
