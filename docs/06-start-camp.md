@@ -50,7 +50,7 @@ Queda pendiente el resto de nombres de mentores y jurado, la confirmación de qu
 
 Con el viernes confirmado, el evento empieza el 6 de noviembre a las 18:00 y acaba el domingo 8 a las 20:00. Se actualizan `date`, `days`, `time`, calendario descargable, avisos, cuenta atrás, avatar y referencias en Patrocina para que todas las fechas coincidan. La llegada del sábado es a las 09:00; las franjas previas de preparación se muestran en el programa.
 
-Para cambiar el programa: editar `agenda` (`day`, `time`, `title`, `desc` opcional) y `agendaNote` en el markdown. Con `day`, la ficha muestra una columna por jornada; las agendas anteriores sin `day` conservan su formato.
+Para cambiar el programa: editar `agenda` (`day`, `time`, `title`, `desc` opcional) y `agendaNote` en el markdown. Con `day`, la ficha muestra un desplegable por jornada después de premios, información práctica, mentores y jurado. Los tres días empiezan cerrados; cada cabecera resume horas y número de actividades. Se puede abrir un día a la vez, con controles nativos accesibles por teclado y sin depender de JavaScript. Las filas de horas y actividades son compactas; se conserva el programa completo. Las agendas anteriores sin `day` conservan su formato.
 
 ## Por qué se oculta solo
 
