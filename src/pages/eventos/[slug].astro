@@ -23,6 +23,7 @@ const dateLabel = e.data.days === 1 ? fmt(e.data.date)
   : `del ${firstDay} al ${fmt(lastDay).replace(',', '')}`;
 const timeLabel = e.data.endTime ? (e.data.days > 1 ? `${e.data.time} (${fmtDay(e.data.date).split(' ')[0]}) – ${e.data.endTime} (${fmtDay(lastDay).split(' ')[0]})` : `${e.data.time} – ${e.data.endTime}`) : e.data.time;
 const { prizes, mentors, jury, info } = e.data;
+const agendaDays = [...new Set(e.data.agenda.map((a) => a.day).filter(Boolean))];
 // Si se confirman más nombres que el total previsto, mandan los nombres.
 const mentorsTotal = mentors ? Math.max(mentors.total, mentors.names.length) : 0;
 const juryTotal = jury ? Math.max(jury.total, jury.names.length) : 0;
@@ -74,6 +75,7 @@ const eventJsonLd = {
           {open && (e.data.external
             ? <a href={e.data.external} target="_blank" rel="noopener" class="btn btn-lime">Reservar plaza <span class="font-mono">↗</span></a>
             : <a href="#inscripcion" class="btn btn-on-blue">Inscripción <span class="font-mono">→</span></a>)}
+          {agendaDays.length > 0 && <a href="#horario" class="btn btn-outline text-white">Ver horario <span class="font-mono">↓</span></a>}
           {!past && <a href={icsHref} download={`${e.id}.ics`} class="btn btn-outline text-white">Añadir al calendario <span class="font-mono">＋</span></a>}
           {past && <a href="/eventos" class="btn btn-outline text-white">Ver próximos eventos</a>}
       </div>
@@ -109,7 +111,7 @@ const eventJsonLd = {
         </div>
       )}
     </div>
-    {e.data.agenda.length > 0 ? (
+    {e.data.agenda.length > 0 && agendaDays.length === 0 ? (
       <div data-reveal>
         <span class="eyebrow text-cobalt">Agenda</span>
         <ol class="relative mt-4 border-l-2 border-cobalt/30 pl-8" data-stagger>
@@ -127,6 +129,31 @@ const eventJsonLd = {
       <div class="relative aspect-[4/3] overflow-hidden rounded-brand" data-reveal><Photo name={fotos?.side} sizes="(min-width: 768px) 50vw, 100vw" class="absolute inset-0 h-[120%] w-full object-cover" /></div>
     )}
   </section>
+  {agendaDays.length > 0 && (
+    <section id="horario" class="scroll-mt-24 border-t border-line bg-paper-2">
+      <div class="container-x py-12 md:py-20">
+        <span class="eyebrow text-cobalt">El programa</span>
+        <h2 class="display mt-3 text-[clamp(32px,5vw,64px)] text-cobalt"><span>Horario_</span></h2>
+        {e.data.agendaNote && <p class="mt-4 text-lg text-ink/70">{e.data.agendaNote}</p>}
+        <div class={`mt-8 grid items-start gap-6 ${agendaDays.length > 2 ? 'lg:grid-cols-3' : 'md:grid-cols-2'}`}>
+          {agendaDays.map((day) => (
+            <div class="rounded-brand border border-line bg-paper p-5 md:p-6">
+              <h3 class="text-2xl font-bold text-cobalt">{day}</h3>
+              <ol class="mt-5 divide-y divide-line">
+                {e.data.agenda.filter((a) => a.day === day).map((a) => (
+                  <li class="py-4 first:pt-0 last:pb-0">
+                    <span class="mono text-cobalt">{a.time}</span>
+                    <h4 class="mt-1 text-lg font-semibold leading-snug">{a.title}</h4>
+                    {a.desc && <p class="mt-2 text-ink/70">{a.desc}</p>}
+                  </li>
+                ))}
+              </ol>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
   <!-- PREMIOS: los que no están confirmados salen como "por anunciar" -->
   {prizes.length > 0 && (
     <section class="border-t border-line bg-paper">

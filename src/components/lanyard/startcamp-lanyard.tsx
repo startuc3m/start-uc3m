@@ -782,7 +782,7 @@ export function StartcampLanyard({
                                                                         </div>
                                                                         <div>
                                                                                 <span>Fecha</span>
-                                                                                <b>{isLoggedIn ? validThru : "07/08 NOVIEMBRE"}</b>
+                                                                                <b>{isLoggedIn ? validThru : "06–08 NOVIEMBRE"}</b>
                                                                         </div>
                                                                 </div>
                                                                 <a className="scl-qr" href={EVENT_URL} target="_blank" rel="noopener noreferrer"><img src={neonpassQR} alt="QR de reserva de STARTCAMP en Neonpass" width="80" height="80" /></a>
