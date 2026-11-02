@@ -30,7 +30,7 @@ flowchart TD
 
 ## Cambiar datos
 
-- **Premios, mentores, jurado, info práctica, precio:** en `start-camp.md`. Los campos están explicados en [04 · Contenido](04-contenido.md#todos-los-campos). La fuente es la página del proyecto **StartCamp** en el Notion de Start, sección *Confirmado hasta la fecha*. Solo se publica lo que esté ahí.
+- **Premios, mentores, jurado, info práctica, precio:** en `start-camp.md`. Los campos están explicados en [04 · Contenido](04-contenido.md#todos-los-campos). La fuente es la página del proyecto **StartCamp** en el Notion de Start, sección *Confirmado hasta la fecha*. También se aceptan publicaciones oficiales de Start facilitadas como fuente; los premios se contrastaron con Instagram el 2 de noviembre.
 - **Enlace de compra:** campo `external` de `start-camp.md`. El lanyard tiene su propio `EVENT_URL` y su QR (`src/assets/component_assets/startcamp-neonpass-qr.svg`): si cambia el enlace, hay que cambiar los tres.
 - **Hora de inicio o fin:** en `startcamp_countdown.js` **y** en `date`, `time` y `endTime` de `start-camp.md`. Las dos tienen que coincidir.
 
@@ -41,12 +41,12 @@ Notion se ha consultado solo en lectura. Fuentes contrastadas:
 - [Proyecto StartCamp](https://www.notion.so/3949cbdd93e58032b187ed8b7295b9af), sección «Confirmado hasta la fecha»: comida cerrada, 12 mentores previstos y siete con nombre; 7 jurados previstos, Borja Vega y Alfredo entre los confirmados. Incluye a Óscar Longares (Unlimited), domingo de 15:30 a 17:45.
 - [Cerrar catering](https://www.notion.so/3fb9cbdd93e580ef9e0af7c8daea524a): completada. La tarea de [comida gratis para ambos días](https://www.notion.so/3fb9cbdd93e5808782d4d07e23366544) sigue en progreso: se anuncia comida, sin prometer gratuidad, menú ni cobertura de todas las comidas.
 - Alfredo es **Alfredo Raya Bejarano**: la [tabla de contactos de jurado StartCamp](https://www.notion.so/4089cbdd93e58071b175e2261e95c509) identifica su nombre completo; el [CRM](https://www.notion.so/4099cbdd93e58085b28fc27b1b84a284) lo marca «Cerrado» y «Jurado». La tabla conserva «En conversación»; para su participación se toma la confirmación de la página principal y del CRM. Los demás candidatos solicitados o en conversación no se publican.
-- Álvaro confirma **Juan José Fernández** (la lista abreviaba «Juan Fernández») y que el tercer premio sigue pendiente. Se conservan los dos primeros premios; no se añaden viaje, túnel de viento, South Summit, Kerna ni sudaderas sin concretar su vigencia y asignación.
+- Álvaro confirma **Juan José Fernández** (la lista abreviaba «Juan Fernández»). Después facilita la [publicación oficial de premios](https://www.instagram.com/p/DfPcSXuiCKX/), del 2 de noviembre: 1.º pase a UNEC (clasificatoria nacional para Hult Prize, donde se puede optar a un millón de dólares), viaje con Waynabox y túnel de viento Windobona; 2.º participación en Impact Social Cup (2.000 € en premios de esa competición) y entradas South Summit 2027; 3.º mentorías posteriores al evento, un año como socios de Start y «Piense y hágase rico», de Napoleon Hill. Esta publicación resuelve el tercer premio y sustituye las opciones ambiguas del Notion. No se añaden Kerna ni sudaderas.
 - [Reorganizar horario](https://www.notion.so/3fb9cbdd93e5802b98a1f689f719c209) está completada, pero su adjunto se titula «HORARIO PROVISIONAL STARTCAMP 26.pdf». No se traslada una agenda provisional como definitiva.
 
 También se han revisado «Contactar mentores», «Publi Mentores» y la [Escaleta Actividades StartCamp](https://www.notion.so/40c9cbdd93e580ab8e34e4d47af391b0). La escaleta está en progreso y sus tiempos son estimaciones; no se publican como programa definitivo.
 
-Queda pendiente el resto de nombres de mentores y jurado, la agenda definitiva, el tercer premio y el detalle de comidas.
+Queda pendiente el resto de nombres de mentores y jurado, la agenda definitiva y el detalle de comidas.
 
 ## Por qué se oculta solo
 

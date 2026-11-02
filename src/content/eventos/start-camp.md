@@ -3,8 +3,9 @@ title: "Start Camp 2026"
 subtitle: "Dos días, un reto real y un equipo para convertir una idea de negocio en realidad"
 # Fuente: proyecto StartCamp en el Notion de Start ("Confirmado hasta la fecha", 02/11/2026),
 # tareas de catering y contactos de jurado. Nombre de Juan José confirmado por Álvaro.
-# Premios según Notion (29/10): el 3.º sigue sin confirmar.
-# Pendiente de Eventos (#44): 3.er premio, resto de mentores y jurado, agenda y detalle de comidas.
+# Premios: publicación oficial de Start UC3M en Instagram (02/11/2026),
+# https://www.instagram.com/p/DfPcSXuiCKX/
+# Pendiente de Eventos (#44): resto de mentores y jurado, agenda y detalle de comidas.
 date: 2026-11-07
 days: 2
 time: "9:00"
@@ -20,9 +21,15 @@ edition: "Curso 2026/27"
 # Sin cifras ni fechas: ya salen en la cabecera y en las secciones de mentores y jurado.
 highlights: ["Un reto real", "Mentores en sala", "Final ante jurado"]
 prizes:
-  - { place: "1.er premio", prize: "Plaza asegurada en la UNEC", note: "Con la posibilidad de ganar 1 millón de euros" }
-  - { place: "2.º premio", prize: "Plaza en la competición Impact Social Cup", note: "Con premios de 2.000 €" }
-  - { place: "3.er premio" }
+  - place: "1.er premio"
+    prize: "UNEC, viaje por Europa y túnel de viento"
+    note: "Pase directo a UNEC, la final nacional clasificatoria para Hult Prize, cuya competición internacional permite optar a un millón de dólares de financiación. Además, viaje por Europa con Waynabox y experiencia en el túnel de viento de Windobona."
+  - place: "2.º premio"
+    prize: "Impact Social Cup y South Summit 2027"
+    note: "Participación en Impact Social Cup, una competición con 2.000 € en premios, y entradas para South Summit 2027."
+  - place: "3.er premio"
+    prize: "Mentorías, un año de socio y un libro"
+    note: "Mentorías con expertos para seguir desarrollando el proyecto después de StartCamp, un año como socios de Start y el libro «Piense y hágase rico», de Napoleon Hill."
 mentors:
   total: 12
   names: ["Darío Méndez Fernández", "Carmen Vázquez de Castro", "Juan José Fernández", "Monique Maley", "Fernando Nieto", "Óscar Longares", "Yago Cousiño"]
