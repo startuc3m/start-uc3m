@@ -51,7 +51,7 @@ export const CONSENTIMIENTO_VERSION = 'v1';
 // foto_path en las llamadas a Supabase). Para encenderla, ver «Fotos
 // (desactivado)» en docs/startcamp-perfil.md. En modo demo se fuerza con
 // &fotos=1 (o con ?demo=con-foto).
-export const FOTOS_ACTIVAS = false;
+export const FOTOS_ACTIVAS = true;
 
 // Versión del consentimiento cuando el texto nombra la foto (FOTOS_ACTIVAS).
 // PENDIENTE: texto de Legal
