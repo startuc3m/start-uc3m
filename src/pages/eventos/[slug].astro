@@ -23,6 +23,7 @@ const dateLabel = e.data.days === 1 ? fmt(e.data.date)
   : `del ${firstDay} al ${fmt(lastDay).replace(',', '')}`;
 const timeLabel = e.data.endTime ? (e.data.days > 1 ? `${e.data.time} (${fmtDay(e.data.date).split(' ')[0]}) – ${e.data.endTime} (${fmtDay(lastDay).split(' ')[0]})` : `${e.data.time} – ${e.data.endTime}`) : e.data.time;
 const { prizes, mentors, jury, info } = e.data;
+const agendaDays = [...new Set(e.data.agenda.map((a) => a.day).filter(Boolean))];
 // Si se confirman más nombres que el total previsto, mandan los nombres.
 const mentorsTotal = mentors ? Math.max(mentors.total, mentors.names.length) : 0;
 const juryTotal = jury ? Math.max(jury.total, jury.names.length) : 0;
@@ -74,6 +75,7 @@ const eventJsonLd = {
           {open && (e.data.external
             ? <a href={e.data.external} target="_blank" rel="noopener" class="btn btn-lime">Reservar plaza <span class="font-mono">↗</span></a>
             : <a href="#inscripcion" class="btn btn-on-blue">Inscripción <span class="font-mono">→</span></a>)}
+          {agendaDays.length > 0 && <a href="#horario" class="btn btn-outline text-white">Ver horario <span class="font-mono">↓</span></a>}
           {!past && <a href={icsHref} download={`${e.id}.ics`} class="btn btn-outline text-white">Añadir al calendario <span class="font-mono">＋</span></a>}
           {past && <a href="/eventos" class="btn btn-outline text-white">Ver próximos eventos</a>}
       </div>
@@ -109,7 +111,7 @@ const eventJsonLd = {
         </div>
       )}
     </div>
-    {e.data.agenda.length > 0 ? (
+    {e.data.agenda.length > 0 && agendaDays.length === 0 ? (
       <div data-reveal>
         <span class="eyebrow text-cobalt">Agenda</span>
         <ol class="relative mt-4 border-l-2 border-cobalt/30 pl-8" data-stagger>
@@ -215,6 +217,49 @@ const eventJsonLd = {
             </ul>
           </div>
         )}
+      </div>
+    </section>
+  )}
+
+  {agendaDays.length > 0 && (
+    <section id="horario" class="scroll-mt-24 border-t border-line bg-paper-2">
+      <div class="container-x py-10 md:py-14">
+        <div class="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <span class="eyebrow text-cobalt">Organiza tu fin de semana</span>
+            <h2 class="display mt-3 text-[clamp(32px,5vw,56px)] text-cobalt"><span>Horario_</span></h2>
+          </div>
+          {e.data.agendaNote && <p class="max-w-sm text-sm text-ink/70">{e.data.agendaNote}</p>}
+        </div>
+        <div class="mt-6 overflow-hidden rounded-brand border border-cobalt/20 bg-paper">
+          {agendaDays.map((day) => {
+            const activities = e.data.agenda.filter((a) => a.day === day);
+            const start = activities[0].time.split('–')[0];
+            const end = activities[activities.length - 1].time.split('–').at(-1);
+            return (
+              <details name="event-agenda" class="group border-b border-cobalt/15 last:border-b-0">
+                <summary class="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-5 transition-colors hover:bg-cobalt/5 focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-cobalt md:px-7 [&::-webkit-details-marker]:hidden">
+                  <span class="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:gap-5">
+                    <span class="text-xl font-bold text-cobalt">{day}</span>
+                    <span class="mono text-xs text-ink/60">{start}–{end} · {activities.length} actividades</span>
+                  </span>
+                  <span class="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-cobalt/10 text-xl text-cobalt transition-transform group-open:rotate-45" aria-hidden="true">+</span>
+                </summary>
+                <ol class="border-t border-line px-5 md:px-7">
+                  {activities.map((a) => (
+                    <li class="grid gap-1 border-b border-line py-3 last:border-b-0 sm:grid-cols-[8rem_1fr] sm:gap-5">
+                      <span class="mono pt-0.5 text-xs text-cobalt">{a.time}</span>
+                      <div>
+                        <h3 class="font-semibold leading-snug">{a.title}</h3>
+                        {a.desc && <p class="mt-1 text-sm text-ink/70">{a.desc}</p>}
+                      </div>
+                    </li>
+                  ))}
+                </ol>
+              </details>
+            );
+          })}
+        </div>
       </div>
     </section>
   )}

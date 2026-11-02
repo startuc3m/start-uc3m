@@ -78,7 +78,8 @@ Texto del evento en markdown. Puede tener **negritas**, enlaces y párrafos.
 | `edition` | | "Curso 2026/27" | Etiqueta de la ficha |
 | `tags` | | Etiquetas cortas | Píldoras de la ficha y las tarjetas |
 | `highlights` | | Tres frases destacadas | Franja bajo la cabecera de la ficha |
-| `agenda` | | Lista de `{ time, title, desc }` | Agenda de la ficha (si no hay, sale una foto) |
+| `agenda` | | Lista de `{ day?, time, title, desc? }` | Con `day`, programa agrupado por jornadas; sin `day`, agenda junto al texto (si no hay, sale una foto) |
+| `agendaNote` | | Texto opcional, por ejemplo "Horario provisional, sujeto a cambios" | Nota junto al programa por días |
 | `sponsors` | | Nombres, tal cual están en `site.sponsors` | "Con el apoyo de", con su logo |
 | `prizes` | | Lista de `{ place, prize?, note? }`. Sin `prize` sale "Por anunciar" | Sección "Premios" |
 | `mentors` | | `{ total, names }`: total previsto y nombres confirmados | Sección "N mentores" con huecos para los que faltan |

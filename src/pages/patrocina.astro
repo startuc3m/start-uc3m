@@ -14,7 +14,7 @@ const contentThumb = 'https://img.youtube.com/vi/G2hVH1AGr38/hqdefault.jpg';
 const photos = [
   ['buildathon-sala', 'Buildathon', 'Arranque de curso · 60 personas construyendo en una tarde'],
   ['startxperience-escenario', 'StartXperience', 'Un día con startups, inversores e incubadoras · 300 personas'],
-  ['start-camp-mentor', 'Start Camp', 'Dos días de trabajo en equipo, mentores y jurado'],
+  ['start-camp-mentor', 'Start Camp', 'Tres días de trabajo en equipo, mentores y jurado'],
 ];
 // Sin citas reales todavía — Partnerships tiene que conseguirlas de NomuLabs/Pitchless antes de publicar nada atribuido.
 const testimonials: { quote: string; who: string; logo: string }[] = [];
@@ -164,7 +164,7 @@ const others = site.tiers.slice(1);
   <section class="container-x py-14 md:py-24" data-reveal>
     <span class="eyebrow text-cobalt">Eventos patrocinables</span>
     <ul class="mt-6 border-t border-line" data-stagger>
-      {[['Buildathon', 'Septiembre · 60 personas · arranque de curso', 'Evento'], ['StartXperience', 'Abril · 300 personas · inversores e incubadoras', 'Partner / Evento'], ['Start Camp', 'Noviembre · 40 personas · 2 días', 'Evento'], ['StartTheWeek (podcast)', 'Todo el curso · YouTube y Spotify', 'Partner']].map(([n, d, t]) => (
+      {[['Buildathon', 'Septiembre · 60 personas · arranque de curso', 'Evento'], ['StartXperience', 'Abril · 300 personas · inversores e incubadoras', 'Partner / Evento'], ['Start Camp', 'Noviembre · 40 personas · 3 días', 'Evento'], ['StartTheWeek (podcast)', 'Todo el curso · YouTube y Spotify', 'Partner']].map(([n, d, t]) => (
         <li class="grid gap-2 border-b border-line py-6 md:grid-cols-[1fr_1.5fr_auto] md:items-center" data-reveal><span class="text-3xl font-bold">{n}</span><span class="opacity-70">{d}</span><span class="eyebrow text-cobalt">{t}</span></li>
       ))}
     </ul>

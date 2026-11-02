@@ -1,5 +1,5 @@
-// Horario oficial en Neonpass: 7/11/2026 9:00 – 8/11/2026 20:00.
-export const STARTCAMP_START = Date.parse('2026-11-07T09:00:00+01:00')
+// Horario de Notion: viernes 6/11 a las 18:00 – domingo 8/11 a las 20:00 (viernes confirmado por Álvaro).
+export const STARTCAMP_START = Date.parse('2026-11-06T18:00:00+01:00')
 export const STARTCAMP_END = Date.parse('2026-11-08T20:00:00+01:00')
 
 // [días, horas, minutos, segundos] hasta `target` (ms); todo a 0 cuando ya ha llegado.
