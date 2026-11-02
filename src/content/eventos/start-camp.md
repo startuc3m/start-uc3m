@@ -1,9 +1,10 @@
 ---
 title: "Start Camp 2026"
 subtitle: "Dos días, un reto real y un equipo para convertir una idea de negocio en realidad"
-# Fuente: proyecto StartCamp en el Notion de Start ("Confirmado hasta la fecha", 27/10/2026) y Neonpass.
+# Fuente: proyecto StartCamp en el Notion de Start ("Confirmado hasta la fecha", 02/11/2026),
+# tareas de catering y contactos de jurado. Nombre de Juan José confirmado por Álvaro.
 # Premios según Notion (29/10): el 3.º sigue sin confirmar.
-# Pendiente de Eventos (#44): 3.er premio, comida, resto de mentores, nombres del jurado y agenda.
+# Pendiente de Eventos (#44): 3.er premio, resto de mentores y jurado, agenda y detalle de comidas.
 date: 2026-11-07
 days: 2
 time: "9:00"
@@ -24,11 +25,18 @@ prizes:
   - { place: "3.er premio" }
 mentors:
   total: 12
-  names: ["Darío Méndez Fernández", "Carmen Vázquez de Castro", "Juan Fernández", "Monique Maley"]
+  names: ["Darío Méndez Fernández", "Carmen Vázquez de Castro", "Juan José Fernández", "Monique Maley", "Fernando Nieto", "Óscar Longares", "Yago Cousiño"]
 jury:
   total: 7
-# Comida: pendiente de confirmar por Eventos; no se publica hasta entonces.
+  names: ["Borja Vega", "Alfredo Raya Bejarano"]
+# Comida cerrada y tarea de catering completada; no se promete gratuidad ni menús.
 info:
+  - title: "Comida"
+    text: "Habrá comida durante el evento."
+  - title: "Experiencia de los mentores"
+    text: "Darío Méndez Fernández (TheFork), Carmen Vázquez de Castro (CAVAC Consulting), Juan José Fernández (ingeniería de IA) y Monique Maley (Articulate Persuasion)."
+  - title: "Mentoría con Óscar Longares"
+    text: "Óscar Longares, de Unlimited, acompañará a los equipos el domingo de 15:30 a 17:45."
   - title: "Cómo llegar"
     text: "Mad Tech Campus está en la Nave 14 de Matadero Madrid (Paseo de la Chopera, 14). Metro más cercano: Legazpi (L3 y L6)."
     link: { href: "https://www.google.com/maps/search/?api=1&query=Mad+Tech+Campus%2C+Paseo+de+la+Chopera+14%2C+28045+Madrid", label: "Abrir en Google Maps" }
