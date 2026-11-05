@@ -127,3 +127,14 @@ test('muestra la foto firmada, vuelve a iniciales si falla y acepta una firma nu
   rerender(<CurvedArcStart participants={[{ ...participants[0], foto_url: 'https://firmada/ana-nueva' }]} />);
   expect(avatar.querySelector('img')).toHaveAttribute('src', 'https://firmada/ana-nueva');
 });
+
+test('las flechas de participante permiten avanzar y retroceder', async () => {
+  render(<CurvedArcStart participants={participants} />);
+  expect(screen.getByRole('heading', { name: 'Ana' })).toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'Siguiente participante' }));
+  await act(async () => { await vi.advanceTimersByTimeAsync(600); });
+  expect(screen.getByRole('heading', { name: 'Luis' })).toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'Anterior participante' }));
+  await act(async () => { await vi.advanceTimersByTimeAsync(600); });
+  expect(screen.getByRole('heading', { name: 'Ana' })).toBeInTheDocument();
+});

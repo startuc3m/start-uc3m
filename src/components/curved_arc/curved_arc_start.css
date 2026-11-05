@@ -96,7 +96,7 @@
   .start-roster { flex-direction: column; height: auto; min-height: 80dvh; overflow: clip; }
   .start-carousel { width: 100%; height: 430px; overflow: hidden; }
   .start-card-anchor { right: 18%; }
-  .start-arc-controls { left: 20px; }
+  .start-arc-controls { left: auto; right: 16px; }
   .start-hints { display: none; }
   .start-profile { width: 100%; height: auto; padding: 16px 16px 32px; border-left: 0; border-top: 1px solid #dedeee; }
   .start-profile h1 { font-size: 32px; }

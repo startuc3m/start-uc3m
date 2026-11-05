@@ -327,7 +327,7 @@ export default function CurvedArcStart({ participants }: { participants: Hackath
           })}
         </div>
 
-        <div className="start-arc-controls absolute left-10 top-1/2 -translate-y-1/2 flex flex-col gap-2.5 z-30">
+        <div className="start-arc-controls absolute right-4 sm:right-auto sm:left-10 top-1/2 -translate-y-1/2 flex flex-col gap-2.5 z-30">
           <button
             onClick={() => setTargetOffset((prev) => Math.round(prev) - 1)}
             aria-label="Anterior participante"
