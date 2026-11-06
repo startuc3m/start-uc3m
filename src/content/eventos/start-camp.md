@@ -5,7 +5,9 @@ subtitle: "Tres días, un reto real y un equipo para convertir una idea de negoc
 # tareas de catering y contactos de jurado. Nombre de Juan José confirmado por Álvaro.
 # Premios: publicación oficial de Start UC3M en Instagram (02/11/2026),
 # https://www.instagram.com/p/DfPcSXuiCKX/
-# Pendiente de Eventos (#44): resto de mentores y jurado y detalle de comidas.
+# Mentores y jurado según Notion (06/11): todos por igual, sin destacar a nadie. Jurado: solo los confirmados
+# (Íñigo Peña y Javier Sánchez están como «posiblemente» / «se intenta» y no se publican).
+# Pendiente de Eventos (#44): 3 mentores y 4 jurados más, y detalle de comidas.
 date: 2026-11-06
 days: 3
 time: "18:00"
@@ -130,18 +132,14 @@ prizes:
     note: "Mentorías con expertos para seguir desarrollando el proyecto después de StartCamp, un año como socios de Start y el libro «Piense y hágase rico», de Napoleon Hill."
 mentors:
   total: 12
-  names: ["Darío Méndez Fernández", "Carmen Vázquez de Castro", "Juan José Fernández", "Monique Maley", "Fernando Nieto", "Óscar Longares", "Yago Cousiño"]
+  names: ["Darío Méndez Fernández", "Carmen Vázquez de Castro", "Juan José Fernández", "Monique Maley", "Yago Cousiño", "Alberto Minaya", "Enrique Casado", "Óscar Longares", "Fernando Nieto"]
 jury:
   total: 7
-  names: ["Borja Vega", "Alfredo Raya Bejarano"]
+  names: ["Borja Vega", "Alfredo Raya Bejarano", "Raúl Marcos"]
 # Comida cerrada y tarea de catering completada; no se promete gratuidad ni menús.
 info:
   - title: "Comida"
     text: "Habrá comida durante el evento."
-  - title: "Experiencia de los mentores"
-    text: "Darío Méndez Fernández (TheFork), Carmen Vázquez de Castro (CAVAC Consulting), Juan José Fernández (ingeniería de IA) y Monique Maley (Articulate Persuasion)."
-  - title: "Mentoría con Óscar Longares"
-    text: "Óscar Longares, de Unlimited, acompañará a los equipos el domingo de 15:30 a 17:45."
   - title: "Cómo llegar"
     text: "Mad Tech Campus está en la Nave 14 de Matadero Madrid (Paseo de la Chopera, 14). Metro más cercano: Legazpi (L3 y L6)."
     link: { href: "https://www.google.com/maps/search/?api=1&query=Mad+Tech+Campus%2C+Paseo+de+la+Chopera+14%2C+28045+Madrid", label: "Abrir en Google Maps" }
