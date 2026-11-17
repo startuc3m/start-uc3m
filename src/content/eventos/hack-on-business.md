@@ -1,5 +1,4 @@
 ---
-draft: true # pendiente de validar (#8)
 title: "Hack On Business"
 subtitle: "El hackathon que junta a business con ingenieros en equipos multidisciplinares"
 date: 2019-03-15

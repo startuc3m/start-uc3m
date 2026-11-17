@@ -7,21 +7,22 @@ subtitle: "Tres días, un reto real y un equipo para convertir una idea de negoc
 # https://www.instagram.com/p/DfPcSXuiCKX/
 # Mentores y jurado según Notion (06/11): todos por igual, sin destacar a nadie. Jurado: solo los confirmados
 # (Íñigo Peña y Javier Sánchez están como «posiblemente» / «se intenta» y no se publican).
-# Pendiente de Eventos (#44): 3 mentores y 4 jurados más, y detalle de comidas.
+# 17/11: celebrado. Ganadores, cifras aproximadas y jurado confirmados por Álvaro (Íñigo Peña sí estuvo).
+# Pendiente: fotos de la fotógrafa y crónica de Marketing (#64).
 date: 2026-11-06
 days: 3
 time: "18:00"
 endTime: "20:00"
 place: "Mad Tech Campus"
 type: "Campamento"
-status: abierto
+status: pasado
 price: "35 €"
 priceNote: "10 % de descuento para socios de Start"
 sponsors: []
 tags: ["3 días", "Mentores", "Jurado", "Premios"]
 edition: "Curso 2026/27"
-# Sin cifras ni fechas: ya salen en la cabecera y en las secciones de mentores y jurado.
-highlights: ["Un reto real", "Mentores en sala", "Final ante jurado"]
+# Cifras aproximadas (Álvaro, 17/11): no hay recuento exacto.
+highlights: ["Unas 60 personas", "14 proyectos", "3 días de trabajo"]
 # Fuente: adjunto de «Reorganizar horario» en Notion, descargado por Álvaro el 02/11.
 # Álvaro confirma publicar también el viernes 6. Se conserva el carácter provisional del PDF.
 agendaNote: "Horario provisional, sujeto a cambios."
@@ -122,20 +123,23 @@ agenda:
     desc: "Pitch de 4 minutos y 2 minutos de preguntas por proyecto."
 prizes:
   - place: "1.er premio"
+    winner: "Open2Agents"
     prize: "UNEC, viaje por Europa y túnel de viento"
     note: "Pase directo a UNEC, la final nacional clasificatoria para Hult Prize, cuya competición internacional permite optar a un millón de dólares de financiación. Además, viaje por Europa con Waynabox y experiencia en el túnel de viento de Windobona."
   - place: "2.º premio"
+    winner: "Ración"
     prize: "Impact Social Cup y South Summit 2027"
     note: "Participación en Impact Social Cup, una competición con 2.000 € en premios, y entradas para South Summit 2027."
   - place: "3.er premio"
+    winner: "Ipso"
     prize: "Mentorías, un año de socio y un libro"
     note: "Mentorías con expertos para seguir desarrollando el proyecto después de StartCamp, un año como socios de Start y el libro «Piense y hágase rico», de Napoleon Hill."
 mentors:
-  total: 12
-  names: ["Darío Méndez Fernández", "Carmen Vázquez de Castro", "Juan José Fernández", "Monique Maley", "Yago Cousiño", "Alberto Minaya", "Enrique Casado", "Óscar Longares", "Fernando Nieto"]
+  total: 9
+  names: ["Darío Méndez Fernández", "Carmen Vázquez de Castro", "Juan José Fernández Morales", "Monique Maley Palacios", "Yago Cousiño", "Alberto Minaya", "Enrique Casado", "Óscar Longares", "Fernando Nieto"]
 jury:
-  total: 7
-  names: ["Borja Vega", "Alfredo Raya Bejarano", "Raúl Marcos"]
+  total: 4
+  names: ["Borja Vega", "Íñigo Peña", "Alfredo Raya Bejarano", "Raúl Marcos"]
 # Comida cerrada y tarea de catering completada; no se promete gratuidad ni menús.
 info:
   - title: "Comida"
@@ -149,4 +153,4 @@ info:
     text: "Sin problema: puedes apuntarte aunque no tengas equipo."
 external: "https://www.neonpass.es/event/ec3ee828-56d3-40d4-9636-ece85cfd383b"
 ---
-El formato más intenso del curso: tres días de trabajo en equipo para pasar de una idea a un proyecto, con mentores acompañando a los equipos y un jurado que elige a los ganadores en la final.
+El formato más intenso del curso: tres días de trabajo en equipo para pasar de una idea a un proyecto, con mentores acompañando a los equipos y un jurado que eligió a los ganadores en la final. En esta edición se juntaron unas 60 personas y se presentaron 14 proyectos.
