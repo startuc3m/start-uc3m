@@ -129,12 +129,12 @@ export default function Panel({config,providedClient}) {
     const {data:subscription}=client.auth.onAuthStateChange((event,next)=>{setTimeout(()=>{if(alive){if(event==='TOKEN_REFRESHED')setSession(next);else update(next);}},0);});
     return()=>{alive=false;generation.current++;subscription.subscription.unsubscribe();};
   },[client]);
-  return <div className="start-panel"><header className="panel-header"><a href="/" aria-label="Start UC3M, inicio">START<span>UC3M</span></a><span>ÁREA DE SOCIOS</span>{session&&<button className="text-button" disabled={busy} onClick={()=>perform(async()=>{await client.auth.signOut();setData(null);setSession(null);setMessage('');})}>Salir</button>}</header>
-    <main><div className="panel-intro"><span className="eyebrow">COMUNIDAD START</span><h1>Tu próximo paso<br/><em>empieza aquí_</em></h1><p>Tu perfil. Tu comunidad. Nuevas oportunidades.</p></div>
+  return <div className="start-panel"><header className="panel-header"><a href="/" aria-label="Start UC3M, inicio"><img src="/brand/logo-full-white.png" alt="Start · Emprendedores UC3M" width="96" height="40"/></a><span>ÁREA DE SOCIOS</span>{session&&<button className="text-button" disabled={busy} onClick={()=>perform(async()=>{await client.auth.signOut();setData(null);setSession(null);setMessage('');})}>Salir</button>}</header>
+    <main><div className="panel-intro"><span className="panel-marker">Stop talking, Start walking</span><h1>Tu próximo paso<br/><em className="hl hl-lime">empieza aquí</em>_</h1><p>Tu perfil. Tu comunidad. Nuevas oportunidades.</p></div>
     {error&&<div role="alert" className="status error">{error}</div>}{message&&<div role="status" className="status success">{message}</div>}
     {!client?<section className="panel-card"><h2>Estamos preparando tu espacio</h2><p>Cuando esté listo, recibirás una invitación de IT o Junta para completar tu perfil.</p></section>:loading?<p role="status">Comprobando tu acceso…</p>:(!session||invite)?<Login client={client} invite={invite} onAccepted={()=>setInvite(null)} busy={busy} perform={perform}/>:!data?<section className="panel-card"><h2>Necesitas una invitación</h2><p>Usa el correo autorizado por IT o Junta. Si tu correo ha cambiado, contacta con el equipo para revisarlo.</p><button onClick={()=>perform(refresh)} disabled={busy}>Volver a comprobar</button></section>:<>
       <nav className="panel-tabs" aria-label="Secciones del panel"><button aria-current={tab==='profile'?'page':undefined} onClick={()=>setTab('profile')}>Mi perfil</button>{canManage(data.member)&&<button aria-current={tab==='users'?'page':undefined} onClick={()=>setTab('users')}>Usuarios e invitaciones</button>}</nav>
       {tab==='users'&&canManage(data.member)?<Invitations client={client} actorId={data.member.id} perform={perform} busy={busy}/>:<Profile key={data.member.id} data={data} client={client} refresh={refresh} perform={perform} busy={busy}/>}
     </>}
-    </main><footer>Start UC3M · El panel y Neon Pass funcionan de forma independiente.</footer></div>;
+    </main><footer><a href="/">← Volver a Start UC3M</a><span>El panel y Neon Pass funcionan de forma independiente.</span></footer></div>;
 }

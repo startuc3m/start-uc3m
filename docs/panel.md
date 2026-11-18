@@ -26,6 +26,8 @@ No se habilita el panel en producción, se ejecutan migraciones remotas ni se en
 
 Implementado en `/panel/`: acceso con Google o contraseña, aceptación explícita del enlace de invitación, recuperación de contraseña, edición del perfil y subida privada de foto/CV. La configuración está desactivada por defecto. Todavía no hay directorio, mapa, ofertas ni notificaciones de «Me interesa»; corresponden a las fases siguientes.
 
+La interfaz comparte los tokens de color, tipografías y estética de botones de la landing. La navegación pública incluye «Acceder» en escritorio y móvil, y la página de vuelta del pago incluye «Acceder al panel». Ambos llevan a `/panel/`: el pago no concede acceso automáticamente; sigue siendo necesaria la autorización de IT/Junta (confirmado el 18/11/2026).
+
 Junta y miembros de IT con `manage_users=true` pueden pegar hasta 100 personas por lote, revisar errores/duplicados, guardar sin enviar o preparar invitaciones. También pueden modificar el tipo, departamento, cargo, autorización administrativa y acceso de otros usuarios. No pueden cambiar sus propios permisos: otro administrador debe hacerlo. Ser Responsable no concede administración.
 
 Un lote admite `Nombre, correo`, `Nombre <correo>` o correos separados por líneas/comas/punto y coma. Normaliza mayúsculas y espacios, conserva puntos y alias `+`, y rechaza líneas ambiguas. Un usuario existente no se modifica, reactiva ni recibe una nueva invitación al importar. Su reenvío es explícito en su ficha. No se importan personas de Neon, pagos o formularios de la web.

@@ -439,3 +439,7 @@
 .socios--estrecho .socios__form {
   max-width: 26rem;
 }
+
+.socios-gracias__acceso{max-width:40rem;margin:28px auto;padding:24px 0;border-block:1px solid var(--color-lavender,#b6b8e7)}
+.socios-gracias__acceso .btn{color:var(--color-ink,#12123a);text-decoration:none}
+.socios-gracias__acceso p{font-size:14px;margin-bottom:0}
