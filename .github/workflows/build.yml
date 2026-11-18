@@ -39,3 +39,4 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run test:socios
+      - run: npm run test:panel-db
