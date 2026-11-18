@@ -15,7 +15,7 @@
     "test:db": "node db/test-schema.js",
     "test:api": "node db/test-api.js",
     "test:socios": "node db/test-schema.js && node db/test-api.js",
-    "test:panel-db": "node db/test-panel.js",
+    "test:panel-db": "node db/test-panel.mjs",
     "test:notion": "node db/test-notion.js",
     "test:email": "node db/test-email.js",
     "test:stripe": "node db/test-stripe.js",
