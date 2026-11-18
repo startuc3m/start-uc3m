@@ -1,5 +1,4 @@
 ---
-draft: true # pendiente de validar (#8)
 title: "Start Camp 2025"
 subtitle: "Dos días para pasar de idea a proyecto con el equipo de Start"
 date: 2025-11-25

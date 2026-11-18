@@ -3,6 +3,7 @@ import Photo from '../../components/Photo.astro';
 import { eventoFotos } from '../../lib/fotos';
 import Base from '../../layouts/Base.astro';
 import { eventos } from '../../lib/content';
+import { site } from '../../lib/site';
 const all = await eventos();
 const next = all.filter((e) => e.data.status !== 'pasado');
 const past = all.filter((e) => e.data.status === 'pasado').reverse();
@@ -28,8 +29,22 @@ const fmtLong = (d: Date) => d.toLocaleDateString('es-ES', { weekday: 'long', da
   <section class="container-x py-12 md:py-20">
     <div class="flex items-end justify-between" data-reveal>
       <div><span class="eyebrow text-cobalt">Próximos</span><h2 class="display mt-3 text-[clamp(32px,5vw,72px)] text-cobalt" data-split>Apúntate_</h2></div>
-      <span class="mono hidden text-ink/60 md:block">{next.length} eventos con inscripción</span>
+      {next.length > 0 && <span class="mono hidden text-ink/60 md:block">{next.length} {next.length === 1 ? 'evento' : 'eventos'} con inscripción</span>}
     </div>
+    {/* Sin eventos con inscripción: se dice y se da por dónde enterarse, en vez de dejar el hueco */}
+    {next.length === 0 && (
+      <div class="mt-10 flex flex-col gap-8 rounded-brand bg-navy p-8 text-white md:flex-row md:items-end md:justify-between md:p-12" data-reveal>
+        <div>
+          <span class="eyebrow text-lavender">Ahora mismo</span>
+          <p class="display mt-3 text-[clamp(28px,3.5vw,48px)]">No hay inscripciones abiertas_</p>
+          <p class="mt-4 max-w-xl text-lg text-lavender">Estamos preparando lo siguiente. Lo anunciamos primero en Instagram, y los socios tienen venta anticipada y descuento en nuestros eventos.</p>
+        </div>
+        <div class="flex flex-wrap gap-3">
+          <a href={site.social.instagram} target="_blank" rel="noopener" class="btn btn-on-blue">Seguir en Instagram <span class="font-mono">↗</span></a>
+          <a href="/socios#alta" class="btn btn-outline text-white">Hazte socio</a>
+        </div>
+      </div>
+    )}
     <ul class="mt-10 flex flex-col gap-10" data-stagger>
       {next.map((e, i) => (
         <li data-reveal><div class="group relative grid gap-0 overflow-hidden rounded-brand bg-navy text-white md:grid-cols-[1.25fr_1fr]">

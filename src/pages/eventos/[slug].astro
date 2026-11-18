@@ -135,8 +135,8 @@ const eventJsonLd = {
       <div class="container-x py-12 md:py-20">
         <div class="flex items-end justify-between gap-6" data-reveal>
           <div>
-            <span class="eyebrow text-cobalt">Qué te llevas</span>
-            <h2 class="display mt-3 text-[clamp(32px,5vw,64px)] text-cobalt">Premios_</h2>
+            <span class="eyebrow text-cobalt">{past ? 'Así quedó' : 'Qué te llevas'}</span>
+            <h2 class="display mt-3 text-[clamp(32px,5vw,64px)] text-cobalt">{past && prizes.some((p) => p.winner) ? 'Ganadores_' : 'Premios_'}</h2>
           </div>
           <Doodle name="star" class="hidden h-16 w-16 md:block" />
         </div>
@@ -144,7 +144,12 @@ const eventJsonLd = {
           {prizes.map((p, i) => (
             <li class={`flex min-h-[200px] flex-col justify-between gap-6 rounded-brand p-6 md:p-8 ${p.prize ? 'bg-lime text-ink' : 'border-2 border-dashed border-cobalt/30 text-cobalt'}`} data-reveal>
               <span class="mono">{p.place}</span>
-              {p.prize ? (
+              {p.winner ? (
+                <div>
+                  <p class={`display leading-none ${i === 0 ? 'text-[clamp(40px,5vw,72px)]' : 'text-[clamp(32px,3.4vw,48px)]'}`}>{p.winner}</p>
+                  {p.prize && <p class="mt-3 text-lg font-semibold">{p.prize}</p>}
+                </div>
+              ) : p.prize ? (
                 <div>
                   <p class={`font-bold leading-tight ${i === 0 ? 'text-[clamp(28px,3.4vw,44px)]' : 'text-2xl'}`}>{p.prize}</p>
                   {p.note && <p class="mt-2 text-lg">{p.note}</p>}
@@ -160,7 +165,7 @@ const eventJsonLd = {
   )}
 
   <!-- INFO PRÁCTICA: cómo llegar, horario, equipo… (solo lo confirmado) -->
-  {info.length > 0 && (
+  {info.length > 0 && !past && (
     <section class="border-t border-line bg-paper-2">
       <div class="container-x py-12 md:py-20">
         <div data-reveal>
@@ -187,9 +192,9 @@ const eventJsonLd = {
       <div class="container-x grid gap-12 py-12 md:grid-cols-[1.4fr_1fr] md:gap-16 md:py-20">
         {mentors && (
           <div data-reveal>
-            <span class="eyebrow text-lavender">Te acompañan</span>
+            <span class="eyebrow text-lavender">{past ? 'Nos acompañaron' : 'Te acompañan'}</span>
             <h2 class="display mt-3 text-[clamp(32px,5vw,64px)]">{mentorsTotal} mentores_</h2>
-            <p class="mt-4 max-w-md text-lavender">Acompañan a los equipos durante el evento para ayudarte a aterrizar la idea.</p>
+            <p class="mt-4 max-w-md text-lavender">{past ? 'Acompañaron a los equipos durante el evento para ayudarles a aterrizar la idea.' : 'Acompañan a los equipos durante el evento para ayudarte a aterrizar la idea.'}</p>
             <ul class="mt-8 grid gap-3 sm:grid-cols-2" data-stagger>
               {mentors.names.map((n) => (
                 <li class="flex items-center gap-4 rounded-brand bg-white/10 p-3 pr-5" data-reveal>
@@ -210,7 +215,7 @@ const eventJsonLd = {
           <div data-reveal>
             <span class="eyebrow text-lavender">Jurado</span>
             <h2 class="display mt-3 text-[clamp(32px,5vw,64px)]">{juryTotal} jurados_</h2>
-            <p class="mt-4 max-w-md text-lavender">Valoran los proyectos y eligen a los ganadores.{jury.names.length < juryTotal && ' Desvelamos los nombres muy pronto.'}</p>
+            <p class="mt-4 max-w-md text-lavender">{past ? 'Valoraron los proyectos y eligieron a los ganadores.' : 'Valoran los proyectos y eligen a los ganadores.'}{!past && jury.names.length < juryTotal && ' Desvelamos los nombres muy pronto.'}</p>
             <ul class="mt-8 flex flex-wrap gap-3" aria-label={`${juryTotal} jurados`}>
               {jury.names.map((n) => <li class="rounded-full bg-white/10 px-4 py-2 font-semibold">{n}</li>)}
               {Array.from({ length: juryTotal - jury.names.length }, () => <li class="h-14 w-14 rounded-full border-2 border-dashed border-white/40" aria-hidden="true"></li>)}
@@ -229,7 +234,7 @@ const eventJsonLd = {
             <span class="eyebrow text-cobalt">Organiza tu fin de semana</span>
             <h2 class="display mt-3 text-[clamp(32px,5vw,56px)] text-cobalt"><span>Horario_</span></h2>
           </div>
-          {e.data.agendaNote && <p class="max-w-sm text-sm text-ink/70">{e.data.agendaNote}</p>}
+          {e.data.agendaNote && !past && <p class="max-w-sm text-sm text-ink/70">{e.data.agendaNote}</p>}
         </div>
         <div class="mt-6 overflow-hidden rounded-brand border border-cobalt/20 bg-paper">
           {agendaDays.map((day) => {
