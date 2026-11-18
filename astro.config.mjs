@@ -19,7 +19,7 @@ export default defineConfig({
     // y del avatar del Start Camp (enlace personal y su página de error).
     sitemap({
       filter: (page) =>
-        !/\/(socios\/(gracias|telefono)|eventos\/start-camp\/(avatar|enlace-no-valido))\/?$/.test(page),
+        !/\/(panel(?:\/.*)?|socios\/(gracias|telefono)|eventos\/start-camp\/(avatar|enlace-no-valido))\/?$/.test(page),
     }),
     react(),
   ],

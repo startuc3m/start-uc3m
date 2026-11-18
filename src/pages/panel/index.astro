@@ -1,0 +1,10 @@
+---
+import Panel from '../../panel/Panel.jsx';
+import '../../styles/global.css';
+const config={enabled:import.meta.env.PUBLIC_PANEL_ENABLED==='true',url:import.meta.env.PUBLIC_PANEL_SUPABASE_URL||'',key:import.meta.env.PUBLIC_PANEL_SUPABASE_KEY||''};
+---
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><meta name="robots" content="noindex,nofollow"/><meta name="referrer" content="no-referrer"/><title>Panel de socios | Start UC3M</title><link rel="icon" href="/favicon.svg"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Permanent+Marker&family=Titillium+Web:wght@400;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style is:global>body{margin:0}</style></head><body><Panel config={config} client:only="react"/><noscript>Activa JavaScript para acceder al panel de socios.</noscript></body></html>
