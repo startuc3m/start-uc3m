@@ -90,6 +90,11 @@ export default function Privacidad() {
             Si nos escribes por el <strong>formulario de contacto o de patrocinio</strong>,
             recogemos tu nombre, tu email, la empresa (si la indicas) y tu mensaje.
           </p>
+          <p>
+            Si <strong>pagas una mentoría</strong>, recogemos tu nombre completo, tu email y
+            tu teléfono, además de la fecha, el importe y una referencia del pago. Igual que
+            con la cuota, los datos de tu tarjeta los gestiona Stripe y nosotros no los vemos.
+          </p>
         </section>
 
         <section>
@@ -98,6 +103,12 @@ export default function Privacidad() {
             <li>
               <strong>Gestionar tu alta como socio y cobrar la cuota.</strong> La base
               legal es la ejecución de la relación de socio que solicitas al pagar.
+            </li>
+            <li>
+              <strong>Gestionar y cobrar las mentorías que reservas.</strong> La base legal es
+              la ejecución de la reserva que haces al pagar. Usamos tu email para confirmarte
+              el pago y tu teléfono solo para avisarte si hay algún cambio en la mentoría: no
+              te añadimos a grupos ni te enviamos otras comunicaciones por pagarla.
             </li>
             <li>
               <strong>Enviarte información sobre las actividades de Start.</strong> La base
@@ -138,17 +149,17 @@ export default function Privacidad() {
               <tbody>
                 <tr>
                   <td>Stripe</td>
-                  <td>Cobro de la cuota</td>
+                  <td>Cobro de la cuota y de las mentorías</td>
                   <td>UE / EE. UU.</td>
                 </tr>
                 <tr>
                   <td>Neon</td>
-                  <td>Base de datos de socios</td>
+                  <td>Base de datos de socios y de pagos de mentorías</td>
                   <td>Reino Unido (país con decisión de adecuación de la Comisión Europea)</td>
                 </tr>
                 <tr>
                   <td>Resend</td>
-                  <td>Envío del correo de bienvenida y de los mensajes del formulario de contacto</td>
+                  <td>Envío del correo de bienvenida, de la confirmación de las mentorías y de los mensajes del formulario de contacto</td>
                   <td>UE / EE. UU.</td>
                 </tr>
                 <tr>
@@ -190,8 +201,10 @@ export default function Privacidad() {
           <p>
             Mantenemos tus datos mientras seas socio. Después los conservamos solo el
             tiempo necesario para atender posibles responsabilidades legales y contables, y
-            luego los eliminamos. Los mensajes del formulario de contacto los conservamos
-            el tiempo necesario para atender tu consulta.
+            luego los eliminamos. Los datos de las mentorías los conservamos mientras se
+            presta la mentoría y, después, solo el tiempo que exigen nuestras obligaciones
+            contables. Los mensajes del formulario de contacto los conservamos el tiempo
+            necesario para atender tu consulta.
           </p>
         </section>
 
