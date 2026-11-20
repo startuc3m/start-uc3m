@@ -175,6 +175,7 @@ En `src/lib/site.ts`, array `team`:
 - `depts` admite varios departamentos, con el nombre exacto de `departments`.
 - `photo` es el nombre del archivo en `src/assets/equipo/`. Quien no tiene foto sale con sus iniciales.
 - **Fotos:** cada persona sube la suya a su fila de la base *Miembros* del Notion de Start (campo *Foto*). Cada cierto tiempo, alguien de IT la descarga, la reduce (`sips -Z 1200 foto.jpg --out src/assets/equipo/nombre_apellido.jpg`) y la pone en `photo`.
+- **Resolución:** el original debe medir **al menos 1200 px de ancho**, vertical (4:5) y sin pasar antes por WhatsApp ni capturas de pantalla, que la comprimen. La web genera sola las versiones de 320 a 1200 px en AVIF y WebP; con un original más pequeño, en móvil y en pantallas retina se ve borrosa.
 - Si cambias una foto, **usa un nombre de archivo nuevo**: el navegador guarda las imágenes y seguiría enseñando la vieja.
 - Nunca se publican correos ni teléfonos.
 
