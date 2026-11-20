@@ -17,7 +17,7 @@ import './Privacidad.css';
 
 // Datos facilitados por la junta. Si algo queda en null, la pagina avisa.
 const ENTIDAD = {
-  nombre: 'Start UC3M Emprendedores',
+  nombre: 'Asociación de Emprendedores UC3M (Start UC3M)',
   nif: 'G86907300',
   direccion: 'Calle Madrid 126, despacho 6.0.01, 28903 Getafe',
   email: 'startuc3m@gmail.com',
@@ -36,17 +36,21 @@ export default function Privacidad() {
   return (
     <div>
 
+      <header className="privacidad__hero">
+        <div className="privacidad__hero-dentro">
+          <span className="eyebrow privacidad__eyebrow">Legal</span>
+          <h1 className="display privacidad__titulo">Política de privacidad_</h1>
+          <p className="privacidad__fecha">Última actualización: 20 de noviembre de 2026</p>
+        </div>
+      </header>
+
       <div className="privacidad">
-        <header className="privacidad__intro">
-          <h1>Política de privacidad</h1>
-          <p className="privacidad__fecha">Última actualización: 24 de septiembre de 2026</p>
-        </header>
 
         {PENDIENTES.length > 0 && (
           <div className="privacidad__aviso" role="alert">
             <strong>Borrador sin terminar.</strong> Faltan por rellenar los datos de la
             asociación ({PENDIENTES.join(', ')}). No publiquéis la web con este aviso
-            visible: editad <code>ENTIDAD</code> en <code>src/pages/Privacidad.js</code>.
+            visible: editad <code>ENTIDAD</code> en <code>src/socios/Privacidad.jsx</code>.
           </div>
         )}
 
@@ -140,7 +144,7 @@ export default function Privacidad() {
                 <tr>
                   <td>Neon</td>
                   <td>Base de datos de socios</td>
-                  <td>UE (Londres)</td>
+                  <td>Reino Unido (país con decisión de adecuación de la Comisión Europea)</td>
                 </tr>
                 <tr>
                   <td>Resend</td>
@@ -168,6 +172,16 @@ export default function Privacidad() {
           <p>
             Las transferencias fuera de la UE se amparan en las cláusulas contractuales
             tipo aprobadas por la Comisión Europea.
+          </p>
+        </section>
+
+        <section>
+          <h2>Estadísticas de la web</h2>
+          <p>
+            Para saber cuántas personas visitan la web y qué páginas consultan usamos Vercel
+            Web Analytics, que funciona sin cookies y sin identificar a los visitantes: los
+            datos se agregan de forma anónima. Por eso esta web no instala cookies ni
+            necesita banner de consentimiento.
           </p>
         </section>
 
@@ -202,7 +216,7 @@ export default function Privacidad() {
         </section>
 
         <p className="privacidad__volver">
-          <a href="/socios">Volver al formulario de socio</a>
+          <a href="/socios#alta">Volver al formulario de socio <span aria-hidden="true">→</span></a>
         </p>
       </div>
     </div>
