@@ -19,6 +19,12 @@ const publicDir = join(raiz, 'public', 'startskills');
 const tmpDir = join(raiz, 'public', 'startskills.tmp');
 const generado = join(raiz, 'src', 'data', 'startskills.generated.json');
 
+// En local las variables vienen de .env.local / .env (Node 22+). No pisan las ya definidas
+// (en Vercel el entorno manda). Si el fichero no existe, se ignora.
+for (const f of ['.env.local', '.env']) {
+  try { process.loadEnvFile(join(raiz, f)); } catch (e) { if (e.code !== 'ENOENT') throw e; }
+}
+
 const token = process.env.NOTION_API_KEY;
 const bloquesDb = process.env.NOTION_STARTSKILLS_DATABASE_ID;
 let participantesDb = process.env.NOTION_STARTSKILLS_PARTICIPANTES_DATABASE_ID;
