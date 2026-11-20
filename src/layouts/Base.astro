@@ -4,6 +4,7 @@ import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import StartcampBar from '../components/StartcampBar.astro';
 import StartcampBanner from '../components/StartcampBanner.astro';
+import PlazasBanner from '../components/PlazasBanner.astro';
 import Analytics from '@vercel/analytics/astro';
 import { site } from '../lib/site';
 const { title, description = site.description, tone = 'light', image, noindex = false } = Astro.props;
@@ -60,6 +61,7 @@ const organizationJsonLd = {
   <body>
     <div class="loader" aria-hidden="true"><img src="/brand/logo-full-white.png" alt="" width="816" height="342" /><div class="loader-bar"></div></div>
     <StartcampBanner />
+    <PlazasBanner />
     <Nav tone={tone} />
     <main><slot /></main>
     <Footer />
