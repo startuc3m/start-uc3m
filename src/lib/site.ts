@@ -12,13 +12,13 @@ export const site = {
     youtube: 'https://www.youtube.com/@StartUC3MG',
   },
   nav: [
-    { label: 'Eventos', href: '/eventos' },
+    { label: 'Eventos', href: '/eventos', children: [{ label: 'Todos los eventos', href: '/eventos' }, { label: 'Start Skills', href: '/eventos/start-skills' }] },
     { label: 'Podcast', href: '/podcast' },
     { label: 'Equipo', href: '/equipo' },
     { label: 'Blog', href: '/blog' },
     { label: 'Patrocina', href: '/patrocina' },
     { label: 'Recursos', href: '/recursos' },
-  ],
+  ] as { label: string; href: string; children?: { label: string; href: string }[] }[],
   // logo: ruta en public/logos (los que faltan van en texto hasta que Partnerships pase el SVG)
   sponsors: [
     { name: 'NomuLabs', logo: '/logos/nomulabs.png', tier: 'Partner' },

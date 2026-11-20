@@ -23,6 +23,9 @@ Cómo cambiar lo que se ve en la web **sin tocar el diseño**. Casi todo el cont
 | Menú principal | `src/lib/site.ts` (`nav`) |
 | Textos fijos de una página | `src/pages/<página>.astro` |
 | Fechas de la cuenta atrás de Start Camp | `src/components/lanyard/startcamp_countdown.js`. Ver [06](06-start-camp.md) |
+| Bloques, formadores, participantes y fotos de Start Skills | Notion (bases *Bloques* y *Participantes*), no el código. Ver [12](12-start-skills.md) |
+| Textos fijos del programa Start Skills (intro, asociaciones) | `src/lib/startskills.ts` (`programa`) |
+| Respaldo de Start Skills si no hay Notion | `src/data/startskills.seed.json`. Ver [12](12-start-skills.md) |
 
 ## Cómo hacer el cambio
 
