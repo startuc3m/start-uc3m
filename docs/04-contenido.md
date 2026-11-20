@@ -153,7 +153,7 @@ date: 2023-05-01                 # fecha de publicación en YouTube
 duration: "Vídeo"
 youtube: "https://www.youtube.com/watch?v=GgGys5QETtk"
 youtubeId: "GgGys5QETtk"
-cover: "https://img.youtube.com/vi/GgGys5QETtk/hqdefault.jpg"
+cover: "https://img.youtube.com/vi/GgGys5QETtk/maxresdefault.jpg"
 ---
 Una línea de descripción.
 ```

@@ -3,14 +3,15 @@ import Photo from '../components/Photo.astro';
 import Base from '../layouts/Base.astro';
 import ContactForm from '../components/ContactForm.astro';
 import { site } from '../lib/site';
-const stats = [['3.000', 'Estudiantes alcanzados por curso', 3000], ['3.000', 'Seguidores en Instagram', 2990], ['12', 'Eventos al año', 12], ['13', 'Años construyendo', 13]];
+// "Eventos al año" retirado el 20/11/2026: el 12 no era real. Se vuelve a poner cuando se confirme la cifra.
+const stats = [['3.000', 'Estudiantes alcanzados por curso', 3000], ['3.000', 'Seguidores en Instagram', 2990], ['13', 'Años construyendo', 13]];
 const offers = [
   ['01', 'Talento', 'Acceso directo a starters y asistentes: prácticas, cofundadores y primeras contrataciones. La gente que va a construir, antes de que esté en LinkedIn.'],
   ['02', 'Marca en campus', 'Tu marca en todos los eventos del curso, en la cartelería de Puerta de Toledo y en las redes de Start: Instagram, TikTok, LinkedIn y YouTube.'],
   ['03', 'Contenido', 'Un episodio de StartTheWeek con tu equipo, grabado en el campus, y crónicas de tus eventos en las redes de Start.'],
   ['04', 'Datos', 'Feedback directo en el propio evento: de qué grado son y qué les interesó de tu propuesta, cara a cara. No cedemos bases de datos de asistentes.'],
 ];
-const contentThumb = 'https://img.youtube.com/vi/G2hVH1AGr38/hqdefault.jpg';
+const contentThumb = 'https://img.youtube.com/vi/G2hVH1AGr38/maxresdefault.jpg';
 const photos = [
   ['buildathon-sala', 'Buildathon', 'Arranque de curso · 60 personas construyendo en una tarde'],
   ['startxperience-escenario', 'StartXperience', 'Un día con startups, inversores e incubadoras · 300 personas'],
@@ -53,7 +54,7 @@ const others = site.tiers.slice(1);
   </section>
 
   <!-- CIFRAS -->
-  <section class="border-b border-line bg-paper"><div class="container-x grid gap-8 py-10 md:py-16 sm:grid-cols-2 md:grid-cols-4" data-stagger>
+  <section class="border-b border-line bg-paper"><div class="container-x grid gap-8 py-10 md:py-16 sm:grid-cols-3" data-stagger>
     {stats.map(([n, l, c]) => <div data-reveal><div class="display text-6xl text-cobalt md:text-7xl" data-count={c}>{n}</div><div class="eyebrow mt-2 opacity-70">{l}</div></div>)}
   </div></section>
 
