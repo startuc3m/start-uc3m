@@ -43,7 +43,7 @@ function assert(cond, msg) {
 }
 
 async function reset() {
-  await pool.query('truncate premium_invites, memberships restart identity cascade');
+  await pool.query('truncate premium_invites, memberships, mentoria_payments restart identity cascade');
   await pool.query('delete from rate_limits');
   await pool.query("select setval('member_number_seq', 1, false)");
   await pool.query('update membership_settings set premium_open = true');
@@ -70,12 +70,14 @@ async function startServer() {
   const webhook = (await import('../api/stripe/webhook.mjs')).default;
 
   const telefono = (await import('../api/membership/telefono.mjs')).default;
+  const mentoria = (await import('../api/mentorias/checkout.mjs')).default;
 
   const routes = {
     '/api/membership/availability': availability,
     '/api/membership/premium-eligibility': eligibility,
     '/api/membership/checkout': checkout,
     '/api/membership/telefono': telefono,
+    '/api/mentorias/checkout': mentoria,
     '/api/stripe/webhook': webhook,
   };
 
@@ -411,6 +413,104 @@ async function main() {
     );
     const { rows } = await pool.query("select count(*)::int as n from memberships where status = 'paid'");
     assertEqual(rows[0].n, 0, 'no debe haber socios');
+  });
+
+  console.log('\nMentorías (POST /api/mentorias/checkout y webhook)');
+
+  // Eventos firmados con el mismo secreto que usa el handler: así se prueba
+  // el camino real del webhook, no solo el rechazo de firmas falsas.
+  const Stripe = require('stripe');
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+  const firmado = (event) => {
+    const header = stripe.webhooks.generateTestHeaderString({
+      payload: JSON.stringify(event),
+      secret: process.env.STRIPE_WEBHOOK_SECRET,
+    });
+    return call('POST', '/api/stripe/webhook', event, { 'stripe-signature': header });
+  };
+  const sesionMentoria = (id, extra) => ({
+    id: 'cs_test_mentoria',
+    payment_status: 'paid',
+    payment_intent: 'pi_test_mentoria',
+    metadata: { kind: 'mentoria', mentoria_id: id },
+    ...(extra || {}),
+  });
+  const pagoPendiente = async () => {
+    const { rows } = await pool.query(
+      "select * from create_mentoria_payment('ana@uc3m.es', 'Ana Garcia', '666123456', 1500)"
+    );
+    return rows[0];
+  };
+
+  await test('mentoría: sin aceptar la privacidad no abre el pago', async () => {
+    const res = await call('POST', '/api/mentorias/checkout', {
+      name: 'Ana Garcia', email: 'ana@uc3m.es', phone: '666123456', acceptedPrivacy: false,
+    });
+    assertEqual(res.status, 400, 'status');
+    assertEqual(res.body.error, 'PRIVACY_NOT_ACCEPTED', 'error');
+  });
+
+  await test('mentoría: con un email invalido no abre el pago', async () => {
+    const res = await call('POST', '/api/mentorias/checkout', {
+      name: 'Ana Garcia', email: 'no-es-email', phone: '666123456', acceptedPrivacy: true,
+    });
+    assertEqual(res.status, 400, 'status');
+    assertEqual(res.body.error, 'INVALID_EMAIL', 'error');
+  });
+
+  await test('mentoría: con un telefono invalido no abre el pago ni guarda nada', async () => {
+    const res = await call('POST', '/api/mentorias/checkout', {
+      name: 'Ana Garcia', email: 'ana@uc3m.es', phone: '123', acceptedPrivacy: true,
+    });
+    assertEqual(res.status, 409, 'status');
+    assertEqual(res.body.error, 'INVALID_PHONE', 'error');
+    const { rows } = await pool.query('select count(*)::int as n from mentoria_payments');
+    assertEqual(rows[0].n, 0, 'no debe quedar ningun pago');
+  });
+
+  await test('mentoría: el pago confirmado la marca pagada y NO da de alta a ningun socio', async () => {
+    const pago = await pagoPendiente();
+    const res = await firmado({ type: 'checkout.session.completed', data: { object: sesionMentoria(pago.id) } });
+    assertEqual(res.status, 200, 'status');
+    const { rows } = await pool.query('select status, stripe_payment_intent from mentoria_payments where id = $1', [pago.id]);
+    assertEqual(rows[0].status, 'paid', 'estado');
+    assertEqual(rows[0].stripe_payment_intent, 'pi_test_mentoria', 'payment intent');
+    const socios = await pool.query('select count(*)::int as n from memberships');
+    assertEqual(socios.rows[0].n, 0, 'no debe haber socios');
+    const num = await pool.query("select last_value, is_called from member_number_seq");
+    assertEqual(num.rows[0].is_called, false, 'no debe consumir numero de socio');
+  });
+
+  await test('mentoría: un reintento de Stripe no la procesa dos veces', async () => {
+    const pago = await pagoPendiente();
+    const event = { type: 'checkout.session.completed', data: { object: sesionMentoria(pago.id) } };
+    await firmado(event);
+    const { rows: [antes] } = await pool.query('select paid_at from mentoria_payments where id = $1', [pago.id]);
+    const res = await firmado(event);
+    assertEqual(res.status, 200, 'status del reintento');
+    const { rows: [despues] } = await pool.query('select paid_at from mentoria_payments where id = $1', [pago.id]);
+    assertEqual(String(despues.paid_at), String(antes.paid_at), 'paid_at no cambia');
+  });
+
+  await test('mentoría: la sesion caducada la marca expired', async () => {
+    const pago = await pagoPendiente();
+    const res = await firmado({ type: 'checkout.session.expired', data: { object: sesionMentoria(pago.id, { payment_status: 'unpaid' }) } });
+    assertEqual(res.status, 200, 'status');
+    const { rows } = await pool.query('select status from mentoria_payments where id = $1', [pago.id]);
+    assertEqual(rows[0].status, 'expired', 'estado');
+  });
+
+  await test('socios: un pago sin kind sigue yendo por el alta de socio', async () => {
+    await pool.query("update membership_settings set premium_open = true");
+    const { rows: [m] } = await pool.query("select * from reserve_membership('luis@uc3m.es', 'Luis Perez', 'standard', '666123456')");
+    const res = await firmado({
+      type: 'checkout.session.completed',
+      data: { object: { id: 'cs_test_socio', payment_status: 'paid', payment_intent: 'pi_test_socio', metadata: { membership_id: m.id } } },
+    });
+    assertEqual(res.status, 200, 'status');
+    const { rows } = await pool.query('select status, member_number from memberships where id = $1', [m.id]);
+    assertEqual(rows[0].status, 'paid', 'estado del socio');
+    assertEqual(rows[0].member_number, 1, 'numero de socio');
   });
 
   server.close();

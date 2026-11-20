@@ -1,0 +1,9 @@
+---
+// Pago de mentorías en Mad Tech Campus (15 €). Página SIN enlazar desde la web:
+// se reparte el enlace directamente. noindex y fuera del sitemap (astro.config.mjs).
+import Base from '../../layouts/Base.astro';
+import Mentorias from '../../socios/Mentorias.jsx';
+---
+<Base title="Mentorías" description="Reserva tu mentoría de Start UC3M en Mad Tech Campus." tone="dark" noindex>
+  <Mentorias client:only="react" />
+</Base>

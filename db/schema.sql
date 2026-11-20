@@ -416,3 +416,91 @@ begin
   return found;
 end;
 $fn$;
+
+-- =====================================================================
+-- Mentorías en Mad Tech Campus (15 €)
+-- Página /mentorias, sin enlazar desde la web: se reparte el enlace.
+-- Sin aforo ni número de orden: cada pago es una fila. Una misma persona
+-- puede pagar más de una mentoría, así que no hay índice único por email.
+-- El precio lo fija el servidor (api/mentorias/checkout.mjs), nunca el
+-- formulario.
+-- =====================================================================
+create table if not exists mentoria_payments (
+  id                    uuid primary key default gen_random_uuid(),
+  email                 text not null,
+  full_name             text not null,
+  phone                 text not null,
+  price_cents           int  not null check (price_cents > 0),
+  status                text not null default 'pending'
+                        check (status in ('pending', 'paid', 'expired')),
+  stripe_session_id     text,
+  stripe_payment_intent text,
+  created_at            timestamptz not null default now(),
+  paid_at               timestamptz
+);
+
+create index if not exists mentoria_payments_status_idx
+  on mentoria_payments (status, created_at);
+
+-- Crea el pago pendiente. Excepciones: INVALID_EMAIL, INVALID_NAME, INVALID_PHONE
+create or replace function create_mentoria_payment(
+  p_email       text,
+  p_name        text,
+  p_phone       text,
+  p_price_cents int
+)
+returns mentoria_payments
+language plpgsql as $fn$
+declare
+  v_email text := lower(trim(p_email));
+  v_name  text := trim(p_name);
+  v_phone text := normalize_phone(p_phone);
+  v_row   mentoria_payments;
+begin
+  if v_email is null or v_email !~ '^[^@[:space:]]+@[^@[:space:]]+[.][^@[:space:]]+$' then
+    raise exception 'INVALID_EMAIL';
+  end if;
+  if v_name is null or length(v_name) < 2 then
+    raise exception 'INVALID_NAME';
+  end if;
+  if v_phone is null then
+    raise exception 'INVALID_PHONE';
+  end if;
+
+  insert into mentoria_payments (email, full_name, phone, price_cents)
+  values (v_email, v_name, v_phone, p_price_cents)
+  returning * into v_row;
+
+  return v_row;
+end;
+$fn$;
+
+-- Marca el pago como cobrado. Idempotente: si ya estaba pagado (reintento
+-- de Stripe) devuelve null y el webhook no reenvía el correo.
+create or replace function confirm_mentoria_payment(
+  p_id             uuid,
+  p_payment_intent text
+)
+returns mentoria_payments
+language plpgsql as $fn$
+declare
+  v_row mentoria_payments;
+begin
+  update mentoria_payments
+     set status = 'paid', paid_at = now(), stripe_payment_intent = p_payment_intent
+   where id = p_id and status <> 'paid'
+  returning * into v_row;
+
+  if not found then
+    return null;
+  end if;
+  return v_row;
+end;
+$fn$;
+
+-- La sesión de Stripe caducó sin pagar.
+create or replace function expire_mentoria_payment(p_id uuid)
+returns void
+language sql as $fn$
+  update mentoria_payments set status = 'expired' where id = p_id and status = 'pending';
+$fn$;
