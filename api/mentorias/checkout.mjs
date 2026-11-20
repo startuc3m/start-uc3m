@@ -55,6 +55,20 @@ export default async function handler(req, res) {
       throw err;
     }
 
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+    // Como en socios: si ya hay una sesión viva para este pago, se reutiliza.
+    if (payment.stripe_session_id) {
+      try {
+        const existing = await stripe.checkout.sessions.retrieve(payment.stripe_session_id);
+        if (existing.status === 'open' && existing.url) {
+          return sendJson(res, 200, { url: existing.url, priceCents: payment.price_cents, reused: true });
+        }
+      } catch (err) {
+        console.error('[mentorias/checkout] no se pudo recuperar la sesion previa', err);
+      }
+    }
+
     const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || '').replace(/\/$/, '');
     const priceData = { currency: 'eur', unit_amount: payment.price_cents };
     if (process.env.STRIPE_PRODUCT_MENTORIA) {
@@ -63,7 +77,6 @@ export default async function handler(req, res) {
       priceData.product_data = { name: MENTORIA_LABEL, description: 'Pago único' };
     }
 
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
       locale: 'es',
@@ -83,7 +96,7 @@ export default async function handler(req, res) {
       session.id,
     ]);
 
-    return sendJson(res, 200, { url: session.url, priceCents: payment.price_cents });
+    return sendJson(res, 200, { url: session.url, priceCents: payment.price_cents, reused: false });
   } catch (err) {
     console.error('[mentorias/checkout] error', err);
     return sendJson(res, 500, { error: 'SERVER_ERROR' });

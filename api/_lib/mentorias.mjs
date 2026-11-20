@@ -1,5 +1,6 @@
 import { query } from './db.mjs';
 import { sendMentoriaEmail } from './email.mjs';
+import { createNotionMentoria } from './notion.mjs';
 
 // Mentorías en Mad Tech Campus: precio único, fijado aquí y no en el formulario.
 export const MENTORIA_PRICE_CENTS = 1500;
@@ -37,9 +38,15 @@ export async function handleMentoriaCompleted(session) {
   }
 
   console.log('[webhook] mentoría pagada (' + payment.email + ')');
-  const email = await sendMentoriaEmail(payment);
+
+  // Igual que en socios: correo y Notion en paralelo, y ninguno tumba la
+  // respuesta. El pago ya está en la BD, que es la fuente de verdad.
+  const [email, notion] = await Promise.all([sendMentoriaEmail(payment), createNotionMentoria(payment)]);
   if (!email.ok && !email.skipped) {
     console.error('[webhook] no se envió la confirmación de mentoría a ' + payment.email, email.error);
+  }
+  if (!notion.ok && !notion.skipped) {
+    console.error('[webhook] no se creó la ficha en Notion de la mentoría de ' + payment.email, notion.error);
   }
 }
 
@@ -47,6 +54,7 @@ export async function handleMentoriaCompleted(session) {
 export async function handleMentoriaExpired(session) {
   const id = session.metadata && session.metadata.mentoria_id;
   if (!id) return;
-  await query('select expire_mentoria_payment($1)', [id]);
-  console.log('[webhook] mentoría caducada sin pagar', id);
+  await query('select expire_mentoria_payment($1, $2)', [id, session.id]);
+  // Solo cambia algo si es la sesión vigente del pago (ver expire_mentoria_payment).
+  console.log('[webhook] caducidad de sesión de mentoría recibida', id, session.id);
 }

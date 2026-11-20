@@ -500,6 +500,45 @@ async function main() {
     assertEqual(rows[0].status, 'expired', 'estado');
   });
 
+  await test('mentoría: un segundo intento en curso reutiliza el mismo pago (y corrige el nombre)', async () => {
+    const primero = await pagoPendiente();
+    const { rows: [segundo] } = await pool.query(
+      "select * from create_mentoria_payment('ana@uc3m.es', 'Ana García Pérez', '666123456', 1500)"
+    );
+    assertEqual(segundo.id, primero.id, 'mismo pago');
+    assertEqual(segundo.full_name, 'Ana García Pérez', 'nombre corregido');
+    const { rows } = await pool.query('select count(*)::int as n from mentoria_payments');
+    assertEqual(rows[0].n, 1, 'una sola fila');
+  });
+
+  await test('mentoría: otra persona abre su propio pago', async () => {
+    await pagoPendiente();
+    await pool.query("select * from create_mentoria_payment('luis@uc3m.es', 'Luis Perez', '666123457', 1500)");
+    const { rows } = await pool.query('select count(*)::int as n from mentoria_payments');
+    assertEqual(rows[0].n, 2, 'dos filas');
+  });
+
+  await test('mentoría: un pago ya cobrado no se reutiliza para otra mentoría', async () => {
+    const pago = await pagoPendiente();
+    await firmado({ type: 'checkout.session.completed', data: { object: sesionMentoria(pago.id) } });
+    const { rows: [nuevo] } = await pool.query(
+      "select * from create_mentoria_payment('ana@uc3m.es', 'Ana Garcia', '666123456', 1500)"
+    );
+    assert(nuevo.id !== pago.id, 'debe ser un pago nuevo');
+    assertEqual(nuevo.status, 'pending', 'estado del nuevo');
+  });
+
+  await test('mentoría: caducar una sesión antigua no anula la sesión nueva del mismo pago', async () => {
+    const pago = await pagoPendiente();
+    await pool.query("update mentoria_payments set stripe_session_id = 'cs_nueva' where id = $1", [pago.id]);
+    await firmado({ type: 'checkout.session.expired', data: { object: sesionMentoria(pago.id, { id: 'cs_vieja', payment_status: 'unpaid' }) } });
+    const { rows: [r1] } = await pool.query('select status from mentoria_payments where id = $1', [pago.id]);
+    assertEqual(r1.status, 'pending', 'sigue pendiente');
+    await firmado({ type: 'checkout.session.expired', data: { object: sesionMentoria(pago.id, { id: 'cs_nueva', payment_status: 'unpaid' }) } });
+    const { rows: [r2] } = await pool.query('select status from mentoria_payments where id = $1', [pago.id]);
+    assertEqual(r2.status, 'expired', 'la sesión vigente sí la caduca');
+  });
+
   await test('socios: un pago sin kind sigue yendo por el alta de socio', async () => {
     await pool.query("update membership_settings set premium_open = true");
     const { rows: [m] } = await pool.query("select * from reserve_membership('luis@uc3m.es', 'Luis Perez', 'standard', '666123456')");

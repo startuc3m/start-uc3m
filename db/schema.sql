@@ -442,7 +442,10 @@ create table if not exists mentoria_payments (
 create index if not exists mentoria_payments_status_idx
   on mentoria_payments (status, created_at);
 
--- Crea el pago pendiente. Excepciones: INVALID_EMAIL, INVALID_NAME, INVALID_PHONE
+-- Crea el pago pendiente o, como en socios, devuelve el que esa persona ya
+-- tiene en curso (doble clic, volver atrás desde Stripe): así no se abren
+-- dos cobros. Si ha corregido el nombre o el teléfono, se actualizan.
+-- Excepciones: INVALID_EMAIL, INVALID_NAME, INVALID_PHONE
 create or replace function create_mentoria_payment(
   p_email       text,
   p_name        text,
@@ -465,6 +468,21 @@ begin
   end if;
   if v_phone is null then
     raise exception 'INVALID_PHONE';
+  end if;
+
+  -- Ventana de 31 min: lo que dura una sesión de Stripe (checkout.mjs).
+  update mentoria_payments
+     set full_name = v_name, phone = v_phone
+   where id = (
+     select id from mentoria_payments
+      where email = v_email and status = 'pending'
+        and created_at > now() - interval '31 minutes'
+      order by created_at desc
+      limit 1
+   )
+  returning * into v_row;
+  if found then
+    return v_row;
   end if;
 
   insert into mentoria_payments (email, full_name, phone, price_cents)
@@ -498,9 +516,13 @@ begin
 end;
 $fn$;
 
--- La sesión de Stripe caducó sin pagar.
-create or replace function expire_mentoria_payment(p_id uuid)
+-- La sesión de Stripe caducó sin pagar. Solo cuenta si es la sesión vigente
+-- del pago: si se abrió otra después (reutilización), la vieja no lo anula.
+drop function if exists expire_mentoria_payment(uuid);
+create or replace function expire_mentoria_payment(p_id uuid, p_session_id text)
 returns void
 language sql as $fn$
-  update mentoria_payments set status = 'expired' where id = p_id and status = 'pending';
+  update mentoria_payments set status = 'expired'
+   where id = p_id and status = 'pending'
+     and (stripe_session_id is null or stripe_session_id = p_session_id);
 $fn$;

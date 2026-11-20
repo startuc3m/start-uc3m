@@ -55,6 +55,7 @@ STRIPE_WEBHOOK_SECRET
 STRIPE_PRODUCT_STANDARD      # opcional: si no se pone, el producto se crea al vuelo
 STRIPE_PRODUCT_PREMIUM       # opcional
 STRIPE_PRODUCT_MENTORIA      # opcional: producto de Stripe de las mentorías
+NOTION_MENTORIAS_DATABASE_ID # opcional: base de Notion donde se crea una ficha por pago de mentoría
 RESEND_API_KEY
 EMAIL_FROM                   # "Start UC3M <socios@startuc3m.es>"
 CONTACT_EMAIL                # opcional, sale en el correo de bienvenida
@@ -145,6 +146,8 @@ Pago suelto con el mismo Stripe, el mismo webhook y la misma base de datos que l
 | `src/pages/mentorias/gracias.astro` | Vuelta desde Stripe |
 
 - **Sin aforo y sin número:** cada pago es una fila. Una persona puede pagar más de una mentoría.
+- **Como en socios:** si alguien vuelve a pulsar o regresa desde Stripe en los 31 minutos que dura la sesión, se reabre el mismo pago en vez de crear otro. La caducidad de una sesión antigua no anula la nueva.
+- **Ficha en Notion (opcional):** con `NOTION_MENTORIAS_DATABASE_ID`, cada pago crea una fila en esa base, con el mismo sistema que socios (columnas reconocidas por tipo y nombre: título, Email, Teléfono, Importe, Fecha de pago y Stripe payment intent). La base hay que conectarla a la integración (*··· › Conexiones*). Sin la variable, no hace nada.
 - **El precio lo fija el servidor.** Para cambiarlo, edita `MENTORIA_PRICE_CENTS`. Lo que muestra el formulario (`PRICE_LABEL` en `Mentorias.jsx`) es solo informativo: cámbialo a la vez.
 - **Quién ha pagado:** en Stripe (Pagos) o en la base de datos:
 
