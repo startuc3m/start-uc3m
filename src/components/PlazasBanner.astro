@@ -1,0 +1,31 @@
+---
+// Aviso de plazas para entrar en Start (2º cuatrimestre). Va encima del menú en todas las
+// páginas menos /unete, se puede cerrar durante la sesión y no lleva fecha: Dirección
+// prefiere no comprometer una (20/11/2026). Para quitarlo, borra <PlazasBanner /> de Base.astro.
+const show = !Astro.url.pathname.startsWith('/unete');
+---
+{show && (
+  <div class="relative z-50 bg-lime text-ink" data-plazas-banner hidden>
+    <div class="container-x flex min-h-11 items-center gap-3 py-1.5 md:gap-6">
+      <p class="min-w-0 flex-1 text-[14px] leading-tight md:text-[15px]">
+        <span class="font-bold">¿Quieres entrar en Start?</span>
+        <span class="hidden sm:inline"> Abrimos plazas al empezar el segundo cuatrimestre.</span>
+        <span class="sm:hidden"> Plazas en el 2º cuatri.</span>
+      </p>
+      <a href="/unete" class="shrink-0 rounded-brand bg-ink px-3 py-1.5 text-[13px] font-semibold text-lime sm:px-4">Cómo entrar <span class="font-mono">→</span></a>
+      <button type="button" class="shrink-0 px-1 font-mono text-lg leading-none" aria-label="Cerrar el aviso de plazas" data-plazas-banner-close>×</button>
+    </div>
+  </div>
+)}
+<script>
+  import { isDismissed, dismiss } from './lanyard/startcamp_countdown.js';
+  const KEY = 'plazas-banner-dismissed';
+  const banner = document.querySelector<HTMLElement>('[data-plazas-banner]');
+  if (banner && !isDismissed(KEY)) {
+    banner.hidden = false;
+    banner.querySelector('[data-plazas-banner-close]')?.addEventListener('click', () => {
+      banner.hidden = true;
+      dismiss(KEY);
+    });
+  }
+</script>
