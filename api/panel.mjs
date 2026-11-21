@@ -22,7 +22,7 @@ export function createPanelHandler({client=panelClient,auth=authenticate,run=run
     try {
       if(!['GET','POST'].includes(req.method)) { res.setHeader('Allow','GET, POST'); throw new PanelError(405,'Método no permitido.'); }
       const action=new URL(req.url,'http://localhost').searchParams.get('action')||'me';
-      const reads=['me','users'];
+      const reads=['me','users','departments'];
       if((req.method==='GET')!==reads.includes(action)) throw new PanelError(405,'Método no permitido.');
       if(req.method==='POST' && !/^application\/json(?:;|$)/i.test(req.headers['content-type']||'')) throw new PanelError(415,'Envía JSON.');
       const db=client(env);

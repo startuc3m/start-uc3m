@@ -32,3 +32,11 @@ describe('perfil y permisos',()=>{
     expect(()=>validateClassification({kind:'starter',department:'Marketing',manage_users:true})).toThrow();
   });
 });
+
+it('valida departamentos del catálogo y usa null para socios',()=>{
+ const catalog=[{id:'IT',name:'IT'}];
+ expect(validateClassification({kind:'socio'}).department).toBeNull();
+ expect(validateClassification({kind:'starter',department:'IT'},catalog).department).toBe('IT');
+ for(const department of ['it','Inventado','',null]) expect(()=>validateClassification({kind:'starter',department},catalog)).toThrow();
+ expect(()=>validateClassification({kind:'socio',department:'IT'},catalog)).toThrow();
+});

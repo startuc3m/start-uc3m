@@ -55,13 +55,13 @@ export function validateProfile(input) {
   if (personality && !PERSONALITIES.includes(personality)) throw new Error('Selecciona una de las 16 etiquetas.');
   return { name, career, course, linkedin, personality };
 }
-export function validateClassification(input) {
+export function validateClassification(input, departments = []) {
   const kind = input.kind;
   const position = input.position ?? 'miembro';
-  const department = bounded(input.department ?? '', 80, 'Departamento');
+  const department = bounded(input.department ?? '', 80, 'Departamento') || null;
   if (!['socio', 'starter'].includes(kind) || !['miembro', 'responsable', 'junta'].includes(position)) throw new Error('Tipo o cargo inválido.');
   if (kind === 'socio' && (department || position !== 'miembro' || input.manage_users)) throw new Error('Los permisos de equipo requieren tipo Starter.');
-  if (kind === 'starter' && !department) throw new Error('Indica el departamento.');
+  if (kind === 'starter' && !departments.some(d => d.id === department)) throw new Error('Selecciona un departamento válido.');
   if (input.manage_users && department !== 'IT' && position !== 'junta') throw new Error('La gestión de usuarios corresponde a Junta o IT autorizado.');
   return { kind, department, position, manage_users: input.manage_users === true };
 }

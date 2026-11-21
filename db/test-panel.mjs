@@ -1,7 +1,7 @@
 // Integration test against disposable localhost Postgres only. Always rolls back.
 import pg from 'pg';
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { readFile, readdir } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
 const url=new URL(process.env.DATABASE_URL || 'postgres://postgres:test@localhost:5432/socios_test');
 if(!['localhost','127.0.0.1'].includes(url.hostname)||!url.pathname.endsWith('_test'))throw new Error('Requires disposable localhost *_test database');
@@ -21,9 +21,14 @@ try {
   create schema auth; create table auth.users(id uuid primary key);
   create schema storage; create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]);`);
   await q(await readFile(new URL('../supabase/migrations/20261117175111_panel_access.sql',import.meta.url),'utf8'));
+  for(const file of (await readdir(new URL('../supabase/migrations/',import.meta.url))).filter(f=>f.endsWith('.sql')&&!f.endsWith('_panel_access.sql')).sort()) await q(await readFile(new URL('../supabase/migrations/'+file,import.meta.url),'utf8'));
   const actor=randomUUID(), user=randomUUID(), other=randomUUID(), batch=randomUUID();
   await q("insert into panel_members(id,email,kind,department,position) values($1,'junta@example.org','starter','Junta','junta')",[actor]);
-  const rows=[{name:'Ana',email:'ana@example.org',kind:'socio',department:'',position:'miembro',manage_users:false}];
+  assert.equal((await q('select count(*)::int n from panel_departments')).rows[0].n,8);
+  await rejects("insert into panel_members(email,kind,department) values('invalid@example.org','starter','Inventado')",[],/foreign key/);
+  await rejects("insert into panel_members(email,kind,department) values('invalid@example.org','starter',null)",[],/check constraint/);
+  await rejects("insert into panel_members(email,kind,department) values('invalid@example.org','socio','IT')",[],/check constraint/);
+  const rows=[{name:'Ana',email:'ana@example.org',kind:'socio',department:null,position:'miembro',manage_users:false}];
   const create='select panel_create_batch($1,$2,$3,$4::jsonb,$5)';
   await q(create,[actor,batch,'fingerprint',JSON.stringify(rows),true]);
   await q(create,[actor,batch,'fingerprint',JSON.stringify(rows),true]);
@@ -35,7 +40,7 @@ try {
   await q('select panel_accept($1,$2)',[user,member.email]);
   await rejects('select panel_accept($1,$2)',[other,member.email],/PANEL_FORBIDDEN/);
   await rejects('select panel_accept($1,$2)',[other,'unknown@example.org'],/PANEL_FORBIDDEN/);
-  await rejects('select panel_change_member($1,$1,$2,$3,$4,false,false)',[actor,'socio','','miembro'],/PANEL_SELF_CHANGE/);
+  await rejects('select panel_change_member($1,$1,$2,$3,$4,false,false)',[actor,'socio',null,'miembro'],/PANEL_SELF_CHANGE/);
   await q('select panel_change_member($1,$2,$3,$4,$5,false,false)',[actor,member.id,'socio','','miembro']);
   assert.equal((await q('select state from panel_mail_jobs')).rows[0].state,'cancelled');
   await rejects('select panel_accept($1,$2)',[user,member.email],/PANEL_FORBIDDEN/);

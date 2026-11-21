@@ -121,6 +121,8 @@ export async function processInvitation(db, actor, env, send = null) {
 
 export async function runAction(action, input, context, db, env=process.env) {
   const {member}=context;
+  const departments = async () => checked(await db.from('panel_departments').select('id,name').order('name'));
+  if (action==='departments') return {departments:await departments()};
   if (action==='me') {
     const profile=checked(await db.from('panel_profiles').select('*').eq('member_id',member.id).maybeSingle());
     const files=checked(await db.from('panel_files').select('kind,path').eq('member_id',member.id));
@@ -153,7 +155,7 @@ export async function runAction(action, input, context, db, env=process.env) {
     return {members:members.map(m=>({...m,completed:profiles.some(p=>p.member_id===m.id),invitation:jobs.find(j=>j.member_id===m.id)||null})),pending:jobs.filter(j=>j.state==='queued').length};
   }
   if(action==='preview' || action==='invite') {
-    const classification=validateClassification(input);
+    const classification=validateClassification(input, await departments());
     const rows=parseInvitations(input.text);
     const emails=rows.filter(r=>!r.error).map(r=>r.email);
     const existing=emails.length?checked(await db.from('panel_members').select('email').in('email',emails)):[];
@@ -170,7 +172,7 @@ export async function runAction(action, input, context, db, env=process.env) {
     return {batch_id:id,reviewed:entries.length};
   }
   if(action==='member') {
-    const classification=validateClassification(input);
+    const classification=validateClassification(input, await departments());
     if(typeof input.active!=='boolean') throw new PanelError(400,'Estado inválido.');
     checked(await db.rpc('panel_change_member',{p_actor:member.id,p_target:requireUuid(input.id),p_kind:classification.kind,p_department:classification.department,p_position:classification.position,p_manage:classification.manage_users,p_active:input.active}));
     return {ok:true};

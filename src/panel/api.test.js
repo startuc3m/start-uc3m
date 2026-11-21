@@ -74,3 +74,12 @@ describe('invitaciones sin correos reales',()=>{
     expect(send).toHaveBeenCalledTimes(1);expect(updates.at(-1)).toMatchObject({error_code:'CHECK_PROVIDER'});
   });
 });
+
+it('sirve departamentos por GET y rechaza departamentos inventados',async()=>{
+ const q={select:()=>q,order:async()=>({data:[{id:'IT',name:'IT'}]})};
+ const db={from:()=>q,rpc:vi.fn()};
+ expect((await request({url:'/api/panel?action=departments',method:'GET'},{client:()=>db,run:runAction})).body).toEqual({departments:[{id:'IT',name:'IT'}]});
+ expect((await request({url:'/api/panel?action=departments'})).status).toBe(405);
+ await expect(runAction('member',{kind:'starter',department:'Inventado'},{member:{active:true,position:'junta'}},db)).rejects.toThrow(/departamento/);
+ expect(db.rpc).not.toHaveBeenCalled();
+});

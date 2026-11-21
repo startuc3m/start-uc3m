@@ -10,7 +10,7 @@ it('presenta las 16 etiquetas y un enlace externo, sin test propio',()=>{
   expect(screen.getByRole('link',{name:/test oficial/})).toHaveAttribute('href','https://www.16personalities.com/es/test-de-personalidad');
 });
 it('revisa un lote antes de crearlo y permite guardar sin enviar',async()=>{
-  const api=vi.fn(async(action)=>action==='users'?{members:[],pending:0}:action==='preview'?{rows:[{email:'ana@example.org',name:'Ana',error:'',existing:false}]}:{ok:true});
+  const api=vi.fn(async(action)=>action==='departments'?{departments:[{id:'IT',name:'IT'}]}:action==='users'?{members:[],pending:0}:action==='preview'?{rows:[{email:'ana@example.org',name:'Ana',error:'',existing:false}]}:{ok:true});
   render(<Invitations client={{api}} actorId="self" perform={fn=>fn()} busy={false}/>);
   fireEvent.change(screen.getByLabelText('Personas a invitar'),{target:{value:'Ana, ana@example.org'}});
   fireEvent.click(screen.getByRole('button',{name:'Revisar lista'}));
