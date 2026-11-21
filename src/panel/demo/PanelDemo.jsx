@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import './panel.css';
 import './screens.css';
 import { createDemoApi } from './api.js';
-import { DEPTH, SECTION, back, interceptLinks, useRoute } from './router.js';
+import { DEPTH, SECTION, back, interceptLinks, lastDir, savedScroll, useRoute } from './router.js';
 import './motion.css';
 import Icon from './ui/Icon.jsx';
 import { Avatar, Ctx, Logo } from './ui/pieces.jsx';
@@ -46,6 +46,14 @@ function useSystemDark() {
   return dark;
 }
 
+// Tocar la pestaña en la que ya estás te sube arriba del todo (como en Instagram).
+function scrollTopIfHere(e, href) {
+  if (location.hash === href && scrollY > 0) {
+    e.preventDefault();
+    scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+  }
+}
+
 export default function PanelDemo({ photos }) {
   const demo = useMemo(() => createDemoApi(), []);
   const { api } = demo;
@@ -69,11 +77,13 @@ export default function PanelDemo({ photos }) {
   }, [api]);
   useEffect(() => { refreshMe(); }, [refreshMe]);
 
-  const toast = useCallback((text) => {
+  // toast('Texto') o toast('Texto', { label: 'Deshacer', run }) para avisos con acción.
+  const toast = useCallback((text, action) => {
     clearTimeout(toastTimer.current);
-    setToastMsg({ id: Date.now(), text });
-    toastTimer.current = setTimeout(() => setToastMsg(null), 2600);
+    setToastMsg({ id: Date.now(), text, action });
+    toastTimer.current = setTimeout(() => setToastMsg(null), action ? 4500 : 2600);
   }, []);
+  const dismissToast = useCallback(() => { clearTimeout(toastTimer.current); setToastMsg(null); }, []);
   const setTheme = (t) => { setThemePref(t); try { localStorage.setItem(THEME_KEY, t); } catch {} };
 
   // Color de la barra del navegador según tema y pantalla.
@@ -84,8 +94,9 @@ export default function PanelDemo({ photos }) {
     document.body.style.background = theme === 'dark' ? '#0e0e26' : '#f8f8fc';
   }, [theme, route.name]);
 
-  // Cada pantalla empieza arriba (salvo al volver atrás, que el navegador restaura).
-  useEffect(() => { window.scrollTo(0, 0); }, [route.path]);
+  // Al avanzar, la pantalla nueva empieza arriba; al volver, donde la dejaste. En layout
+  // effect para que la View Transition fotografíe ya la posición buena.
+  useLayoutEffect(() => { window.scrollTo(0, lastDir === 'pop' ? savedScroll(route.path) : 0); }, [route.path]);
 
   if (!me) return <div className="pd" data-theme={theme}><div className="pd-boot" aria-busy="true"><Logo className="logo" /></div></div>;
 
@@ -130,7 +141,7 @@ export default function PanelDemo({ photos }) {
               ) : (
                 <header className="pd-header">
                   <a href="#/comunidad" aria-label="Inicio"><Logo className="logo" /></a>
-                  <a className="pd-bell press" href="#/avisos" aria-label={unread ? `Avisos, ${unread} sin leer` : 'Avisos'}><Icon name="bell" size={22} />{unread > 0 && <span className="dot" />}</a>
+                  <a className="pd-bell press" href="#/avisos" aria-label={unread ? `Avisos, ${unread} sin leer` : 'Avisos'}><Icon name="bell" size={22} />{unread > 0 && <span key={unread} className="dot" />}</a>
                 </header>
               )}
               <main className={`pd-screen pd-screen--${route.name}`} key={`${route.path}#${nonce}`}>
@@ -138,13 +149,13 @@ export default function PanelDemo({ photos }) {
               </main>
             </div>
             <nav className="pd-tabbar" aria-label="Secciones">
-              {NAV.map(([k, href, icon, label]) => <a key={k} className="press" href={href} aria-current={section === k ? 'page' : undefined}><Icon name={icon} size={22} />{label}</a>)}
-              <a className="press" href="#/perfil" aria-current={section === 'perfil' ? 'page' : undefined}><Avatar person={me} size={26} lime className={section === 'perfil' ? 'is-on' : ''} />Perfil</a>
+              {NAV.map(([k, href, icon, label]) => <a key={k} className="press" href={href} aria-current={section === k ? 'page' : undefined} onClick={(e) => scrollTopIfHere(e, href)}><Icon name={icon} size={22} />{label}</a>)}
+              <a className="press" href="#/perfil" aria-current={section === 'perfil' ? 'page' : undefined} onClick={(e) => scrollTopIfHere(e, '#/perfil')}><Avatar person={me} size={26} lime className={section === 'perfil' ? 'is-on' : ''} />Perfil</a>
               <span className="ind" aria-hidden="true" style={{ transform: `translateX(${Math.max(0, ['comunidad', 'mapa', 'ofertas', 'perfil'].indexOf(section)) * 100}%)`, opacity: section === 'admin' ? 0 : 1 }} />
             </nav>
           </div>
         )}
-        <Toast msg={toastMsg} />
+        <Toast msg={toastMsg} onAction={dismissToast} />
         {qrOpen && <QrModal onClose={() => morphQr(false)} />}
         {party && <Celebracion party={party} onClose={() => setParty(null)} />}
         <DemoPanel />

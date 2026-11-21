@@ -7,7 +7,16 @@ import { CVS, EVENTS, FEED, ME, NOTIFICATIONS, OFFERS, PEOPLE, STAMPS, COMPANIES
 
 const KEY = 'start-panel-demo';
 
-export const DEMO_DEFAULTS = { latency: 'normal', empty: false, error: false };
+export const DEMO_DEFAULTS = { latency: 'normal', empty: false, error: false, extreme: false };
+
+// «Datos extremos»: para ver dónde se rompe la interfaz con contenido real feo.
+const extremePerson = (x) => ({
+  ...x,
+  name: x.id === 'lucia' ? 'María de los Ángeles Fernández-Villaverde Rodríguez' : `${x.name} de la Concepción`,
+  career: 'Doble Grado en Ingeniería Informática y Administración de Empresas',
+  dept: x.dept ? `${x.dept} y Comunicación Corporativa` : x.dept,
+  bio: 'Me interesan el growth, las marcas que empiezan, la inversión de impacto y conocer a gente con ganas de montar cosas de verdad.',
+});
 
 function fresh() {
   return {
@@ -41,16 +50,22 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
     const mine = state.interests.includes(o.id);
     const interested = o.interested.filter((id) => id !== state.me.id);
     const all = mine ? [state.me.id, ...interested] : interested;
+    const X = state.settings.extreme;
+    const company = COMPANIES[o.company] ?? o.company;
     return {
       ...o,
-      company: COMPANIES[o.company] ?? o.company,
-      interestedCount: all.length,
+      ...(X ? { title: `${o.title} para el equipo internacional de producto y crecimiento`, deadline: 'Hasta el 31 de diciembre de 2026', place: 'Híbrida · Madrid, Barcelona y remoto' } : {}),
+      company: X ? { ...company, name: `${company.name} International Ventures Group` } : company,
+      interestedCount: X ? 999 : all.length,
       interestedPeople: all.slice(0, 3).map(person).filter(Boolean),
       isInterested: mine,
       isMine: Boolean(o.mine || o.createdByMe),
     };
   };
-  const decoratePerson = (x) => ({ ...x, family: familyOf(x.type), typeName: TYPE_NAMES[x.type], level: levelFor(x.stamps.length), stampList: x.stamps.map((s) => STAMPS[s]) });
+  const decoratePerson = (x0) => {
+    const x = state.settings.extreme ? extremePerson(x0) : x0;
+    return { ...x, family: familyOf(x.type), typeName: TYPE_NAMES[x.type], level: levelFor(x.stamps.length), stampList: x.stamps.map((s) => STAMPS[s]) };
+  };
 
   const actions = {
     me: () => ({ me: decoratePerson(state.me) }),

@@ -27,7 +27,7 @@ export function Perfil() {
         </div>
         <div className="col-right">
           <section aria-label="Tus sellos">
-            <div className="section-h"><h2 className="t-h">Tus sellos</h2><span className="t-soft num">{me.stampList.length}</span></div>
+            <div className="section-h"><h2 className="t-h">Tus sellos · <span className="num">{me.stampList.length}</span></h2><a className="link" href="#/comunidad">Próximo: Start to Invest</a></div>
             <Sellos list={me.stampList} next="30 NOV" />
           </section>
           <section aria-label="Personalidad">

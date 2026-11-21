@@ -52,9 +52,16 @@ const reduced = () => typeof matchMedia !== 'undefined' && matchMedia('(prefers-
 
 // push: entra desde la derecha. pop: vuelve. none: cambio de sección, instantáneo
 // (se hace decenas de veces al día); solo se mueven los indicadores con nombre.
-function navigate(update, to, { skip = false } = {}) {
+// Posición de scroll de cada pantalla, para volver exactamente a donde estabas.
+const scrollMemory = new Map();
+export let lastDir = 'none';
+export const savedScroll = (path) => scrollMemory.get(path) ?? 0;
+
+function navigate(update, to, { skip = false, pop = false } = {}) {
   const a = depthOf(current), b = depthOf(to);
-  const dir = b > a ? 'push' : b < a ? 'pop' : 'none';
+  const dir = b > a ? 'push' : b < a || pop ? 'pop' : 'none';
+  if (typeof scrollY !== 'undefined') scrollMemory.set(current, scrollY);
+  lastDir = pop ? 'pop' : dir;
   if (skip || typeof document === 'undefined' || !document.startViewTransition) return update();
   const root = document.documentElement;
   root.dataset.nav = reduced() ? 'fade' : dir;
@@ -66,7 +73,7 @@ if (typeof window !== 'undefined') {
   // Atrás/adelante del navegador. Si Safari ya animó el gesto de volver, no repetimos.
   // (Cambiar el hash a mano también dispara popstate, así que no hace falta escuchar hashchange,
   // que además llegaría antes de que la transición capture la pantalla vieja.)
-  addEventListener('popstate', (e) => { const to = read(); navigate(() => set(to), to, { skip: e.hasUAVisualTransition }); });
+  addEventListener('popstate', (e) => { const to = read(); navigate(() => set(to), to, { skip: e.hasUAVisualTransition, pop: true }); });
 }
 
 export function useRoute() {

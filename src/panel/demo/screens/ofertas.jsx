@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import Icon from '../ui/Icon.jsx';
-import { Avatar, Empty, Load, OfferLogo, Rolling, Sheet, Skeleton, Stack, burst, roleLine, useApp } from '../ui/pieces.jsx';
+import { Avatar, Empty, Img, Load, OfferLogo, Rolling, Sheet, Skeleton, Stack, burst, roleLine, useApp } from '../ui/pieces.jsx';
 import { back, go, useApi } from '../router.js';
 import { PageTitle } from './comunidad.jsx';
 
@@ -63,28 +63,39 @@ function OfertaDetalle({ id, onChange, compact = false }) {
   const q = useApi(api, 'offer', { id }, [id]);
   const [busy, setBusy] = useState(false);
   const btn = useRef(null);
+  const toggleRef = useRef(null);
   return (
     <Load q={q} skeleton={<><div className="skel" style={{ aspectRatio: '16/8' }} /><Skeleton h={40} n={4} /></>}>
       {({ offer: o }) => {
-        const toggle = async () => {
-          if (busy) return;
+        // Respuesta inmediata: se pinta el cambio al tocar y el servidor confirma después.
+        // Si falla, se deshace y se avisa.
+        const apply = (on) => {
+          const others = o.interestedPeople.filter((x) => x.id !== me.id);
+          return { ...o, isInterested: on, interestedCount: o.interestedCount + (on ? 1 : -1), interestedPeople: on ? [me, ...others].slice(0, 3) : others };
+        };
+        const toggle = async (on = !o.isInterested) => {
+          if (busy || on === o.isInterested) return;
+          const before = o;
+          const next = apply(on);
+          q.setData({ offer: next });
           setBusy(true);
+          if (on) {
+            // La celebración grande, una vez por sesión; después, un confeti pequeño desde el botón.
+            let first = true;
+            try { first = !sessionStorage.getItem('pd-c2'); sessionStorage.setItem('pd-c2', '1'); } catch {}
+            if (first) celebrate({ kind: 'interest', title: '¡Apuntado!', text: `${o.contact} verá tu perfil${me.cv ? ' y tu CV' : ''}. Si encaja, te escribirá.`, people: next.interestedPeople, count: next.interestedCount });
+            else { burst(btn.current); navigator.vibrate?.(12); }
+          } else toast('Ya no te interesa esta oferta', { label: 'Deshacer', run: () => toggleRef.current(true) });
           try {
-            const r = await api('offer.interest', { id: o.id, on: !o.isInterested });
+            const r = await api('offer.interest', { id: o.id, on });
             q.setData({ offer: r.offer });
             onChange?.();
-            if (r.offer.isInterested) {
-              // La celebración grande, una vez por sesión; después, un confeti pequeño desde el botón.
-              let first = true;
-              try { first = !sessionStorage.getItem('pd-c2'); sessionStorage.setItem('pd-c2', '1'); } catch {}
-              if (first) celebrate({ kind: 'interest', title: '¡Apuntado!', text: `${o.contact} verá tu perfil y tu CV. Si encaja, te escribirá.`, people: r.offer.interestedPeople, count: r.offer.interestedCount });
-              else { burst(btn.current); navigator.vibrate?.(12); }
-            } else toast('Ya no te interesa esta oferta');
-          } catch (e) { toast(e.message); } finally { setBusy(false); }
+          } catch (e) { q.setData({ offer: before }); toast(e.message); } finally { setBusy(false); }
         };
+        toggleRef.current = toggle;
         return (
           <article className="oferta">
-            <div className="offer-cover" style={{ backgroundImage: `url(${photos[o.cover]})` }} role="img" aria-label="Foto de la oferta"><OfferLogo company={o.company} size={72} /></div>
+            <div className="offer-cover"><Img src={photos[o.cover]} alt={`Foto de ${o.company.name}`} /><OfferLogo company={o.company} size={72} /></div>
             <p><b>{o.company.name}</b> <span className="t-soft">{o.company.isStart ? '' : '(ejemplo) '}· {o.company.note}</span></p>
             <p style={{ display: 'flex', gap: 10, alignItems: 'center' }}><span className={`chip bg-${o.kindColor}`}>{o.kind}</span><span className="t-soft">{o.deadline}</span></p>
             <h1 className="t-display" style={{ fontSize: compact ? 34 : 40, color: 'var(--ink)' }}>{o.title} en {o.company.name}_</h1>
@@ -103,7 +114,7 @@ function OfertaDetalle({ id, onChange, compact = false }) {
             )}
             {o.isMine && <a className="btn btn--ghost btn--block press" href={`#/oferta/${o.id}/interesados`}><Icon name="users" size={18} /> Ver interesados · {o.interestedCount}</a>}
             <div className="sticky-cta">
-              <button ref={btn} className={`btn btn--block press btn-morph ${o.isInterested ? 'btn--soft' : 'btn--lime'}`} onClick={toggle} aria-busy={busy} aria-pressed={o.isInterested}>
+              <button ref={btn} className={`btn btn--block press btn-morph ${o.isInterested ? 'btn--soft' : 'btn--lime'}`} onClick={() => toggle()} aria-pressed={o.isInterested}>
                 <span key={String(o.isInterested)} className="btn-label">{o.isInterested ? <><Icon name="check" size={18} className="check-draw" /> Te interesa</> : 'Me interesa'}</span>
               </button>
               <p className="t-soft" style={{ fontSize: 14 }}>{o.isInterested ? 'Toca otra vez para quitarlo.' : me.cv ? `${o.contact} verá tu perfil y tu CV.` : <>{o.contact} verá tu perfil. <a href="#/perfil" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>Sube tu CV</a> para que también lo vea.</>}</p>

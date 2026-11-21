@@ -252,3 +252,11 @@ export function burst(el, colors = ['#d6ff4f', '#8ee1e6', '#b6b8e7', '#f5e443'])
     origin: { x: (r.left + r.width / 2) / innerWidth, y: (r.top + r.height / 2) / innerHeight },
   }));
 }
+
+// Foto de portada que entra con un fundido cuando termina de cargar.
+export function Img({ src, alt = '' }) {
+  const [ok, setOk] = useState(false);
+  const ref = useRef(null);
+  useEffect(() => { if (ref.current?.complete && ref.current.naturalWidth) setOk(true); }, [src]);
+  return <img ref={ref} src={src} alt={alt} className={`cover-img ${ok ? 'is-loaded' : ''}`} onLoad={() => setOk(true)} decoding="async" />;
+}

@@ -150,3 +150,40 @@ html[data-nav='qr']::view-transition-old(root), html[data-nav='qr']::view-transi
   .alta-step--fwd, .alta-step--back, .alta-step > * { animation: pd-fade 150ms ease both !important; }
   .steps b { transition-duration: 0ms; }
 }
+
+/* ---------- Pulido: detalles de apps sociales ---------- */
+.toast { pointer-events: auto; }
+.toast-action { margin-left: 6px; padding: 4px 8px; border-radius: 6px; color: var(--lime); font-weight: 700; }
+.pd[data-theme='dark'] .toast-action { color: var(--cobalt); }
+.search-clear { width: 28px; height: 28px; border-radius: 99px; display: grid; place-items: center; background: var(--paper-2); color: var(--ink-soft); flex: none; }
+.search input::-webkit-search-cancel-button { display: none; }
+/* El punto de la campana salta cuando llega un aviso nuevo. */
+.pd-bell .dot { animation: pd-dot 360ms cubic-bezier(.23,1,.32,1) both; }
+@keyframes pd-dot { 0% { transform: scale(.5); opacity: 0; } 60% { transform: scale(1.25); opacity: 1; } 100% { transform: scale(1); } }
+/* Cabecera translúcida: el contenido se intuye por debajo al hacer scroll. */
+.pd-header { background: color-mix(in srgb, var(--surface) 84%, transparent); -webkit-backdrop-filter: saturate(180%) blur(16px); backdrop-filter: saturate(180%) blur(16px); }
+.pd-tabbar { background: color-mix(in srgb, var(--surface) 88%, transparent); -webkit-backdrop-filter: saturate(180%) blur(16px); backdrop-filter: saturate(180%) blur(16px); }
+/* La pestaña elegida de la barra inferior da un saltito muy corto (feedback, no fiesta). */
+.pd-tabbar a[aria-current='page'] .ico, .pd-tabbar a[aria-current='page'] .avatar { animation: pd-tab 220ms cubic-bezier(.23,1,.32,1); }
+@keyframes pd-tab { 40% { transform: scale(.88); } }
+/* Escritorio: las tarjetas pulsables se marcan al pasar el ratón. */
+@media (hover: hover) and (pointer: fine) {
+  .card.press { transition: border-color 160ms ease, transform 140ms cubic-bezier(.23,1,.32,1); }
+  .card.press:hover { border-color: color-mix(in srgb, var(--brand-text) 45%, var(--line)); }
+  .pd-side nav a { transition: background-color 120ms ease; }
+}
+@media (prefers-reduced-motion: reduce) { .pd-bell .dot, .pd-tabbar a .ico, .pd-tabbar a .avatar { animation: none !important; } }
+
+/* Fotos: aparecen con un fundido al cargar, sobre el color de fondo (sin saltos). */
+.cover-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 320ms ease; border-radius: inherit; }
+.cover-img.is-loaded { opacity: 1; }
+
+/* Tirar para recargar */
+.pull { display: grid; place-items: center; overflow: hidden; margin: -18px 0 0; transition: height 280ms cubic-bezier(.32,.72,0,1); }
+.pull.is-pulling:not(.is-refreshing) { transition: none; }
+.pull-mark { width: 34px; color: var(--brand-text); display: block; }
+.pull-mark svg { width: 100%; height: auto; display: block; }
+.pull.is-refreshing .pull-mark { animation: pd-spin 700ms linear infinite; opacity: 1 !important; }
+@keyframes pd-spin { to { rotate: 360deg; } }
+:where(html:has(.pd)) { overscroll-behavior-y: contain; }
+@media (min-width: 1024px) { .pull { display: none; } }

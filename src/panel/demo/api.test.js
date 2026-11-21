@@ -65,4 +65,34 @@ describe('api de la demo', () => {
     const { api } = make();
     await expect(api('borrar-todo')).rejects.toThrow('Acción desconocida');
   });
+
+  it('el CV es privado: solo aparece en los interesados de una oferta', async () => {
+    const { api } = make();
+    const { people } = await api('offer.interested', { id: 'astro' });
+    expect(people.every((x) => 'cv' in x && x.status === 'nuevo')).toBe(true);
+    expect((await api('person', { id: 'pablo' })).person.cv).toBeUndefined();
+    await api('applicant.status', { offer: 'astro', person: 'pablo', status: 'contactado' });
+    expect((await api('offer.interested', { id: 'astro' })).people.find((x) => x.id === 'pablo').status).toBe('contactado');
+  });
+
+  it('sube y quita tu CV', async () => {
+    const { api } = make();
+    expect((await api('cv.remove')).me.cv).toBeNull();
+    expect((await api('cv.upload', { name: 'cv.pdf', size: '90 KB' })).me.cv.name).toBe('cv.pdf');
+  });
+
+  it('abrir un aviso lo marca como leído', async () => {
+    const { api } = make();
+    const before = (await api('notifications')).items.filter((n) => n.unread).length;
+    await api('notifications.open', { id: 'n1' });
+    expect((await api('notifications')).items.filter((n) => n.unread).length).toBe(before - 1);
+  });
+
+  it('con datos extremos los textos se alargan pero la forma no cambia', async () => {
+    const { api } = make();
+    await api('demo.settings', { extreme: true });
+    const { offers } = await api('offers');
+    expect(offers[0].interestedCount).toBe(999);
+    expect((await api('person', { id: 'lucia' })).person.name.length).toBeGreaterThan(40);
+  });
 });

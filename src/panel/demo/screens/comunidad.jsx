@@ -1,7 +1,8 @@
 import { useDeferredValue, useState } from 'react';
 import Icon from '../ui/Icon.jsx';
-import { Avatar, Carne, Empty, Load, OfferLogo, Rolling, Sello, Sellos, Skeleton, Stack, TypeTag, roleLine, useApp } from '../ui/pieces.jsx';
+import { Avatar, Carne, Empty, Img, Load, OfferLogo, Rolling, Sello, Sellos, Skeleton, Stack, TypeTag, roleLine, useApp } from '../ui/pieces.jsx';
 import { go, useApi } from '../router.js';
+import { PullIndicator, usePull } from '../ui/Pull.jsx';
 
 function ComunidadTabs({ current }) {
   return (
@@ -27,11 +28,18 @@ export function PageTitle({ eyebrow, children, action }) {
 }
 
 /* ---------- Para ti ---------- */
+// Historias vistas: el aro se apaga cuando ya has entrado a ver a esa persona (como en Instagram).
+const readSeen = () => { try { return JSON.parse(localStorage.getItem('pd-seen') || '[]'); } catch { return []; } };
+const markSeen = (id) => { try { localStorage.setItem('pd-seen', JSON.stringify([...new Set([...readSeen(), id])])); } catch {} };
+
 export function ParaTi() {
   const { api, photos, me } = useApp();
+  const seen = readSeen();
   const q = useApi(api, 'feed', {}, []);
+  const { pull, refreshing } = usePull(q.reload);
   return (
     <>
+      <PullIndicator pull={pull} refreshing={refreshing} />
       <PageTitle eyebrow="Comunidad">Lo que pasa en Start</PageTitle>
       <ComunidadTabs current="paraTi" />
       <Load q={q} skeleton={<><div className="skel" style={{ height: 92 }} /><Skeleton h={260} n={2} /></>}>
@@ -43,7 +51,7 @@ export function ParaTi() {
                   <div className="section-h" style={{ marginBottom: 10 }}><h2 id="nuevos" className="t-h">Nuevos en Start</h2><a className="link" href="#/comunidad/gente">Ver todos</a></div>
                   <ul className="stories">
                     {d.newcomers.map((x, i) => (
-                      <li key={x.id}><a className={`story press ${i > 2 ? 'story--seen' : ''}`} href={`#/persona/${x.id}`}><span className="ring"><Avatar person={x} size={60} /></span>{x.name.split(' ')[0]}</a></li>
+                      <li key={x.id}><a className={`story press ${seen.includes(x.id) ? 'story--seen' : ''}`} href={`#/persona/${x.id}`} onClick={() => markSeen(x.id)}><span className="ring"><Avatar person={x} size={60} /></span>{x.name.split(' ')[0]}</a></li>
                     ))}
                   </ul>
                 </section>
@@ -82,32 +90,33 @@ function SameCareer({ people }) {
 }
 
 function FeedItem({ it, photos, api, onChange }) {
-  const { celebrate, toast, openQr } = useApp();
+  const { celebrate, toast, openQr, me } = useApp();
   const [busy, setBusy] = useState(false);
+  const [local, setLocal] = useState({});
   if (it.kind === 'event') {
-    const e = it.event;
+    const e = { ...it.event, ...local };
     const toggle = async () => {
+      if (busy) return;
+      const on = !e.isGoing;
+      setLocal({ isGoing: on, goingCount: e.goingCount + (on ? 1 : -1) });
+      if (on) celebrate({ kind: 'going', title: '¡Te esperamos!', text: `Nos vemos en ${e.title}, el ${e.day} de ${e.month.toLowerCase()}. En la entrada, enseña el QR de tu carné y el sello ${e.stamp.label} será tuyo.`, stamp: { ...e.stamp, pending: true } });
       setBusy(true);
-      try {
-        await api('event.going', { id: e.id, on: !e.isGoing });
-        await onChange();
-        if (!e.isGoing) celebrate({ kind: 'going', title: '¡Te esperamos!', text: `Nos vemos en ${e.title}, el ${e.day} de ${e.month.toLowerCase()}. En la entrada, enseña el QR de tu carné y el sello ${e.stamp.label} será tuyo.`, stamp: { ...e.stamp, pending: true } });
-      } catch (err) { toast(err.message); } finally { setBusy(false); }
+      try { await api('event.going', { id: e.id, on }); } catch (err) { setLocal({}); toast(err.message); } finally { setBusy(false); }
     };
     return (
       <article className="card feed-card">
-        <div className="cover" style={{ backgroundImage: `url(${photos[e.cover]})` }} role="img" aria-label={`Foto de ${e.title}`}>
+        <div className="cover"><Img src={photos[e.cover]} alt={`Foto de ${e.title}`} />
           <span className="date"><b>{e.day}</b><span>{e.month}</span></span>
         </div>
         <div className="body">
           <p className="t-mono t-soft" style={{ color: 'var(--brand-text)' }}>Próximo evento · Sello {e.stamp.label} al fichar</p>
           <h3 className="title">{e.title}</h3>
           <div className="feed-row">
-            <Stack people={e.goingPeople} />
+            <Stack people={e.isGoing ? [me, ...e.goingPeople].slice(0, 3) : e.goingPeople} />
             <span className="grow t-soft num"><Rolling value={e.goingCount} /> van{e.isGoing ? ', tú también' : ''}</span>
             {e.isGoing && <button className="btn btn--soft press" style={{ minHeight: 40, borderRadius: 999, fontSize: 15 }} onClick={openQr}>Mi QR</button>}
-            <button className={`btn ${e.isGoing ? 'btn--soft' : 'btn--lime'} press`} style={{ minHeight: 40, borderRadius: 999 }} onClick={toggle} disabled={busy} aria-pressed={e.isGoing}>
-              {e.isGoing ? <><Icon name="check" size={18} /> Vas</> : 'Voy'}
+            <button className={`btn btn-morph ${e.isGoing ? 'btn--soft' : 'btn--lime'} press`} style={{ minHeight: 40, borderRadius: 999 }} onClick={toggle} aria-pressed={e.isGoing}>
+              <span key={String(e.isGoing)} className="btn-label">{e.isGoing ? <><Icon name="check" size={18} className="check-draw" /> Vas</> : 'Voy'}</span>
             </button>
           </div>
         </div>
@@ -153,7 +162,7 @@ export function Gente() {
       <PageTitle eyebrow="Comunidad">La gente de Start</PageTitle>
       <ComunidadTabs current="gente" />
       <div className="toolbar">
-        <label className="search"><Icon name="search" /><span className="sr-only">Buscar</span><input type="search" placeholder="Nombre o carrera" value={text} onChange={(e) => setText(e.target.value)} enterKeyHint="search" /></label>
+        <label className="search"><Icon name="search" /><span className="sr-only">Buscar</span><input type="search" placeholder="Nombre o carrera" value={text} onChange={(e) => setText(e.target.value)} enterKeyHint="search" />{text && <button className="search-clear press" onClick={() => setText('')} aria-label="Borrar búsqueda"><Icon name="x" size={16} /></button>}</label>
         <div className="pills" role="group" aria-label="Filtrar">
           {FILTERS.map(([k, l]) => <button key={k} className="pill press" aria-pressed={filter === k} onClick={() => setFilter(k)}>{l}</button>)}
           <a className="pill press" href="#/mapa">Por personalidad</a>
