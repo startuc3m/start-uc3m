@@ -62,6 +62,7 @@ async function main() {
     '/api/membership/premium-eligibility': (await import('../api/membership/premium-eligibility.mjs')).default,
     '/api/membership/checkout': (await import('../api/membership/checkout.mjs')).default,
     '/api/membership/telefono': (await import('../api/membership/telefono.mjs')).default,
+    '/api/mentorias/checkout': (await import('../api/mentorias/checkout.mjs')).default,
     '/api/stripe/webhook': (await import('../api/stripe/webhook.mjs')).default,
     '/api/contacto': (await import('../api/contacto.mjs')).default,
   };

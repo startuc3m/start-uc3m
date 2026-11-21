@@ -20,10 +20,11 @@ export default defineConfig({
   // vienen de la web anterior y se montan tal cual como islas.
   integrations: [
     // Fuera del sitemap: páginas de paso de socios (vuelta de Stripe, enlace personal)
-    // y del avatar del Start Camp (enlace personal y su página de error).
+    // del avatar del Start Camp (enlace personal y su página de error) y el pago
+    // de mentorías, que no se enlaza desde la web: se reparte el enlace.
     sitemap({
       filter: (page) =>
-        !/\/(socios\/(gracias|telefono)|eventos\/start-camp\/(avatar|enlace-no-valido))\/?$/.test(page) &&
+        !/\/(socios\/(gracias|telefono)|mentorias(\/gracias)?|eventos\/start-camp\/(avatar|enlace-no-valido))\/?$/.test(page) &&
         !skillsVacios.some((s) => new RegExp(`/eventos/start-skills/${s}/?$`).test(page)),
     }),
     react(),

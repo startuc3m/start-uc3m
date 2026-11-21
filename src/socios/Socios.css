@@ -56,7 +56,8 @@
     position: sticky;
     top: 6rem;
   }
-  .socios__pasos { display: block; }
+  /* Más específica que la regla base de abajo (display: none), que si no la pisa. */
+  .socios__grid .socios__pasos { display: block; }
 }
 
 /* ---------------------------------------------------------------- */
