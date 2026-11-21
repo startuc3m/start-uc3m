@@ -135,3 +135,14 @@ describe('gestión de personas', () => {
     await expect(api('members')).rejects.toThrow('Solo IT autorizado');
   });
 });
+
+describe('acceso solo con correos autorizados', () => {
+  it('pide código solo a correos invitados y comprueba el código', async () => {
+    const { api } = make();
+    await expect(api('auth.request', { email: 'cualquiera@gmail.com' })).rejects.toThrow('no tiene invitación');
+    const { demoCode } = await api('auth.request', { email: 'Nora.Prieto@alumnos.uc3m.es ' });
+    await expect(api('auth.verify', { email: 'nora.prieto@alumnos.uc3m.es', code: '000000' })).rejects.toThrow('incorrecto');
+    expect((await api('auth.verify', { email: 'nora.prieto@alumnos.uc3m.es', code: demoCode })).ok).toBe(true);
+    await expect(api('auth.google', { email: 'nora@gmail.com' })).rejects.toThrow('no está autorizada');
+  });
+});

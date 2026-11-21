@@ -76,9 +76,9 @@ Esta demo y el backend de Estrella (#87) tocan las mismas decisiones. **Manda #8
 | Roles: `kind`, `department`, `position`, `manage_users` | `docs/panel-roles.md` §1-2, `src/panel/model.js` | `src/panel/demo/data.js` (`canManage`, `canPublish`, `positionLabel`); pantallas Gestión (`/gestion`, con la tabla «Quién puede hacer qué» de §3) y Personas (`/admin`, acciones `members` y `member.change` con las reglas §4.1 y §4.3) |
 | Permisos de edición por sección (`startskills`, `eventos`, `blog`) | `panel_permissions`, migración `20261121223358` | **No se muestran en la app.** Decisión de Álvaro (22/11): la web y su gestor de contenidos van aparte; la app solo gestiona lo de dentro de la app (oportunidades, puntos, personas). Hablar con Estrella dónde se administran esos permisos |
 | Puntos manuales (Responsable solo a su departamento; Junta a cualquiera) | §3 (pendiente) | `canGivePoints`, acción `points.add`, pantalla `/ranking` |
-| Starter del mes y portada (solo con `public_consent`) | §5 y §7 (por decidir) | `STARTER_OF_MONTH`, tarjeta en Inicio |
+| Starter del mes y portada (solo con `public_consent`) | §5 y §7 (por decidir) | `STARTER_OF_MONTH`, tarjeta grande en Inicio y en `/ranking` |
 | Pagar no da acceso | regla 4.6 | `member.join` devuelve `pendiente`; pantalla «Pago recibido» |
-| Acceso: Google y correo/contraseña | `docs/panel.md` | Pantalla de acceso (sin Apple ni enlace mágico) |
+| Acceso | `docs/panel.md`: Google y correo/contraseña; solo se vincula el email autorizado (regla 4.5) | **Propuesta distinta (Álvaro, 22/11):** sin contraseñas. Pones tu correo; si está autorizado te llega un código de 6 cifras y entras. Con Google, solo si es la cuenta autorizada. Acciones `auth.request`, `auth.verify`, `auth.google`. Supabase Auth lo permite (OTP por correo). **Decidir con Estrella** |
 | Alta: nombre, carrera, curso y foto obligatorios; personalidad o «No lo sé» | `docs/panel.md` | Alta guiada con «Seguir» bloqueado hasta completar |
 
 Si una regla cambia en #87, hay que cambiar también la fila correspondiente de la demo (o al revés, si se decide que la demo propone algo mejor). La API real debería devolver en `me` el cargo y los permisos ya calculados (`positionLabel`, `canManage`, `canPublish`, `permissions`), para que el front no repita reglas.

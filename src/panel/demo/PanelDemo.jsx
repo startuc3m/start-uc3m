@@ -28,6 +28,7 @@ const SCREENS = { inicio: Inicio, canales: Canales, canal: Canal, gente: Gente, 
 // Título pequeño de la barra de arriba (aparece al bajar, cuando el título grande ya no se ve).
 const TITLE = { inicio: 'Inicio', canales: 'Comunidad', gente: 'Comunidad', mapa: 'Comunidad', canal: 'Canal', eventos: 'Eventos', evento: 'Evento', ofertas: 'Oportunidades', oferta: 'Oportunidad', interesados: 'Interesados', publicar: 'Publicar', perfil: 'Mi perfil', editar: 'Editar perfil', ajustes: 'Ajustes', socio: 'Membresía', avisos: 'Avisos', admin: 'Personas', persona: 'Perfil', ranking: 'Starter del mes', gestion: 'Gestión' };
 const NAV = [['inicio', '#/inicio', 'home', 'Inicio'], ['comunidad', '#/comunidad', 'users', 'Comunidad'], ['eventos', '#/eventos', 'calendar', 'Eventos'], ['ofertas', '#/ofertas', 'target', 'Oportunidades']];
+const GESTION_ROUTES = ['gestion', 'admin', 'publicar'];
 const TABS = ['inicio', 'comunidad', 'eventos', 'ofertas', 'perfil'];
 
 // La barra de arriba solo enseña lo que sirve en cada pantalla.
@@ -167,6 +168,13 @@ export default function PanelDemo({ photos }) {
   const deep = Boolean(DEPTH[route.name]);
   const tab = TABS.indexOf(section);
   const badge = me.badges?.comunidad ?? 0;
+  // Bloque «Gestión» del menú lateral: solo lo que tu cargo te deja hacer.
+  const gestion = [
+    (me.canPublish || me.canManage || ['responsable', 'junta'].includes(me.position)) && ['gestion', '#/gestion', 'shield-check', 'Resumen'],
+    me.canManage && ['admin', '#/admin', 'users', 'Personas e invitaciones'],
+    me.canPublish && ['publicar', '#/ofertas/publicar', 'plus', 'Publicar oportunidad'],
+    ['responsable', 'junta'].includes(me.position) && ['ranking', '#/ranking', 'sparkles', 'Puntos del mes'],
+  ].filter(Boolean);
   const goBack = () => back(route.name === 'avisos' ? '/inicio' : route.name === 'ajustes' ? '/perfil' : route.name === 'socio' ? '/ajustes' : route.name === 'admin' ? '/gestion' : route.name === 'gestion' ? '/perfil' : `/${section === 'perfil' ? 'perfil' : section}`);
 
   return (
@@ -178,16 +186,23 @@ export default function PanelDemo({ photos }) {
           <div className={`pd-app ${deep ? 'is-deep' : ''}`}>
             <aside className="pd-side" aria-label="Menú">
               <div><Logo className="logo" /><p className="sub">ÁREA DE SOCIOS_</p></div>
-              <nav>
-                {NAV.map(([k, href, icon, label]) => <a key={k} href={href} aria-current={section === k ? 'page' : undefined}><Icon name={icon} />{label}{k === 'comunidad' && badge > 0 && <span className="badge num">{badge}</span>}</a>)}
-                <a href="#/perfil" aria-current={section === 'perfil' ? 'page' : undefined}><Icon name="user" />Mi perfil</a>
+              <nav aria-label="Secciones">
+                {NAV.map(([k, href, icon, label]) => <a key={k} href={href} aria-current={section === k && !GESTION_ROUTES.includes(route.name) ? 'page' : undefined}><Icon name={icon} />{label}{k === 'comunidad' && badge > 0 && <span className="badge num">{badge}</span>}</a>)}
               </nav>
+              {gestion.length > 0 && (
+                <nav className="side-gest" aria-label="Gestión">
+                  <p className="side-h">Gestión<span>{me.positionLabel}</span></p>
+                  {gestion.map(([k, href, icon, label]) => <a key={k} href={href} aria-current={route.name === k ? 'page' : undefined}><Icon name={icon} />{label}</a>)}
+                </nav>
+              )}
               <button className="btn btn--lime btn--block press side-pass" onClick={openQr}><Icon name="qr-code" size={18} /> Mi QR de Start</button>
-              <a className="me press" href="#/ajustes" aria-label="Ajustes">
-                <Avatar person={me} size={36} lime />
-                <span style={{ flex: 1, minWidth: 0 }}><b style={{ display: 'block' }}>{me.name.split(' ')[0]} {me.name.split(' ')[1]?.[0]}.</b><span className="t-soft" style={{ fontSize: 13 }}>{me.positionLabel}</span></span>
-                <Icon name="settings" size={18} className="t-soft" />
-              </a>
+              <div className={`me ${section === 'perfil' && !GESTION_ROUTES.includes(route.name) && route.name !== 'ajustes' ? 'is-on' : ''}`}>
+                <a className="me-link press" href="#/perfil" aria-label="Mi perfil">
+                  <Avatar person={me} size={36} lime />
+                  <span style={{ flex: 1, minWidth: 0 }}><b style={{ display: 'block' }}>{me.name.split(' ')[0]} {me.name.split(' ')[1]?.[0]}.</b><span className="t-soft" style={{ fontSize: 13 }}>{me.positionLabel}</span></span>
+                </a>
+                <a className="me-gear press" href="#/ajustes" aria-label="Ajustes" aria-current={route.name === 'ajustes' ? 'page' : undefined}><Icon name="settings" size={19} /></a>
+              </div>
             </aside>
             <div className="pd-main">
               <header className={`pd-top ${scrolled ? 'is-scrolled' : ''}`}>

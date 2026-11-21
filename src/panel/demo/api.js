@@ -3,7 +3,7 @@
 // que exista el backend se cambia este archivo y las pantallas no se tocan.
 // El estado de la demo vive en localStorage para que «Me interesa», los sellos o
 // el perfil sobrevivan a una recarga; «Reiniciar demo» lo borra.
-import { POINTS_BASE, STARTER_OF_MONTH, VIEW_AS, canGivePoints, canManage, canPublish, positionLabel, CHANNELS, DMS, LOOKING, MESSAGES, STARTUPS, SUPPORT, TODAY, CVS, EVENTS, FEED, ME, NOTIFICATIONS, OFFERS, PEOPLE, STAMPS, COMPANIES, TYPE_COUNTS, FAMILIES, TYPE_NAMES, familyOf, levelFor } from './data.js';
+import { AUTHORIZED, DEMO_CODE, POINTS_BASE, STARTER_OF_MONTH, VIEW_AS, canGivePoints, canManage, canPublish, positionLabel, CHANNELS, DMS, LOOKING, MESSAGES, STARTUPS, SUPPORT, TODAY, CVS, EVENTS, FEED, ME, NOTIFICATIONS, OFFERS, PEOPLE, STAMPS, COMPANIES, TYPE_COUNTS, FAMILIES, TYPE_NAMES, familyOf, levelFor } from './data.js';
 
 const KEY = 'start-panel-demo';
 
@@ -228,6 +228,35 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
         stamp: { stamp: STAMPS.camp, count: 48, mine: state.me.stamps.includes('camp'), myCount: state.me.stamps.length },
       };
     },
+    // Acceso solo para correos autorizados: pides un código y te llega al correo (6 cifras).
+    'auth.request': ({ email = '' } = {}) => {
+      const e = String(email).trim().toLowerCase();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) throw new Error('Escribe tu correo completo.');
+      if (!AUTHORIZED.includes(e)) throw new Error('Este correo no tiene invitación. Entra con el correo con el que te invitaron.');
+      return { sent: true, email: e, demoCode: DEMO_CODE };
+    },
+    'auth.verify': ({ email = '', code = '' } = {}) => {
+      if (!AUTHORIZED.includes(String(email).trim().toLowerCase())) throw new Error('Este correo no tiene invitación.');
+      if (String(code).trim() !== DEMO_CODE) throw new Error('Código incorrecto. Revisa el correo o pide otro.');
+      return { ok: true };
+    },
+    'auth.google': ({ email = '' } = {}) => {
+      if (!AUTHORIZED.includes(String(email).toLowerCase())) throw new Error('Esa cuenta de Google no está autorizada. Entra con el correo con el que te invitaron.');
+      return { ok: true };
+    },
+
+    // Gestión › resumen: las cifras que le importan a tu cargo.
+    'gestion.summary': () => {
+      const me = meNow();
+      const mine = allOffers().map(decorateOffer).filter((o) => o.isMine);
+      const team = people().filter((x) => x.kind === 'starter' && (me.position === 'junta' || x.department === me.department));
+      return {
+        people: canManage(me) ? { total: people().filter((x) => x.active !== false).length + 1, starters: people().filter((x) => x.kind === 'starter').length + (me.kind === 'starter' ? 1 : 0), pending: 1 } : null,
+        offers: canPublish(me) ? { published: mine.length, interested: mine.reduce((n, o) => n + o.interestedCount, 0), fresh: 2 } : null,
+        points: ['responsable', 'junta'].includes(me.position) ? { team: team.length, given: state.points.filter((x) => x.by === me.id).reduce((n, x) => n + x.points, 0), scope: me.position === 'junta' ? 'todo el equipo' : me.department } : null,
+      };
+    },
+
     // Gestión › Personas: quién es quién y qué puedes cambiar tú (reglas de docs/panel-roles.md §4).
     members: () => {
       const me = meNow();

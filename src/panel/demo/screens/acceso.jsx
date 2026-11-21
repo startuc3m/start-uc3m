@@ -5,19 +5,35 @@ import { go } from '../router.js';
 import { FAMILIES, TYPE_NAMES } from '../data.js';
 import { PageTitle } from './comunidad.jsx';
 
+// Acceso: solo entran los correos que IT o la Junta han autorizado. Con el correo te llega
+// un código de 6 cifras (sin contraseñas); con Google, solo si esa cuenta es la autorizada.
+const GOOGLE_ACCOUNTS = [['Nora Prieto', 'nora.prieto@alumnos.uc3m.es', 'La de la invitación'], ['Nora Prieto', 'nora.prieto.p@gmail.com', 'Personal']];
 export function Acceso() {
-  const { photos } = useApp();
-  const [mail, setMail] = useState(false);
+  const { api, photos } = useApp();
+  const [sheet, setSheet] = useState(null); // 'mail' | 'google'
+  const [step, setStep] = useState('email'); // email → code
   const [email, setEmail] = useState('nora.prieto@alumnos.uc3m.es');
-  const [pass, setPass] = useState('');
-  const [err, setErr] = useState({});
-  const enter = (e) => {
-    e.preventDefault();
-    const x = {};
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) x.email = 'Escribe el correo con el que te invitaron.';
-    if (pass.length < 8) x.pass = 'La contraseña tiene al menos 8 caracteres.';
-    setErr(x);
-    if (!Object.keys(x).length) go('/alta/1');
+  const [code, setCode] = useState('');
+  const [hint, setHint] = useState('');
+  const [err, setErr] = useState('');
+  const [busy, setBusy] = useState(false);
+  const close = () => { setSheet(null); setErr(''); setStep('email'); setCode(''); };
+  const request = async (e) => {
+    e?.preventDefault();
+    setBusy(true); setErr('');
+    try { const r = await api('auth.request', { email }); setHint(r.demoCode); setStep('code'); setCode(''); }
+    catch (x) { setErr(x.message); } finally { setBusy(false); }
+  };
+  const verify = async (value) => {
+    setBusy(true); setErr('');
+    try { await api('auth.verify', { email, code: value }); navigator.vibrate?.(12); close(); go('/alta/1'); }
+    catch (x) { setErr(x.message); setCode(''); } finally { setBusy(false); }
+  };
+  const onCode = (v) => { const d = v.replace(/\D/g, '').slice(0, 6); setCode(d); setErr(''); if (d.length === 6) verify(d); };
+  const google = async (mail) => {
+    setBusy(true); setErr('');
+    try { await api('auth.google', { email: mail }); close(); go('/alta/1'); }
+    catch (x) { setErr(x.message); } finally { setBusy(false); }
   };
   return (
     <div className="acceso">
@@ -27,26 +43,51 @@ export function Acceso() {
         <p className="t-mono" style={{ color: 'var(--lime)' }}>Área de socios_</p>
         <h1 className="t-display acceso-h">Somos gente haciendo cosas_</h1>
         <div className="acceso-btns">
-          <button className="btn btn--block btn-apple-w press" onClick={() => go('/alta/1')}><GoogleG /> Continuar con Google</button>
-          <button className="btn btn--block btn-text press" onClick={() => setMail(true)} aria-expanded={mail}><Icon name="mail" size={20} /> Entrar con tu correo</button>
+          <button className="btn btn--block btn-apple-w press" onClick={() => setSheet('google')}><GoogleG /> Continuar con Google</button>
+          <button className="btn btn--block btn-glass press" onClick={() => setSheet('mail')}><Icon name="mail" size={20} /> Entrar con tu correo</button>
         </div>
+        <p className="acceso-note">Solo pueden entrar los correos invitados por Start.</p>
         <p className="acceso-join">¿Aún no eres socio? <a href="#/hazte-socio">Hazte socio</a></p>
       </div>
-      <Sheet open={mail} onClose={() => setMail(false)} title="Entra con tu correo">
-        <form className="acceso-form" onSubmit={enter} noValidate>
-          <div className="field">
-            <label htmlFor="acc-mail">Correo de la invitación</label>
-            <input id="acc-mail" className="input" type="email" autoComplete="email" inputMode="email" value={email} onChange={(e) => { setEmail(e.target.value); setErr({}); }} aria-invalid={Boolean(err.email)} aria-describedby={err.email ? 'acc-err' : undefined} />
-            {err.email && <p id="acc-err" className="err">{err.email}</p>}
+      <Sheet open={sheet === 'mail'} onClose={close} title={step === 'email' ? 'Entra con tu correo' : 'Mira tu correo'}>
+        {step === 'email' ? (
+          <form className="acceso-form" onSubmit={request} noValidate>
+            <div className="field">
+              <label htmlFor="acc-mail">Correo de la invitación</label>
+              <input id="acc-mail" className="input" type="email" autoComplete="email" inputMode="email" value={email} onChange={(e) => { setEmail(e.target.value); setErr(''); }} aria-invalid={Boolean(err)} aria-describedby={err ? 'acc-err' : 'acc-hint'} />
+              {err ? <p id="acc-err" className="err">{err} <a href="#/hazte-socio" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>¿Quieres hacerte socio?</a></p>
+                : <p id="acc-hint" className="t-soft" style={{ fontSize: 14 }}>Te mandamos un código de 6 cifras. Sin contraseñas.</p>}
+            </div>
+            <button className="btn btn--primary btn--block press" disabled={busy}>{busy ? 'Enviando…' : 'Enviarme el código'}</button>
+            <p className="t-soft" style={{ fontSize: 12.5, textAlign: 'center' }}>Demo: prueba con otro correo para ver qué pasa si no estás invitado.</p>
+          </form>
+        ) : (
+          <div className="acceso-form">
+            <p className="t-soft">Hemos mandado un código a <b style={{ color: 'var(--ink)' }}>{email}</b>.</p>
+            <label className="sr-only" htmlFor="acc-code">Código de 6 cifras</label>
+            <div className={`otp ${err ? 'is-err' : ''}`} onClick={() => document.getElementById('acc-code')?.focus()}>
+              <input id="acc-code" className="otp-input" inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={code} onChange={(e) => onCode(e.target.value)} autoFocus aria-invalid={Boolean(err)} aria-describedby={err ? 'acc-cerr' : undefined} />
+              {Array.from({ length: 6 }, (_, i) => <span key={i} className={`otp-box ${i === code.length ? 'is-cur' : ''} ${code[i] ? 'is-full' : ''}`}>{code[i] ?? ''}</span>)}
+            </div>
+            {err && <p id="acc-cerr" className="err" role="alert">{err}</p>}
+            <p className="otp-demo">Demo: el código es <b className="num">{hint}</b></p>
+            <div className="otp-links">
+              <button className="link-btn press" onClick={() => { setStep('email'); setErr(''); }}>Cambiar correo</button>
+              <button className="link-btn press" onClick={() => request()}>Reenviar código</button>
+            </div>
           </div>
-          <div className="field">
-            <label htmlFor="acc-pass">Contraseña</label>
-            <input id="acc-pass" className="input" type="password" autoComplete="current-password" value={pass} onChange={(e) => { setPass(e.target.value); setErr({}); }} aria-invalid={Boolean(err.pass)} aria-describedby={err.pass ? 'acc-perr' : undefined} />
-            {err.pass && <p id="acc-perr" className="err">{err.pass}</p>}
-          </div>
-          <button className="btn btn--primary btn--block press">Entrar</button>
-          <p className="t-soft" style={{ fontSize: 14, textAlign: 'center' }}>¿Primera vez? Usa el enlace de tu invitación para crear la contraseña. <a href="#/acceso" onClick={(e) => e.preventDefault()} style={{ color: 'var(--brand-text)', fontWeight: 600 }}>He olvidado la contraseña</a></p>
-        </form>
+        )}
+      </Sheet>
+      <Sheet open={sheet === 'google'} onClose={close} title="Elige una cuenta de Google">
+        <div className="acceso-form">
+          <ul className="card members">
+            {GOOGLE_ACCOUNTS.map(([n, mail, note]) => (
+              <li key={mail}><button className="member press" onClick={() => google(mail)} disabled={busy}><span className="avatar" style={{ '--s': '40px' }}>NP</span><span className="grow"><b>{n}</b><span className="t-soft">{mail} · {note}</span></span></button></li>
+            ))}
+          </ul>
+          {err && <p className="err" role="alert">{err}</p>}
+          <p className="t-soft" style={{ fontSize: 12.5 }}>Demo: elige la personal para ver el aviso de cuenta no autorizada.</p>
+        </div>
       </Sheet>
     </div>
   );

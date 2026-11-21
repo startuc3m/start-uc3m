@@ -35,9 +35,22 @@ export function Gestion() {
     (me.position === 'responsable' || me.position === 'junta') && ['sparkles', 'Sumar puntos', me.position === 'junta' ? 'A cualquier Starter, para el Starter del mes.' : `A la gente de ${me.department}, para el Starter del mes.`, '#/ranking'],
     me.canManage && ['users', 'Personas e invitaciones', me.position === 'junta' ? 'Invitar, cambiar cargos y quitar acceso.' : 'Invitar, cambiar cargos y quitar acceso (salvo a la Junta).', '#/admin'],
   ].filter(Boolean);
+  const { api } = useApp();
+  const sum = useApi(api, 'gestion.summary', {}, []);
+  const st = sum.data;
+  const stats = st ? [
+    st.people && ['users', st.people.total, 'personas en la app', `${st.people.starters} del equipo · ${st.people.pending} invitación pendiente`, '#/admin'],
+    st.offers && ['briefcase', st.offers.published, st.offers.published === 1 ? 'oportunidad publicada' : 'oportunidades publicadas', `${st.offers.interested} interesados · ${st.offers.fresh} nuevos`, '#/ofertas/mias'],
+    st.points && ['sparkles', st.points.team, 'Starters a los que puedes dar puntos', st.points.given ? `Has dado ${st.points.given} puntos este mes` : `De ${st.points.scope}`, '#/ranking'],
+  ].filter(Boolean) : [];
   return (
     <>
       <PageTitle eyebrow="Mi perfil" sub="Lo que puedes hacer dentro de la app con tu cargo.">Gestión</PageTitle>
+      {stats.length > 0 && (
+        <ul className="gest-stats">
+          {stats.map(([icon, n, label, sub, href]) => <li key={label}><a className="card gest-stat press" href={href}><span className="gest-ico"><Icon name={icon} size={20} /></span><b className="num">{n}</b><span className="gest-stat-l">{label}</span><span className="t-soft">{sub}</span></a></li>)}
+        </ul>
+      )}
       <div className="card gest-me">
         <Avatar person={me} size={52} lime />
         <span className="grow"><span className="t-mono t-soft">Tu cargo</span><b>{me.positionLabel}</b>{me.manage_users && me.position !== 'junta' && <span className="t-soft" style={{ fontSize: 13 }}>Con permiso para gestionar personas</span>}</span>

@@ -48,18 +48,31 @@ export function Ranking() {
   );
 }
 
+// Starter del mes: tarjeta grande (Inicio y ranking). Foto del equipo de fondo, la persona en
+// grande, su sello de ganador y por qué ganó. Con su LinkedIn, que es lo que le da visibilidad.
 export function StarterMes({ s, compact = false }) {
+  const { photos } = useApp();
+  const first = s.person.name.split(' ')[0];
   return (
-    <a className={`card som ${compact ? 'som--compact' : ''} press`} href={compact ? '#/ranking' : `#/persona/${s.person.id}`}>
-      <span className="som-badge t-mono">Starter de {s.month}</span>
-      <Avatar person={s.person} size={compact ? 52 : 72} />
-      <span className="grow">
-        <b className="som-name">{s.person.name}</b>
-        <span className="som-pos">{roleLine(s.person)} · <span className="num">{s.points}</span> pts</span>
-        {!compact && <span className="som-why">{s.why}</span>}
-      </span>
-      {compact ? <Icon name="chevron-right" /> : <span className="som-in"><Icon name="linkedin" size={18} /></span>}
-    </a>
+    <article className={`som-hero ${compact ? 'som-hero--home' : ''}`} aria-label={`Starter de ${s.month}: ${s.person.name}`}>
+      <div className="som-bg" style={{ backgroundImage: `url(${photos.pitch})` }} aria-hidden="true" />
+      <span className="som-stamp" aria-hidden="true"><b>Nº1</b><span>{s.month.slice(0, 3).toUpperCase()} 26</span></span>
+      <p className="t-display som-kicker">Starter de {s.month}_</p>
+      <div className="som-who">
+        <span className="som-ring"><Avatar person={s.person} size={compact ? 84 : 104} /></span>
+        <div className="som-text">
+          <h3 className="som-name">{s.person.name}</h3>
+          <p className="som-pos">{roleLine(s.person)}</p>
+        </div>
+      </div>
+      <p className="som-why t-marker">«{s.why}»</p>
+      <div className="som-foot">
+        <span className="som-pts"><b className="num">{s.points}</b> pts</span>
+        <a className="som-in press" href={s.person.linkedin} target="_blank" rel="noreferrer" aria-label={`LinkedIn de ${first}`}><Icon name="linkedin" size={18} /></a>
+        {compact ? <a className="btn btn--lime press som-cta" href="#/ranking">Ver ranking <Icon name="chevron-right" size={16} /></a>
+          : <a className="btn btn--lime press som-cta" href={`#/persona/${s.person.id}`}>Ver perfil <Icon name="chevron-right" size={16} /></a>}
+      </div>
+    </article>
   );
 }
 
