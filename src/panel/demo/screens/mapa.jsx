@@ -1,5 +1,6 @@
 import { useRef } from 'react';
-import { Avatar, Load, Sheet, Skeleton, roleLine, useApp } from '../ui/pieces.jsx';
+import Icon from '../ui/Icon.jsx';
+import { Avatar, Load, Sheet, Skeleton, Stack, roleLine, useApp } from '../ui/pieces.jsx';
 import { go, useApi } from '../router.js';
 import { PageTitle } from './comunidad.jsx';
 import { TYPE_NAMES } from '../data.js';
@@ -11,25 +12,36 @@ export function Mapa({ params }) {
   return (
     <>
       <PageTitle eyebrow="Mapa">Start por personalidades</PageTitle>
-      <Load q={q} skeleton={<><div className="skel" style={{ height: 96 }} /><Skeleton h={170} n={4} /></>}>
+      <Load q={q} skeleton={<><div className="skel" style={{ height: 108 }} /><div className="map-grid">{[0, 1, 2, 3].map((i) => <div key={i} className="skel" style={{ height: 220 }} />)}</div></>}>
         {(d) => {
-          const mine = d.families.flatMap((f) => f.types).find((t) => t.code === d.myType);
+          const all = d.families.flatMap((f) => f.types);
+          const mine = all.find((t) => t.code === d.myType);
+          const max = Math.max(...all.map((t) => t.count));
           return (
             <>
               <a className="mytype press" href={`#/mapa/${d.myType}`}>
                 <b>{d.myType}</b>
-                <span><span style={{ fontWeight: 700, display: 'block', fontSize: 17 }}>Tu tipo · {TYPE_NAMES[d.myType]}</span><span style={{ color: 'var(--lavender)' }}>{mine.count - 1} personas más lo comparten</span></span>
+                <span className="grow">
+                  <span style={{ fontWeight: 700, display: 'block', fontSize: 17 }}>Tu tipo · {TYPE_NAMES[d.myType]}</span>
+                  <span className="mytype-people"><Stack people={mine.faces} /><span>{mine.count - 1} personas más lo comparten</span></span>
+                </span>
+                <Icon name="chevron-right" />
               </a>
-              <div className="families">
+              <p className="t-soft map-help">Cada burbuja es un tipo; cuanto más grande, más gente. Toca una para ver quién es.</p>
+              <div className="map-grid">
                 {d.families.map((f) => (
-                  <section key={f.id} className={`family bg-${f.color}`} aria-labelledby={`fam-${f.id}`}>
-                    <div className="section-h"><h2 id={`fam-${f.id}`}>{f.name}</h2><span className="t-mono num">{f.total} personas</span></div>
-                    <div className="types">
-                      {f.types.map((t) => (
-                        <a key={t.code} className="type press" href={`#/mapa/${t.code}`} aria-current={t.code === d.myType ? 'true' : undefined} aria-label={`${t.code}, ${t.name}: ${t.count} personas`}>
-                          {t.code}<b className="num">{t.count}</b>
-                        </a>
-                      ))}
+                  <section key={f.id} className={`zone zone--${f.color}`} aria-labelledby={`fam-${f.id}`}>
+                    <div className="zone-h"><h2 id={`fam-${f.id}`}>{f.name}</h2><span className="t-mono num">{f.total}</span></div>
+                    <div className="bubbles">
+                      {f.types.map((t, i) => {
+                        const size = 42 + (t.count / max) * 30; // 42-72 px: dos por fila en el móvil
+                        return (
+                          <a key={t.code} href={`#/mapa/${t.code}`} className={`bubble press ${t.code === d.myType ? 'is-me' : ''}`} style={{ '--b': `${size}px`, '--i': i }}
+                            aria-label={`${t.code}, ${t.name}: ${t.count} ${t.count === 1 ? 'persona' : 'personas'}${t.code === d.myType ? ' (tu tipo)' : ''}`}>
+                            <span className="code">{t.code}</span><b className="num">{t.count}</b>
+                          </a>
+                        );
+                      })}
                     </div>
                   </section>
                 ))}

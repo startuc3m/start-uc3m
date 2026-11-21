@@ -1,6 +1,6 @@
 import { useDeferredValue, useState } from 'react';
 import Icon from '../ui/Icon.jsx';
-import { Avatar, Carne, Empty, Load, OfferLogo, Sello, Sellos, Skeleton, Stack, TypeTag, roleLine, useApp } from '../ui/pieces.jsx';
+import { Avatar, Carne, Empty, Load, OfferLogo, Rolling, Sello, Sellos, Skeleton, Stack, TypeTag, roleLine, useApp } from '../ui/pieces.jsx';
 import { go, useApi } from '../router.js';
 
 function ComunidadTabs({ current }) {
@@ -82,7 +82,7 @@ function SameCareer({ people }) {
 }
 
 function FeedItem({ it, photos, api, onChange }) {
-  const { celebrate, toast } = useApp();
+  const { celebrate, toast, openQr } = useApp();
   const [busy, setBusy] = useState(false);
   if (it.kind === 'event') {
     const e = it.event;
@@ -91,7 +91,7 @@ function FeedItem({ it, photos, api, onChange }) {
       try {
         await api('event.going', { id: e.id, on: !e.isGoing });
         await onChange();
-        if (!e.isGoing) celebrate({ kind: 'going', title: '¡Apuntado!', text: `Nos vemos en ${e.title}. Ficha con tu carné y te llevas el sello.`, stamp: e.stamp });
+        if (!e.isGoing) celebrate({ kind: 'going', title: '¡Te esperamos!', text: `Nos vemos en ${e.title}, el ${e.day} de ${e.month.toLowerCase()}. En la entrada, enseña el QR de tu carné y el sello ${e.stamp.label} será tuyo.`, stamp: { ...e.stamp, pending: true } });
       } catch (err) { toast(err.message); } finally { setBusy(false); }
     };
     return (
@@ -100,11 +100,12 @@ function FeedItem({ it, photos, api, onChange }) {
           <span className="date"><b>{e.day}</b><span>{e.month}</span></span>
         </div>
         <div className="body">
-          <p className="t-mono t-soft" style={{ color: 'var(--brand-text)' }}>Próximo evento · Sello nuevo</p>
+          <p className="t-mono t-soft" style={{ color: 'var(--brand-text)' }}>Próximo evento · Sello {e.stamp.label} al fichar</p>
           <h3 className="title">{e.title}</h3>
           <div className="feed-row">
             <Stack people={e.goingPeople} />
-            <span className="grow t-soft num">{e.goingCount} van</span>
+            <span className="grow t-soft num"><Rolling value={e.goingCount} /> van{e.isGoing ? ', tú también' : ''}</span>
+            {e.isGoing && <button className="btn btn--soft press" style={{ minHeight: 40, borderRadius: 999, fontSize: 15 }} onClick={openQr}>Mi QR</button>}
             <button className={`btn ${e.isGoing ? 'btn--soft' : 'btn--lime'} press`} style={{ minHeight: 40, borderRadius: 999 }} onClick={toggle} disabled={busy} aria-pressed={e.isGoing}>
               {e.isGoing ? <><Icon name="check" size={18} /> Vas</> : 'Voy'}
             </button>
@@ -238,28 +239,51 @@ async function share(x, toast) {
 }
 
 /* ---------- Avisos ---------- */
+const GROUPS = [['hoy', 'Nuevos'], ['semana', 'Esta semana'], ['antes', 'Antes']];
 export function Avisos() {
   const { api, refreshMe } = useApp();
   const q = useApi(api, 'notifications', {}, []);
+  const readAll = async () => { await api('notifications.read'); q.setData((d) => ({ items: d.items.map((n) => ({ ...n, unread: false })) })); refreshMe(); };
+  const open = (n) => { if (n.unread) { api('notifications.open', { id: n.id }).then(refreshMe); } };
   return (
     <>
-      <PageTitle>Avisos</PageTitle>
-      <Load q={q}>
-        {(d) => (
-          <ul style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {d.items.map((n) => (
-              <li key={n.id} className="card feed-row" style={{ padding: 14, borderColor: n.unread ? 'var(--brand-text)' : undefined }}>
-                <span className="avatar" style={{ '--s': '40px' }}><Icon name={n.icon} size={18} /></span>
-                <span className="grow"><b style={{ display: 'block' }}>{n.text}</b><span className="t-soft" style={{ fontSize: 14 }}>{n.when}</span></span>
-                {n.unread && <span className="sr-only">Sin leer</span>}
-              </li>
-            ))}
-            <li><button className="btn btn--soft btn--block press" onClick={async () => { await api('notifications.read'); q.reload(); refreshMe(); }}>Marcar todo como leído</button></li>
-          </ul>
+      <PageTitle action={q.data?.items.some((n) => n.unread) && <button className="link-btn press" onClick={readAll}>Marcar como leído</button>}>Avisos</PageTitle>
+      <Load q={q} skeleton={<Skeleton h={68} n={5} />}>
+        {(d) => d.items.length === 0 ? <Empty icon="bell" title="Todo al día">Cuando pase algo (un sello, una oferta, alguien que se apunta a la tuya), aparecerá aquí.</Empty> : (
+          <div className="avisos">
+            {GROUPS.map(([k, label]) => {
+              const items = d.items.filter((n) => n.at === k);
+              if (!items.length) return null;
+              return (
+                <section key={k} aria-label={label}>
+                  <h2 className="t-h avisos-h">{label}</h2>
+                  <ul>
+                    {items.map((n) => (
+                      <li key={n.id}>
+                        <a className={`aviso press ${n.unread ? 'is-unread' : ''}`} href={n.href} onClick={() => open(n)}>
+                          <AvisoVisual n={n} />
+                          <span className="grow"><span className="txt" dangerouslySetInnerHTML={{ __html: n.text }} /><span className="when">{n.when}</span></span>
+                          {n.unread && <span className="dot" aria-label="Sin leer" />}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              );
+            })}
+          </div>
         )}
       </Load>
     </>
   );
+}
+
+function AvisoVisual({ n }) {
+  if (n.kind === 'stamp') return <Sello stamp={n.stamp} size={48} rotate={-8} />;
+  if (n.kind === 'offer') return <OfferLogo company={n.company} size={48} />;
+  if (n.kind === 'interested') return <span className="aviso-stack"><Avatar person={n.people[0]} size={36} /><Avatar person={n.people[1]} size={36} /></span>;
+  if (n.kind === 'event') return <span className="aviso-date"><b>{n.event.day}</b><span>{n.event.month}</span></span>;
+  return <Avatar person={n.person} size={48} />;
 }
 
 export { go };

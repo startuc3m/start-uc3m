@@ -83,6 +83,16 @@ export const ME = {
   role: 'starter', dept: 'IT', type: 'ENTP', number: 42, stamps: ['camp', 'build', 'canas', 'skills', 'pitch'],
   bio: 'Construyo la web y el área de socios de Start.', linkedin: 'https://www.linkedin.com/in/ejemplo',
   interests: ['growth', 'astro'], canPublish: true, canManage: true, onboarded: true,
+  cv: { name: 'CV-Alvaro-Carpintero.pdf', size: '184 KB', updated: '12 nov' },
+};
+
+// CV de ejemplo de cada persona (privado: solo lo ve quien publica una oferta a la que se apunta).
+export const CVS = {
+  lucia: '2 págs · actualizado 3 nov', pablo: '1 pág · actualizado 20 oct', marta: '1 pág · actualizado 8 nov',
+  diego: '2 págs · actualizado 1 nov', sara: '1 pág · actualizado 15 nov', hugo: '1 pág · actualizado 30 oct',
+  carla: '1 pág · actualizado 11 nov', gema: '2 págs · actualizado 5 nov', andres: '1 pág · actualizado 2 nov',
+  lidia: '2 págs · actualizado 9 nov', jorge: '1 pág · actualizado 14 nov', ines: '1 pág · actualizado 6 nov',
+  ivan: '1 pág · actualizado 16 nov', elena: '1 pág · actualizado 17 nov',
 };
 
 export const COMPANIES = {
@@ -140,7 +150,9 @@ export const FEED = [
 ];
 
 export const NOTIFICATIONS = [
-  { id: 'n1', icon: 'stamp', text: 'Has conseguido el sello PITCH', when: 'hace 2 días', unread: true },
-  { id: 'n2', icon: 'briefcase', text: 'Nueva oferta: Prácticas de growth en Lumen Labs', when: 'hace 3 días', unread: true },
-  { id: 'n3', icon: 'user', text: 'Nora Prieto ha entrado en Start', when: 'hace 4 días', unread: false },
+  { id: 'n1', kind: 'stamp', stamp: 'pitch', text: 'Has conseguido el sello <b>PITCH</b> en la Noche de pitch.', when: 'hace 2 días', at: 'hoy', unread: true, href: '#/perfil' },
+  { id: 'n2', kind: 'offer', offer: 'growth', text: '<b>Lumen Labs</b> ha publicado <b>Prácticas de growth</b>. 12 de Start ya se han apuntado.', when: 'hace 3 días', at: 'semana', unread: true, href: '#/oferta/growth' },
+  { id: 'n3', kind: 'interested', offer: 'astro', people: ['ines', 'jorge'], text: '<b>Inés</b> y <b>Jorge</b> se han apuntado a tu oferta <b>Desarrollo web con Astro</b>.', when: 'hace 4 días', at: 'semana', unread: false, href: '#/oferta/astro/interesados' },
+  { id: 'n4', kind: 'event', event: 'invest', text: '<b>Start to Invest</b> es el 30 nov. Lleva tu carné para fichar.', when: 'hace 5 días', at: 'semana', unread: false, href: '#/comunidad' },
+  { id: 'n5', kind: 'joined', person: 'nora', text: '<b>Nora Prieto</b> ha entrado en Start. Es ENFP, como 9 más.', when: 'hace 6 días', at: 'antes', unread: false, href: '#/persona/nora' },
 ];

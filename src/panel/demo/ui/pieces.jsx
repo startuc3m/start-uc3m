@@ -78,8 +78,9 @@ export function FakeQr({ seed = 42 }) {
 }
 
 // Carné Start. `own` = el tuyo (con QR y número); si no, el de otra persona (con su frase).
-export function Carne({ person, own = false, animateRing = false, onFlip, className = '' }) {
+export function Carne({ person, own = false, animateRing = false, className = '' }) {
   const lvl = person.level;
+  const app = useApp();
   return (
     <article className={`carne ${className}`} aria-label={own ? 'Tu carné de Start' : `Carné de ${person.name}`}>
       <div className="top">
@@ -93,10 +94,14 @@ export function Carne({ person, own = false, animateRing = false, onFlip, classN
           <p className="sub">{[person.career && !own ? person.career : null, person.course && !own ? person.course : null, person.role === 'starter' ? `Starter${person.dept ? (own ? ' · ' : ' en ') + person.dept : ''}` : 'Socio', own ? person.type : null].filter(Boolean).join(' · ')}</p>
           {own ? <p className="big num">Nº {String(person.number).padStart(4, '0')}</p> : <p className="big">NIVEL {lvl.n}<small>{lvl.name}</small></p>}
         </div>
-        {own && <span className="qr"><FakeQr seed={person.number} /></span>}
+        {own && (
+          <button className="qr press" onClick={() => app?.openQr()} aria-label="Ampliar el QR para fichar" style={{ viewTransitionName: app?.qrOpen ? 'none' : 'my-qr' }}>
+            <FakeQr seed={person.number} />
+          </button>
+        )}
       </div>
       {own ? (
-        <div className="bottom"><span>ENSEÑA EL QR PARA FICHAR</span>{onFlip && <button className="press" onClick={onFlip} style={{ display: 'inline-flex', gap: 6, alignItems: 'center', color: '#fff' }}><Icon name="rotate-ccw" size={14} /> GIRAR</button>}</div>
+        <div className="bottom"><span>TOCA EL QR PARA FICHAR</span><button className="press" onClick={() => app?.openQr()} style={{ display: 'inline-flex', gap: 6, alignItems: 'center', color: '#fff' }}><Icon name="maximize" size={14} /> AMPLIAR</button></div>
       ) : person.bio && <p className="bio">{person.bio}</p>}
     </article>
   );
@@ -223,29 +228,6 @@ export function Sheet({ open, onClose, title, children }) {
 }
 
 export const roleLine = (x) => (x.role === 'starter' ? `Starter${x.dept ? ` · ${x.dept}` : ''}` : x.role === 'socio' ? 'Socio' : '');
-
-// Tu carné con dos caras: delante el carné, detrás el QR grande para fichar.
-export function CarneFlip({ person, animateRing }) {
-  const [back, setBack] = useState(false);
-  return (
-    <div className={`carne-flip ${back ? 'is-back' : ''}`}>
-      <div className="carne-face" aria-hidden={back} inert={back}>
-        <Carne person={person} own animateRing={animateRing} onFlip={() => setBack(true)} />
-      </div>
-      <div className="carne-face carne-face--back" aria-hidden={!back} inert={!back}>
-        <article className="carne carne--qr" aria-label="QR para fichar">
-          <span className="qr-big"><FakeQr seed={person.number} /></span>
-          <div className="qr-side">
-            <p className="t-mono" style={{ color: 'var(--lavender)' }}>Ficha en la entrada</p>
-            <p className="big num">Nº {String(person.number).padStart(4, '0')}</p>
-            <p className="sub">{person.name}</p>
-            <button className="press qr-back" onClick={() => setBack(false)}><Icon name="rotate-ccw" size={14} /> VOLVER</button>
-          </div>
-        </article>
-      </div>
-    </div>
-  );
-}
 
 // Número que rueda al cambiar (sube: entra desde abajo; baja: desde arriba).
 export function Rolling({ value }) {

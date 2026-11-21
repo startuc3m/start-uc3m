@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import Icon from '../ui/Icon.jsx';
-import { Avatar, CarneFlip, Load, OfferLogo, Sellos, Skeleton, useApp } from '../ui/pieces.jsx';
+import { Avatar, Carne, Load, OfferLogo, Sellos, Skeleton, useApp } from '../ui/pieces.jsx';
 import { back, useApi } from '../router.js';
 import { PageTitle } from './comunidad.jsx';
 import { FAMILIES, TYPE_NAMES, familyOf } from '../data.js';
@@ -15,7 +15,7 @@ export function Perfil() {
       <PageTitle eyebrow="Mi perfil" action={wide && <ProfileActions toast={toast} me={me} />}>Así te conoce Start</PageTitle>
       <div className="two-col two-col--profile">
         <div className="col-left">
-          <CarneFlip person={me} animateRing />
+          <Carne person={me} own animateRing />
           {!wide && <ProfileActions toast={toast} me={me} />}
           <section className="card level-card" aria-label="Tu nivel">
             <p className="t-mono t-soft">Nivel {lvl.n}</p>
@@ -23,6 +23,7 @@ export function Perfil() {
             <div className="bar" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(lvl.progress * 100)} aria-label="Progreso al siguiente nivel"><i style={{ width: `${lvl.progress * 100}%` }} /></div>
             <p className="t-soft">{lvl.next ? `${missing} ${missing === 1 ? 'sello más' : 'sellos más'} y serás ${lvl.next.name}. El próximo: Start to Invest, el 30 nov.` : 'Has llegado al nivel más alto. Leyenda.'}</p>
           </section>
+          <CvCard />
         </div>
         <div className="col-right">
           <section aria-label="Tus sellos">
@@ -119,5 +120,41 @@ export function Editar() {
         </div>
       </form>
     </>
+  );
+}
+
+// Tu CV: privado. Solo lo ve quien publica una oferta a la que te apuntas.
+function CvCard() {
+  const { api, me, refreshMe, toast } = useApp();
+  const input = useRef(null);
+  const [busy, setBusy] = useState(false);
+  const upload = async (file) => {
+    if (!file) return;
+    if (file.type && file.type !== 'application/pdf') return toast('Sube el CV en PDF');
+    setBusy(true);
+    await api('cv.upload', { name: file.name, size: `${Math.max(1, Math.round(file.size / 1024))} KB` });
+    await refreshMe(); setBusy(false); toast('CV guardado');
+  };
+  return (
+    <section className="card cv-card" aria-labelledby="cv-t">
+      <div className="section-h">
+        <h2 id="cv-t" className="t-h">Tu CV</h2>
+        <span className="cv-private"><Icon name="lock" size={13} /> Privado</span>
+      </div>
+      {me.cv ? (
+        <div className="cv-file">
+          <span className="cv-ico"><Icon name="file-text" size={22} /></span>
+          <span className="grow"><b>{me.cv.name}</b><span className="t-soft">{me.cv.size} · actualizado {me.cv.updated}</span></span>
+          <button className="btn btn--soft btn--icon press" aria-label="Cambiar CV" onClick={() => input.current?.click()} disabled={busy}><Icon name="upload" size={18} /></button>
+          <button className="btn btn--soft btn--icon press" aria-label="Quitar CV" onClick={async () => { await api('cv.remove'); await refreshMe(); toast('CV quitado'); }}><Icon name="trash" size={18} /></button>
+        </div>
+      ) : (
+        <button className="cv-drop press" onClick={() => input.current?.click()} disabled={busy}>
+          <Icon name="upload" size={22} /><b>{busy ? 'Subiendo…' : 'Sube tu CV en PDF'}</b><span className="t-soft">Hasta 5 MB</span>
+        </button>
+      )}
+      <p className="t-soft" style={{ fontSize: 14 }}>No es público. Cuando marcas «Me interesa» en una oferta, quien la publica puede verlo para filtrar y escribirte.</p>
+      <input ref={input} type="file" accept="application/pdf" hidden onChange={(e) => { upload(e.target.files?.[0]); e.target.value = ''; }} />
+    </section>
   );
 }

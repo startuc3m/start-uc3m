@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import Icon from '../ui/Icon.jsx';
 import { Avatar, Carne, Logo, Sello, useApp } from '../ui/pieces.jsx';
 import { go } from '../router.js';
@@ -36,7 +36,8 @@ export function Acceso() {
       <form className="acceso-form" onSubmit={enter} noValidate>
         <h2 className="t-display only-desk" style={{ fontSize: 40 }}>Entra en Start_</h2>
         <p className="only-desk card" style={{ background: 'var(--lime)', color: 'var(--ink-fixed)', border: 0, padding: 14 }}><b>Tienes una invitación de Start.</b><br />Entra con tu correo para activar tu carné y completar tu perfil.</p>
-        <button type="button" className="btn btn--ghost btn--block press" onClick={() => go('/alta/1')}>Continuar con Google</button>
+        <button type="button" className="btn btn--block press btn-google" onClick={() => go('/alta/1')}><GoogleG /> Continuar con Google</button>
+        <div className="or" aria-hidden="true"><span>o con tu correo</span></div>
         <div className="field">
           <label htmlFor="acc-mail">Correo electrónico</label>
           <input id="acc-mail" className="input" type="email" autoComplete="email" inputMode="email" value={email} onChange={(e) => { setEmail(e.target.value); setErr(''); }} aria-invalid={Boolean(err)} aria-describedby={err ? 'acc-err' : undefined} />
@@ -54,6 +55,10 @@ export function Alta({ params }) {
   const { api, me, refreshMe, celebrate } = useApp();
   const step = Math.min(Math.max(Number(params.paso) || 1, 1), 4);
   const [f, setF] = useState({ career: me.career, course: me.course, type: me.type });
+  // Dirección del último cambio de paso: avanzar entra por la derecha, volver por la izquierda.
+  const prev = useRef(step);
+  const dir = step >= prev.current ? 'fwd' : 'back';
+  prev.current = step;
   const nextStep = async () => {
     if (step === 3) await api('profile.update', { ...f, name: me.name });
     if (step < 4) return go(`/alta/${step + 1}`, { replace: true });
@@ -64,11 +69,15 @@ export function Alta({ params }) {
   };
   return (
     <div className="alta">
+      <div className="steps" role="progressbar" aria-valuemin={1} aria-valuemax={4} aria-valuenow={step} aria-label={`Paso ${step} de 4: ${STEPS[step - 1]}`}>
+        {STEPS.map((s, i) => <i key={s}><b className={i < step ? 'on' : ''} /></i>)}
+      </div>
       <div className="alta-top">
-        <div className="steps" aria-label={`Paso ${step} de 4`}>{STEPS.map((s, i) => <i key={s} className={i < step ? 'on' : ''} />)}</div>
+        {step > 1 ? <button className="alta-back press" onClick={() => go(`/alta/${step - 1}`, { replace: true })}><Icon name="arrow-left" size={18} /> Atrás</button> : <span className="t-mono" style={{ color: 'var(--brand-text)' }}>Paso 1 de 4</span>}
         <button className="t-soft press" onClick={() => go('/comunidad', { replace: true })}>Lo hago luego</button>
       </div>
-      <p className="t-mono" style={{ color: 'var(--brand-text)' }}>Paso {step} de 4</p>
+      <div key={step} className={`alta-step alta-step--${dir}`}>
+      {step > 1 && <p className="t-mono" style={{ color: 'var(--brand-text)' }}>Paso {step} de 4</p>}
       {step === 1 && (
         <>
           <h1 className="t-display" style={{ fontSize: 40 }}>Ponle cara a tu carné_</h1>
@@ -104,7 +113,8 @@ export function Alta({ params }) {
           <p className="t-soft">Enséñalo en cada evento: te llevas un sello y subes de nivel.</p>
         </>
       )}
-      <div className="alta-cta"><button className="btn btn--primary btn--block press" onClick={nextStep}>{step === 4 ? 'Entrar en Start' : 'Seguir'}</button></div>
+      </div>
+      <div className="alta-cta"><button className={`btn btn--block press btn-next ${step === 4 ? 'btn--lime' : 'btn--primary'}`} onClick={nextStep}>{step === 4 ? 'Entrar en Start' : 'Seguir'} <Icon name="arrow-right" size={18} /></button></div>
     </div>
   );
 }
@@ -143,3 +153,13 @@ export function Admin() {
     </>
   );
 }
+
+// Logo de Google para el botón de acceso (según su guía de marca para "Sign in with Google").
+const GoogleG = () => (
+  <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true">
+    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+  </svg>
+);

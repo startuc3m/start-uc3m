@@ -3,7 +3,7 @@
 // que exista el backend se cambia este archivo y las pantallas no se tocan.
 // El estado de la demo vive en localStorage para que «Me interesa», los sellos o
 // el perfil sobrevivan a una recarga; «Reiniciar demo» lo borra.
-import { EVENTS, FEED, ME, NOTIFICATIONS, OFFERS, PEOPLE, STAMPS, COMPANIES, TYPE_COUNTS, FAMILIES, TYPE_NAMES, familyOf, levelFor } from './data.js';
+import { CVS, EVENTS, FEED, ME, NOTIFICATIONS, OFFERS, PEOPLE, STAMPS, COMPANIES, TYPE_COUNTS, FAMILIES, TYPE_NAMES, familyOf, levelFor } from './data.js';
 
 const KEY = 'start-panel-demo';
 
@@ -16,6 +16,7 @@ function fresh() {
     going: [],
     read: [],
     offers: [],
+    status: {},
     settings: { ...DEMO_DEFAULTS },
   };
 }
@@ -118,10 +119,28 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
       return { offer: actions.offer({ id }).offer, firstTime };
     },
 
+    // Solo para quien publicó la oferta: interesados con su CV (privado) y en qué punto está cada uno.
     'offer.interested': ({ id }) => {
       const o = allOffers().find((x) => x.id === id);
-      return { people: o.interested.map(person).filter(Boolean).map(decoratePerson) };
+      if (!o) throw new Error('Esta oferta ya no está publicada.');
+      const people = o.interested.map(person).filter(Boolean).map((x) => ({
+        ...decoratePerson(x),
+        cv: x.id === state.me.id ? state.me.cv : CVS[x.id] ? { name: `CV-${x.name.replace(/ /g, '-')}.pdf`, meta: CVS[x.id] } : null,
+        status: state.status[`${id}:${x.id}`] ?? 'nuevo',
+      }));
+      return { offer: decorateOffer(o), people };
     },
+    'applicant.status': ({ offer, person: pid, status }) => {
+      state.status = { ...state.status, [`${offer}:${pid}`]: status };
+      save();
+      return { status };
+    },
+    'cv.upload': ({ name = 'Mi-CV.pdf', size = '160 KB' } = {}) => {
+      state.me = { ...state.me, cv: { name, size, updated: 'hoy' } };
+      save();
+      return actions.me();
+    },
+    'cv.remove': () => { state.me = { ...state.me, cv: null }; save(); return actions.me(); },
 
     'offer.create': (input) => {
       const title = String(input.title ?? '').trim();
@@ -148,7 +167,18 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
       return { stamp: STAMPS[stamp], isNew: true, level: after, levelUp: after.n > before.n };
     },
 
-    notifications: () => ({ items: NOTIFICATIONS.map((n) => ({ ...n, unread: n.unread && !state.read.includes(n.id) })) }),
+    notifications: () => ({
+      items: NOTIFICATIONS.map((n) => ({
+        ...n,
+        unread: n.unread && !state.read.includes(n.id),
+        stamp: n.stamp ? STAMPS[n.stamp] : undefined,
+        company: n.offer ? COMPANIES[allOffers().find((o) => o.id === n.offer)?.company] : undefined,
+        people: n.people?.map(person),
+        person: n.person ? person(n.person) : undefined,
+        event: n.event ? EVENTS.find((e) => e.id === n.event) : undefined,
+      })),
+    }),
+    'notifications.open': ({ id }) => { state.read = [...new Set([...state.read, id])]; save(); return { ok: true }; },
     'notifications.read': () => { state.read = NOTIFICATIONS.map((n) => n.id); save(); return { ok: true }; },
 
     'profile.update': (input) => {

@@ -8,6 +8,8 @@ import Icon from './ui/Icon.jsx';
 import { Avatar, Ctx, Logo } from './ui/pieces.jsx';
 import Celebracion from './ui/Celebracion.jsx';
 import Toast from './ui/Toast.jsx';
+import QrModal from './ui/QrModal.jsx';
+import { flushSync } from 'react-dom';
 import DemoPanel from './DemoPanel.jsx';
 import { Avisos, Gente, ParaTi, Persona } from './screens/comunidad.jsx';
 import { Mapa } from './screens/mapa.jsx';
@@ -57,6 +59,7 @@ export default function PanelDemo({ photos }) {
   const [toastMsg, setToastMsg] = useState(null); // { id, text }
   const [party, setParty] = useState(null);
   const [nonce, setNonce] = useState(0);
+  const [qrOpen, setQrOpen] = useState(false);
   const toastTimer = useRef(0);
 
   const refreshMe = useCallback(async () => {
@@ -86,7 +89,14 @@ export default function PanelDemo({ photos }) {
 
   if (!me) return <div className="pd" data-theme={theme}><div className="pd-boot" aria-busy="true"><Logo className="logo" /></div></div>;
 
-  const ctx = { api, demo, photos, me, refreshMe, toast, celebrate: setParty, reloadScreen: () => setNonce((n) => n + 1), wide, theme, themePref, setTheme };
+  // El QR pequeño del carné crece hasta la ventana (y vuelve) con una transición de elemento compartido.
+  const morphQr = (open) => {
+    const run = () => flushSync(() => setQrOpen(open));
+    if (!document.startViewTransition || matchMedia('(prefers-reduced-motion: reduce)').matches) return run();
+    document.documentElement.dataset.nav = 'qr';
+    document.startViewTransition(run).finished.finally(() => { delete document.documentElement.dataset.nav; });
+  };
+  const ctx = { qrOpen, openQr: () => morphQr(true), api, demo, photos, me, refreshMe, toast, celebrate: setParty, reloadScreen: () => setNonce((n) => n + 1), wide, theme, themePref, setTheme };
   const bare = route.name === 'acceso' || route.name === 'alta';
   const Screen = SCREENS[route.name] ?? ParaTi;
   const section = SECTION[route.name];
@@ -135,6 +145,7 @@ export default function PanelDemo({ photos }) {
           </div>
         )}
         <Toast msg={toastMsg} />
+        {qrOpen && <QrModal onClose={() => morphQr(false)} />}
         {party && <Celebracion party={party} onClose={() => setParty(null)} />}
         <DemoPanel />
       </div>

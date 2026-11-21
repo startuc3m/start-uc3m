@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import Icon from '../ui/Icon.jsx';
-import { Avatar, Empty, Load, OfferLogo, Rolling, Skeleton, Stack, TypeTag, burst, roleLine, useApp } from '../ui/pieces.jsx';
+import { Avatar, Empty, Load, OfferLogo, Rolling, Sheet, Skeleton, Stack, burst, roleLine, useApp } from '../ui/pieces.jsx';
 import { back, go, useApi } from '../router.js';
 import { PageTitle } from './comunidad.jsx';
 
@@ -59,7 +59,7 @@ export function Oferta({ params }) {
 }
 
 function OfertaDetalle({ id, onChange, compact = false }) {
-  const { api, photos, celebrate, toast } = useApp();
+  const { api, photos, celebrate, toast, me } = useApp();
   const q = useApi(api, 'offer', { id }, [id]);
   const [busy, setBusy] = useState(false);
   const btn = useRef(null);
@@ -106,7 +106,7 @@ function OfertaDetalle({ id, onChange, compact = false }) {
               <button ref={btn} className={`btn btn--block press btn-morph ${o.isInterested ? 'btn--soft' : 'btn--lime'}`} onClick={toggle} aria-busy={busy} aria-pressed={o.isInterested}>
                 <span key={String(o.isInterested)} className="btn-label">{o.isInterested ? <><Icon name="check" size={18} className="check-draw" /> Te interesa</> : 'Me interesa'}</span>
               </button>
-              <p className="t-soft" style={{ fontSize: 14 }}>{o.isInterested ? 'Toca otra vez para quitarlo.' : `${o.contact} verá tu perfil y tu CV.`}</p>
+              <p className="t-soft" style={{ fontSize: 14 }}>{o.isInterested ? 'Toca otra vez para quitarlo.' : me.cv ? `${o.contact} verá tu perfil y tu CV.` : <>{o.contact} verá tu perfil. <a href="#/perfil" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>Sube tu CV</a> para que también lo vea.</>}</p>
             </div>
           </article>
         );
@@ -115,26 +115,88 @@ function OfertaDetalle({ id, onChange, compact = false }) {
   );
 }
 
+const STATUS = { nuevo: ['Nuevo', 'lime'], guardado: ['Guardado', 'cyan'], contactado: ['Contactado', 'lavender'], descartado: ['Descartado', 'line'] };
+const STATUS_FILTERS = [['todos', 'Todos'], ['nuevo', 'Nuevos'], ['guardado', 'Guardados'], ['contactado', 'Contactados']];
+
 export function Interesados({ params }) {
-  const { api } = useApp();
+  const { api, toast } = useApp();
   const q = useApi(api, 'offer.interested', { id: params.id }, [params.id]);
+  const [filter, setFilter] = useState('todos');
+  const [career, setCareer] = useState('');
+  const [cv, setCv] = useState(null);
+  const setStatus = async (x, status, msg) => {
+    await api('applicant.status', { offer: params.id, person: x.id, status });
+    q.setData((d) => ({ ...d, people: d.people.map((y) => (y.id === x.id ? { ...y, status } : y)) }));
+    if (msg) toast(msg);
+  };
+  const contact = (x) => { setStatus(x, 'contactado', `Marcado como contactado: ${x.name.split(' ')[0]}`); window.open(x.linkedin, '_blank', 'noopener'); };
   return (
     <>
       <PageTitle eyebrow="Mis ofertas">Interesados</PageTitle>
-      <Load q={q} skeleton={<Skeleton h={88} n={4} />}>
-        {(d) => d.people.length === 0 ? <Empty icon="users" title="Aún no se ha apuntado nadie">Compártela en el grupo de socios para que la vean.</Empty> : (
-          <ul style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {d.people.map((x) => (
-              <li key={x.id} className="card person-row">
-                <Avatar person={x} size={52} />
-                <span className="who"><a className="name" href={`#/persona/${x.id}`} style={{ display: 'block' }}>{x.name}</a><span className="meta" style={{ display: 'block' }}>{x.career} · {x.course} · {roleLine(x)}</span></span>
-                <TypeTag code={x.type} family={x.family} />
-                <a className="btn btn--soft btn--icon press" href="#" onClick={(e) => e.preventDefault()} aria-label={`CV de ${x.name}`}><Icon name="file-text" /></a>
-              </li>
-            ))}
-          </ul>
-        )}
+      <Load q={q} skeleton={<Skeleton h={120} n={4} />}>
+        {(d) => {
+          const careers = [...new Set(d.people.map((x) => x.career))].sort();
+          const count = (k) => (k === 'todos' ? d.people.filter((x) => x.status !== 'descartado').length : d.people.filter((x) => x.status === k).length);
+          const list = d.people
+            .filter((x) => (filter === 'todos' ? x.status !== 'descartado' : x.status === filter))
+            .filter((x) => !career || x.career === career);
+          return (
+            <>
+              <a className="card feed-row press" href={`#/oferta/${d.offer.id}`} style={{ padding: 12 }}>
+                <OfferLogo company={d.offer.company} size={40} />
+                <span className="grow"><b style={{ display: 'block' }}>{d.offer.title}</b><span className="t-soft" style={{ fontSize: 14 }}>{d.offer.deadline} · {d.people.length} interesados · {d.people.filter((x) => x.cv).length} con CV</span></span>
+                <Icon name="chevron-right" className="t-soft" />
+              </a>
+              <div className="toolbar">
+                <div className="pills" role="group" aria-label="Filtrar por estado">
+                  {STATUS_FILTERS.map(([k, l]) => <button key={k} className="pill press" aria-pressed={filter === k} onClick={() => setFilter(k)}>{l} <span className="num">{count(k)}</span></button>)}
+                </div>
+                <label className="select-pill"><Icon name="filter" size={15} /><span className="sr-only">Carrera</span>
+                  <select value={career} onChange={(e) => setCareer(e.target.value)}><option value="">Todas las carreras</option>{careers.map((c) => <option key={c}>{c}</option>)}</select>
+                </label>
+              </div>
+              {list.length === 0 ? <Empty icon="users" title={d.people.length ? 'Nadie con estos filtros' : 'Aún no se ha apuntado nadie'}>{d.people.length ? 'Prueba con otro estado o carrera.' : 'Compártela en el grupo de socios para que la vean.'}</Empty> : (
+                <ul className="applicants">
+                  {list.map((x) => (
+                    <li key={x.id} className="card applicant">
+                      <div className="feed-row">
+                        <Avatar person={x} size={52} />
+                        <span className="grow" style={{ minWidth: 0 }}>
+                          <a className="name" href={`#/persona/${x.id}`}>{x.name}</a>
+                          <span className="t-soft" style={{ display: 'block', fontSize: 14 }}>{x.career} · {x.course} · {roleLine(x)}</span>
+                        </span>
+                        <span className={`chip bg-${STATUS[x.status][1]}`}>{STATUS[x.status][0]}</span>
+                      </div>
+                      <div className="applicant-actions">
+                        <button className="btn btn--soft press" onClick={() => (x.cv ? setCv(x) : toast('No ha subido CV todavía'))} disabled={!x.cv} aria-label={`CV de ${x.name}`}><Icon name="file-text" size={17} /> {x.cv ? 'Ver CV' : 'Sin CV'}</button>
+                        <button className="btn btn--primary press" onClick={() => contact(x)}><Icon name="message-circle" size={17} /> Contactar</button>
+                        <button className={`btn btn--soft btn--icon press ${x.status === 'guardado' ? 'is-on' : ''}`} aria-pressed={x.status === 'guardado'} aria-label={x.status === 'guardado' ? 'Quitar de guardados' : 'Guardar'} onClick={() => setStatus(x, x.status === 'guardado' ? 'nuevo' : 'guardado')}><Icon name="heart" size={17} /></button>
+                        <button className="btn btn--soft btn--icon press" aria-label={x.status === 'descartado' ? 'Recuperar' : 'Descartar'} onClick={() => setStatus(x, x.status === 'descartado' ? 'nuevo' : 'descartado', x.status === 'descartado' ? null : `${x.name.split(' ')[0]} descartado`)}><Icon name={x.status === 'descartado' ? 'rotate-ccw' : 'x'} size={17} /></button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {filter === 'todos' && count('descartado') > 0 && <button className="t-soft press" style={{ alignSelf: 'center', fontSize: 14 }} onClick={() => setFilter('descartado')}>Ver descartados ({count('descartado')})</button>}
+            </>
+          );
+        }}
       </Load>
+      <Sheet open={Boolean(cv)} onClose={() => setCv(null)} title={cv?.cv?.name ?? 'CV'}>
+        {cv && (
+          <>
+            <div className="cv-page" aria-label={`Vista previa del CV de ${cv.name}`}>
+              <div className="feed-row"><Avatar person={cv} size={44} /><span><b style={{ display: 'block', fontSize: 18 }}>{cv.name}</b><span className="t-soft" style={{ fontSize: 13 }}>{cv.career} · {cv.course} · UC3M</span></span></div>
+              {['Experiencia', 'Formación', 'Proyectos', 'Idiomas'].map((h, i) => <div key={h}><p className="t-mono" style={{ color: 'var(--brand-text)', marginBottom: 6 }}>{h}</p>{[92, 78, 64].slice(0, 3 - (i % 2)).map((w) => <i key={w} className="cv-line" style={{ width: `${w}%` }} />)}</div>)}
+            </div>
+            <p className="t-soft" style={{ fontSize: 13 }}>Vista previa de ejemplo · {cv.cv.meta}</p>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button className="btn btn--soft press" onClick={() => toast('En la demo no se descargan CV')}>Descargar</button>
+              <button className="btn btn--primary btn--block press" onClick={() => { contact(cv); setCv(null); }}><Icon name="message-circle" size={17} /> Contactar</button>
+            </div>
+          </>
+        )}
+      </Sheet>
     </>
   );
 }

@@ -63,24 +63,6 @@ html[data-nav='fade']::view-transition-group(*) { animation-duration: 0s; }
 .stack .avatar { transition: transform 260ms cubic-bezier(.23,1,.32,1), opacity 200ms ease;
   @starting-style { transform: scale(.6) translateX(-6px); opacity: 0; } }
 
-/* ---------- Carné: volteo al QR ---------- */
-.carne-flip { display: grid; perspective: 1200px; }
-.carne-face { grid-area: 1 / 1; backface-visibility: hidden; -webkit-backface-visibility: hidden; transition: transform 520ms cubic-bezier(.77,0,.175,1); }
-.carne-face--back { transform: rotateY(-180deg); }
-.carne-flip.is-back .carne-face:first-child { transform: rotateY(180deg); }
-.carne-flip.is-back .carne-face--back { transform: rotateY(0); }
-.carne-face > .carne { height: 100%; }
-.carne--qr { flex-direction: row; align-items: center; gap: 16px; }
-.carne--qr .qr-big { width: 46%; max-width: 168px; aspect-ratio: 1; background: #fff; border-radius: 10px; padding: 10px; color: var(--ink-fixed); flex: none; }
-.carne--qr .qr-side { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
-.carne--qr .qr-back { margin-top: 6px; display: inline-flex; gap: 6px; align-items: center; color: #fff; font-family: var(--f-mono); font-size: 11px; letter-spacing: .16em; }
-
-/* Inclinación del carné con el ratón (solo con puntero fino): decorativa y contenida. */
-@media (hover: hover) and (pointer: fine) {
-  .carne-flip .carne { transition: transform 300ms cubic-bezier(.23,1,.32,1), box-shadow 300ms ease; }
-  .carne-flip:not(.is-back) .carne-face:first-child:hover .carne { transform: translateY(-2px); box-shadow: 0 16px 32px #33339955; }
-}
-
 /* ---------- Toast ---------- */
 .toast-region { position: fixed; z-index: 80; left: 0; right: 0; bottom: 0; pointer-events: none; }
 .toast { transition: transform 260ms cubic-bezier(.23,1,.32,1), opacity 200ms ease;
@@ -116,10 +98,6 @@ html[data-nav='fade']::view-transition-group(*) { animation-duration: 0s; }
   .people-list > li, .offer-list > li, .col-main > .card, .col-main > section, .families > section, .oferta, .ficha, .two-col--profile,
   .party-card, .party-card > *, .party-stamp { animation: pd-fade 150ms ease both !important; }
   .party-stamp::before, .check-draw path { animation: none; }
-  .carne-face { transition: opacity 150ms ease; }
-  .carne-flip.is-back .carne-face:first-child { transform: none; opacity: 0; }
-  .carne-face--back { transform: none; opacity: 0; }
-  .carne-flip.is-back .carne-face--back { opacity: 1; }
   .btn-label, .stack .avatar, .toast { transition-property: opacity; }
   .press:active { transform: none; }
 }
@@ -127,3 +105,48 @@ html[data-nav='fade']::view-transition-group(*) { animation-duration: 0s; }
 /* En las fichas (sin barra inferior) el aviso sube por encima del botón fijo. */
 .toast { width: max-content; }
 .pd:has(.is-deep) .toast { bottom: calc(96px + env(safe-area-inset-bottom)); }
+
+/* ---------- QR a pantalla grande ---------- */
+/* El QR del carné y el de la ventana comparten nombre: el navegador interpola tamaño y posición. */
+html[data-nav='qr']::view-transition-old(root), html[data-nav='qr']::view-transition-new(root) { animation: none; }
+::view-transition-group(my-qr) { animation-duration: 380ms; animation-timing-function: cubic-bezier(.32,.72,0,1); }
+::view-transition-group(qr-layer) { animation-duration: 260ms; }
+.qr-modal { view-transition-name: qr-layer; }
+.qr-huge .qr-beam { position: absolute; left: 6%; right: 6%; top: 8%; height: 3px; border-radius: 3px; background: var(--lime); box-shadow: 0 0 18px 4px #d6ff4f99; opacity: 0; }
+.qr-huge.is-scanning .qr-beam { animation: qr-scan 900ms cubic-bezier(.77,0,.175,1) both; }
+@keyframes qr-scan { 0% { opacity: 0; transform: translateY(0); } 10% { opacity: 1; } 90% { opacity: 1; } 100% { opacity: 0; transform: translateY(calc(var(--qr) * .82)); } }
+.qr-ok { position: absolute; inset: 0; display: grid; place-items: center; background: #1d7a4fe6; color: #fff; border-radius: 14px; animation: pd-pop 260ms cubic-bezier(.23,1,.32,1) both; }
+.qr-ok path { stroke-dasharray: 24; animation: pd-draw 320ms 60ms cubic-bezier(.23,1,.32,1) backwards; }
+@media (prefers-reduced-motion: reduce) { .qr-huge.is-scanning .qr-beam { animation: pd-fade 300ms ease both; } }
+
+/* Mapa: las burbujas aparecen escalonadas y la tuya late una vez (sin bucle infinito). */
+.bubble { animation: pd-bubble 360ms calc(var(--i) * 40ms + 80ms) cubic-bezier(.23,1,.32,1) both; }
+@keyframes pd-bubble { from { opacity: 0; transform: scale(.85); } }
+.bubble.is-me { animation: pd-bubble 360ms 80ms cubic-bezier(.23,1,.32,1) both, pd-beat 900ms 600ms cubic-bezier(.23,1,.32,1) 2; }
+@keyframes pd-beat { 0%, 100% { transform: scale(1); } 30% { transform: scale(1.08); } }
+@media (hover: hover) and (pointer: fine) { .bubble { transition: transform 200ms cubic-bezier(.23,1,.32,1); } .bubble:hover { transform: scale(1.05); } }
+@media (prefers-reduced-motion: reduce) { .bubble, .bubble.is-me { animation: pd-fade 150ms ease both; } }
+
+/* ---------- Alta guiada ---------- */
+/* La barra se rellena (también la primera vez: arranca vacía con @starting-style). */
+.steps b { transition: transform 520ms cubic-bezier(.23,1,.32,1) 120ms; }
+.steps b.on { @starting-style { transform: scaleX(0); } }
+/* Cada paso entra desde el lado hacia el que vas. */
+.alta-step--fwd { animation: alta-in-r 340ms cubic-bezier(.23,1,.32,1) both; }
+.alta-step--back { animation: alta-in-l 340ms cubic-bezier(.23,1,.32,1) both; }
+@keyframes alta-in-r { from { opacity: 0; transform: translateX(28px); } }
+@keyframes alta-in-l { from { opacity: 0; transform: translateX(-28px); } }
+/* Dentro del paso, primero el título y luego lo demás. */
+.alta-step > :nth-child(2) { animation: pd-rise 300ms 60ms cubic-bezier(.23,1,.32,1) both; }
+.alta-step > :nth-child(n+3) { animation: pd-rise 300ms 120ms cubic-bezier(.23,1,.32,1) both; }
+.btn-next .ico { transition: transform 200ms cubic-bezier(.23,1,.32,1); }
+@media (hover: hover) and (pointer: fine) { .btn-next:hover .ico { transform: translateX(3px); } }
+.btn-next:active .ico { transform: translateX(4px); }
+/* Elegir curso o tipo: el elegido «salta» un poco. */
+.type-picker .type, .pill { transition: background-color 160ms ease, color 160ms ease, transform 160ms cubic-bezier(.23,1,.32,1); }
+.type-picker .type[aria-current='true'], .alta .pill[aria-pressed='true'] { animation: pd-pick 260ms cubic-bezier(.23,1,.32,1); }
+@keyframes pd-pick { 40% { transform: scale(1.06); } }
+@media (prefers-reduced-motion: reduce) {
+  .alta-step--fwd, .alta-step--back, .alta-step > * { animation: pd-fade 150ms ease both !important; }
+  .steps b { transition-duration: 0ms; }
+}
