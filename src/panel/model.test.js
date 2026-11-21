@@ -25,7 +25,7 @@ describe('perfil y permisos',()=>{
   });
   it('solo Junta e IT autorizado administran; un responsable no',()=>{
     expect(canManage({active:true,position:'junta'})).toBe(true);
-    expect(canManage({active:true,manage_users:true})).toBe(true);
+    expect(canManage({active:true,department:'IT',manage_users:true})).toBe(true);
     expect(canManage({active:false,position:'junta'})).toBe(false);
     expect(canManage({active:true,position:'responsable'})).toBe(false);
     expect(()=>validateClassification({kind:'socio',manage_users:true})).toThrow();

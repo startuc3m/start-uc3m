@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { createHash, randomUUID, randomBytes, createCipheriv, createDecipheriv } from 'node:crypto';
-import { canManage, parseInvitations, validateClassification, validateProfile } from '../../src/panel/model.js';
+import { canManage, validatePermissions, parseInvitations, validateClassification, validateProfile } from '../../src/panel/model.js';
 
 export class PanelError extends Error {
   constructor(status, message) { super(message); this.status = status; }
@@ -128,7 +128,8 @@ export async function runAction(action, input, context, db, env=process.env) {
     const files=checked(await db.from('panel_files').select('kind,path').eq('member_id',member.id));
     const urls={};
     for (const file of files) urls[file.kind]=checked(await db.storage.from('panel-private').createSignedUrl(file.path,60)).signedUrl;
-    return {member,profile,files:urls};
+    const permissions=checked(await db.from('panel_permissions').select('scope').eq('member_id',member.id)).map(p=>p.scope);
+    return {member,profile,files:urls,permissions};
   }
   if (action==='profile') {
     const profile=validateProfile(input);
@@ -152,7 +153,8 @@ export async function runAction(action, input, context, db, env=process.env) {
     const members=checked(await db.from('panel_members').select('*').order('created_at',{ascending:false}).limit(500));
     const profiles=checked(await db.from('panel_profiles').select('member_id,completed_at').limit(500));
     const jobs=checked(await db.from('panel_mail_jobs').select('id,member_id,state,created_at,error_code').order('created_at',{ascending:false}).limit(1000));
-    return {members:members.map(m=>({...m,completed:profiles.some(p=>p.member_id===m.id),invitation:jobs.find(j=>j.member_id===m.id)||null})),pending:jobs.filter(j=>j.state==='queued').length};
+    const permissions=members.length?checked(await db.from('panel_permissions').select('member_id,scope').in('member_id',members.map(m=>m.id))):[];
+    return {members:members.map(m=>({...m,permissions:permissions.filter(p=>p.member_id===m.id).map(p=>p.scope),completed:profiles.some(p=>p.member_id===m.id),invitation:jobs.find(j=>j.member_id===m.id)||null})),pending:jobs.filter(j=>j.state==='queued').length};
   }
   if(action==='preview' || action==='invite') {
     if(member.position!=='junta' && input.position==='junta') throw new PanelError(403,'Solo Junta puede modificar cargos de Junta.');
@@ -180,6 +182,10 @@ export async function runAction(action, input, context, db, env=process.env) {
     const classification=validateClassification(input, await departments());
     if(typeof input.active!=='boolean') throw new PanelError(400,'Estado inválido.');
     checked(await db.rpc('panel_change_member',{p_actor:member.id,p_target:requireUuid(input.id),p_kind:classification.kind,p_department:classification.department,p_position:classification.position,p_manage:classification.manage_users,p_active:input.active}));
+    return {ok:true};
+  }
+  if(action==='permissions') {
+    checked(await db.rpc('panel_set_permissions',{p_actor:member.id,p_target:requireUuid(input.id),p_scopes:validatePermissions(input.permissions)}));
     return {ok:true};
   }
   if(action==='resend') {

@@ -46,12 +46,24 @@ try {
   await rejects(create,[it,randomUUID(),'existing-junta',JSON.stringify([{...rows[0],email:'junta@example.org'}]),false],/PANEL_FORBIDDEN/);
   await q(change,[actor,it2,'starter','IT','junta',true,true]);
   await q(change,[actor,it2,'starter','IT','miembro',true,true]);
+  const permissions='select panel_set_permissions($1,$2,$3::text[])';
+  await q(permissions,[actor,member.id,['startskills','blog']]);
+  assert.deepEqual((await q('select scope from panel_permissions where member_id=$1 order by scope',[member.id])).rows.map(r=>r.scope),['blog','startskills']);
+  await q(permissions,[it,member.id,['eventos']]);
+  await rejects(permissions,[member.id,it,['blog']],/PANEL_FORBIDDEN/);
+  await rejects(permissions,[it,actor,['blog']],/PANEL_FORBIDDEN/);
+  await rejects(permissions,[it,it,['blog']],/PANEL_SELF_CHANGE/);
+  await rejects(permissions,[actor,member.id,['invalid']],/PANEL_INVALID/);
+  await rejects(permissions,[actor,member.id,[null]],/PANEL_INVALID/);
+  await q(permissions,[actor,member.id,[]]);
+  assert.equal((await q('select count(*)::int n from panel_permissions where member_id=$1',[member.id])).rows[0].n,0);
+  assert.equal((await q("select count(*)::int n from panel_audit where action='permissions.updated' and details ? 'before' and details ? 'after'")).rows[0].n,3);
   await q('insert into auth.users(id) values($1),($2)',[user,other]);
   await q('select panel_accept($1,$2)',[user,member.email]);
   await rejects('select panel_accept($1,$2)',[other,member.email],/PANEL_FORBIDDEN/);
   await rejects('select panel_accept($1,$2)',[other,'unknown@example.org'],/PANEL_FORBIDDEN/);
   await rejects('select panel_change_member($1,$1,$2,$3,$4,false,false)',[actor,'socio',null,'miembro'],/PANEL_SELF_CHANGE/);
-  await q('select panel_change_member($1,$2,$3,$4,$5,false,false)',[actor,member.id,'socio','','miembro']);
+  await q('select panel_change_member($1,$2,$3,$4,$5,false,false)',[actor,member.id,'socio',null,'miembro']);
   assert.equal((await q('select state from panel_mail_jobs')).rows[0].state,'cancelled');
   await rejects('select panel_accept($1,$2)',[user,member.email],/PANEL_FORBIDDEN/);
   // Reimport must never reactivate or promote an existing member.

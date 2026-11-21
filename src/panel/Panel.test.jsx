@@ -42,3 +42,14 @@ it('oculta el cargo Junta y bloquea su edición para IT',async()=>{
  expect(screen.getByLabelText('Departamento').tagName).toBe('SELECT');
  expect(screen.queryByRole('option',{name:'Junta'})).not.toBeInTheDocument();
 });
+
+it('edita los permisos por sección en la ficha administrativa',async()=>{
+ const actor={id:'board',position:'junta'};
+ const api=vi.fn(async action=>action==='departments'?{departments:[]}:action==='users'?{members:[{id:'person',email:'person@example.org',kind:'socio',position:'miembro',active:true,permissions:['blog']}],pending:0}:{ok:true});
+ render(<Invitations client={{api}} actor={actor} perform={fn=>fn()} busy={false}/>);
+ fireEvent.click(await screen.findByRole('button',{name:'Editar acceso y permisos'}));
+ expect(screen.getByLabelText('blog')).toBeChecked();
+ fireEvent.click(screen.getByLabelText('startskills'));
+ fireEvent.click(screen.getByRole('button',{name:'Guardar permisos de sección'}));
+ await waitFor(()=>expect(api).toHaveBeenCalledWith('permissions',{id:'person',permissions:['blog','startskills']}));
+});

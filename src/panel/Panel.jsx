@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { canManage, PERSONALITY_GROUPS, TEST_URL } from './model';
+import { canManage, CONTENT_SCOPES, PERSONALITY_GROUPS, TEST_URL } from './model';
 import { makePanelClient } from './client';
 import './panel.css';
 
@@ -81,6 +81,7 @@ function UserEditor({member,actor,client,perform,refresh,busy,departments}) {
     <button className="text-button" disabled={member.id===actor?.id||busy||(member.position==='junta'&&actor?.position!=='junta')} onClick={()=>{setForm(member);setEditing(!editing);}}>Editar acceso y permisos</button></div>
     {editing&&<form className="member-editor" onSubmit={e=>{e.preventDefault();perform(async()=>{await client.api('member',{...form,id:member.id});await refresh();setEditing(false);return 'Permisos actualizados.';});}}>
       <Classification actor={actor} departments={departments} value={form} onChange={setForm} id={member.id}/><label className="inline"><input type="checkbox" checked={form.active} onChange={e=>setForm({...form,active:e.target.checked})}/>Acceso activo</label>
+      <fieldset><legend>Edición de secciones</legend>{CONTENT_SCOPES.map(scope=><label className="inline" key={scope}><input type="checkbox" checked={(form.permissions||[]).includes(scope)} onChange={e=>setForm({...form,permissions:e.target.checked?[...(form.permissions||[]),scope]:(form.permissions||[]).filter(p=>p!==scope)})}/>{scope}</label>)}<button type="button" disabled={busy} onClick={()=>perform(async()=>{await client.api('permissions',{id:member.id,permissions:form.permissions||[]});await refresh();setEditing(false);return 'Permisos de sección actualizados.';})}>Guardar permisos de sección</button></fieldset>
       <p className="hint">Junta e IT autorizado pueden invitar a otras personas y conceder permisos. Revisa el destinatario antes de guardar.</p><button disabled={busy}>Guardar cambios</button>
     </form>}
   </article>;

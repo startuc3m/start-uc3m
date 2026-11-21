@@ -8,7 +8,7 @@ export const PERSONALITIES = PERSONALITY_GROUPS.flatMap(g => g.codes);
 export const TEST_URL = 'https://www.16personalities.com/es/test-de-personalidad';
 export const normalizeEmail = value => String(value ?? '').trim().toLowerCase();
 export const validEmail = value => value.length <= 254 && /^[^\s@<>,;]+@[^\s@<>,;]+\.[^\s@<>,;]+$/.test(value);
-export const canManage = member => member?.active === true && (member.position === 'junta' || member.manage_users === true);
+export const canManage = member => member?.active === true && (member.position === 'junta' || (member.department === 'IT' && member.manage_users === true));
 export const canPublish = member => member?.active === true && ['junta', 'responsable'].includes(member.position);
 
 /** No side effects. Ambiguous lines stay visible for correction, never silently discarded. */
@@ -64,4 +64,10 @@ export function validateClassification(input, departments = []) {
   if (kind === 'starter' && !departments.some(d => d.id === department)) throw new Error('Selecciona un departamento válido.');
   if (input.manage_users && department !== 'IT' && position !== 'junta') throw new Error('La gestión de usuarios corresponde a Junta o IT autorizado.');
   return { kind, department, position, manage_users: input.manage_users === true };
+}
+
+export const CONTENT_SCOPES = ['startskills', 'eventos', 'blog'];
+export function validatePermissions(value) {
+ if (!Array.isArray(value) || value.some(scope => !CONTENT_SCOPES.includes(scope))) throw new Error('Permisos de sección inválidos.');
+ return [...new Set(value)].sort();
 }

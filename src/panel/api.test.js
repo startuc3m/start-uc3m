@@ -98,3 +98,15 @@ it('traduce la denegación SQL de Junta a HTTP 403',async()=>{
  const result=await request({url:'/api/panel?action=member',body:{id:'00000000-0000-4000-8000-000000000002',kind:'socio',active:true}},{client:()=>db,auth:async()=>({member:{position:'junta',active:true}}),run:runAction});
  expect(result.status).toBe(403);
 });
+
+it('expone permisos en me y restringe su concesión',async()=>{
+ const actor={id:'00000000-0000-4000-8000-000000000001',active:true,position:'junta'};
+ const db={rpc:vi.fn().mockResolvedValue({data:null}),from:table=>{
+  const q={select:()=>q,eq:()=>q,maybeSingle:async()=>({data:null}),then:resolve=>resolve({data:table==='panel_permissions'?[{scope:'startskills'}]:[]})};return q;
+ }};
+ expect((await runAction('me',{}, {member:actor},db)).permissions).toEqual(['startskills']);
+ await runAction('permissions',{id:actor.id,permissions:['blog','startskills','blog']},{member:actor},db);
+ expect(db.rpc).toHaveBeenLastCalledWith('panel_set_permissions',{p_actor:actor.id,p_target:actor.id,p_scopes:['blog','startskills']});
+ await expect(runAction('permissions',{id:actor.id,permissions:['admin']},{member:actor},db)).rejects.toThrow(/Permisos/);
+ for(const member of [{active:true,position:'responsable'},{active:true,department:'Marketing',manage_users:true},{...actor,active:false}]) await expect(runAction('permissions',{}, {member},db)).rejects.toMatchObject({status:403});
+});

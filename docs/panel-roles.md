@@ -59,7 +59,7 @@ Junta o un Responsable.
 | Sumar puntos manuales | | | Solo a su departamento | | A cualquiera | Pendiente |
 | Invitar personas (una a una o en lote de hasta 100) | | | | ✓ | ✓ | Hecho |
 | Cambiar tipo, departamento, cargo o acceso de otros | | | | ✓ (salvo Junta) | ✓ | Hecho (falta la restricción de Junta) |
-| Dar o quitar permisos de edición de secciones de la web | | | | ✓ | ✓ | Pendiente |
+| Dar o quitar permisos de edición de secciones de la web | | | | ✓ | ✓ | Hecho |
 | Dar o quitar el cargo de Junta | | | | | ✓ | Hecho |
 | Editar contenido de la web (Start Skills, eventos, blog) | Con el permiso de esa sección ||||| Pendiente |
 
