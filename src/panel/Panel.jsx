@@ -18,13 +18,13 @@ export function PersonalityPicker({value,onChange}) {
   </fieldset>;
 }
 
-function Classification({value,onChange,departments,id='new'}) {
+function Classification({value,onChange,departments,actor,id='new'}) {
   const set=(key,v)=>{const next={...value,[key]:v};if(next.department!=='IT'&&next.position!=='junta')next.manage_users=false;onChange(next);};
   return <div className="form-grid">
     <label>Tipo de miembro<select value={value.kind} onChange={e=>onChange(e.target.value==='socio'?{...initialClassification}:{...value,kind:'starter'})}><option value="socio">Socio</option><option value="starter">Starter</option></select></label>
     {value.kind==='starter'&&<>
       <label>Departamento<select required value={value.department||''} onChange={e=>set('department',e.target.value||null)}><option value="">Selecciona un departamento</option>{departments.map(d=><option key={d.id} value={d.id}>{d.name}</option>)}</select></label>
-      <label>Cargo<select value={value.position} onChange={e=>set('position',e.target.value)}><option value="miembro">Miembro</option><option value="responsable">Responsable</option><option value="junta">Junta</option></select></label>
+      <label>Cargo<select value={value.position} onChange={e=>set('position',e.target.value)}><option value="miembro">Miembro</option><option value="responsable">Responsable</option>{actor?.position==='junta'&&<option value="junta">Junta</option>}</select></label>
       {(value.department==='IT'||value.position==='junta')&&<label className="inline" htmlFor={`manage-${id}`}><input id={`manage-${id}`} type="checkbox" checked={value.position==='junta'||value.manage_users} disabled={value.position==='junta'} onChange={e=>set('manage_users',e.target.checked)}/>Puede gestionar usuarios y permisos</label>}
     </>}
   </div>;
@@ -73,20 +73,20 @@ function Profile({data,client,refresh,perform,busy}) {
   </aside></div>;
 }
 
-function UserEditor({member,actorId,client,perform,refresh,busy,departments}) {
+function UserEditor({member,actor,client,perform,refresh,busy,departments}) {
   const [editing,setEditing]=useState(false),[form,setForm]=useState(member);
   return <article className="member-row"><div><strong>{member.name_hint||member.email}</strong><div>{member.email}</div><small>{member.kind} · {member.department||'Comunidad'} · {member.position}</small><p><span className="badge">{member.active?'Acceso activo':'Acceso desactivado'}</span> <span className="badge">{member.completed?'Perfil completado':member.accepted_at?'Perfil pendiente':'Sin aceptar'}</span> <span>{jobLabels[member.invitation?.state]||'Sin invitar'}</span></p></div>
     {member.invitation?.state==='uncertain'&&<p className="hint">IT debe comprobar este envío con el proveedor antes de repetirlo.</p>}
     <div className="actions"><button className="secondary" disabled={busy||!member.active||['queued','sending','uncertain'].includes(member.invitation?.state)} onClick={()=>perform(async()=>{await client.api('resend',{id:member.id,job_id:crypto.randomUUID()});await refresh();return 'Invitación en cola. Pulsa «Procesar cola» para enviarla.';})}>Invitar / reenviar</button>
-    <button className="text-button" disabled={member.id===actorId||busy} onClick={()=>{setForm(member);setEditing(!editing);}}>Editar acceso y permisos</button></div>
+    <button className="text-button" disabled={member.id===actor?.id||busy||(member.position==='junta'&&actor?.position!=='junta')} onClick={()=>{setForm(member);setEditing(!editing);}}>Editar acceso y permisos</button></div>
     {editing&&<form className="member-editor" onSubmit={e=>{e.preventDefault();perform(async()=>{await client.api('member',{...form,id:member.id});await refresh();setEditing(false);return 'Permisos actualizados.';});}}>
-      <Classification departments={departments} value={form} onChange={setForm} id={member.id}/><label className="inline"><input type="checkbox" checked={form.active} onChange={e=>setForm({...form,active:e.target.checked})}/>Acceso activo</label>
+      <Classification actor={actor} departments={departments} value={form} onChange={setForm} id={member.id}/><label className="inline"><input type="checkbox" checked={form.active} onChange={e=>setForm({...form,active:e.target.checked})}/>Acceso activo</label>
       <p className="hint">Junta e IT autorizado pueden invitar a otras personas y conceder permisos. Revisa el destinatario antes de guardar.</p><button disabled={busy}>Guardar cambios</button>
     </form>}
   </article>;
 }
 
-export function Invitations({client,actorId,perform,busy}) {
+export function Invitations({client,actor,perform,busy}) {
   const [text,setText]=useState(''),[classification,setClassification]=useState(initialClassification),[preview,setPreview]=useState(null),[listing,setListing]=useState({members:[],pending:0});
   const [departments,setDepartments]=useState([]);
   const batch=useRef(null), stopped=useRef(false);
@@ -110,7 +110,7 @@ export function Invitations({client,actorId,perform,busy}) {
     {preview&&<><div className="table-scroll"><table><caption>Vista previa de destinatarios</caption><thead><tr><th>Nombre</th><th>Correo</th><th>Resultado</th></tr></thead><tbody>{preview.map((r,i)=><tr key={i}><td>{r.name||'—'}</td><td>{r.email}</td><td>{r.error|| (r.existing?'Ya existe; no se modifica':'Nuevo')}</td></tr>)}</tbody></table></div><p>Corrige los errores en el texto y vuelve a revisar. Los correos existentes no reciben otra invitación en este lote.</p><div className="actions"><button className="secondary" disabled={busy||!valid} onClick={()=>perform(()=>save(false))}>Guardar sin enviar</button><button disabled={busy||!valid} onClick={()=>perform(()=>save(true))}>Confirmar y preparar invitaciones</button></div></>}
   </section><section className="panel-card"><div className="section-heading"><div><span className="eyebrow">SEGUIMIENTO</span><h2>Usuarios e invitaciones</h2></div><button className="text-button" disabled={busy} onClick={()=>perform(refresh)}>Actualizar</button></div>
     <div className="notice"><strong>{listing.pending} invitaciones en cola</strong><p>La cola queda guardada aunque cierres la pestaña. «Enviada» significa aceptada por el proveedor de correo.</p><button disabled={busy||!listing.pending} onClick={()=>perform(process)}>Procesar cola</button>{busy&&<button className="secondary" onClick={()=>{stopped.current=true;}}>Parar tras este envío</button>}</div>
-    {listing.members.length===0?<p>No hay usuarios que mostrar.</p>:listing.members.map(m=><UserEditor departments={departments} key={m.id} member={m} actorId={actorId} client={client} perform={perform} refresh={refresh} busy={busy}/>)}
+    {listing.members.length===0?<p>No hay usuarios que mostrar.</p>:listing.members.map(m=><UserEditor departments={departments} key={m.id} member={m} actor={actor} client={client} perform={perform} refresh={refresh} busy={busy}/>)}
   </section></div>;
 }
 
@@ -135,7 +135,7 @@ export default function Panel({config,providedClient}) {
     {error&&<div role="alert" className="status error">{error}</div>}{message&&<div role="status" className="status success">{message}</div>}
     {!client?<section className="panel-card"><h2>Estamos preparando tu espacio</h2><p>Cuando esté listo, recibirás una invitación de IT o Junta para completar tu perfil.</p></section>:loading?<p role="status">Comprobando tu acceso…</p>:(!session||invite)?<Login client={client} invite={invite} onAccepted={()=>setInvite(null)} busy={busy} perform={perform}/>:!data?<section className="panel-card"><h2>Necesitas una invitación</h2><p>Usa el correo autorizado por IT o Junta. Si tu correo ha cambiado, contacta con el equipo para revisarlo.</p><button onClick={()=>perform(refresh)} disabled={busy}>Volver a comprobar</button></section>:<>
       <nav className="panel-tabs" aria-label="Secciones del panel"><button aria-current={tab==='profile'?'page':undefined} onClick={()=>setTab('profile')}>Mi perfil</button>{canManage(data.member)&&<button aria-current={tab==='users'?'page':undefined} onClick={()=>setTab('users')}>Usuarios e invitaciones</button>}</nav>
-      {tab==='users'&&canManage(data.member)?<Invitations client={client} actorId={data.member.id} perform={perform} busy={busy}/>:<Profile key={data.member.id} data={data} client={client} refresh={refresh} perform={perform} busy={busy}/>}
+      {tab==='users'&&canManage(data.member)?<Invitations client={client} actor={data.member} perform={perform} busy={busy}/>:<Profile key={data.member.id} data={data} client={client} refresh={refresh} perform={perform} busy={busy}/>}
     </>}
     </main><footer><a href="/">← Volver a Start UC3M</a><span>El panel y Neon Pass funcionan de forma independiente.</span></footer></div>;
 }

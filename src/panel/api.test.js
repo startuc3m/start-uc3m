@@ -80,6 +80,21 @@ it('sirve departamentos por GET y rechaza departamentos inventados',async()=>{
  const db={from:()=>q,rpc:vi.fn()};
  expect((await request({url:'/api/panel?action=departments',method:'GET'},{client:()=>db,run:runAction})).body).toEqual({departments:[{id:'IT',name:'IT'}]});
  expect((await request({url:'/api/panel?action=departments'})).status).toBe(405);
- await expect(runAction('member',{kind:'starter',department:'Inventado'},{member:{active:true,position:'junta'}},db)).rejects.toThrow(/departamento/);
+ await expect(runAction('preview',{kind:'starter',department:'Inventado'},{member:{active:true,position:'junta'}},db)).rejects.toThrow(/departamento/);
  expect(db.rpc).not.toHaveBeenCalled();
+});
+
+it('bloquea a IT la creación, ascenso y modificación de Junta',async()=>{
+ const member={id:'00000000-0000-4000-8000-000000000001',active:true,department:'IT',manage_users:true,position:'miembro'};
+ const q={select:()=>q,eq:()=>q,maybeSingle:async()=>({data:{position:'junta'}})};
+ const db={from:()=>q,rpc:vi.fn()};
+ for(const action of ['invite','preview']) await expect(runAction(action,{position:'junta'},{member},db)).rejects.toMatchObject({status:403});
+ for(const position of ['miembro','junta']) await expect(runAction('member',{id:member.id,position},{member},db)).rejects.toMatchObject({status:403});
+ expect(db.rpc).not.toHaveBeenCalled();
+});
+it('traduce la denegación SQL de Junta a HTTP 403',async()=>{
+ const q={select:()=>q,eq:()=>q,maybeSingle:async()=>({data:{position:'miembro'}}),order:async()=>({data:[]})};
+ const db={from:()=>q,rpc:async()=>({error:{message:'PANEL_FORBIDDEN'}})};
+ const result=await request({url:'/api/panel?action=member',body:{id:'00000000-0000-4000-8000-000000000002',kind:'socio',active:true}},{client:()=>db,auth:async()=>({member:{position:'junta',active:true}}),run:runAction});
+ expect(result.status).toBe(403);
 });

@@ -155,10 +155,12 @@ export async function runAction(action, input, context, db, env=process.env) {
     return {members:members.map(m=>({...m,completed:profiles.some(p=>p.member_id===m.id),invitation:jobs.find(j=>j.member_id===m.id)||null})),pending:jobs.filter(j=>j.state==='queued').length};
   }
   if(action==='preview' || action==='invite') {
+    if(member.position!=='junta' && input.position==='junta') throw new PanelError(403,'Solo Junta puede modificar cargos de Junta.');
     const classification=validateClassification(input, await departments());
     const rows=parseInvitations(input.text);
     const emails=rows.filter(r=>!r.error).map(r=>r.email);
-    const existing=emails.length?checked(await db.from('panel_members').select('email').in('email',emails)):[];
+    const existing=emails.length?checked(await db.from('panel_members').select('email,position').in('email',emails)):[];
+    if(member.position!=='junta' && existing.some(m=>m.position==='junta')) throw new PanelError(403,'Solo Junta puede modificar miembros de Junta.');
     const preview=rows.map(row=>({...row,existing:existing.some(m=>m.email===row.email)}));
     if(action==='preview') return {rows:preview};
     if(preview.some(r=>r.error)) throw new PanelError(400,'Corrige los errores de la lista antes de enviar.');
@@ -172,6 +174,9 @@ export async function runAction(action, input, context, db, env=process.env) {
     return {batch_id:id,reviewed:entries.length};
   }
   if(action==='member') {
+    const target=checked(await db.from('panel_members').select('position').eq('id',requireUuid(input.id)).maybeSingle());
+    if(!target) throw new PanelError(404,'Miembro no encontrado.');
+    if(member.position!=='junta' && target.position==='junta') throw new PanelError(403,'Solo Junta puede modificar miembros de Junta.');
     const classification=validateClassification(input, await departments());
     if(typeof input.active!=='boolean') throw new PanelError(400,'Estado inválido.');
     checked(await db.rpc('panel_change_member',{p_actor:member.id,p_target:requireUuid(input.id),p_kind:classification.kind,p_department:classification.department,p_position:classification.position,p_manage:classification.manage_users,p_active:input.active}));

@@ -36,6 +36,16 @@ try {
   await rejects(create,[actor,batch,'different',JSON.stringify(rows),true],/PANEL_CONFLICT/);
   const member=(await q("select * from panel_members where email='ana@example.org'")).rows[0];
   await rejects(create,[member.id,randomUUID(),'x',JSON.stringify(rows),true],/PANEL_FORBIDDEN/);
+  const it=randomUUID(), it2=randomUUID();
+  await q("insert into panel_members(id,email,kind,department,manage_users) values($1,'it@example.org','starter','IT',true),($2,'it2@example.org','starter','IT',true)",[it,it2]);
+  const change='select panel_change_member($1,$2,$3,$4,$5,$6,$7)';
+  for(const [a,t] of [[it,it2],[it2,it]]) await rejects(change,[a,t,'starter','IT','junta',true,true],/PANEL_FORBIDDEN/);
+  for(const position of ['miembro','junta']) await rejects(change,[it,actor,'starter','Junta',position,false,true],/PANEL_FORBIDDEN/);
+  await rejects(change,[it,actor,'starter','Junta','junta',false,false],/PANEL_FORBIDDEN/);
+  await rejects(create,[it,randomUUID(),'junta',JSON.stringify([{...rows[0],email:'new-junta@example.org',kind:'starter',department:'Junta',position:'junta'}]),false],/PANEL_FORBIDDEN/);
+  await rejects(create,[it,randomUUID(),'existing-junta',JSON.stringify([{...rows[0],email:'junta@example.org'}]),false],/PANEL_FORBIDDEN/);
+  await q(change,[actor,it2,'starter','IT','junta',true,true]);
+  await q(change,[actor,it2,'starter','IT','miembro',true,true]);
   await q('insert into auth.users(id) values($1),($2)',[user,other]);
   await q('select panel_accept($1,$2)',[user,member.email]);
   await rejects('select panel_accept($1,$2)',[other,member.email],/PANEL_FORBIDDEN/);

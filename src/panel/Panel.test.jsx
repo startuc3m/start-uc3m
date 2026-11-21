@@ -31,3 +31,14 @@ it('permanece deshabilitado sin configuración',()=>{
   expect(screen.getByRole('heading',{name:'Estamos preparando tu espacio'})).toBeInTheDocument();
   expect(screen.queryByRole('button',{name:'Entrar'})).not.toBeInTheDocument();
 });
+
+it('oculta el cargo Junta y bloquea su edición para IT',async()=>{
+ const actor={id:'it',position:'miembro',department:'IT',active:true,manage_users:true};
+ const api=vi.fn(async action=>action==='departments'?{departments:[{id:'IT',name:'IT'}]}:{members:[{id:'board',email:'board@example.org',kind:'starter',position:'junta',active:true}],pending:0});
+ render(<Invitations client={{api}} actor={actor} perform={fn=>fn()} busy={false}/>);
+ await screen.findByText('board@example.org',{selector:'strong'});
+ expect(screen.getByRole('button',{name:'Editar acceso y permisos'})).toBeDisabled();
+ fireEvent.change(screen.getByLabelText('Tipo de miembro'),{target:{value:'starter'}});
+ expect(screen.getByLabelText('Departamento').tagName).toBe('SELECT');
+ expect(screen.queryByRole('option',{name:'Junta'})).not.toBeInTheDocument();
+});
