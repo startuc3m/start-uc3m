@@ -23,6 +23,9 @@ Cómo cambiar lo que se ve en la web **sin tocar el diseño**. Casi todo el cont
 | Menú principal | `src/lib/site.ts` (`nav`) |
 | Textos fijos de una página | `src/pages/<página>.astro` |
 | Fechas de la cuenta atrás de Start Camp | `src/components/lanyard/startcamp_countdown.js`. Ver [06](06-start-camp.md) |
+| Bloques, formadores, participantes y fotos de Start Skills | Notion (bases *Bloques* y *Participantes*), no el código. Ver [12](12-start-skills.md) |
+| Textos fijos del programa Start Skills (intro, asociaciones) | `src/lib/startskills.ts` (`programa`) |
+| Respaldo de Start Skills si no hay Notion | `src/data/startskills.seed.json`. Ver [12](12-start-skills.md) |
 
 ## Cómo hacer el cambio
 
@@ -153,7 +156,7 @@ date: 2023-05-01                 # fecha de publicación en YouTube
 duration: "Vídeo"
 youtube: "https://www.youtube.com/watch?v=GgGys5QETtk"
 youtubeId: "GgGys5QETtk"
-cover: "https://img.youtube.com/vi/GgGys5QETtk/hqdefault.jpg"
+cover: "https://img.youtube.com/vi/GgGys5QETtk/maxresdefault.jpg"
 ---
 Una línea de descripción.
 ```
@@ -175,6 +178,7 @@ En `src/lib/site.ts`, array `team`:
 - `depts` admite varios departamentos, con el nombre exacto de `departments`.
 - `photo` es el nombre del archivo en `src/assets/equipo/`. Quien no tiene foto sale con sus iniciales.
 - **Fotos:** cada persona sube la suya a su fila de la base *Miembros* del Notion de Start (campo *Foto*). Cada cierto tiempo, alguien de IT la descarga, la reduce (`sips -Z 1200 foto.jpg --out src/assets/equipo/nombre_apellido.jpg`) y la pone en `photo`.
+- **Resolución:** el original debe medir **al menos 1200 px de ancho**, vertical (4:5) y sin pasar antes por WhatsApp ni capturas de pantalla, que la comprimen. La web genera sola las versiones de 320 a 1200 px en AVIF y WebP; con un original más pequeño, en móvil y en pantallas retina se ve borrosa.
 - Si cambias una foto, **usa un nombre de archivo nuevo**: el navegador guarda las imágenes y seguiría enseñando la vieja.
 - Nunca se publican correos ni teléfonos.
 

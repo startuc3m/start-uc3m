@@ -7,7 +7,8 @@ export default defineConfig({
   plugins: [react()],
   test: {
     environment: 'jsdom',
-    include: ['src/**/*.test.{js,jsx}'],
+    // api/: lógica de servidor que se puede probar sin red (p. ej. el mapeo a Notion).
+    include: ['src/**/*.test.{js,jsx}', 'api/**/*.test.{js,mjs}'],
     setupFiles: ['./vitest.setup.mjs'],
     globals: true,
   },

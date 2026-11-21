@@ -1,71 +1,103 @@
 /*
- * La web tiene un `body { background-color: #2b2c8f }` global
- * (DividerOfSections.css) y las paginas ponen su propio fondo oscuro
- * encima: Equipo usa #13133d. Esta pagina hace lo mismo, en vez de
- * depender de lo que herede del body.
+ * Alta de socio, enlace del teléfono y página de gracias.
  *
- * De ahi el reparto: texto claro sobre el azul, y tarjetas blancas con
- * texto oscuro para los campos y las modalidades, que es donde hace
- * falta la maxima legibilidad.
+ * Mismo lenguaje que el resto de la web (brand kit 26/27, ver
+ * src/styles/global.css): Anton en mayúsculas con "_" para titulares,
+ * JetBrains Mono para etiquetas, lavanda para el texto secundario,
+ * esquinas de 4px y el botón blanco sobre azul (btn-on-blue).
+ *
+ * Fondo navy: separa el formulario del hero cobalto de /socios sin salir
+ * de la familia de azules del kit.
  */
 
 .socios,
 .socios-gracias {
   --ground: var(--color-navy);
   --on-ground: #ffffff;
-  --on-ground-soft: #bcc7ea;
-  --on-ground-faint: #93a0cd;
-
-  --card: #ffffff;
-  --card-ink: var(--color-navy);
-  --card-soft: #5a648f;
-  --card-faint: #98a0c0;
-  --card-line: #d6dbee;
-  --card-line-strong: #b9c1de;
-  --card-sunk: #f2f4fc;
-
-  --accent: var(--color-cyan);
-  --accent-ink: #0a1338;
-  --amarillo: #ffd966;
+  --on-ground-soft: var(--color-lavender);
+  --on-ground-faint: rgba(182, 184, 231, 0.72);
+  --line: rgba(255, 255, 255, 0.22);
+  --line-strong: rgba(255, 255, 255, 0.55);
+  --panel: rgba(51, 51, 153, 0.32);
+  --radius: 4px;
+  --amarillo: var(--color-accent);
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
 .socios {
   background-color: var(--ground);
-  padding: 3rem 1.25rem 5rem;
-  font-family: inherit;
+  padding-block: 4rem 5rem;
   color: var(--on-ground);
+  font-family: var(--font-sans);
 }
 
-.socios__intro {
-  max-width: 34rem;
-  margin: 0 auto 2.5rem;
-  text-align: center;
+/* Misma retícula que .container-x */
+.socios__grid {
+  max-width: 1312px;
+  margin: 0 auto;
+  padding-inline: 1rem;
+  display: grid;
+  gap: 2.5rem;
 }
+
+@media (min-width: 768px) {
+  .socios { padding-block: 6rem 7rem; }
+  .socios__grid { padding-inline: 2rem; }
+}
+
+@media (min-width: 1024px) {
+  .socios__grid {
+    padding-inline: 4rem;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    gap: 5rem;
+    align-items: start;
+  }
+  .socios__grid .socios__intro {
+    position: sticky;
+    top: 6rem;
+  }
+  /* Más específica que la regla base de abajo (display: none), que si no la pisa. */
+  .socios__grid .socios__pasos { display: block; }
+}
+
+/* ---------------------------------------------------------------- */
+/* Intro                                                             */
+/* ---------------------------------------------------------------- */
 
 .socios__eyebrow {
-  margin: 0 0 0.75rem;
-  font-size: 0.8rem;
-  letter-spacing: 0.18em;
+  margin: 0 0 1rem;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--on-ground-soft);
+}
+
+.socios__eyebrow::after {
+  content: "_";
 }
 
 .socios__title {
-  margin: 0 0 1rem;
-  font-size: clamp(2rem, 7vw, 3rem);
-  line-height: 1.1;
+  margin: 0 0 1.5rem;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(44px, 6vw, 88px);
+  line-height: 0.95;
+  letter-spacing: 0.005em;
+  text-transform: uppercase;
   text-wrap: balance;
   color: var(--on-ground);
 }
 
-.socios__title span {
-  color: var(--accent);
+.socios__title::after {
+  content: "_";
 }
 
 .socios__lead {
   margin: 0;
-  font-size: 1.02rem;
-  line-height: 1.6;
+  max-width: 34rem;
+  font-size: 1.15rem;
+  line-height: 1.5;
   color: var(--on-ground-soft);
 }
 
@@ -73,15 +105,44 @@
   margin-top: 0.9rem;
 }
 
-/* Sin esto el enlace hereda el azul por defecto del navegador y queda
-   ilegible sobre el fondo oscuro. */
 .socios__lead a,
-.socios__legal a {
-  color: var(--accent);
+.socios__legal a,
+.socios__rgpd a {
+  color: var(--on-ground);
   text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .socios__intro strong {
+  color: var(--on-ground);
+}
+
+/* Solo en escritorio, donde van al lado del formulario. En móvil empujarían
+   el formulario por debajo del pliegue al llegar desde /socios#alta (#62). */
+.socios__pasos {
+  display: none;
+  list-style: none;
+  margin: 2.5rem 0 0;
+  padding: 0;
+  max-width: 34rem;
+  border-top: 1px solid var(--line);
+}
+
+.socios__pasos li {
+  display: flex;
+  gap: 1.25rem;
+  align-items: baseline;
+  padding-block: 1rem;
+  border-bottom: 1px solid var(--line);
+  line-height: 1.5;
+  color: var(--on-ground-soft);
+}
+
+.socios__paso-num {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
   color: var(--on-ground);
 }
 
@@ -90,52 +151,78 @@
 /* ---------------------------------------------------------------- */
 
 .socios__form {
-  max-width: 34rem;
-  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 1.75rem;
+  gap: 2rem;
+  padding: 1.5rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+@media (min-width: 768px) {
+  .socios__form { padding: 2.5rem; }
 }
 
 .socios__fields {
-  display: flex;
-  flex-direction: column;
+  display: grid;
   gap: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .socios__fields { grid-template-columns: 1fr 1fr; }
+  .socios__fields > .socios__field:first-child { grid-column: 1 / -1; }
 }
 
 .socios__field {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.5rem;
+  min-width: 0;
 }
 
-.socios__field label {
-  font-size: 0.92rem;
-  font-weight: 600;
-  letter-spacing: 0.03em;
+/* Etiquetas como en el formulario de contacto: mono en mayúsculas */
+.socios__field label,
+.socios__modalidades legend {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   color: var(--on-ground);
 }
 
 .socios__field input {
   width: 100%;
-  padding: 0.85rem 1rem;
+  padding: 0.8rem 1rem;
+  font: inherit;
   font-size: 1rem;
-  font-family: inherit;
-  color: var(--card-ink);
-  background: var(--card);
-  border: 1.5px solid transparent;
-  border-radius: 10px;
+  color: var(--on-ground);
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .socios__field input::placeholder {
-  color: var(--card-faint);
+  color: rgba(182, 184, 231, 0.5);
+}
+
+.socios__field input:hover {
+  border-color: rgba(255, 255, 255, 0.8);
 }
 
 .socios__field input:focus {
   outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(76, 201, 240, 0.35);
+  border-color: #ffffff;
+  box-shadow: 0 0 0 2px #ffffff;
+}
+
+/* El autocompletado del navegador pinta el campo de amarillo/blanco */
+.socios__field input:-webkit-autofill {
+  -webkit-text-fill-color: #ffffff;
+  -webkit-box-shadow: 0 0 0 100px var(--color-cobalt-deep) inset;
+  caret-color: #ffffff;
 }
 
 .socios__hint {
@@ -152,19 +239,16 @@
 .socios__modalidades {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.6rem;
   margin: 0;
   padding: 0;
   border: 0;
+  min-width: 0;
 }
 
 .socios__modalidades legend {
   padding: 0;
   margin-bottom: 0.9rem;
-  font-size: 0.92rem;
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  color: var(--on-ground);
 }
 
 .socios__cargando {
@@ -176,37 +260,56 @@
 .socios__opcion {
   display: flex;
   align-items: center;
-  gap: 0.9rem;
-  padding: 1rem 1.1rem;
-  background: var(--card);
-  color: var(--card-ink);
-  border: 2px solid transparent;
-  border-radius: 12px;
+  gap: 1rem;
+  padding: 1rem 1.15rem;
+  color: var(--on-ground);
+  background: rgba(19, 19, 61, 0.35);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
   cursor: pointer;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+  transition: border-color 0.15s ease, background-color 0.2s var(--ease), color 0.2s var(--ease);
 }
 
 .socios__opcion:hover:not(.socios__opcion--bloqueada) {
-  border-color: var(--accent);
+  border-color: rgba(255, 255, 255, 0.8);
 }
 
-.socios__opcion--activa {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 4px rgba(76, 201, 240, 0.25);
+/* Elegida: tarjeta blanca con texto cobalto, como el botón principal */
+.socios__opcion--activa,
+.socios__opcion--activa:hover:not(.socios__opcion--bloqueada) {
+  color: var(--color-cobalt);
+  background: #ffffff;
+  border-color: #ffffff;
 }
 
 /* Bloqueada: se apaga, pero sin bajar de contraste legible. */
 .socios__opcion--bloqueada {
   cursor: not-allowed;
-  background: #e8eaf4;
-  color: var(--card-soft);
+  background: transparent;
+  border-style: dashed;
+  color: var(--on-ground-soft);
 }
 
+/* Radio propio: el nativo no se ve sobre el fondo oscuro */
 .socios__opcion input {
+  appearance: none;
   flex: none;
   width: 1.15rem;
   height: 1.15rem;
-  accent-color: var(--color-cobalt);
+  margin: 0;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+  background: transparent;
+  cursor: inherit;
+  transition: box-shadow 0.15s ease;
+}
+
+.socios__opcion input:checked {
+  box-shadow: inset 0 0 0 3px #ffffff, inset 0 0 0 10px currentColor;
+}
+
+.socios__opcion input:disabled {
+  opacity: 0.5;
 }
 
 .socios__opcion-texto {
@@ -218,35 +321,45 @@
 }
 
 .socios__opcion-titulo {
-  font-size: 0.98rem;
+  font-size: 1rem;
   font-weight: 700;
 }
 
 .socios__opcion-nota {
-  font-size: 0.84rem;
-  color: var(--card-soft);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--on-ground-faint);
+}
+
+.socios__opcion--activa .socios__opcion-nota {
+  color: rgba(51, 51, 153, 0.75);
 }
 
 .socios__opcion-precio {
   flex: none;
-  font-size: 1.15rem;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  line-height: 1;
+  letter-spacing: 0.01em;
   white-space: nowrap;
 }
 
 .socios__opcion-precio--tachado {
   text-decoration: line-through;
-  color: var(--card-faint);
+  text-decoration-thickness: 2px;
+  color: var(--on-ground-faint);
 }
 
 /* ---------------------------------------------------------------- */
-/* RGPD, avisos y boton                                              */
+/* RGPD, avisos y botón                                              */
 /* ---------------------------------------------------------------- */
 
 .socios__rgpd {
   display: flex;
   align-items: flex-start;
-  gap: 0.65rem;
+  gap: 0.75rem;
   font-size: 0.9rem;
   line-height: 1.55;
   color: var(--on-ground-soft);
@@ -254,16 +367,32 @@
 }
 
 .socios__rgpd input {
+  appearance: none;
   flex: none;
-  margin-top: 0.15rem;
-  width: 1.05rem;
-  height: 1.05rem;
-  accent-color: var(--accent);
+  display: grid;
+  place-content: center;
+  margin: 0.15rem 0 0;
+  width: 1.1rem;
+  height: 1.1rem;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 2px;
+  background: transparent;
+  cursor: pointer;
 }
 
-.socios__rgpd a {
-  color: var(--accent);
-  text-decoration: underline;
+.socios__rgpd input:checked {
+  background: #ffffff;
+  border-color: #ffffff;
+}
+
+.socios__rgpd input:checked::after {
+  content: "";
+  width: 0.55rem;
+  height: 0.3rem;
+  margin-top: -0.12rem;
+  border-left: 2px solid var(--color-cobalt);
+  border-bottom: 2px solid var(--color-cobalt);
+  transform: rotate(-45deg);
 }
 
 .socios__error {
@@ -271,20 +400,22 @@
   padding: 0.85rem 1rem;
   font-size: 0.92rem;
   line-height: 1.5;
-  color: #ffd7d7;
-  background: rgba(190, 40, 60, 0.22);
-  border: 1.5px solid #e8798c;
-  border-radius: 10px;
+  color: #ffd7dc;
+  background: rgba(190, 40, 60, 0.2);
+  border: 1px solid #e8798c;
+  border-left-width: 3px;
+  border-radius: var(--radius);
 }
 
 .socios__aviso {
-  padding: 1rem 1.1rem;
+  padding: 1rem 1.15rem;
   font-size: 0.92rem;
   line-height: 1.55;
-  color: #ffeec2;
-  background: rgba(255, 217, 102, 0.14);
-  border: 1.5px solid var(--amarillo);
-  border-radius: 12px;
+  color: #fff8c4;
+  background: rgba(245, 228, 67, 0.1);
+  border: 1px solid var(--amarillo);
+  border-left-width: 3px;
+  border-radius: var(--radius);
 }
 
 .socios__aviso p {
@@ -301,40 +432,56 @@
   gap: 0.6rem;
 }
 
-/* El boton principal lleva el cian de la marca: sobre el azul oscuro un
-   boton navy desapareceria. */
+/* Botón principal: el btn-on-blue de la web (blanco, texto cobalto) */
 .socios__boton {
-  padding: 0.95rem 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1rem 1.75rem;
   font-family: inherit;
-  font-size: 1.02rem;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  color: var(--accent-ink);
-  background: var(--accent);
-  border: 0;
-  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-cobalt);
+  background: #ffffff;
+  border: 1px solid #ffffff;
+  border-radius: var(--radius);
   cursor: pointer;
-  transition: background 0.15s ease, transform 0.1s ease;
+  transition: transform 0.2s var(--ease), background-color 0.15s ease, color 0.15s ease;
+}
+
+.socios__form > .socios__boton {
+  width: 100%;
+}
+
+.socios__boton-flecha {
+  font-family: var(--font-mono);
+  transition: transform 0.2s var(--ease);
 }
 
 .socios__boton:hover:not(:disabled) {
-  background: #7fdcff;
+  transform: translateY(-1px);
+}
+
+.socios__boton:hover:not(:disabled) .socios__boton-flecha {
+  transform: translateX(3px);
 }
 
 .socios__boton:active:not(:disabled) {
-  transform: translateY(1px);
+  transform: translateY(0) scale(0.99);
 }
 
 .socios__boton:disabled {
-  color: rgba(255, 255, 255, 0.55);
-  background: rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.18);
   cursor: not-allowed;
 }
 
 .socios__boton--secundario {
   color: var(--on-ground);
   background: transparent;
-  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  border-color: var(--line-strong);
 }
 
 .socios__boton--secundario:hover:not(:disabled) {
@@ -344,55 +491,74 @@
 .socios__boton:focus-visible,
 .socios__opcion input:focus-visible,
 .socios__rgpd input:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid #ffffff;
   outline-offset: 3px;
 }
 
 .socios__legal {
-  margin: 0;
+  margin: -0.75rem 0 0;
   text-align: center;
-  font-size: 0.84rem;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  line-height: 1.6;
   color: var(--on-ground-faint);
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .socios__boton,
+  .socios__boton-flecha,
+  .socios__opcion {
+    transition: none;
+  }
+}
+
 /* ---------------------------------------------------------------- */
-/* Pagina de gracias                                                 */
+/* Página de gracias                                                 */
 /* ---------------------------------------------------------------- */
 
 .socios-gracias {
   background-color: var(--ground);
-  padding: 4rem 1.25rem 6rem;
+  padding: 5rem 1rem 6rem;
   text-align: center;
-  font-family: inherit;
+  font-family: var(--font-sans);
   color: var(--on-ground);
 }
 
 .socios-gracias__icono {
-  width: 68px;
-  height: 68px;
-  margin: 0 auto 1.5rem;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
-  color: var(--accent-ink);
-  background: var(--accent);
-  border-radius: 50%;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-cobalt);
+  background: #ffffff;
+  border-radius: var(--radius);
 }
 
 .socios-gracias h1 {
-  margin: 0 auto 1rem;
-  max-width: 20ch;
-  font-size: clamp(1.8rem, 6vw, 2.5rem);
-  line-height: 1.15;
+  margin: 0 auto 1.5rem;
+  max-width: 14ch;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(44px, 7vw, 88px);
+  line-height: 0.95;
+  text-transform: uppercase;
   text-wrap: balance;
+}
+
+.socios-gracias h1::after {
+  content: "_";
 }
 
 .socios-gracias p {
   margin: 0 auto 1rem;
   max-width: 34rem;
-  font-size: 1.02rem;
-  line-height: 1.6;
+  font-size: 1.1rem;
+  line-height: 1.55;
   color: var(--on-ground-soft);
 }
 
@@ -401,43 +567,54 @@
 }
 
 .socios-gracias__volver {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
   margin-top: 1.5rem;
-  padding: 0.85rem 1.5rem;
-  font-weight: 700;
-  color: var(--accent-ink);
-  background: var(--accent);
-  border-radius: 10px;
+  padding: 1rem 1.75rem;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-cobalt);
+  background: #ffffff;
+  border-radius: var(--radius);
   text-decoration: none;
+  transition: transform 0.2s var(--ease);
 }
 
 .socios-gracias__volver:hover {
-  background: #7fdcff;
+  transform: translateY(-1px);
 }
 
 @media (max-width: 480px) {
-  .socios {
-    padding: 2rem 1rem 4rem;
-  }
-
   .socios__opcion {
     padding: 0.9rem;
-    gap: 0.7rem;
+    gap: 0.75rem;
   }
 
   .socios__opcion-precio {
-    font-size: 1.05rem;
+    font-size: 1.5rem;
   }
 }
 
-/* Paginas cortas como el enlace del telefono: sin esto la pagina queda
-   demasiado suelta entre el navbar y el pie. */
+/* Páginas cortas como el enlace del teléfono: una sola columna centrada,
+   sin la retícula de dos columnas del alta. */
 .socios--estrecho {
   min-height: 60vh;
+  padding-inline: 1rem;
+}
+
+.socios--estrecho .socios__intro {
+  max-width: 30rem;
+  margin: 0 auto 2rem;
+}
+
+.socios--estrecho .socios__title {
+  font-size: clamp(40px, 6vw, 64px);
 }
 
 .socios--estrecho .socios__form {
-  max-width: 26rem;
+  max-width: 30rem;
+  margin: 0 auto;
 }
 
 .socios-gracias__acceso{max-width:40rem;margin:28px auto;padding:24px 0;border-block:1px solid var(--color-lavender,#b6b8e7)}

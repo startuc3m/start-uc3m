@@ -28,3 +28,10 @@ pnpm-debug.log*
 # datos locales (envíos de formularios)
 data/*.json
 data/*.csv
+
+# Start Skills: generado en el build desde Notion
+src/data/startskills.generated.json
+public/startskills/
+capturas-start-skills/
+public/startskills.tmp/
+public/startskills.old/

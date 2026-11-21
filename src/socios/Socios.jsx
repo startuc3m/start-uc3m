@@ -213,18 +213,37 @@ export default function Socios() {
     acceptedPrivacy;
 
   return (
-    <div>
-
-      <div className="socios">
+    <section className="socios">
+      <div className="socios__grid">
         <header className="socios__intro">
           <p className="socios__eyebrow">Alta de socio</p>
-          <h2 className="socios__title">
-            Únete a <span>Start UC3M</span>
-          </h2>
+          <h2 className="socios__title">Únete a Start</h2>
           <p className="socios__lead">
             Una cuota al año. Cuanto antes te apuntes, menos pagas: las primeras plazas tienen
             el precio más bajo y el tramo sube según se van ocupando.
           </p>
+
+          <ol className="socios__pasos">
+            <li>
+              <span className="socios__paso-num" aria-hidden="true">01</span>
+              <span>
+                <strong>Rellenas tus datos.</strong> Nombre, email y teléfono: un minuto.
+              </span>
+            </li>
+            <li>
+              <span className="socios__paso-num" aria-hidden="true">02</span>
+              <span>
+                <strong>Pagas con Stripe.</strong> Pago único para todo el curso.
+              </span>
+            </li>
+            <li>
+              <span className="socios__paso-num" aria-hidden="true">03</span>
+              <span>
+                <strong>Ya eres socio.</strong> Te llega por email tu número de socio y entras
+                al grupo de socios.
+              </span>
+            </li>
+          </ol>
         </header>
 
         <form className="socios__form" onSubmit={handleSubmit} noValidate>
@@ -401,6 +420,7 @@ export default function Socios() {
           {!priceChange && (
             <button type="submit" className="socios__boton" disabled={!canSubmit}>
               {submitting ? 'Abriendo el pago…' : 'Pagar y hacerme socio'}
+              <span className="socios__boton-flecha" aria-hidden="true">→</span>
             </button>
           )}
 
@@ -409,6 +429,6 @@ export default function Socios() {
           </p>
         </form>
       </div>
-    </div>
+    </section>
   );
 }

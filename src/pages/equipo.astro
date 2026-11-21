@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import { Picture } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 import Base from '../layouts/Base.astro';
 import PageHead from '../components/PageHead.astro';
@@ -11,6 +11,12 @@ const foto = (f: string) => {
   if (!img) throw new Error(`Falta la foto src/assets/equipo/${f}`);
   return img.default;
 };
+// Varios tamaños y AVIF/WebP, como src/components/Photo.astro: cada pantalla baja la versión
+// que necesita (nítida en retina, ligera en móvil). Antes era un único JPG/WebP de 480 px,
+// que en pantallas 2x se veía borroso. Nunca se amplía por encima del original.
+const anchos = (img: ImageMetadata) => [320, 480, 640, 800, 1000, 1200].filter((w) => w <= img.width);
+// Ancho real de la tarjeta: 4 columnas en el contenedor de la web (máx. ~290 px), 2 en tablet, 1 en móvil.
+const tamaños = '(min-width: 1280px) 290px, (min-width: 768px) 23vw, (min-width: 640px) 46vw, 100vw';
 const depts = ['Todos', ...site.departments.map((d) => d.name)];
 const initials = (n: string) => n.split(' ').map((w) => w[0]).slice(0, 2).join('');
 // El filtro de Junta directiva incluye a los responsables de cada departamento, como en la web anterior.
@@ -29,7 +35,7 @@ const filterKeys = (m: (typeof site.team)[number]) => [...m.depts, ...(m.role ==
           {m.linkedin ? (
             <a href={m.linkedin} target="_blank" rel="noopener" class="group block" aria-label={`${m.name} en LinkedIn`}>
               <div class="relative aspect-[4/5] overflow-hidden rounded-brand bg-cobalt">
-                {m.photo ? <Image src={foto(m.photo)} alt={m.name} width={480} class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" /> : <span class="display absolute inset-0 grid place-items-center text-6xl text-white/80">{initials(m.name)}</span>}
+                {m.photo ? <Picture src={foto(m.photo)} alt={m.name} formats={['avif', 'webp']} widths={anchos(foto(m.photo))} sizes={tamaños} loading="lazy" class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" /> : <span class="display absolute inset-0 grid place-items-center text-6xl text-white/80">{initials(m.name)}</span>}
                 <span class="mono absolute bottom-3 left-3 rounded-full bg-white px-3 py-1 text-cobalt opacity-0 transition-opacity group-hover:opacity-100">LinkedIn ↗</span>
               </div>
               <h2 class="mt-4 text-xl font-bold group-hover:underline">{m.name}</h2>
@@ -37,7 +43,7 @@ const filterKeys = (m: (typeof site.team)[number]) => [...m.depts, ...(m.role ==
             </a>
           ) : (
             <div>
-              <div class="relative aspect-[4/5] overflow-hidden rounded-brand bg-cobalt">{m.photo ? <Image src={foto(m.photo)} alt={m.name} width={480} class="absolute inset-0 h-full w-full object-cover" /> : <span class="display absolute inset-0 grid place-items-center text-6xl text-white/80">{initials(m.name)}</span>}</div>
+              <div class="relative aspect-[4/5] overflow-hidden rounded-brand bg-cobalt">{m.photo ? <Picture src={foto(m.photo)} alt={m.name} formats={['avif', 'webp']} widths={anchos(foto(m.photo))} sizes={tamaños} loading="lazy" class="absolute inset-0 h-full w-full object-cover" /> : <span class="display absolute inset-0 grid place-items-center text-6xl text-white/80">{initials(m.name)}</span>}</div>
               <h2 class="mt-4 text-xl font-bold">{m.name}</h2>
               <p class="text-sm opacity-80">{m.role} · {m.depts.join(' y ')}</p>
             </div>

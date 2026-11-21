@@ -39,7 +39,7 @@ const eventos = defineCollection({
     price: z.string().optional(),
     priceNote: z.string().optional(),
     // Premios, mentores y jurado: solo lo confirmado; `total` es lo previsto y `names` lo ya cerrado.
-    prizes: z.array(z.object({ place: z.string(), prize: z.string().optional(), note: z.string().optional() })).default([]),
+    prizes: z.array(z.object({ place: z.string(), prize: z.string().optional(), note: z.string().optional(), winner: z.string().optional() })).default([]),
     mentors: z.object({ total: z.number(), names: z.array(z.string()).default([]) }).optional(),
     jury: z.object({ total: z.number(), names: z.array(z.string()).default([]) }).optional(),
     // Info práctica (cómo llegar, horario, equipo…): una tarjeta por punto, con enlace opcional.

@@ -1,8 +1,9 @@
 const NOTION_VERSION = '2022-06-28';
 
-// Esquema de la base cacheado por instancia lambda. Evita pedirlo en cada
-// alta sin dejarlo fijo para siempre: una instancia nueva lo relee.
-let schemaCache = null;
+// Esquema de cada base cacheado por instancia lambda (clave: id de la base).
+// Evita pedirlo en cada alta sin dejarlo fijo para siempre: una instancia
+// nueva lo relee. Hay dos bases: socios y mentorías.
+const schemaCache = new Map();
 
 function padMemberNumber(n) {
   return String(n).padStart(4, '0');
@@ -107,7 +108,7 @@ function fieldSpecs(member) {
  *
  * Exportada para poder probarla sin tocar la red (db/test-notion.js).
  */
-export function buildProperties(member, schema) {
+export function buildProperties(member, schema, specs = fieldSpecs(member)) {
   const properties = {};
   const omitidas = [];
   const usadas = new Set();
@@ -122,7 +123,7 @@ export function buildProperties(member, schema) {
 
   const columnas = Object.keys(schema).map((name) => ({ name, norm: normalize(name) }));
 
-  fieldSpecs(member).forEach((spec) => {
+  specs.forEach((spec) => {
     const candidatas = columnas.filter(
       (c) => !usadas.has(c.name) && schema[c.name] === spec.tipo
     );
@@ -221,7 +222,7 @@ async function notionFetch(token, path, options) {
 
 /** Lee {nombre: tipo} de la base. Cacheado por instancia. */
 export async function fetchSchema(token, databaseId, { force = false } = {}) {
-  if (schemaCache && !force) return schemaCache;
+  if (schemaCache.has(databaseId) && !force) return schemaCache.get(databaseId);
 
   const response = await notionFetch(token, '/databases/' + databaseId, { method: 'GET' });
   if (!response.ok) {
@@ -235,7 +236,7 @@ export async function fetchSchema(token, databaseId, { force = false } = {}) {
     schema[name] = database.properties[name].type;
   });
 
-  schemaCache = schema;
+  schemaCache.set(databaseId, schema);
   return schema;
 }
 
@@ -247,8 +248,58 @@ export async function fetchSchema(token, databaseId, { force = false } = {}) {
  * socio. Devuelve { ok, skipped?, error?, omitidas? } y nunca lanza.
  */
 export async function createNotionMember(member) {
+  return createNotionRow(process.env.NOTION_SOCIOS_DATABASE_ID, member, fieldSpecs);
+}
+
+/**
+ * Ficha de un pago de mentoría, en su propia base de Notion
+ * (NOTION_MENTORIAS_DATABASE_ID). Mismas reglas que socios: espejo de
+ * Postgres, nunca lanza y, sin configurar, no hace nada.
+ */
+export async function createNotionMentoria(payment) {
+  return createNotionRow(process.env.NOTION_MENTORIAS_DATABASE_ID, payment, mentoriaFieldSpecs);
+}
+
+/** Lo que sabemos escribir de una mentoría. Mismo sistema que fieldSpecs. */
+export function mentoriaFieldSpecs(payment) {
+  return [
+    {
+      clave: 'importe',
+      tipo: 'number',
+      incluye: ['importe', 'precio', 'euro', 'pagado'],
+      valor: () => ({ number: payment.price_cents / 100 }),
+    },
+    {
+      clave: 'email',
+      tipo: 'email',
+      incluye: [],
+      valor: () => ({ email: payment.email }),
+    },
+    {
+      clave: 'telefono',
+      tipo: 'phone_number',
+      incluye: [],
+      valor: () => ({ phone_number: payment.phone || null }),
+    },
+    {
+      clave: 'fecha de pago',
+      tipo: 'date',
+      incluye: [],
+      valor: () => ({ date: { start: new Date(payment.paid_at || Date.now()).toISOString() } }),
+    },
+    {
+      clave: 'referencia de stripe',
+      tipo: 'rich_text',
+      incluye: ['stripe', 'intent', 'pago'],
+      valor: () => ({
+        rich_text: [{ text: { content: payment.stripe_payment_intent || '' } }],
+      }),
+    },
+  ];
+}
+
+async function createNotionRow(databaseId, record, specsFor) {
   const token = process.env.NOTION_API_KEY;
-  const databaseId = process.env.NOTION_SOCIOS_DATABASE_ID;
 
   if (!token || !databaseId) {
     return { ok: false, skipped: true, error: 'NOTION_NOT_CONFIGURED' };
@@ -256,7 +307,7 @@ export async function createNotionMember(member) {
 
   try {
     const schema = await fetchSchema(token, databaseId);
-    const { properties, omitidas } = buildProperties(member, schema);
+    const { properties, omitidas } = buildProperties(record, schema, specsFor(record));
 
     const response = await notionFetch(token, '/pages', {
       method: 'POST',
@@ -267,10 +318,10 @@ export async function createNotionMember(member) {
       const detail = await response.text();
       // Si la base cambio despues de cachear el esquema, reintentamos una
       // vez con el esquema fresco antes de darlo por perdido.
-      if (response.status === 400 && schemaCache) {
-        schemaCache = null;
+      if (response.status === 400 && schemaCache.has(databaseId)) {
+        schemaCache.delete(databaseId);
         const fresco = await fetchSchema(token, databaseId, { force: true });
-        const segundo = buildProperties(member, fresco);
+        const segundo = buildProperties(record, fresco, specsFor(record));
         const reintento = await notionFetch(token, '/pages', {
           method: 'POST',
           body: JSON.stringify({ parent: { database_id: databaseId }, properties: segundo.properties }),

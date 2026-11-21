@@ -23,6 +23,7 @@ Todo lo que hace falta para entender, cambiar y mantener [startuc3m.es](https://
 | 06 | [Start Camp](06-start-camp.md) | Ficha, lanyard, banner, barra y cuenta atrás; qué hacer cuando acabe |
 | 07 | [Formularios](07-formularios.md) | Contacto y patrocinio (Resend), y qué pasa con "Únete" |
 | — | [Socios](socios.md) | Alta y pago de socios: Stripe, Neon, Resend y Notion |
+| — | [Start Skills](12-start-skills.md) | Programa de liderazgo (5 bloques): sincronización con Notion, fotos y checklist de RRHH |
 | 08 | [Despliegue](08-despliegue.md) | Vercel, entornos, variables, dominios, analítica y cómo volver atrás |
 | 09 | [Calidad](09-calidad.md) | Tests, CI, checklist de QA, Lighthouse y enlaces rotos |
 | 10 | [Cómo trabajamos](10-como-trabajamos.md) | Ramas, commits, PRs, issues, etiquetas y reglas de Start |

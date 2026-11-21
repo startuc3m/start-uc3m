@@ -3,6 +3,10 @@ import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
 import react from '@astrojs/react';
+import { slugsVacios } from './src/lib/startskills-vacio.mjs';
+
+// Bloques de Start Skills aún vacíos: llevan noindex y tampoco van al sitemap.
+const skillsVacios = await slugsVacios();
 
 // Web 100% estática, sin adaptador: Vercel sirve dist/ y, aparte, las
 // funciones de socios de api/ (igual que con la web de CRA). Si hiciera
@@ -16,10 +20,12 @@ export default defineConfig({
   // vienen de la web anterior y se montan tal cual como islas.
   integrations: [
     // Fuera del sitemap: páginas de paso de socios (vuelta de Stripe, enlace personal)
-    // y del avatar del Start Camp (enlace personal y su página de error).
+    // del avatar del Start Camp (enlace personal y su página de error) y el pago
+    // de mentorías, que no se enlaza desde la web: se reparte el enlace.
     sitemap({
       filter: (page) =>
-        !/\/(panel(?:\/.*)?|socios\/(gracias|telefono)|eventos\/start-camp\/(avatar|enlace-no-valido))\/?$/.test(page),
+        !/\/(panel(?:\/.*)?|socios\/(gracias|telefono)|mentorias(\/gracias)?|eventos\/start-camp\/(avatar|enlace-no-valido))\/?$/.test(page) &&
+        !skillsVacios.some((s) => new RegExp(`/eventos/start-skills/${s}/?$`).test(page)),
     }),
     react(),
   ],

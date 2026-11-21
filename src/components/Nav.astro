@@ -6,24 +6,45 @@ const nav = (await blogVisible()) ? site.nav : site.nav.filter((n) => n.href !==
 const { tone = 'light' } = Astro.props; // light = sobre papel, dark = sobre azul
 const dark = tone === 'dark';
 const path = Astro.url.pathname;
+// Activo en la página y sus subpáginas; /eventos solo en sí misma (si no, siempre ganaría a Start Skills).
+const limpio = path.replace(/\/$/, '') || '/';
+const activo = (href: string) => limpio === href || (href !== '/eventos' && limpio.startsWith(href + '/'));
 ---
 <header class={`sticky top-0 z-50 ${dark ? 'bg-cobalt text-white' : 'bg-paper/85 text-ink backdrop-blur'} border-b ${dark ? 'border-cobalt-deep' : 'border-line'}`}>
   <div class="container-x flex h-[64px] items-center justify-between">
     <Logo tone={dark ? 'white' : 'cobalt'} size={40} full />
-    <nav class="hidden items-center gap-6 lg:flex" aria-label="Principal">
-      {nav.map((n) => (
+    <nav class="hidden items-center gap-8 md:flex" aria-label="Principal">
+      {nav.map((n) => n.children ? (
+        <div class="relative" data-dd>
+          <button type="button" data-dd-toggle aria-expanded="false" aria-controls={`dd-${n.href.replace(/\W+/g, "")}`} class={`inline-flex items-center gap-1.5 text-[14px] font-semibold transition-opacity hover:opacity-70 ${path.startsWith(n.href) ? 'underline underline-offset-8 decoration-2' : ''}`}>
+            {n.label}
+            <svg class="dd-chevron h-3 w-3" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2 4l4 4 4-4" /></svg>
+          </button>
+          <div id={`dd-${n.href.replace(/\W+/g, "")}`} hidden class={`absolute left-1/2 top-full z-50 mt-4 w-56 -translate-x-1/2 rounded-brand border p-2 shadow-lg ${dark ? 'border-white/20 bg-cobalt-deep text-white' : 'border-line bg-white text-ink'}`}>
+            {n.children.map((c) => (
+              <a href={c.href} aria-current={activo(c.href) ? 'page' : undefined} class={`block rounded-brand px-3 py-2.5 text-[14px] font-semibold ${dark ? 'hover:bg-white/10' : 'hover:bg-paper-2'} ${activo(c.href) ? 'underline underline-offset-4 decoration-2' : ''}`}>{c.label}</a>
+            ))}
+          </div>
+        </div>
+      ) : (
         <a href={n.href} class={`text-[14px] font-semibold transition-opacity hover:opacity-70 ${path.startsWith(n.href) ? 'underline underline-offset-8 decoration-2' : ''}`}>{n.label}</a>
       ))}
     </nav>
     <div class="flex items-center gap-3">
-      <a href="/panel/" class={`rounded-brand border px-4 py-2 text-[14px] font-semibold transition-colors ${dark ? 'border-white/50 hover:bg-white hover:text-cobalt' : 'border-cobalt text-cobalt hover:bg-cobalt hover:text-white'}`}>Acceder</a>
+      <a href="/panel/" class={`hidden rounded-brand border px-4 py-2 text-[14px] font-semibold md:inline-flex transition-colors ${dark ? 'border-white/50 hover:bg-white hover:text-cobalt' : 'border-cobalt text-cobalt hover:bg-cobalt hover:text-white'}`}>Acceder</a>
       <a href="/socios#alta" class={`hidden rounded-brand border px-4 py-2 text-[14px] font-semibold md:inline-flex ${dark ? 'border-lime bg-lime text-ink hover:bg-white hover:border-white' : 'border-cobalt bg-cobalt text-white hover:bg-cobalt-deep'} transition-colors`}>Hazte socio</a>
-      <button class="lg:hidden font-mono text-sm" data-menu-toggle aria-expanded="false" aria-controls="menu">menu_</button>
+      <button class="md:hidden font-mono text-sm" data-menu-toggle aria-expanded="false" aria-controls="menu">menu_</button>
     </div>
   </div>
-  <div id="menu" class={`hidden lg:hidden ${dark ? 'bg-cobalt' : 'bg-paper'} border-t ${dark ? 'border-cobalt-deep' : 'border-line'}`}>
+  <div id="menu" class={`hidden max-h-[calc(100dvh-64px)] overflow-y-auto overscroll-contain md:hidden ${dark ? 'bg-cobalt' : 'bg-paper'} border-t ${dark ? 'border-cobalt-deep' : 'border-line'}`}>
     <nav class="container-x flex flex-col py-4" aria-label="Móvil">
-      {nav.map((n) => <a href={n.href} class="py-3 text-2xl font-bold">{n.label}</a>)}
+      {nav.map((n) => (
+        <>
+          <a href={n.href} class="py-3 text-2xl font-bold">{n.label}</a>
+          {n.children?.filter((c) => c.href !== n.href).map((c) => <a href={c.href} aria-current={activo(c.href) ? 'page' : undefined} class="py-2 pl-5 text-lg font-semibold opacity-80">{c.label}</a>)}
+        </>
+      ))}
+      <a href="/panel/" class="py-3 text-2xl font-bold">Acceder</a>
       <a href="/socios#alta" class={`btn mt-2 ${dark ? 'btn-lime' : 'btn-primary'}`}>Hazte socio →</a>
     </nav>
   </div>
@@ -35,4 +56,19 @@ const path = Astro.url.pathname;
     const open = m!.classList.toggle('hidden') === false;
     t.setAttribute('aria-expanded', String(open));
   });
+  // Desplegable de Eventos: Escape, clic fuera y perder el foco lo cierran.
+  document.querySelectorAll<HTMLElement>('[data-dd]').forEach((dd) => {
+    const btn = dd.querySelector<HTMLButtonElement>('[data-dd-toggle]')!;
+    const panel = dd.querySelector<HTMLElement>('[id^="dd-"]')!;
+    const set = (open: boolean) => { panel.hidden = !open; btn.setAttribute('aria-expanded', String(open)); };
+    btn.addEventListener('click', () => set(panel.hidden));
+    dd.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !panel.hidden) { set(false); btn.focus(); } });
+    dd.addEventListener('focusout', (e) => { if (!dd.contains((e as FocusEvent).relatedTarget as Node | null)) set(false); });
+    document.addEventListener('click', (e) => { if (!dd.contains(e.target as Node)) set(false); });
+  });
 </script>
+<style>
+  .dd-chevron { transition: transform 0.2s; }
+  [aria-expanded="true"] > .dd-chevron { transform: rotate(180deg); }
+  @media (prefers-reduced-motion: reduce) { .dd-chevron { transition: none; } }
+</style>

@@ -1,0 +1,30 @@
+name: Start Skills rebuild
+
+# Redespliega la web cada día para que el estado de los bloques (celebrado /
+# próximo) y los cambios hechos en Notion se reflejen sin un push de código.
+on:
+  schedule:
+    - cron: '0 5 * * *'
+  workflow_dispatch:
+
+# Solo llama a un webhook: el token de GitHub no necesita ningún permiso.
+permissions: {}
+
+concurrency:
+  group: start-skills-rebuild
+  cancel-in-progress: false
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Lanzar despliegue en Vercel
+        env:
+          HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK_START_SKILLS }}
+        run: |
+          if [ -z "$HOOK" ]; then
+            echo "::notice::VERCEL_DEPLOY_HOOK_START_SKILLS no está configurado, se omite el redespliegue."
+            exit 0
+          fi
+          curl --fail --silent --show-error -X POST "$HOOK"
