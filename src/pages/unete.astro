@@ -1,15 +1,15 @@
 ---
 import Base from '../layouts/Base.astro';
 import { site } from '../lib/site';
-// Inscripciones cerradas (#31). Para la próxima convocatoria hace falta un
-// formulario y su handler en api/ (como api/contacto.mjs): ver docs/07-formularios.md.
+// Convocatoria del 2º cuatrimestre anunciada sin fecha (20/11/2026). Cuando se abra hace falta
+// un formulario y su handler en api/ (como api/contacto.mjs): ver docs/07-formularios.md.
 ---
 <Base title="Únete a Start" description="Proceso de entrada a Start UC3M" tone="dark">
   <section class="bg-cobalt text-white">
     <div class="container-x py-12 md:py-28">
-      <span class="eyebrow inline-flex items-center gap-2 rounded-full border border-white/40 px-3 py-2 text-lavender normal-case"><span class="h-1.5 w-1.5 rounded-full bg-white/60"></span>Inscripciones cerradas · Curso {site.course}</span>
+      <span class="eyebrow inline-flex items-center gap-2 rounded-full border border-white/40 px-3 py-2 text-lavender normal-case"><span class="h-1.5 w-1.5 rounded-full bg-white/60"></span>Próxima convocatoria · 2º cuatrimestre</span>
       <h1 class="display mt-6 text-[clamp(40px,7vw,96px)]">Quiero entrar en Start_</h1>
-      <p class="mt-6 max-w-2xl text-xl leading-snug text-lavender">El proceso de entrada de este curso ya se ha cerrado. Abrimos una nueva convocatoria cada curso: síguenos en redes para enterarte la primera vez que se abra. Si eres socio, te avisamos los primeros.</p>
+      <p class="mt-6 max-w-2xl text-xl leading-snug text-lavender">Abriremos plazas para entrar en Start al empezar el segundo cuatrimestre. Lo anunciaremos aquí y en Instagram: síguenos para enterarte en cuanto se abra. Si eres socio, te avisamos los primeros.</p>
       <div class="mt-10 flex flex-wrap gap-3">
         <a href={site.social.instagram} target="_blank" rel="noopener" class="btn btn-on-blue">Seguir a Start en Instagram <span class="font-mono">↗</span></a>
         <a href="/socios#alta" class="btn btn-outline text-white">Mientras tanto, hazte socio</a>
