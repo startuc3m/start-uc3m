@@ -1,0 +1,20 @@
+---
+// Prototipo navegable del área de socios con datos de ejemplo (PR en borrador).
+// No se enlaza desde la web, no se indexa y está fuera del sitemap.
+import { getImage } from 'astro:assets';
+import PanelApp from '../../../layouts/PanelApp.astro';
+import PanelDemo from '../../../panel/demo/PanelDemo.jsx';
+import sala from '../../../assets/fotos/buildathon-sala.jpg';
+import oficina from '../../../assets/fotos/sala-trabajo-staff.jpg';
+import equipo from '../../../assets/fotos/equipo-mesa.jpg';
+import pitch from '../../../assets/fotos/start-camp-pitch.jpg';
+import portatiles from '../../../assets/fotos/start-camp-portatiles.jpg';
+
+const src = { sala, oficina, equipo, pitch, portatiles };
+const photos = Object.fromEntries(
+  await Promise.all(Object.entries(src).map(async ([k, img]) => [k, (await getImage({ src: img, width: 1200, format: 'webp', quality: 72 })).src])),
+);
+---
+<PanelApp title="Área de socios · demo">
+  <PanelDemo client:only="react" photos={photos} />
+</PanelApp>

@@ -19,7 +19,8 @@ export default defineConfig({
     // y del avatar del Start Camp (enlace personal y su página de error).
     sitemap({
       filter: (page) =>
-        !/\/(socios\/(gracias|telefono)|eventos\/start-camp\/(avatar|enlace-no-valido))\/?$/.test(page),
+        !/\/(socios\/(gracias|telefono)|eventos\/start-camp\/(avatar|enlace-no-valido))\/?$/.test(page)
+        && !/\/panel\//.test(page), // área de socios (y su demo): privada
     }),
     react(),
   ],
