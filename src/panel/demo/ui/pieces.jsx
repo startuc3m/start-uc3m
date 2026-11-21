@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useId, useRef } from 'react';
+import { createContext, useContext, useEffect, useId, useRef, useState } from 'react';
 import logoFull from '../assets/start.svg?raw';
 import logoWord from '../assets/start-wordmark.svg?raw';
 import Icon from './Icon.jsx';
@@ -42,7 +42,9 @@ export function LevelRing({ progress = 0, size = 84, children, animate = false }
   const c = 2 * Math.PI * r;
   const ref = useRef(null);
   useEffect(() => {
+    // Se llena una sola vez por sesión: la primera vez es un premio, la décima sería ruido.
     if (!animate || !ref.current || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    try { if (sessionStorage.getItem('pd-ring')) return; sessionStorage.setItem('pd-ring', '1'); } catch {}
     ref.current.animate([{ strokeDashoffset: c }, { strokeDashoffset: c * (1 - progress) }], { duration: 900, delay: 250, easing: 'cubic-bezier(.23,1,.32,1)', fill: 'backwards' });
   }, [animate, progress, c]);
   return (
@@ -127,21 +129,93 @@ export function Load({ q, skeleton, children }) {
   return children(q.data);
 }
 
+const DRAWER = 'cubic-bezier(.32,.72,0,1)';
+const isWide = () => matchMedia('(min-width: 1024px)').matches;
+const noMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// Hoja inferior (en escritorio, panel flotante). Entra con la curva de iOS, sale por
+// donde entró y en el móvil se cierra arrastrando: por distancia o por un tirón rápido.
 export function Sheet({ open, onClose, title, children }) {
   const id = useId();
+  const [mounted, setMounted] = useState(open);
+  const panel = useRef(null);
+  const scrim = useRef(null);
+  const drag = useRef(null);
+  const leaving = useRef(false);
+  const lastFocus = useRef(null);
+
+  useEffect(() => { if (open) { leaving.current = false; setMounted(true); } }, [open]);
+
+  // Entrada
   useEffect(() => {
-    if (!open) return;
-    const onKey = (e) => e.key === 'Escape' && onClose();
+    if (!mounted || !open || !panel.current) return;
+    lastFocus.current = document.activeElement;
+    panel.current.focus({ preventScroll: true });
+    if (noMotion()) return;
+    const from = isWide() ? 'translateY(12px) scale(.97)' : 'translateY(100%)';
+    panel.current.animate([{ transform: from, opacity: isWide() ? 0 : 1 }, { transform: 'none', opacity: 1 }], { duration: isWide() ? 260 : 420, easing: DRAWER });
+    scrim.current?.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300, easing: 'ease' });
+  }, [mounted]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Salida: anima desde donde esté (también a mitad de un arrastre) y luego desmonta.
+  const exit = (after) => {
+    if (leaving.current) return;
+    leaving.current = true;
+    const done = () => { setMounted(false); lastFocus.current?.focus?.({ preventScroll: true }); after?.(); };
+    if (!panel.current || noMotion()) return done();
+    const now = getComputedStyle(panel.current).transform;
+    const to = isWide() ? 'translateY(12px) scale(.97)' : 'translateY(100%)';
+    panel.current.animate([{ transform: now === 'none' ? 'none' : now }, { transform: to, opacity: isWide() ? 0 : 1 }], { duration: 260, easing: DRAWER, fill: 'forwards' }).finished.then(done, done);
+    scrim.current?.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 260, easing: 'ease', fill: 'forwards' });
+  };
+  useEffect(() => { if (!open && mounted) exit(); }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
+  const requestClose = () => exit(onClose);
+
+  useEffect(() => {
+    if (!mounted) return;
+    const onKey = (e) => e.key === 'Escape' && requestClose();
     addEventListener('keydown', onKey);
     return () => removeEventListener('keydown', onKey);
-  }, [open, onClose]);
-  if (!open) return null;
+  }); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const onDown = (e) => {
+    if (isWide() || e.button !== 0 || leaving.current) return;
+    if (e.target.closest('button, a')) return;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    drag.current = { y: e.clientY, t: performance.now(), id: e.pointerId };
+    panel.current.getAnimations().forEach((a) => a.cancel());
+  };
+  const onMove = (e) => {
+    const d = drag.current;
+    if (!d || e.pointerId !== d.id) return; // un solo dedo: ignorar el segundo
+    const dy = e.clientY - d.y;
+    // Hacia arriba no hay tope duro: cede cada vez menos (fricción).
+    const y = dy > 0 ? dy : -Math.sqrt(-dy) * 3;
+    panel.current.style.transform = `translateY(${y}px)`;
+    if (scrim.current) scrim.current.style.opacity = String(Math.max(0, 1 - dy / 400));
+  };
+  const onUp = (e) => {
+    const d = drag.current;
+    if (!d || e.pointerId !== d.id) return;
+    drag.current = null;
+    const dy = e.clientY - d.y;
+    const v = dy / (performance.now() - d.t);
+    if (dy > 120 || v > 0.11) return requestClose();
+    const now = panel.current.style.transform;
+    panel.current.style.transform = '';
+    if (scrim.current) scrim.current.style.opacity = '';
+    panel.current.animate([{ transform: now || 'none' }, { transform: 'none' }], { duration: 300, easing: DRAWER });
+  };
+
+  if (!mounted) return null;
   return (
     <>
-      <div className="scrim" onClick={onClose} />
-      <div className="sheet" role="dialog" aria-modal="true" aria-labelledby={id}>
-        <span className="grab" aria-hidden="true" />
-        <div className="section-h"><h2 id={id} className="t-h" style={{ fontSize: 18 }}>{title}</h2><button className="press" onClick={onClose} aria-label="Cerrar"><Icon name="x" /></button></div>
+      <div ref={scrim} className="scrim" onClick={requestClose} />
+      <div ref={panel} className="sheet" role="dialog" aria-modal="true" aria-labelledby={id} tabIndex={-1}>
+        <div className="sheet-drag" onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp}>
+          <span className="grab" aria-hidden="true" />
+          <div className="section-h"><h2 id={id} className="t-h" style={{ fontSize: 18 }}>{title}</h2><button className="press" onClick={requestClose} aria-label="Cerrar"><Icon name="x" /></button></div>
+        </div>
         {children}
       </div>
     </>
@@ -149,3 +223,50 @@ export function Sheet({ open, onClose, title, children }) {
 }
 
 export const roleLine = (x) => (x.role === 'starter' ? `Starter${x.dept ? ` · ${x.dept}` : ''}` : x.role === 'socio' ? 'Socio' : '');
+
+// Tu carné con dos caras: delante el carné, detrás el QR grande para fichar.
+export function CarneFlip({ person, animateRing }) {
+  const [back, setBack] = useState(false);
+  return (
+    <div className={`carne-flip ${back ? 'is-back' : ''}`}>
+      <div className="carne-face" aria-hidden={back} inert={back}>
+        <Carne person={person} own animateRing={animateRing} onFlip={() => setBack(true)} />
+      </div>
+      <div className="carne-face carne-face--back" aria-hidden={!back} inert={!back}>
+        <article className="carne carne--qr" aria-label="QR para fichar">
+          <span className="qr-big"><FakeQr seed={person.number} /></span>
+          <div className="qr-side">
+            <p className="t-mono" style={{ color: 'var(--lavender)' }}>Ficha en la entrada</p>
+            <p className="big num">Nº {String(person.number).padStart(4, '0')}</p>
+            <p className="sub">{person.name}</p>
+            <button className="press qr-back" onClick={() => setBack(false)}><Icon name="rotate-ccw" size={14} /> VOLVER</button>
+          </div>
+        </article>
+      </div>
+    </div>
+  );
+}
+
+// Número que rueda al cambiar (sube: entra desde abajo; baja: desde arriba).
+export function Rolling({ value }) {
+  const prev = useRef(value);
+  const ref = useRef(null);
+  useEffect(() => {
+    const from = prev.current;
+    prev.current = value;
+    if (from === value || !ref.current || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const dir = value > from ? 1 : -1;
+    ref.current.animate([{ transform: `translateY(${dir * 70}%)`, opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 260, easing: 'cubic-bezier(.23,1,.32,1)' });
+  }, [value]);
+  return <span className="rolling"><span ref={ref} className="num">{value}</span></span>;
+}
+
+// Confeti pequeño que sale de un botón (para «Me interesa» a partir de la segunda vez).
+export function burst(el, colors = ['#d6ff4f', '#8ee1e6', '#b6b8e7', '#f5e443']) {
+  if (!el || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const r = el.getBoundingClientRect();
+  import('canvas-confetti').then(({ default: confetti }) => confetti({
+    particleCount: 26, spread: 60, startVelocity: 22, gravity: 1.1, ticks: 90, scalar: 0.8, zIndex: 200, colors,
+    origin: { x: (r.left + r.width / 2) / innerWidth, y: (r.top + r.height / 2) / innerHeight },
+  }));
+}

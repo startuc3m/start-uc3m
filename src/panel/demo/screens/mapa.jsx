@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { Avatar, Load, Sheet, Skeleton, roleLine, useApp } from '../ui/pieces.jsx';
 import { go, useApi } from '../router.js';
 import { PageTitle } from './comunidad.jsx';
@@ -42,11 +43,15 @@ export function Mapa({ params }) {
   );
 }
 
-function TypeSheet({ code, onClose }) {
+function TypeSheet({ code: open, onClose }) {
   const { api } = useApp();
+  // Mientras la hoja sale, sigue enseñando el último tipo (no se vacía a mitad de animación).
+  const last = useRef(open);
+  if (open) last.current = open;
+  const code = last.current;
   const q = useApi(api, 'people', { type: code }, [code]);
   return (
-    <Sheet open={Boolean(code)} onClose={onClose} title={code ? `${code} · ${TYPE_NAMES[code]}` : ''}>
+    <Sheet open={Boolean(open)} onClose={onClose} title={code ? `${code} · ${TYPE_NAMES[code]}` : ''}>
       <Load q={q} skeleton={<Skeleton h={64} n={3} />}>
         {(d) => d.people.length === 0 ? <p className="t-soft">Aún no hay nadie con este tipo. ¿Serás la primera persona?</p> : (
           <ul style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>

@@ -6,8 +6,8 @@ import { go, useApi } from '../router.js';
 function ComunidadTabs({ current }) {
   return (
     <div className="tabs" role="tablist" aria-label="Comunidad">
-      <a href="#/comunidad" role="tab" aria-selected={current === 'paraTi'}>Para ti</a>
-      <a href="#/comunidad/gente" role="tab" aria-selected={current === 'gente'}>Gente</a>
+      <a href="#/comunidad" role="tab" aria-selected={current === 'paraTi'}>Para ti{current === 'paraTi' && <span className="tab-line" />}</a>
+      <a href="#/comunidad/gente" role="tab" aria-selected={current === 'gente'}>Gente{current === 'gente' && <span className="tab-line" />}</a>
       <span className="grow" />
       {current === 'paraTi' && <a href="#/comunidad/gente" aria-label="Buscar personas" style={{ boxShadow: 'none' }}><Icon name="search" size={22} /></a>}
     </div>

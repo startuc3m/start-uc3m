@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Icon from '../ui/Icon.jsx';
-import { Avatar, Carne, Load, OfferLogo, Sellos, Skeleton, useApp } from '../ui/pieces.jsx';
+import { Avatar, CarneFlip, Load, OfferLogo, Sellos, Skeleton, useApp } from '../ui/pieces.jsx';
 import { back, useApi } from '../router.js';
 import { PageTitle } from './comunidad.jsx';
 import { FAMILIES, TYPE_NAMES, familyOf } from '../data.js';
@@ -8,7 +8,6 @@ import { FAMILIES, TYPE_NAMES, familyOf } from '../data.js';
 export function Perfil() {
   const { api, me, toast, wide } = useApp();
   const offers = useApi(api, 'offers', { tab: 'interesan' }, []);
-  const [flipped, setFlipped] = useState(false);
   const lvl = me.level;
   const missing = lvl.next ? lvl.next.from - lvl.count : 0;
   return (
@@ -16,7 +15,7 @@ export function Perfil() {
       <PageTitle eyebrow="Mi perfil" action={wide && <ProfileActions toast={toast} me={me} />}>Así te conoce Start</PageTitle>
       <div className="two-col two-col--profile">
         <div className="col-left">
-          <Carne person={me} own animateRing onFlip={() => setFlipped(!flipped)} className={flipped ? 'is-flipped' : ''} />
+          <CarneFlip person={me} animateRing />
           {!wide && <ProfileActions toast={toast} me={me} />}
           <section className="card level-card" aria-label="Tu nivel">
             <p className="t-mono t-soft">Nivel {lvl.n}</p>

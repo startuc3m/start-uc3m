@@ -2,10 +2,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import './panel.css';
 import './screens.css';
 import { createDemoApi } from './api.js';
-import { DEPTH, SECTION, back, useRoute } from './router.js';
+import { DEPTH, SECTION, back, interceptLinks, useRoute } from './router.js';
+import './motion.css';
 import Icon from './ui/Icon.jsx';
 import { Avatar, Ctx, Logo } from './ui/pieces.jsx';
 import Celebracion from './ui/Celebracion.jsx';
+import Toast from './ui/Toast.jsx';
 import DemoPanel from './DemoPanel.jsx';
 import { Avisos, Gente, ParaTi, Persona } from './screens/comunidad.jsx';
 import { Mapa } from './screens/mapa.jsx';
@@ -52,7 +54,7 @@ export default function PanelDemo({ photos }) {
   const theme = themePref === 'system' ? (systemDark ? 'dark' : 'light') : themePref;
   const [me, setMe] = useState(null);
   const [unread, setUnread] = useState(0);
-  const [toastMsg, setToastMsg] = useState(null);
+  const [toastMsg, setToastMsg] = useState(null); // { id, text }
   const [party, setParty] = useState(null);
   const [nonce, setNonce] = useState(0);
   const toastTimer = useRef(0);
@@ -64,9 +66,9 @@ export default function PanelDemo({ photos }) {
   }, [api]);
   useEffect(() => { refreshMe(); }, [refreshMe]);
 
-  const toast = useCallback((msg) => {
+  const toast = useCallback((text) => {
     clearTimeout(toastTimer.current);
-    setToastMsg(msg);
+    setToastMsg({ id: Date.now(), text });
     toastTimer.current = setTimeout(() => setToastMsg(null), 2600);
   }, []);
   const setTheme = (t) => { setThemePref(t); try { localStorage.setItem(THEME_KEY, t); } catch {} };
@@ -92,7 +94,7 @@ export default function PanelDemo({ photos }) {
 
   return (
     <Ctx.Provider value={ctx}>
-      <div className="pd" data-theme={theme} data-route={route.name}>
+      <div className="pd" data-theme={theme} data-route={route.name} onClick={interceptLinks}>
         {bare ? (
           route.name === 'acceso' ? <Acceso /> : <Alta params={route.params} />
         ) : (
@@ -132,7 +134,7 @@ export default function PanelDemo({ photos }) {
             </nav>
           </div>
         )}
-        {toastMsg && <div className="toast" role="status"><Icon name="check" size={18} />{toastMsg}</div>}
+        <Toast msg={toastMsg} />
         {party && <Celebracion party={party} onClose={() => setParty(null)} />}
         <DemoPanel />
       </div>

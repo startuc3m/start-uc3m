@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import Icon from '../ui/Icon.jsx';
-import { Avatar, Empty, Load, OfferLogo, Skeleton, Stack, TypeTag, roleLine, useApp } from '../ui/pieces.jsx';
+import { Avatar, Empty, Load, OfferLogo, Rolling, Skeleton, Stack, TypeTag, burst, roleLine, useApp } from '../ui/pieces.jsx';
 import { back, go, useApi } from '../router.js';
 import { PageTitle } from './comunidad.jsx';
 
@@ -16,7 +16,7 @@ export function Ofertas({ path }) {
     <>
       <PageTitle eyebrow="Ofertas" action={me.canPublish && <a className="btn btn--primary press only-desk" href="#/ofertas/publicar"><Icon name="plus" size={18} /> Publicar oferta</a>}>Prácticas y oportunidades</PageTitle>
       <nav className="segmented" aria-label="Ofertas">
-        {tabs.map(([k, href, label]) => <a key={k} href={`#${href}`} aria-current={tab === k ? 'page' : undefined}>{label}{q.data ? <span className="num"> · {q.data.counts[k]}</span> : null}</a>)}
+        {tabs.map(([k, href, label]) => <a key={k} href={`#${href}`} aria-current={tab === k ? 'page' : undefined}>{tab === k && <span className="seg-bg" aria-hidden="true" />}<span className="seg-t">{label}{q.data ? <span className="num"> · {q.data.counts[k]}</span> : null}</span></a>)}
       </nav>
       <div className="two-col two-col--detail">
         <div className="col-main">
@@ -62,17 +62,24 @@ function OfertaDetalle({ id, onChange, compact = false }) {
   const { api, photos, celebrate, toast } = useApp();
   const q = useApi(api, 'offer', { id }, [id]);
   const [busy, setBusy] = useState(false);
+  const btn = useRef(null);
   return (
     <Load q={q} skeleton={<><div className="skel" style={{ aspectRatio: '16/8' }} /><Skeleton h={40} n={4} /></>}>
       {({ offer: o }) => {
         const toggle = async () => {
+          if (busy) return;
           setBusy(true);
           try {
             const r = await api('offer.interest', { id: o.id, on: !o.isInterested });
             q.setData({ offer: r.offer });
             onChange?.();
-            if (r.offer.isInterested) celebrate({ kind: 'interest', title: '¡Apuntado!', text: `${o.contact} verá tu perfil y tu CV. Si encaja, te escribirá.`, people: r.offer.interestedPeople, count: r.offer.interestedCount });
-            else toast('Ya no te interesa esta oferta');
+            if (r.offer.isInterested) {
+              // La celebración grande, una vez por sesión; después, un confeti pequeño desde el botón.
+              let first = true;
+              try { first = !sessionStorage.getItem('pd-c2'); sessionStorage.setItem('pd-c2', '1'); } catch {}
+              if (first) celebrate({ kind: 'interest', title: '¡Apuntado!', text: `${o.contact} verá tu perfil y tu CV. Si encaja, te escribirá.`, people: r.offer.interestedPeople, count: r.offer.interestedCount });
+              else { burst(btn.current); navigator.vibrate?.(12); }
+            } else toast('Ya no te interesa esta oferta');
           } catch (e) { toast(e.message); } finally { setBusy(false); }
         };
         return (
@@ -91,13 +98,13 @@ function OfertaDetalle({ id, onChange, compact = false }) {
             {o.interestedCount > 0 && (
               <div className="card feed-row" style={{ padding: 14, background: 'var(--paper-2)', border: 0 }}>
                 <Stack people={o.interestedPeople} />
-                <span className="grow t-soft">{o.isInterested ? 'Tú' : o.interestedPeople.slice(0, 2).map((x) => x.name.split(' ')[0]).join(', ')}{o.interestedCount > (o.isInterested ? 1 : 2) ? ` y ${o.interestedCount - (o.isInterested ? 1 : 2)} más de Start` : ''} {o.interestedCount === 1 ? 'se ha apuntado' : 'se han apuntado'}</span>
+                <span className="grow t-soft"><Rolling value={o.interestedCount} /> de Start {o.interestedCount === 1 ? 'se ha apuntado' : 'se han apuntado'}{o.isInterested ? ', tú incluido' : ''}</span>
               </div>
             )}
             {o.isMine && <a className="btn btn--ghost btn--block press" href={`#/oferta/${o.id}/interesados`}><Icon name="users" size={18} /> Ver interesados · {o.interestedCount}</a>}
             <div className="sticky-cta">
-              <button className={`btn btn--block press ${o.isInterested ? 'btn--soft' : 'btn--lime'}`} onClick={toggle} disabled={busy} aria-pressed={o.isInterested}>
-                {o.isInterested ? <><Icon name="check" size={18} /> Te interesa</> : 'Me interesa'}
+              <button ref={btn} className={`btn btn--block press btn-morph ${o.isInterested ? 'btn--soft' : 'btn--lime'}`} onClick={toggle} aria-busy={busy} aria-pressed={o.isInterested}>
+                <span key={String(o.isInterested)} className="btn-label">{o.isInterested ? <><Icon name="check" size={18} className="check-draw" /> Te interesa</> : 'Me interesa'}</span>
               </button>
               <p className="t-soft" style={{ fontSize: 14 }}>{o.isInterested ? 'Toca otra vez para quitarlo.' : `${o.contact} verá tu perfil y tu CV.`}</p>
             </div>

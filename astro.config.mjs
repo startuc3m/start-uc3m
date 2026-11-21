@@ -26,6 +26,9 @@ export default defineConfig({
   ],
   vite: {
     plugins: [tailwindcss()],
+    // Solo en desarrollo: el confeti se importa bajo demanda y, si Vite lo descubre tarde,
+    // recarga la página a mitad de la celebración.
+    optimizeDeps: { include: ['canvas-confetti'] },
     // Solo en `npm run dev`: las funciones de api/ las levanta `npm run dev:api`
     // en el 3001. El webhook de Stripe apúntalo directo al 3001, no por aquí.
     server: { proxy: { '/api': 'http://localhost:3001' } },
