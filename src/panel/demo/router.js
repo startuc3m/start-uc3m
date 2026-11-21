@@ -57,19 +57,27 @@ const scrollMemory = new Map();
 export let lastDir = 'none';
 export const savedScroll = (path) => scrollMemory.get(path) ?? 0;
 
+let pending = null; // destino de una navegación en curso (contra el doble toque)
+let navId = 0;
+
 function navigate(update, to, { skip = false, pop = false } = {}) {
   const a = depthOf(current), b = depthOf(to);
   const dir = b > a ? 'push' : b < a || pop ? 'pop' : 'none';
   if (typeof scrollY !== 'undefined') scrollMemory.set(current, scrollY);
   lastDir = pop ? 'pop' : dir;
-  if (skip || typeof document === 'undefined' || !document.startViewTransition) return update();
+  const run = () => { pending = null; update(); };
+  if (skip || typeof document === 'undefined' || !document.startViewTransition) return run();
   const root = document.documentElement;
+  const mine = ++navId;
   root.dataset.nav = reduced() ? 'fade' : dir;
-  const t = document.startViewTransition(() => flushSync(update));
-  t.finished.finally(() => { delete root.dataset.nav; });
+  const t = document.startViewTransition(() => flushSync(run));
+  // Solo limpia quien puso la marca: una transición saltada no deja sin dirección a la siguiente.
+  t.finished.finally(() => { if (mine === navId) delete root.dataset.nav; });
 }
 
 if (typeof window !== 'undefined') {
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  if (!history.state?.app) history.replaceState({ app: true, root: true }, '', location.href);
   // Atrás/adelante del navegador. Si Safari ya animó el gesto de volver, no repetimos.
   // (Cambiar el hash a mano también dispara popstate, así que no hace falta escuchar hashchange,
   // que además llegaría antes de que la transición capture la pantalla vieja.)
@@ -82,14 +90,16 @@ export function useRoute() {
 }
 
 export function go(path, { replace = false } = {}) {
-  if (path === current) return;
+  if (path === (pending ?? current)) return;
+  pending = path;
   navigate(() => {
-    if (replace) history.replaceState(null, '', `#${path}`);
-    else history.pushState(null, '', `#${path}`);
+    // Las entradas propias llevan una marca: así «volver» nunca saca de la app.
+    if (replace) history.replaceState({ app: true }, '', `#${path}`);
+    else history.pushState({ app: true }, '', `#${path}`);
     set(path);
   }, path);
 }
-export const back = (fallback = '/comunidad') => (history.length > 1 ? history.back() : go(fallback, { replace: true }));
+export const back = (fallback = '/comunidad') => (history.state?.app && !history.state.root ? history.back() : go(fallback, { replace: true }));
 
 // Los enlaces internos (#/…) pasan por go() para tener transición.
 export function interceptLinks(e) {
@@ -100,20 +110,35 @@ export function interceptLinks(e) {
   go(a.getAttribute('href').slice(1));
 }
 
-// Pide datos al api y avisa de carga, error y recarga.
+// Pide datos al api y avisa de carga, error y recarga. Guarda la última respuesta de
+// cada petición: al volver a una pantalla se pinta al instante con lo que había (y el
+// scroll puede volver a su sitio) mientras se pide de nuevo por detrás.
+const cache = new Map();
+export const clearApiCache = () => cache.clear();
+
 export function useApi(api, action, input, deps = []) {
-  const [state, set] = useState({ data: null, error: null, loading: true });
+  const key = `${action}:${JSON.stringify(input ?? {})}`;
+  const [state, set] = useState(() => ({ data: cache.get(key) ?? null, error: null, loading: true }));
   const seq = useRef(0);
   const run = useCallback(async () => {
     const id = ++seq.current;
     set((s) => ({ ...s, loading: true, error: null }));
     try {
       const data = await api(action, input);
+      cache.set(key, data);
       if (id === seq.current) set({ data, error: null, loading: false });
     } catch (e) {
       if (id === seq.current) set({ data: null, error: e.message, loading: false });
     }
   }, deps); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { run(); }, [run]);
-  return { ...state, reload: run, setData: (fn) => set((s) => ({ ...s, data: typeof fn === 'function' ? fn(s.data) : fn })) };
+  return {
+    ...state,
+    reload: run,
+    setData: (fn) => set((s) => {
+      const data = typeof fn === 'function' ? fn(s.data) : fn;
+      cache.set(key, data);
+      return { ...s, data };
+    }),
+  };
 }

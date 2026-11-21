@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Icon from './ui/Icon.jsx';
 import { Sheet, useApp } from './ui/pieces.jsx';
-import { go } from './router.js';
+import { clearApiCache, go } from './router.js';
 
 // Botón «Demo»: solo existe en el prototipo. Sirve para probar estados y
 // animaciones sin tener que provocarlos de verdad.
@@ -11,6 +11,7 @@ export default function DemoPanel() {
   const [s, setS] = useState(demo.getSettings);
   const update = async (patch) => {
     const r = await api('demo.settings', patch);
+    clearApiCache();
     setS(r.settings);
     reloadScreen(); // la pantalla actual vuelve a pedir sus datos con el ajuste nuevo
     refreshMe();
@@ -40,7 +41,7 @@ export default function DemoPanel() {
             <button className="pill press" onClick={() => { setOpen(false); go('/acceso'); }}>Acceso y alta</button>
             <button className="pill press" onClick={() => { setOpen(false); go('/perfil/editar'); }}>Editar perfil</button>
           </div>
-          <button className="btn btn--ghost btn--block press" style={{ marginTop: 12 }} onClick={async () => { await api('demo.reset'); setS(demo.getSettings()); await refreshMe(); setOpen(false); go('/comunidad', { replace: true }); toast('Demo reiniciada'); }}><Icon name="rotate-ccw" size={18} /> Reiniciar demo</button>
+          <button className="btn btn--ghost btn--block press" style={{ marginTop: 12 }} onClick={async () => { await api('demo.reset'); clearApiCache(); setS(demo.getSettings()); await refreshMe(); setOpen(false); go('/comunidad', { replace: true }); toast('Demo reiniciada'); }}><Icon name="rotate-ccw" size={18} /> Reiniciar demo</button>
         </div>
       </Sheet>
     </>

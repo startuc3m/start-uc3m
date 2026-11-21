@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import Icon from './Icon.jsx';
-import { FakeQr, useApp } from './pieces.jsx';
+import { FakeQr, useApp, useDialogFocus } from './pieces.jsx';
 import { go } from '../router.js';
 
 // QR a pantalla grande para fichar en la entrada de un evento. El QR "crece" desde el
@@ -10,21 +10,26 @@ export default function QrModal({ onClose }) {
   const { me, api, refreshMe, celebrate, toast } = useApp();
   const [phase, setPhase] = useState('idle'); // idle → scanning → ok
   const close = useRef(null);
+  const box = useRef(null);
+  useDialogFocus(box);
 
   useEffect(() => {
     close.current?.focus();
     const onKey = (e) => e.key === 'Escape' && onClose();
     addEventListener('keydown', onKey);
-    let lock = null;
-    navigator.wakeLock?.request('screen').then((l) => { lock = l; }).catch(() => {});
-    return () => { removeEventListener('keydown', onKey); lock?.release().catch(() => {}); };
+    // Si se cierra antes de que llegue el lock, se suelta en cuanto llega.
+    let lock = null, alive = true;
+    navigator.wakeLock?.request('screen').then((l) => { if (alive) lock = l; else l.release().catch(() => {}); }).catch(() => {});
+    return () => { alive = false; removeEventListener('keydown', onKey); lock?.release().catch(() => {}); };
   }, [onClose]);
 
   // Solo en la demo: simula que alguien del equipo escanea tu QR en la puerta.
   const simulate = async () => {
     if (phase !== 'idle') return;
     setPhase('scanning');
-    const [r] = await Promise.all([api('checkin', { stamp: 'invest' }), new Promise((ok) => setTimeout(ok, 900))]);
+    let r;
+    try { [r] = await Promise.all([api('checkin', { stamp: 'invest' }), new Promise((ok) => setTimeout(ok, 900))]); }
+    catch (e) { setPhase('idle'); toast(e.message); return; }
     setPhase('ok');
     navigator.vibrate?.(20);
     await new Promise((ok) => setTimeout(ok, 650));
@@ -36,7 +41,7 @@ export default function QrModal({ onClose }) {
 
   return (
     <div className="qr-modal" role="dialog" aria-modal="true" aria-labelledby="qr-t" onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="qr-card">
+      <div className="qr-card" ref={box}>
         <button ref={close} className="qr-close press" onClick={onClose} aria-label="Cerrar"><Icon name="x" size={22} /></button>
         <p id="qr-t" className="t-mono">Enséñalo en la entrada</p>
         <div className={`qr-huge is-${phase}`} style={{ viewTransitionName: 'my-qr' }}>

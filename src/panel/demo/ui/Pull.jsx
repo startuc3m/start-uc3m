@@ -12,7 +12,11 @@ export function usePull(onRefresh) {
   const start = useRef(null);
   const pullRef = useRef(0);
   useEffect(() => {
-    const down = (e) => { if (scrollY <= 0 && e.touches.length === 1 && !refreshing) start.current = e.touches[0].clientY; };
+    const down = (e) => {
+      // Nunca detrás de una hoja, del QR o de una celebración.
+      if (e.target.closest?.('.sheet, .scrim, .qr-modal, .party')) return;
+      if (scrollY <= 0 && e.touches.length === 1 && !refreshing) start.current = e.touches[0].clientY;
+    };
     const move = (e) => {
       if (start.current == null) return;
       const dy = e.touches[0].clientY - start.current;

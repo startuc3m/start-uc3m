@@ -47,7 +47,7 @@ export function Ofertas({ path }) {
             )}
           </Load>
         </div>
-        {wide && q.data?.offers.length > 0 && <aside className="col-side col-side--panel"><OfertaDetalle id={selected ?? q.data.offers[0].id} onChange={q.reload} compact /></aside>}
+        {wide && q.data?.offers.length > 0 && <aside className="col-side col-side--panel"><OfertaDetalle key={selected ?? q.data.offers[0].id} id={selected ?? q.data.offers[0].id} onChange={q.reload} compact /></aside>}
       </div>
       {me.canPublish && <a className="fab press only-mobile" href="#/ofertas/publicar" aria-label="Publicar oferta"><Icon name="plus" size={24} /></a>}
     </>
@@ -55,7 +55,7 @@ export function Ofertas({ path }) {
 }
 
 export function Oferta({ params }) {
-  return <OfertaDetalle id={params.id} />;
+  return <OfertaDetalle key={params.id} id={params.id} />;
 }
 
 function OfertaDetalle({ id, onChange, compact = false }) {
@@ -64,6 +64,7 @@ function OfertaDetalle({ id, onChange, compact = false }) {
   const [busy, setBusy] = useState(false);
   const btn = useRef(null);
   const toggleRef = useRef(null);
+  const queued = useRef(null);
   return (
     <Load q={q} skeleton={<><div className="skel" style={{ aspectRatio: '16/8' }} /><Skeleton h={40} n={4} /></>}>
       {({ offer: o }) => {
@@ -74,7 +75,9 @@ function OfertaDetalle({ id, onChange, compact = false }) {
           return { ...o, isInterested: on, interestedCount: o.interestedCount + (on ? 1 : -1), interestedPeople: on ? [me, ...others].slice(0, 3) : others };
         };
         const toggle = async (on = !o.isInterested) => {
-          if (busy || on === o.isInterested) return;
+          // Si llega mientras se guarda (p. ej. «Deshacer» con la red lenta), se encola.
+          if (busy) { queued.current = on; return; }
+          if (on === o.isInterested) return;
           const before = o;
           const next = apply(on);
           q.setData({ offer: next });
@@ -90,7 +93,10 @@ function OfertaDetalle({ id, onChange, compact = false }) {
             const r = await api('offer.interest', { id: o.id, on });
             q.setData({ offer: r.offer });
             onChange?.();
-          } catch (e) { q.setData({ offer: before }); toast(e.message); } finally { setBusy(false); }
+          } catch (e) { q.setData({ offer: before }); toast(e.message); } finally {
+            setBusy(false);
+            if (queued.current !== null) { const next2 = queued.current; queued.current = null; setTimeout(() => toggleRef.current?.(next2)); }
+          }
         };
         toggleRef.current = toggle;
         return (
@@ -135,6 +141,10 @@ export function Interesados({ params }) {
   const [filter, setFilter] = useState('todos');
   const [career, setCareer] = useState('');
   const [cv, setCv] = useState(null);
+  // La hoja del CV sigue enseñando a la persona mientras sale.
+  const lastCv = useRef(null);
+  if (cv) lastCv.current = cv;
+  const shownCv = lastCv.current;
   const setStatus = async (x, status, msg) => {
     await api('applicant.status', { offer: params.id, person: x.id, status });
     q.setData((d) => ({ ...d, people: d.people.map((y) => (y.id === x.id ? { ...y, status } : y)) }));
@@ -193,17 +203,17 @@ export function Interesados({ params }) {
           );
         }}
       </Load>
-      <Sheet open={Boolean(cv)} onClose={() => setCv(null)} title={cv?.cv?.name ?? 'CV'}>
-        {cv && (
+      <Sheet open={Boolean(cv)} onClose={() => setCv(null)} title={shownCv?.cv?.name ?? 'CV'}>
+        {shownCv && (
           <>
-            <div className="cv-page" aria-label={`Vista previa del CV de ${cv.name}`}>
-              <div className="feed-row"><Avatar person={cv} size={44} /><span><b style={{ display: 'block', fontSize: 18 }}>{cv.name}</b><span className="t-soft" style={{ fontSize: 13 }}>{cv.career} · {cv.course} · UC3M</span></span></div>
+            <div className="cv-page" aria-label={`Vista previa del CV de ${shownCv.name}`}>
+              <div className="feed-row"><Avatar person={shownCv} size={44} /><span><b style={{ display: 'block', fontSize: 18 }}>{shownCv.name}</b><span className="t-soft" style={{ fontSize: 13 }}>{shownCv.career} · {shownCv.course} · UC3M</span></span></div>
               {['Experiencia', 'Formación', 'Proyectos', 'Idiomas'].map((h, i) => <div key={h}><p className="t-mono" style={{ color: 'var(--brand-text)', marginBottom: 6 }}>{h}</p>{[92, 78, 64].slice(0, 3 - (i % 2)).map((w) => <i key={w} className="cv-line" style={{ width: `${w}%` }} />)}</div>)}
             </div>
-            <p className="t-soft" style={{ fontSize: 13 }}>Vista previa de ejemplo · {cv.cv.meta}</p>
+            <p className="t-soft" style={{ fontSize: 13 }}>Vista previa de ejemplo · {shownCv.cv.meta}</p>
             <div style={{ display: 'flex', gap: 8 }}>
               <button className="btn btn--soft press" onClick={() => toast('En la demo no se descargan CV')}>Descargar</button>
-              <button className="btn btn--primary btn--block press" onClick={() => { contact(cv); setCv(null); }}><Icon name="message-circle" size={17} /> Contactar</button>
+              <button className="btn btn--primary btn--block press" onClick={() => { contact(shownCv); setCv(null); }}><Icon name="message-circle" size={17} /> Contactar</button>
             </div>
           </>
         )}

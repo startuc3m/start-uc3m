@@ -187,3 +187,11 @@ html[data-nav='qr']::view-transition-old(root), html[data-nav='qr']::view-transi
 @keyframes pd-spin { to { rotate: 360deg; } }
 :where(html:has(.pd)) { overscroll-behavior-y: contain; }
 @media (min-width: 1024px) { .pull { display: none; } }
+/* Móvil nativo: mantener pulsado un botón no abre el menú de enlace ni selecciona texto. */
+.press { -webkit-touch-callout: none; }
+.pd img { -webkit-user-drag: none; }
+
+/* Al avanzar o volver, los indicadores con nombre viajan con su página (no se quedan flotando). */
+html:is([data-nav='push'], [data-nav='pop']) :is(.tab-line, .seg-bg, .carne .qr) { view-transition-name: none !important; }
+/* Arrastrar la hoja: el gesto es nuestro, no del scroll del navegador. */
+.sheet-drag { touch-action: none; }

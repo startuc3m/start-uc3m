@@ -4,6 +4,25 @@ import logoWord from '../assets/start-wordmark.svg?raw';
 import Icon from './Icon.jsx';
 
 export const Ctx = createContext(null);
+
+// Diálogos: el Tab no se escapa al contenido de detrás y, al cerrar, el foco vuelve
+// a donde estaba (el botón que lo abrió).
+export function useDialogFocus(ref, active = true) {
+  useEffect(() => {
+    if (!active) return;
+    const back = document.activeElement;
+    const onKey = (e) => {
+      if (e.key !== 'Tab' || !ref.current) return;
+      const items = [...ref.current.querySelectorAll('a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])')];
+      if (!items.length) return;
+      const first = items[0], last = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    };
+    addEventListener('keydown', onKey);
+    return () => { removeEventListener('keydown', onKey); if (back?.isConnected) back.focus?.({ preventScroll: true }); };
+  }, [active]); // eslint-disable-line react-hooks/exhaustive-deps
+}
 export const useApp = () => useContext(Ctx);
 
 // Logo oficial (repo brand): se pinta el SVG tal cual, solo cambia el color.
@@ -147,14 +166,18 @@ export function Sheet({ open, onClose, title, children }) {
   const scrim = useRef(null);
   const drag = useRef(null);
   const leaving = useRef(false);
-  const lastFocus = useRef(null);
 
-  useEffect(() => { if (open) { leaving.current = false; setMounted(true); } }, [open]);
+  useEffect(() => {
+    if (!open) return;
+    // Si se reabre mientras salía, se cancela la salida en vez de desmontar.
+    if (leaving.current) { leaving.current = false; panel.current?.getAnimations().forEach((a) => a.cancel()); scrim.current?.getAnimations().forEach((a) => a.cancel()); }
+    setMounted(true);
+  }, [open]);
+  useDialogFocus(panel, mounted);
 
   // Entrada
   useEffect(() => {
     if (!mounted || !open || !panel.current) return;
-    lastFocus.current = document.activeElement;
     panel.current.focus({ preventScroll: true });
     if (noMotion()) return;
     const from = isWide() ? 'translateY(12px) scale(.97)' : 'translateY(100%)';
@@ -166,7 +189,7 @@ export function Sheet({ open, onClose, title, children }) {
   const exit = (after) => {
     if (leaving.current) return;
     leaving.current = true;
-    const done = () => { setMounted(false); lastFocus.current?.focus?.({ preventScroll: true }); after?.(); };
+    const done = () => { if (!leaving.current) return; setMounted(false); after?.(); };
     if (!panel.current || noMotion()) return done();
     const now = getComputedStyle(panel.current).transform;
     const to = isWide() ? 'translateY(12px) scale(.97)' : 'translateY(100%)';
@@ -205,7 +228,7 @@ export function Sheet({ open, onClose, title, children }) {
     drag.current = null;
     const dy = e.clientY - d.y;
     const v = dy / (performance.now() - d.t);
-    if (dy > 120 || v > 0.11) return requestClose();
+    if (dy > 120 || (v > 0.11 && dy > 10)) return requestClose();
     const now = panel.current.style.transform;
     panel.current.style.transform = '';
     if (scrim.current) scrim.current.style.opacity = '';

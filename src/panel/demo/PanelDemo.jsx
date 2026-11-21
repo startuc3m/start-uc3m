@@ -94,20 +94,39 @@ export default function PanelDemo({ photos }) {
     document.body.style.background = theme === 'dark' ? '#0e0e26' : '#f8f8fc';
   }, [theme, route.name]);
 
-  // Al avanzar, la pantalla nueva empieza arriba; al volver, donde la dejaste. En layout
-  // effect para que la View Transition fotografíe ya la posición buena.
-  useLayoutEffect(() => { window.scrollTo(0, lastDir === 'pop' ? savedScroll(route.path) : 0); }, [route.path]);
-
-  if (!me) return <div className="pd" data-theme={theme}><div className="pd-boot" aria-busy="true"><Logo className="logo" /></div></div>;
+  // Al avanzar, la pantalla nueva empieza arriba; al volver, donde la dejaste (los datos
+  // salen de la caché de useApi, así que la página ya tiene su altura). En layout effect
+  // para que la View Transition fotografíe ya la posición buena. Abrir un tipo del mapa
+  // no es cambiar de pantalla: ahí no se toca el scroll.
+  const prevName = useRef(route.name);
+  useLayoutEffect(() => {
+    const same = prevName.current === route.name && route.name === 'mapa';
+    prevName.current = route.name;
+    if (same) return;
+    const target = lastDir === 'pop' ? savedScroll(route.path) : 0;
+    window.scrollTo(0, target);
+    // Si la página aún no llega a esa altura (fotos, listas que entran), se reintenta un momento.
+    if (target > 0 && scrollY < target - 2) {
+      const until = performance.now() + 600;
+      const retry = () => { scrollTo(0, target); if (scrollY < target - 2 && performance.now() < until) requestAnimationFrame(retry); };
+      requestAnimationFrame(retry);
+    }
+  }, [route.path]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // El QR pequeño del carné crece hasta la ventana (y vuelve) con una transición de elemento compartido.
-  const morphQr = (open) => {
+  const morphQr = useCallback((open) => {
     const run = () => flushSync(() => setQrOpen(open));
     if (!document.startViewTransition || matchMedia('(prefers-reduced-motion: reduce)').matches) return run();
     document.documentElement.dataset.nav = 'qr';
-    document.startViewTransition(run).finished.finally(() => { delete document.documentElement.dataset.nav; });
-  };
-  const ctx = { qrOpen, openQr: () => morphQr(true), api, demo, photos, me, refreshMe, toast, celebrate: setParty, reloadScreen: () => setNonce((n) => n + 1), wide, theme, themePref, setTheme };
+    document.startViewTransition(run).finished.finally(() => { if (document.documentElement.dataset.nav === 'qr') delete document.documentElement.dataset.nav; });
+  }, []);
+  const openQr = useCallback(() => morphQr(true), [morphQr]);
+  const closeQr = useCallback(() => morphQr(false), [morphQr]);
+  const closeParty = useCallback(() => setParty(null), []);
+
+  if (!me) return <div className="pd" data-theme={theme}><div className="pd-boot" aria-busy="true"><Logo className="logo" /></div></div>;
+
+  const ctx = { qrOpen, openQr, api, demo, photos, me, refreshMe, toast, celebrate: setParty, reloadScreen: () => setNonce((n) => n + 1), wide, theme, themePref, setTheme };
   const bare = route.name === 'acceso' || route.name === 'alta';
   const Screen = SCREENS[route.name] ?? ParaTi;
   const section = SECTION[route.name];
@@ -144,7 +163,7 @@ export default function PanelDemo({ photos }) {
                   <a className="pd-bell press" href="#/avisos" aria-label={unread ? `Avisos, ${unread} sin leer` : 'Avisos'}><Icon name="bell" size={22} />{unread > 0 && <span key={unread} className="dot" />}</a>
                 </header>
               )}
-              <main className={`pd-screen pd-screen--${route.name}`} key={`${route.path}#${nonce}`}>
+              <main className={`pd-screen pd-screen--${route.name}`} key={`${route.name === 'mapa' ? 'mapa' : route.path}#${nonce}`}>
                 <Screen params={route.params} path={route.path} />
               </main>
             </div>
@@ -156,8 +175,8 @@ export default function PanelDemo({ photos }) {
           </div>
         )}
         <Toast msg={toastMsg} onAction={dismissToast} />
-        {qrOpen && <QrModal onClose={() => morphQr(false)} />}
-        {party && <Celebracion party={party} onClose={() => setParty(null)} />}
+        {qrOpen && <QrModal onClose={closeQr} />}
+        {party && <Celebracion party={party} onClose={closeParty} />}
         <DemoPanel />
       </div>
     </Ctx.Provider>

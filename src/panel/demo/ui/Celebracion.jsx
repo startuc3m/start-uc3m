@@ -1,10 +1,12 @@
 import { useEffect, useRef } from 'react';
-import { Sello, Stack } from './pieces.jsx';
+import { Sello, Stack, useDialogFocus } from './pieces.jsx';
 
 // Celebraciones (C1 sello nuevo, C2 ¡apuntado!, bienvenida). Son momentos raros,
 // así que pueden tener más fiesta que el resto de la interfaz.
 export default function Celebracion({ party, onClose }) {
   const btn = useRef(null);
+  const box = useRef(null);
+  useDialogFocus(box);
   useEffect(() => {
     btn.current?.focus();
     const onKey = (e) => e.key === 'Escape' && onClose();
@@ -23,7 +25,7 @@ export default function Celebracion({ party, onClose }) {
 
   return (
     <div className="party" role="dialog" aria-modal="true" aria-labelledby="party-t" onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="party-card">
+      <div className="party-card" ref={box}>
         {party.stamp && (party.stamp.pending
           ? <span className="party-pending"><Sello stamp={party.stamp} size={130} rotate={-6} /><span className="t-mono">Al fichar</span></span>
           : <Sello stamp={party.stamp} size={150} rotate={-10} className="party-stamp" />)}
