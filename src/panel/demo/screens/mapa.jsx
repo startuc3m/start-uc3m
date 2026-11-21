@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import Icon from '../ui/Icon.jsx';
 import { Avatar, Load, Sheet, Skeleton, Stack, roleLine, useApp } from '../ui/pieces.jsx';
 import { go, useApi } from '../router.js';
-import { PageTitle } from './comunidad.jsx';
+import { ComunidadHead } from './comunidad.jsx';
 import { TYPE_NAMES } from '../data.js';
 
 export function Mapa({ params }) {
@@ -11,7 +11,7 @@ export function Mapa({ params }) {
   const open = params.tipo ?? null;
   return (
     <>
-      <PageTitle eyebrow="Mapa">Start por personalidades</PageTitle>
+      <ComunidadHead current="mapa" />
       <Load q={q} skeleton={<><div className="skel" style={{ height: 108 }} /><div className="map-grid">{[0, 1, 2, 3].map((i) => <div key={i} className="skel" style={{ height: 220 }} />)}</div></>}>
         {(d) => {
           const all = d.families.flatMap((f) => f.types);
@@ -50,7 +50,7 @@ export function Mapa({ params }) {
           );
         }}
       </Load>
-      <TypeSheet code={open} onClose={() => go('/mapa', { replace: true })} />
+      <TypeSheet code={open} onClose={() => go('/comunidad/mapa', { replace: true })} />
     </>
   );
 }

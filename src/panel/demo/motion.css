@@ -4,7 +4,7 @@
 
 /* ---------- Navegación (View Transitions) ---------- */
 /* Cabecera, menú y barra se quedan quietos: solo se mueve el contenido. */
-.pd-header { view-transition-name: pd-header; }
+.pd-top { view-transition-name: pd-header; }
 .pd-side { view-transition-name: pd-side; }
 .pd-tabbar { view-transition-name: pd-tabbar; }
 .tab-line { view-transition-name: tab-line; }
@@ -161,8 +161,8 @@ html[data-nav='qr']::view-transition-old(root), html[data-nav='qr']::view-transi
 .pd-bell .dot { animation: pd-dot 360ms cubic-bezier(.23,1,.32,1) both; }
 @keyframes pd-dot { 0% { transform: scale(.5); opacity: 0; } 60% { transform: scale(1.25); opacity: 1; } 100% { transform: scale(1); } }
 /* Cabecera translúcida: el contenido se intuye por debajo al hacer scroll. */
-.pd-header { background: color-mix(in srgb, var(--surface) 84%, transparent); -webkit-backdrop-filter: saturate(180%) blur(16px); backdrop-filter: saturate(180%) blur(16px); }
-.pd-tabbar { background: color-mix(in srgb, var(--surface) 88%, transparent); -webkit-backdrop-filter: saturate(180%) blur(16px); backdrop-filter: saturate(180%) blur(16px); }
+
+
 /* La pestaña elegida de la barra inferior da un saltito muy corto (feedback, no fiesta). */
 .pd-tabbar a[aria-current='page'] .ico, .pd-tabbar a[aria-current='page'] .avatar { animation: pd-tab 220ms cubic-bezier(.23,1,.32,1); }
 @keyframes pd-tab { 40% { transform: scale(.88); } }

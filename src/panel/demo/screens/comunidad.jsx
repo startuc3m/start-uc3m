@@ -1,26 +1,31 @@
 import { useDeferredValue, useState } from 'react';
 import Icon from '../ui/Icon.jsx';
-import { Avatar, Carne, Empty, Img, Load, OfferLogo, Rolling, Sello, Sellos, Skeleton, Stack, TypeTag, roleLine, useApp } from '../ui/pieces.jsx';
+import { Avatar, Carne, Empty, FakeQr, Img, Load, OfferLogo, Rolling, Sello, Sellos, Skeleton, Stack, TypeTag, roleLine, useApp } from '../ui/pieces.jsx';
 import { go, useApi } from '../router.js';
 import { PullIndicator, usePull } from '../ui/Pull.jsx';
 
-function ComunidadTabs({ current }) {
+const COM_TABS = [['canales', '/comunidad', 'Canales'], ['mensajes', '/comunidad/mensajes', 'Mensajes'], ['gente', '/comunidad/gente', 'Gente'], ['mapa', '/comunidad/mapa', 'Mapa']];
+// Cabecera común de Comunidad: título grande y las cuatro pestañas.
+export function ComunidadHead({ current, badges = {} }) {
   return (
-    <div className="tabs" role="tablist" aria-label="Comunidad">
-      <a href="#/comunidad" role="tab" aria-selected={current === 'paraTi'}>Para ti{current === 'paraTi' && <span className="tab-line" />}</a>
-      <a href="#/comunidad/gente" role="tab" aria-selected={current === 'gente'}>Gente{current === 'gente' && <span className="tab-line" />}</a>
-      <span className="grow" />
-      {current === 'paraTi' && <a href="#/comunidad/gente" aria-label="Buscar personas" style={{ boxShadow: 'none' }}><Icon name="search" size={22} /></a>}
-    </div>
+    <>
+      <PageTitle sub="Los canales de Start, tus mensajes y la gente.">Comunidad</PageTitle>
+      <div className="tabs" role="tablist" aria-label="Comunidad">
+        {COM_TABS.map(([k, href, label]) => (
+          <a key={k} href={`#${href}`} role="tab" aria-selected={current === k}>{label}{badges[k] > 0 && <span className="tab-badge num">{badges[k]}</span>}{current === k && <span className="tab-line" />}</a>
+        ))}
+      </div>
+    </>
   );
 }
 
-export function PageTitle({ eyebrow, children, action }) {
+export function PageTitle({ eyebrow, sub, children, action }) {
   return (
     <div className="page-title">
       <div>
         {eyebrow && <p className="t-mono only-desk" style={{ color: 'var(--brand-text)' }}>{eyebrow}_</p>}
         <h1 className="t-display">{children}_</h1>
+        {sub && <p className="page-sub">{sub}</p>}
       </div>
       {action}
     </div>
@@ -32,7 +37,8 @@ export function PageTitle({ eyebrow, children, action }) {
 const readSeen = () => { try { return JSON.parse(localStorage.getItem('pd-seen') || '[]'); } catch { return []; } };
 const markSeen = (id) => { try { localStorage.setItem('pd-seen', JSON.stringify([...new Set([...readSeen(), id])])); } catch {} };
 
-export function ParaTi() {
+const FULL_DATE = new Intl.DateTimeFormat('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+export function Inicio() {
   const { api, photos, me } = useApp();
   const seen = readSeen();
   const q = useApi(api, 'feed', {}, []);
@@ -40,12 +46,12 @@ export function ParaTi() {
   return (
     <>
       <PullIndicator pull={pull} refreshing={refreshing} />
-      <PageTitle eyebrow="Comunidad">Lo que pasa en Start</PageTitle>
-      <ComunidadTabs current="paraTi" />
+      <PageTitle eyebrow={FULL_DATE.format(new Date('2026-11-21T12:00:00'))} sub="Lo tuyo y lo nuevo en Start.">Hola, {me.name.split(' ')[0]}</PageTitle>
       <Load q={q} skeleton={<><div className="skel" style={{ height: 92 }} /><Skeleton h={260} n={2} /></>}>
         {(d) => (
           <div className="two-col">
             <div className="col-main">
+              {d.nextEvent && <NextTicket e={d.nextEvent} />}
               {d.newcomers.length > 0 && (
                 <section aria-labelledby="nuevos">
                   <div className="section-h" style={{ marginBottom: 10 }}><h2 id="nuevos" className="t-h">Nuevos en Start</h2><a className="link" href="#/comunidad/gente">Ver todos</a></div>
@@ -68,6 +74,25 @@ export function ParaTi() {
         )}
       </Load>
     </>
+  );
+}
+
+// Tu próxima entrada: el plan más cercano al que vas, con el QR a mano para la puerta.
+export function NextTicket({ e }) {
+  const { openQr, me } = useApp();
+  return (
+    <section className="ticket" aria-label="Tu próxima entrada">
+      <a className="ticket-main press" href={`#/evento/${e.id}`}>
+        <span className="t-mono ticket-eyebrow"><Icon name="ticket" size={14} /> Tu próxima entrada</span>
+        <b className="ticket-when">{e.relative}</b>
+        <span className="ticket-title">{e.title}</span>
+        <span className="ticket-meta">{e.when} · {e.where}</span>
+      </a>
+      <button className="ticket-qr press" onClick={openQr} aria-label="Abrir tu QR para entrar">
+        <span className="qr-mini"><FakeQr seed={me.number} /></span>
+        <span className="t-mono">Tu QR</span>
+      </button>
+    </section>
   );
 }
 
@@ -105,12 +130,12 @@ function FeedItem({ it, photos, api, onChange }) {
     };
     return (
       <article className="card feed-card">
-        <div className="cover"><Img src={photos[e.cover]} alt={`Foto de ${e.title}`} />
+        <a className="cover" href={`#/evento/${e.id}`}><Img src={photos[e.cover]} alt={`Foto de ${e.title}`} />
           <span className="date"><b>{e.day}</b><span>{e.month}</span></span>
-        </div>
+        </a>
         <div className="body">
           <p className="t-mono t-soft" style={{ color: 'var(--brand-text)' }}>Próximo evento · Sello {e.stamp.label} al fichar</p>
-          <h3 className="title">{e.title}</h3>
+          <a href={`#/evento/${e.id}`}><h3 className="title">{e.title}</h3></a>
           <div className="feed-row">
             <Stack people={e.isGoing ? [me, ...e.goingPeople].slice(0, 3) : e.goingPeople} />
             <span className="grow t-soft num"><Rolling value={e.goingCount} /> van{e.isGoing ? ', tú también' : ''}</span>
@@ -159,13 +184,12 @@ export function Gente() {
   const [selected, setSelected] = useState('lucia');
   return (
     <>
-      <PageTitle eyebrow="Comunidad">La gente de Start</PageTitle>
-      <ComunidadTabs current="gente" />
+      <ComunidadHead current="gente" />
       <div className="toolbar">
         <label className="search"><Icon name="search" /><span className="sr-only">Buscar</span><input type="search" placeholder="Nombre o carrera" value={text} onChange={(e) => setText(e.target.value)} enterKeyHint="search" />{text && <button className="search-clear press" onClick={() => setText('')} aria-label="Borrar búsqueda"><Icon name="x" size={16} /></button>}</label>
         <div className="pills" role="group" aria-label="Filtrar">
           {FILTERS.map(([k, l]) => <button key={k} className="pill press" aria-pressed={filter === k} onClick={() => setFilter(k)}>{l}</button>)}
-          <a className="pill press" href="#/mapa">Por personalidad</a>
+          
         </div>
       </div>
       <div className="two-col two-col--detail">
@@ -291,6 +315,7 @@ function AvisoVisual({ n }) {
   if (n.kind === 'stamp') return <Sello stamp={n.stamp} size={48} rotate={-8} />;
   if (n.kind === 'offer') return <OfferLogo company={n.company} size={48} />;
   if (n.kind === 'interested') return <span className="aviso-stack"><Avatar person={n.people[0]} size={36} /><Avatar person={n.people[1]} size={36} /></span>;
+  if (n.kind === 'channel') return <span className="aviso-ico"><Icon name="megaphone" size={22} /></span>;
   if (n.kind === 'event') return <span className="aviso-date"><b>{n.event.day}</b><span>{n.event.month}</span></span>;
   return <Avatar person={n.person} size={48} />;
 }

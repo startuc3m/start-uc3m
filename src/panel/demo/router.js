@@ -5,12 +5,20 @@ import { flushSync } from 'react-dom';
 // recargar y compartir sin reescrituras en Vercel.
 const ROUTES = [
   ['/acceso', 'acceso'],
+  ['/hazte-socio', 'hazteSocio'],
   ['/alta/:paso', 'alta'],
-  ['/comunidad', 'paraTi'],
+  ['/inicio', 'inicio'],
+  ['/comunidad', 'canales'],
+  ['/comunidad/mensajes', 'canales'],
   ['/comunidad/gente', 'gente'],
-  ['/persona/:id', 'persona'],
-  ['/mapa', 'mapa'],
+  ['/comunidad/mapa', 'mapa'],
   ['/mapa/:tipo', 'mapa'],
+  ['/canal/:id', 'canal'],
+  ['/persona/:id', 'persona'],
+  ['/eventos', 'eventos'],
+  ['/eventos/mias', 'eventos'],
+  ['/eventos/pasados', 'eventos'],
+  ['/evento/:id', 'evento'],
   ['/ofertas', 'ofertas'],
   ['/ofertas/interesan', 'ofertas'],
   ['/ofertas/mias', 'ofertas'],
@@ -19,6 +27,8 @@ const ROUTES = [
   ['/oferta/:id/interesados', 'interesados'],
   ['/perfil', 'perfil'],
   ['/perfil/editar', 'editar'],
+  ['/ajustes', 'ajustes'],
+  ['/socio', 'socio'],
   ['/avisos', 'avisos'],
   ['/admin', 'admin'],
 ];
@@ -30,15 +40,15 @@ export function match(path) {
     const m = path.match(re);
     if (m) return { name, params: Object.fromEntries(keys.map((k, i) => [k, decodeURIComponent(m[i + 1])])), path };
   }
-  return { name: 'paraTi', params: {}, path: '/comunidad' };
+  return { name: 'inicio', params: {}, path: '/inicio' };
 }
 
 // Pestaña de la barra inferior a la que pertenece cada pantalla.
-export const SECTION = { paraTi: 'comunidad', gente: 'comunidad', persona: 'comunidad', mapa: 'mapa', ofertas: 'ofertas', oferta: 'ofertas', interesados: 'ofertas', publicar: 'ofertas', perfil: 'perfil', editar: 'perfil', avisos: 'comunidad', admin: 'admin' };
+export const SECTION = { inicio: 'inicio', avisos: 'inicio', canales: 'comunidad', gente: 'comunidad', mapa: 'comunidad', canal: 'comunidad', persona: 'comunidad', eventos: 'eventos', evento: 'eventos', ofertas: 'ofertas', oferta: 'ofertas', interesados: 'ofertas', publicar: 'ofertas', perfil: 'perfil', editar: 'perfil', ajustes: 'perfil', socio: 'perfil', admin: 'perfil' };
 // Profundidad: decide si la transición entra desde la derecha (push) o vuelve (pop).
-export const DEPTH = { persona: 1, oferta: 1, interesados: 2, publicar: 1, editar: 1, avisos: 1 };
+export const DEPTH = { persona: 1, canal: 1, evento: 1, oferta: 1, interesados: 2, publicar: 1, editar: 1, avisos: 1, ajustes: 1, socio: 2, admin: 2 };
 
-const read = () => (typeof location === 'undefined' ? '/comunidad' : location.hash.replace(/^#/, '') || '/comunidad');
+const read = () => (typeof location === 'undefined' ? '/inicio' : location.hash.replace(/^#/, '') || '/inicio');
 
 // Estado propio y síncrono (no el evento hashchange, que llega tarde): así cada
 // navegación cabe dentro de document.startViewTransition y se anima con dirección.
@@ -85,7 +95,7 @@ if (typeof window !== 'undefined') {
 }
 
 export function useRoute() {
-  const path = useSyncExternalStore(subscribe, () => current, () => '/comunidad');
+  const path = useSyncExternalStore(subscribe, () => current, () => '/inicio');
   return match(path);
 }
 
@@ -99,7 +109,7 @@ export function go(path, { replace = false } = {}) {
     set(path);
   }, path);
 }
-export const back = (fallback = '/comunidad') => (history.state?.app && !history.state.root ? history.back() : go(fallback, { replace: true }));
+export const back = (fallback = '/inicio') => (history.state?.app && !history.state.root ? history.back() : go(fallback, { replace: true }));
 
 // Los enlaces internos (#/…) pasan por go() para tener transición.
 export function interceptLinks(e) {

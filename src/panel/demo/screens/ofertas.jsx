@@ -1,20 +1,31 @@
-import { useRef, useState } from 'react';
+import { useDeferredValue, useRef, useState } from 'react';
+import { OFFER_KINDS } from '../data.js';
 import Icon from '../ui/Icon.jsx';
 import { Avatar, Empty, Img, Load, OfferLogo, Rolling, Sheet, Skeleton, Stack, burst, roleLine, useApp } from '../ui/pieces.jsx';
 import { back, go, useApi } from '../router.js';
 import { PageTitle } from './comunidad.jsx';
 
-const TABS = [['todas', '/ofertas', 'Todas'], ['interesan', '/ofertas/interesan', 'Me interesan'], ['mias', '/ofertas/mias', 'Mis ofertas']];
+const TABS = [['todas', '/ofertas', 'Todas'], ['interesan', '/ofertas/interesan', 'Me interesan'], ['mias', '/ofertas/mias', 'Publicadas']];
 
 export function Ofertas({ path }) {
   const { api, me, wide } = useApp();
   const tab = path.endsWith('/interesan') ? 'interesan' : path.endsWith('/mias') ? 'mias' : 'todas';
-  const q = useApi(api, 'offers', { tab }, [tab]);
+  const [text, setText] = useState('');
+  const [kind, setKind] = useState(null);
+  const qText = useDeferredValue(text);
+  const q = useApi(api, 'offers', { tab, kind, q: qText }, [tab, kind, qText]);
   const [selected, setSelected] = useState(null);
   const tabs = TABS.filter(([k]) => k !== 'mias' || me.canPublish);
   return (
     <>
-      <PageTitle eyebrow="Ofertas" action={me.canPublish && <a className="btn btn--primary press only-desk" href="#/ofertas/publicar"><Icon name="plus" size={18} /> Publicar oferta</a>}>Prácticas y oportunidades</PageTitle>
+      <PageTitle sub="Prácticas, proyectos, becas y hackathons, en un sitio." action={me.canPublish && <a className="btn btn--primary press only-desk" href="#/ofertas/publicar"><Icon name="plus" size={18} /> Publicar</a>}>Oportunidades</PageTitle>
+      <div className="toolbar">
+        <label className="search"><Icon name="search" /><span className="sr-only">Buscar</span><input type="search" placeholder="Buscar prácticas, becas, hackathons…" value={text} onChange={(e) => setText(e.target.value)} enterKeyHint="search" />{text && <button className="search-clear press" onClick={() => setText('')} aria-label="Borrar búsqueda"><Icon name="x" size={16} /></button>}</label>
+        <div className="pills" role="group" aria-label="Tipo">
+          <button className="pill press" aria-pressed={!kind} onClick={() => setKind(null)}>Todo</button>
+          {OFFER_KINDS.map((k) => <button key={k} className="pill press" aria-pressed={kind === k} onClick={() => setKind(kind === k ? null : k)}>{k === 'Beca' ? 'Becas' : k === 'Hackathon' ? 'Hackathons' : k === 'Proyecto' ? 'Proyectos' : k}</button>)}
+        </div>
+      </div>
       <nav className="segmented" aria-label="Ofertas">
         {tabs.map(([k, href, label]) => <a key={k} href={`#${href}`} aria-current={tab === k ? 'page' : undefined}>{tab === k && <span className="seg-bg" aria-hidden="true" />}<span className="seg-t">{label}{q.data ? <span className="num"> · {q.data.counts[k]}</span> : null}</span></a>)}
       </nav>
@@ -24,7 +35,8 @@ export function Ofertas({ path }) {
             {(d) => d.offers.length === 0 ? (
               tab === 'interesan'
                 ? <Empty icon="heart" title="Aún no te interesa ninguna" action={<a className="btn btn--primary press" href="#/ofertas">Ver todas las ofertas</a>}>Marca «Me interesa» y quien publica la oferta verá tu perfil y tu CV.</Empty>
-                : <Empty icon="briefcase" title="No hay ofertas ahora mismo">Te avisaremos con la campana cuando se publique una.</Empty>
+                : (text || kind) ? <Empty icon="search" title="Nada con esos filtros" action={<button className="btn btn--soft press" onClick={() => { setText(''); setKind(null); }}>Quitar filtros</button>}>Prueba con otra palabra o con otro tipo.</Empty>
+                : <Empty icon="briefcase" title="No hay oportunidades ahora mismo">Te avisaremos con la campana cuando se publique una.</Empty>
             ) : (
               <ul className="offer-list">
                 {d.offers.map((o) => {
@@ -49,7 +61,6 @@ export function Ofertas({ path }) {
         </div>
         {wide && q.data?.offers.length > 0 && <aside className="col-side col-side--panel"><OfertaDetalle key={selected ?? q.data.offers[0].id} id={selected ?? q.data.offers[0].id} onChange={q.reload} compact /></aside>}
       </div>
-      {me.canPublish && <a className="fab press only-mobile" href="#/ofertas/publicar" aria-label="Publicar oferta"><Icon name="plus" size={24} /></a>}
     </>
   );
 }

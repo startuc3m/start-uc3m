@@ -84,6 +84,8 @@ export const ME = {
   bio: 'Construyo la web y el área de socios de Start.', linkedin: 'https://www.linkedin.com/in/ejemplo',
   interests: ['growth', 'astro'], canPublish: true, canManage: true, onboarded: true,
   cv: { name: 'CV-Alvaro-Carpintero.pdf', size: '184 KB', updated: '12 nov' },
+  links: { linkedin: 'alvarocarpintero', instagram: 'alvaro.cp', email: 'alvaro.carpintero@alumnos.uc3m.es', web: '' },
+  member: { season: '26/27', until: '31 ago 2027', since: 2025 },
 };
 
 // CV de ejemplo de cada persona (privado: solo lo ve quien publica una oferta a la que se apunta).
@@ -96,6 +98,8 @@ export const CVS = {
 };
 
 export const COMPANIES = {
+  fundacion: { name: 'Fundación Impulso', note: 'Becas', initial: 'F', color: '#9A5B00' },
+  racks: { name: 'Racks Labs', note: 'IA', initial: 'R', color: '#12123A' },
   lumen: { name: 'Lumen Labs', note: 'Startup de marketing', initial: 'L', color: '#FF6B35' },
   start: { name: 'Start UC3M', note: 'IT', initial: 's_', color: '#333399', isStart: true },
   arrayan: { name: 'Fondo Arrayán', note: 'Venture capital', initial: 'A', color: '#1D7A4F' },
@@ -133,10 +137,84 @@ export const OFFERS = [
     desc: 'Electrónica, impresión 3D y pruebas de campo con un equipo de cinco personas.',
     contact: 'Mario', interested: ['mario', 'pablo'],
   },
+  {
+    id: 'hack-ia', title: 'Hackathon de IA para el bien común', company: 'racks', kind: 'Hackathon', kindColor: 'lime', deadline: 'Hasta el 1 feb',
+    place: 'Campus de Leganés', duration: '2 días', hours: '13–14 feb', pay: 'Premios', cover: 'portatiles',
+    desc: 'Equipos de 3 a 5 personas, retos de ONG reales y mentores de la industria. No hace falta saber programar: también se buscan perfiles de negocio y diseño.',
+    contact: 'Pablo', interested: ['pablo', 'carla', 'lucia'],
+  },
+  {
+    id: 'beca-mvp', title: 'Ayuda para tu primer MVP', company: 'fundacion', kind: 'Beca', kindColor: 'yellow', deadline: 'Hasta el 15 ene',
+    place: 'Remoto', duration: '3 meses', hours: 'Libre', pay: '500 € + mentoría', cover: 'oficina',
+    desc: 'Para socios con una idea en marcha: 500 € para construir la primera versión y tres sesiones con un mentor.',
+    contact: 'Lidia', interested: ['jorge', 'ines'],
+  },
+];
+export const OFFER_KINDS = ['Prácticas', 'Proyecto', 'Voluntariado', 'Hackathon', 'Beca'];
+
+// Eventos con fecha real (la demo vive en noviembre de 2026). `stamp` es el sello que se
+// consigue al fichar con el QR; los pasados ya no se pueden apuntar.
+export const TODAY = '2026-11-21';
+export const EVENTS = [
+  { id: 'canas-nov', title: 'Cañas de noviembre', date: '2026-11-27', time: '19:30', where: 'La Oficina, Getafe', kind: 'Social', price: 'Gratis', stamp: 'canas', cover: 'equipo', going: ['jorge', 'pablo', 'lucia', 'diego'], goingCount: 35,
+    desc: 'Las cañas de cada mes: llega quien quiera, se presenta la gente nueva y se cuenta en qué anda cada uno. Ficha con tu QR en la puerta.' },
+  { id: 'invest', title: 'Start to Invest', date: '2026-11-30', time: '10:00', where: 'Campus de Getafe', kind: 'Formación', price: 'Gratis para socios', stamp: 'invest', cover: 'sala', going: ['lucia', 'pablo', 'sara', 'diego', 'hugo'], goingCount: 23,
+    desc: 'Una mañana con fondos y business angels: cómo se decide una inversión, qué miran en un pitch y ronda de preguntas. Plazas limitadas.' },
+  { id: 'podcast-38', title: 'Podcast en directo', date: '2026-12-03', time: '18:00', where: 'Campus Puerta de Toledo', kind: 'Podcast', price: 'Gratis', stamp: 'pitch', cover: 'pitch', going: ['gema', 'andres', 'jorge'], goingCount: 49,
+    desc: 'Grabamos un episodio con público. Al final hay turno de preguntas para la invitada.' },
+  { id: 'cena', title: 'Cena de Navidad', date: '2026-12-18', time: '21:00', where: 'Madrid centro', kind: 'Social', price: '25 € socios', membersOnly: true, stamp: 'canas', cover: 'equipo', going: ['lidia', 'gema', 'jorge'], goingCount: 64,
+    desc: 'Cerramos el cuatrimestre todos juntos. Solo socios; la entrada se paga al apuntarte.' },
+  { id: 'rural', title: 'Casa rural', date: '2027-01-22', end: '2027-01-24', time: '17:00', where: 'Sierra de Gredos', kind: 'Viaje', price: '79 € socios', membersOnly: true, few: 'Quedan 18 plazas', stamp: 'rural', cover: 'portatiles', going: ['hugo', 'gema', 'pablo'], goingCount: 22,
+    desc: 'Tres días fuera con la gente de Start: talleres por la mañana, monte por la tarde y cena todos juntos.' },
+  { id: 'camp', title: 'Start Camp', date: '2026-11-13', end: '2026-11-15', time: '09:00', where: 'Campus de Leganés', kind: 'Hackathon', price: 'Gratis', stamp: 'camp', cover: 'pitch', going: ['lucia', 'hugo', 'carla'], goingCount: 60, past: true,
+    desc: 'Tres días para pasar de una idea a una demo. 14 proyectos presentados.' },
+  { id: 'canas-oct', title: 'Cañas de bienvenida', date: '2026-10-08', time: '19:30', where: 'La Oficina, Getafe', kind: 'Social', price: 'Gratis', stamp: 'canas', cover: 'equipo', going: ['diego', 'gema'], goingCount: 71, past: true,
+    desc: 'Las primeras cañas del curso.' },
+  { id: 'build', title: 'Buildathon', date: '2026-09-26', time: '10:00', where: 'Campus de Leganés', kind: 'Hackathon', price: 'Gratis', stamp: 'build', cover: 'sala', going: ['pablo', 'carla', 'jorge'], goingCount: 40, past: true,
+    desc: 'Un día construyendo con IA.' },
 ];
 
-export const EVENTS = [
-  { id: 'invest', title: 'Start to Invest', day: '30', month: 'NOV', where: 'Campus de Getafe', stamp: 'invest', cover: 'sala', going: ['lucia', 'pablo', 'sara', 'diego', 'hugo'], goingCount: 23 },
+// Canales: lo que hoy está en la comunidad de WhatsApp, dentro de la app.
+export const CHANNELS = [
+  { id: 'anuncios', name: 'Anuncios', icon: 'megaphone', readOnly: true, desc: 'Solo escribe la Junta. Lo importante, sin ruido.' },
+  { id: 'socios', name: 'Socios 26/27', icon: 'users', desc: 'El grupo de todos los socios de este curso.' },
+  { id: 'empleo', name: 'Prácticas y empleo', icon: 'briefcase', desc: 'Ofertas, consejos y quién busca a quién.' },
+  { id: 'redes', name: 'Apoyo en redes', icon: 'heart', desc: 'Cuando Start publica algo, aquí se pide un empujón.' },
+  { id: 'startups', name: 'Startups de socios', icon: 'rocket', desc: 'Proyectos de la gente de Start: betas, equipo, feedback.' },
+  { id: 'podcast', name: 'Podcast', icon: 'mic', desc: 'Episodios nuevos e invitados.' },
+];
+
+// Mensajes de ejemplo de cada canal (del más antiguo al más nuevo).
+export const MESSAGES = {
+  anuncios: [
+    { id: 'a1', from: 'lidia', at: 'ayer', text: 'Mañana abrimos las inscripciones del Start to Invest. Hay 40 plazas.' },
+    { id: 'a2', from: 'hugo', at: '3 h', text: '¡Gracias a las 60 personas que vinisteis al Start Camp! 14 proyectos en tres días. Las fotos ya están en el Drive y el sello en vuestro carné 🙌', reactions: { '🔥': 24, '❤️': 12 } },
+  ],
+  socios: [
+    { id: 's1', from: 'elena', at: '1 h', text: '¿Alguien va el jueves a las cañas desde Leganés? Podemos ir juntos.' },
+    { id: 's2', from: 'mario', at: '45 min', text: 'Yo voy, salgo a las 18:45 del campus.' },
+    { id: 's3', from: 'diego', at: '25 min', text: '¿Os apuntáis a un torneo de pádel en diciembre? Si somos 16 lo monto.', reactions: { '🙋': 9 } },
+  ],
+  empleo: [
+    { id: 'e1', from: 'hugo', at: '2 h', text: 'Lumen Labs (ejemplo) busca a alguien para growth, 20 h a la semana. Está en Oportunidades.' },
+    { id: 'e2', from: 'lucia', at: '1 h', text: 'Yo me apunté la semana pasada, si tenéis dudas preguntadme.' },
+  ],
+  redes: [
+    { id: 'r1', from: 'gema', at: '30 min', text: 'Reel del Start Camp en Instagram. Un like y compartir en stories ayuda muchísimo 🔥', reactions: { '❤️': 31 } },
+  ],
+  startups: [
+    { id: 'st1', from: 'jorge', at: '2 h', text: 'Abrimos la beta de nuestra app de apuntes la semana que viene. Si queréis probarla, decídmelo.' },
+  ],
+  podcast: [
+    { id: 'p1', from: 'gema', at: '2 d', text: 'Nuevo episodio: cómo se monta una startup desde la uni. Ya en Spotify.' },
+  ],
+};
+
+// Mensajes directos de ejemplo.
+export const DMS = [
+  { id: 'lucia', with: 'lucia', messages: [{ id: 'd1', from: 'lucia', at: '10 min', text: '¿Te vienes a las cañas del jueves?' }] },
+  { id: 'pablo', with: 'pablo', messages: [{ id: 'd2', from: 'alvaro', at: 'ayer', text: 'Te he pasado acceso al repo de la web.' }, { id: 'd3', from: 'pablo', at: 'ayer', text: '¡Gracias! Lo miro esta tarde.' }] },
+  { id: 'nora', with: 'nora', messages: [{ id: 'd4', from: 'nora', at: '2 d', text: 'Hola, soy nueva. ¿Cómo me apunto a un departamento?' }] },
 ];
 
 // El feed «Para ti» se genera solo: eventos, ofertas nuevas, sellos y altas. Nadie
@@ -153,6 +231,7 @@ export const NOTIFICATIONS = [
   { id: 'n1', kind: 'stamp', stamp: 'pitch', text: 'Has conseguido el sello <b>PITCH</b> en la Noche de pitch.', when: 'hace 2 días', at: 'hoy', unread: true, href: '#/perfil' },
   { id: 'n2', kind: 'offer', offer: 'growth', text: '<b>Lumen Labs</b> ha publicado <b>Prácticas de growth</b>. 12 de Start ya se han apuntado.', when: 'hace 3 días', at: 'semana', unread: true, href: '#/oferta/growth' },
   { id: 'n3', kind: 'interested', offer: 'astro', people: ['ines', 'jorge'], text: '<b>Inés</b> y <b>Jorge</b> se han apuntado a tu oferta <b>Desarrollo web con Astro</b>.', when: 'hace 4 días', at: 'semana', unread: false, href: '#/oferta/astro/interesados' },
-  { id: 'n4', kind: 'event', event: 'invest', text: '<b>Start to Invest</b> es el 30 nov. Lleva tu carné para fichar.', when: 'hace 5 días', at: 'semana', unread: false, href: '#/comunidad' },
+  { id: 'n4', kind: 'event', event: 'invest', text: '<b>Start to Invest</b> es el 30 nov. Lleva tu carné para fichar.', when: 'hace 5 días', at: 'semana', unread: false, href: '#/evento/invest' },
+  { id: 'n6', kind: 'channel', channel: 'anuncios', text: 'Nuevo anuncio en <b>Anuncios</b>: gracias por el Start Camp.', when: 'hace 3 h', at: 'hoy', unread: true, href: '#/canal/anuncios' },
   { id: 'n5', kind: 'joined', person: 'nora', text: '<b>Nora Prieto</b> ha entrado en Start. Es ENFP, como 9 más.', when: 'hace 6 días', at: 'antes', unread: false, href: '#/persona/nora' },
 ];

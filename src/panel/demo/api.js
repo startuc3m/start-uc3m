@@ -3,7 +3,7 @@
 // que exista el backend se cambia este archivo y las pantallas no se tocan.
 // El estado de la demo vive en localStorage para que «Me interesa», los sellos o
 // el perfil sobrevivan a una recarga; «Reiniciar demo» lo borra.
-import { CVS, EVENTS, FEED, ME, NOTIFICATIONS, OFFERS, PEOPLE, STAMPS, COMPANIES, TYPE_COUNTS, FAMILIES, TYPE_NAMES, familyOf, levelFor } from './data.js';
+import { CHANNELS, DMS, MESSAGES, TODAY, CVS, EVENTS, FEED, ME, NOTIFICATIONS, OFFERS, PEOPLE, STAMPS, COMPANIES, TYPE_COUNTS, FAMILIES, TYPE_NAMES, familyOf, levelFor } from './data.js';
 
 const KEY = 'start-panel-demo';
 
@@ -22,10 +22,14 @@ function fresh() {
   return {
     me: { ...ME },
     interests: OFFERS.filter((o) => o.id === 'growth' || o.id === 'analista').map((o) => o.id),
-    going: [],
     read: [],
     offers: [],
     status: {},
+    going: ['canas-nov'],
+    channelRead: {},
+    sent: {},
+    reactions: {},
+    prefs: { notif: { anuncios: true, eventos: true, ofertas: true, canales: false, mensajes: true }, privacy: { gente: true, email: true, cv: true } },
     settings: { ...DEMO_DEFAULTS },
   };
 }
@@ -67,16 +71,32 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
     return { ...x, family: familyOf(x.type), typeName: TYPE_NAMES[x.type], level: levelFor(x.stamps.length), stampList: x.stamps.map((s) => STAMPS[s]) };
   };
 
+  const decorateEvent = (e) => {
+    const going = state.going.includes(e.id);
+    const d = new Date(`${e.date}T12:00:00`);
+    const days = Math.round((d - new Date(`${TODAY}T12:00:00`)) / 864e5);
+    return {
+      ...e,
+      day: String(d.getDate()), month: MONTHS[d.getMonth()].slice(0, 3).toUpperCase(),
+      when: `${WEEKDAYS[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()].slice(0, 3)} · ${e.time}`,
+      inDays: days, relative: e.past ? 'Ya pasó' : days === 0 ? 'Hoy' : days === 1 ? 'Mañana' : `En ${days} días`,
+      isGoing: going, attended: e.past && state.me.stamps.includes(e.stamp),
+      goingCount: (state.settings.extreme ? 999 : e.goingCount) + (going ? 1 : 0),
+      goingPeople: e.going.slice(0, 3).map(person), stamp: STAMPS[e.stamp],
+    };
+  };
+  const messagesOf = (id) => [...(MESSAGES[id] ?? []), ...(state.sent[id] ?? [])].map((m) => ({ ...m, person: person(m.from), mine: m.from === state.me.id, reactions: m.reactions ?? {}, myReactions: state.reactions[m.id] ?? {} }));
+  const unreadOf = (id) => Math.max(0, (MESSAGES[id]?.length ?? 0) - (state.channelRead[id] ?? (id === 'podcast' || id === 'startups' ? 99 : 0)));
+  const badges = () => ({ comunidad: state.settings.empty ? 0 : CHANNELS.reduce((n, c) => n + unreadOf(c.id), 0) + DMS.filter((d) => !state.channelRead[`dm:${d.id}`] && d.messages.at(-1).from !== state.me.id).length });
+
   const actions = {
-    me: () => ({ me: decoratePerson(state.me) }),
+    me: () => ({ me: { ...decoratePerson(state.me), badges: badges() } }),
 
     feed: () => {
       if (state.settings.empty) return { items: [], newcomers: [] };
       const items = FEED.map((f) => {
         if (f.kind === 'event') {
-          const e = EVENTS.find((x) => x.id === f.event);
-          const going = state.going.includes(e.id);
-          return { ...f, event: { ...e, isGoing: going, goingCount: e.goingCount + (going ? 1 : 0), goingPeople: e.going.slice(0, 3).map(person), stamp: STAMPS[e.stamp] } };
+          return { ...f, event: decorateEvent(EVENTS.find((x) => x.id === f.event)) };
         }
         if (f.kind === 'offer') return { ...f, offer: decorateOffer(allOffers().find((o) => o.id === f.offer)) };
         if (f.kind === 'stamp') return { ...f, stamp: STAMPS[f.stamp], mine: state.me.stamps.includes(f.stamp), myCount: state.me.stamps.length };
@@ -84,8 +104,9 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
         return f;
       }).filter((f) => f.kind !== 'joined');
       const newcomers = PEOPLE.filter((x) => x.isNew).map(decoratePerson);
+      const nextEvent = EVENTS.map(decorateEvent).filter((e) => e.isGoing && !e.past).sort((a, b) => a.inDays - b.inDays)[0] ?? null;
       const sameCareer = PEOPLE.filter((x) => x.career === state.me.career && x.id !== state.me.id).slice(0, 3).map(decoratePerson);
-      return { items, newcomers, sameCareer };
+      return { items, newcomers, sameCareer, nextEvent };
     },
 
     people: ({ q = '', filter = 'todos', type = null } = {}) => {
@@ -114,10 +135,12 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
       })),
     }),
 
-    offers: ({ tab = 'todas' } = {}) => {
+    offers: ({ tab = 'todas', kind = null, q = '' } = {}) => {
       if (state.settings.empty) return { offers: [], counts: { todas: 0, interesan: 0, mias: 0 } };
       const all = allOffers().map(decorateOffer);
-      const list = tab === 'interesan' ? all.filter((o) => o.isInterested) : tab === 'mias' ? all.filter((o) => o.isMine) : all;
+      const needle = normalize(q);
+      const list = (tab === 'interesan' ? all.filter((o) => o.isInterested) : tab === 'mias' ? all.filter((o) => o.isMine) : all)
+        .filter((o) => (!kind || o.kind === kind) && (!needle || normalize(`${o.title} ${o.company.name} ${o.kind}`).includes(needle)));
       return { offers: list, counts: { todas: all.length, interesan: all.filter((o) => o.isInterested).length, mias: all.filter((o) => o.isMine).length } };
     },
 
@@ -166,10 +189,63 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
       return { offer: decorateOffer(o) };
     },
 
+    events: ({ tab = 'proximos' } = {}) => {
+      if (state.settings.empty) return { events: [], all: [] };
+      const all = EVENTS.map(decorateEvent).sort((a, b) => a.date.localeCompare(b.date));
+      const list = tab === 'pasados' ? all.filter((e) => e.past).reverse() : tab === 'mias' ? all.filter((e) => e.isGoing && !e.past) : all.filter((e) => !e.past);
+      return { events: list, all: all.map(({ id, date, end, title, isGoing, past }) => ({ id, date, end, title, isGoing, past })) };
+    },
+    event: ({ id }) => {
+      const e = EVENTS.find((x) => x.id === id);
+      if (!e) throw new Error('Este evento ya no está publicado.');
+      return { event: decorateEvent(e) };
+    },
     'event.going': ({ id, on }) => {
       state.going = on ? [...new Set([id, ...state.going])] : state.going.filter((x) => x !== id);
       save();
-      return { going: on };
+      return { event: decorateEvent(EVENTS.find((x) => x.id === id)) };
+    },
+
+    channels: () => {
+      if (state.settings.empty) return { channels: [], dms: [] };
+      const channels = CHANNELS.map((c) => { const m = messagesOf(c.id).at(-1); return { ...c, last: m, unread: unreadOf(c.id), muted: false }; });
+      const dms = DMS.map((d) => { const m = [...d.messages, ...(state.sent[`dm:${d.id}`] ?? [])].at(-1); return { id: d.id, person: decoratePerson(person(d.with)), last: { ...m, mine: m.from === state.me.id }, unread: !state.channelRead[`dm:${d.id}`] && m.from !== state.me.id ? 1 : 0 }; });
+      return { channels, dms };
+    },
+    channel: ({ id }) => {
+      const dm = id.startsWith('dm:') ? DMS.find((d) => `dm:${d.id}` === id) : null;
+      const c = dm ? { id, name: person(dm.with).name, person: decoratePerson(person(dm.with)), dm: true } : CHANNELS.find((x) => x.id === id);
+      if (!c) throw new Error('Este canal ya no existe.');
+      const messages = dm ? [...dm.messages, ...(state.sent[id] ?? [])].map((m) => ({ ...m, person: person(m.from), mine: m.from === state.me.id, reactions: {}, myReactions: {} })) : messagesOf(id);
+      state.channelRead = { ...state.channelRead, [id]: dm ? true : MESSAGES[id]?.length ?? 0 };
+      save();
+      return { channel: { ...c, members: dm ? 2 : c.id === 'anuncios' ? 212 : 140 + c.name.length }, messages };
+    },
+    'channel.send': ({ id, text }) => {
+      const t = String(text ?? '').trim();
+      if (!t) throw new Error('Escribe algo antes de enviar.');
+      const m = { id: `m${Date.now()}`, from: state.me.id, at: 'ahora', text: t };
+      state.sent = { ...state.sent, [id]: [...(state.sent[id] ?? []), m] };
+      save();
+      return { message: { ...m, person: state.me, mine: true, reactions: {}, myReactions: {} } };
+    },
+    'message.react': ({ id, emoji, on }) => {
+      state.reactions = { ...state.reactions, [id]: { ...(state.reactions[id] ?? {}), [emoji]: on } };
+      save();
+      return { ok: true };
+    },
+
+    prefs: () => ({ prefs: state.prefs }),
+    'prefs.update': ({ group, key, value }) => {
+      state.prefs = { ...state.prefs, [group]: { ...state.prefs[group], [key]: value } };
+      save();
+      return { prefs: state.prefs };
+    },
+    // Hacerse socio desde la pantalla de acceso. En la demo el pago siempre sale bien.
+    'member.join': ({ plan = 'curso' } = {}) => {
+      state.me = { ...state.me, member: { season: '26/27', until: '31 ago 2027', since: 2026, plan } };
+      save();
+      return actions.me();
     },
 
     // Fichar en un evento con el QR del carné. En la demo siempre da el sello INVEST.
@@ -190,7 +266,7 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
         company: n.offer ? COMPANIES[allOffers().find((o) => o.id === n.offer)?.company] : undefined,
         people: n.people?.map(person),
         person: n.person ? person(n.person) : undefined,
-        event: n.event ? EVENTS.find((e) => e.id === n.event) : undefined,
+        event: n.event ? decorateEvent(EVENTS.find((e) => e.id === n.event)) : undefined,
       })),
     }),
     'notifications.open': ({ id }) => { state.read = [...new Set([...state.read, id])]; save(); return { ok: true }; },
@@ -229,6 +305,8 @@ function delayFor(latency) {
   if (latency === 'slow') return 1600 + Math.random() * 600;
   return 180 + Math.random() * 260;
 }
+const MONTHS = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+const WEEKDAYS = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'];
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const normalize = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 function safeStorage() {

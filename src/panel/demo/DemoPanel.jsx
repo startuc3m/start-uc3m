@@ -41,7 +41,7 @@ export default function DemoPanel() {
             <button className="pill press" onClick={() => { setOpen(false); go('/acceso'); }}>Acceso y alta</button>
             <button className="pill press" onClick={() => { setOpen(false); go('/perfil/editar'); }}>Editar perfil</button>
           </div>
-          <button className="btn btn--ghost btn--block press" style={{ marginTop: 12 }} onClick={async () => { await api('demo.reset'); clearApiCache(); setS(demo.getSettings()); await refreshMe(); setOpen(false); go('/comunidad', { replace: true }); toast('Demo reiniciada'); }}><Icon name="rotate-ccw" size={18} /> Reiniciar demo</button>
+          <button className="btn btn--ghost btn--block press" style={{ marginTop: 12 }} onClick={async () => { await api('demo.reset'); clearApiCache(); setS(demo.getSettings()); await refreshMe(); setOpen(false); go('/inicio', { replace: true }); toast('Demo reiniciada'); }}><Icon name="rotate-ccw" size={18} /> Reiniciar demo</button>
         </div>
       </Sheet>
     </>

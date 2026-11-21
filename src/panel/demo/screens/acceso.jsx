@@ -1,11 +1,14 @@
 import { useRef, useState } from 'react';
 import Icon from '../ui/Icon.jsx';
-import { Avatar, Carne, Logo, Sello, useApp } from '../ui/pieces.jsx';
+import { Avatar, Carne, Logo, Sheet, useApp } from '../ui/pieces.jsx';
+import { AppleLogo } from './ajustes.jsx';
 import { go } from '../router.js';
-import { FAMILIES, STAMPS, TYPE_NAMES } from '../data.js';
+import { FAMILIES, TYPE_NAMES } from '../data.js';
 import { PageTitle } from './comunidad.jsx';
 
 export function Acceso() {
+  const { photos } = useApp();
+  const [mail, setMail] = useState(false);
   const [email, setEmail] = useState('nora.prieto@alumnos.uc3m.es');
   const [err, setErr] = useState('');
   const enter = (e) => {
@@ -15,37 +18,28 @@ export function Acceso() {
   };
   return (
     <div className="acceso">
-      <div className="acceso-brand">
-        <Logo className="logo" />
-        <div className="acceso-copy">
-          <p className="t-mono only-desk" style={{ color: 'var(--lavender)' }}>Área de socios_</p>
-          <h1 className="t-display">Tu carné de Start te espera_</h1>
-          <p>Nora, te han invitado. Activa tu carné, ficha en los eventos y colecciona sellos.</p>
+      <div className="acceso-photo" style={{ backgroundImage: `url(${photos.sala})` }} aria-hidden="true" />
+      <div className="acceso-top"><Logo className="logo" /><span className="t-mono">Desde 2013</span></div>
+      <div className="acceso-panel">
+        <p className="t-mono" style={{ color: 'var(--lime)' }}>Área de socios_</p>
+        <h1 className="t-display acceso-h">Somos gente haciendo cosas_</h1>
+        <div className="acceso-btns">
+          <button className="btn btn--block btn-apple-w press" onClick={() => go('/alta/1')}><AppleLogo size={20} /> Continuar con Apple</button>
+          <button className="btn btn--block btn-glass press" onClick={() => go('/alta/1')}><GoogleG /> Continuar con Google</button>
+          <button className="btn btn--block btn-text press" onClick={() => setMail(true)} aria-expanded={mail}><Icon name="mail" size={20} /> Entrar con tu correo</button>
         </div>
-        <div className="acceso-scene" aria-hidden="true">
-          <Sello stamp={STAMPS.build} size={86} rotate={14} className="s1" />
-          <Sello stamp={STAMPS.canas} size={86} rotate={-10} className="s2" />
-          <div className="mini-carne">
-            <div className="top"><Logo className="logo" /><span className="t-mono">26/27</span></div>
-            <div className="mid"><span className="ph"><Icon name="camera" size={20} /></span><span><b>Nora Prieto</b><em className="num">Nº 0057</em></span></div>
-            <span className="t-mono" style={{ color: 'var(--lavender)' }}>Te está esperando</span>
-          </div>
-          <span className="t-marker note">¡este es el tuyo!</span>
-        </div>
+        <p className="acceso-join">¿Aún no eres socio? <a href="#/hazte-socio">Hazte socio</a></p>
       </div>
-      <form className="acceso-form" onSubmit={enter} noValidate>
-        <h2 className="t-display only-desk" style={{ fontSize: 40 }}>Entra en Start_</h2>
-        <p className="only-desk card" style={{ background: 'var(--lime)', color: 'var(--ink-fixed)', border: 0, padding: 14 }}><b>Tienes una invitación de Start.</b><br />Entra con tu correo para activar tu carné y completar tu perfil.</p>
-        <button type="button" className="btn btn--block press btn-google" onClick={() => go('/alta/1')}><GoogleG /> Continuar con Google</button>
-        <div className="or" aria-hidden="true"><span>o con tu correo</span></div>
-        <div className="field">
-          <label htmlFor="acc-mail">Correo electrónico</label>
-          <input id="acc-mail" className="input" type="email" autoComplete="email" inputMode="email" value={email} onChange={(e) => { setEmail(e.target.value); setErr(''); }} aria-invalid={Boolean(err)} aria-describedby={err ? 'acc-err' : undefined} />
-          {err && <p id="acc-err" className="err">{err}</p>}
-        </div>
-        <button className="btn btn--primary btn--block press" style={{ justifyContent: 'space-between' }}>Seguir con mi correo <span aria-hidden="true">→</span></button>
-        <a href="#/acceso" className="t-soft" style={{ fontSize: 14 }} onClick={(e) => e.preventDefault()}>¿Has olvidado la contraseña?</a>
-      </form>
+      <Sheet open={mail} onClose={() => setMail(false)} title="Entra con tu correo">
+        <form className="acceso-form" onSubmit={enter} noValidate>
+          <div className="field">
+            <label htmlFor="acc-mail">Correo de la invitación</label>
+            <input id="acc-mail" className="input" type="email" autoComplete="email" inputMode="email" value={email} onChange={(e) => { setEmail(e.target.value); setErr(''); }} aria-invalid={Boolean(err)} aria-describedby={err ? 'acc-err' : 'acc-hint'} />
+            {err ? <p id="acc-err" className="err">{err}</p> : <p id="acc-hint" className="t-soft" style={{ fontSize: 14 }}>Te mandamos un enlace para entrar, sin contraseña.</p>}
+          </div>
+          <button className="btn btn--primary btn--block press">Enviarme el enlace</button>
+        </form>
+      </Sheet>
     </div>
   );
 }
@@ -64,7 +58,7 @@ export function Alta({ params }) {
     if (step < 4) return go(`/alta/${step + 1}`, { replace: true });
     await api('onboarding.done');
     await refreshMe();
-    go('/comunidad', { replace: true });
+    go('/inicio', { replace: true });
     celebrate({ kind: 'welcome', title: '¡Bienvenido a Start!', text: 'Tu carné ya está activo. Enséñalo en el próximo evento y consigue tu primer sello.' });
   };
   return (
@@ -74,7 +68,7 @@ export function Alta({ params }) {
       </div>
       <div className="alta-top">
         {step > 1 ? <button className="alta-back press" onClick={() => go(`/alta/${step - 1}`, { replace: true })}><Icon name="arrow-left" size={18} /> Atrás</button> : <span className="t-mono" style={{ color: 'var(--brand-text)' }}>Paso 1 de 4</span>}
-        <button className="t-soft press" onClick={() => go('/comunidad', { replace: true })}>Lo hago luego</button>
+        <button className="t-soft press" onClick={() => go('/inicio', { replace: true })}>Lo hago luego</button>
       </div>
       <div key={step} className={`alta-step alta-step--${dir}`}>
       {step > 1 && <p className="t-mono" style={{ color: 'var(--brand-text)' }}>Paso {step} de 4</p>}

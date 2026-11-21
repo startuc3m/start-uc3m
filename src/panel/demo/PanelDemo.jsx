@@ -4,6 +4,7 @@ import './screens.css';
 import { createDemoApi } from './api.js';
 import { DEPTH, SECTION, back, interceptLinks, lastDir, savedScroll, useRoute } from './router.js';
 import './motion.css';
+import './shell.css';
 import Icon from './ui/Icon.jsx';
 import { Avatar, Ctx, Logo } from './ui/pieces.jsx';
 import Celebracion from './ui/Celebracion.jsx';
@@ -11,15 +12,44 @@ import Toast from './ui/Toast.jsx';
 import QrModal from './ui/QrModal.jsx';
 import { flushSync } from 'react-dom';
 import DemoPanel from './DemoPanel.jsx';
-import { Avisos, Gente, ParaTi, Persona } from './screens/comunidad.jsx';
+import { Avisos, Gente, Inicio, Persona } from './screens/comunidad.jsx';
+import { Canal, Canales } from './screens/canales.jsx';
+import { Evento, Eventos } from './screens/eventos.jsx';
+import { Ajustes, HazteSocio, Socio } from './screens/ajustes.jsx';
 import { Mapa } from './screens/mapa.jsx';
 import { Interesados, Oferta, Ofertas, Publicar } from './screens/ofertas.jsx';
 import { Editar, Perfil } from './screens/perfil.jsx';
 import { Acceso, Admin, Alta } from './screens/acceso.jsx';
 
-const SCREENS = { paraTi: ParaTi, gente: Gente, persona: Persona, mapa: Mapa, ofertas: Ofertas, oferta: Oferta, interesados: Interesados, publicar: Publicar, perfil: Perfil, editar: Editar, avisos: Avisos, admin: Admin };
-const BACK_TITLE = { persona: 'Comunidad', oferta: 'Ofertas', interesados: 'Oferta', publicar: 'Ofertas', editar: 'Mi perfil', avisos: 'Avisos' };
-const NAV = [['comunidad', '#/comunidad', 'users', 'Comunidad'], ['mapa', '#/mapa', 'orbit', 'Mapa'], ['ofertas', '#/ofertas', 'briefcase', 'Ofertas']];
+const SCREENS = { inicio: Inicio, canales: Canales, canal: Canal, gente: Gente, persona: Persona, mapa: Mapa, eventos: Eventos, evento: Evento, ofertas: Ofertas, oferta: Oferta, interesados: Interesados, publicar: Publicar, perfil: Perfil, editar: Editar, ajustes: Ajustes, socio: Socio, avisos: Avisos, admin: Admin };
+// Título pequeño de la barra de arriba (aparece al bajar, cuando el título grande ya no se ve).
+const TITLE = { inicio: 'Inicio', canales: 'Comunidad', gente: 'Comunidad', mapa: 'Comunidad', canal: 'Canal', eventos: 'Eventos', evento: 'Evento', ofertas: 'Oportunidades', oferta: 'Oportunidad', interesados: 'Interesados', publicar: 'Publicar', perfil: 'Mi perfil', editar: 'Editar perfil', ajustes: 'Ajustes', socio: 'Membresía', avisos: 'Avisos', admin: 'Administración', persona: 'Perfil' };
+const NAV = [['inicio', '#/inicio', 'home', 'Inicio'], ['comunidad', '#/comunidad', 'users', 'Comunidad'], ['eventos', '#/eventos', 'calendar', 'Eventos'], ['ofertas', '#/ofertas', 'target', 'Oportunidades']];
+const TABS = ['inicio', 'comunidad', 'eventos', 'ofertas', 'perfil'];
+
+// La barra de arriba solo enseña lo que sirve en cada pantalla.
+function Actions({ name, me, unread }) {
+  if (name === 'inicio') return (
+    <>
+      <a className="glass-btn press" href="#/comunidad/gente" aria-label="Buscar personas"><Icon name="search" size={21} /></a>
+      <a className="glass-btn press pd-bell" href="#/avisos" aria-label={unread ? `Avisos, ${unread} sin leer` : 'Avisos'}><Icon name="bell" size={21} />{unread > 0 && <span key={unread} className="dot" />}</a>
+    </>
+  );
+  if (name === 'eventos') return <a className="glass-btn press" href="#/eventos/mias" aria-label="Mis entradas"><Icon name="ticket" size={21} /></a>;
+  if (name === 'ofertas' && me.canPublish) return <a className="glass-btn glass-btn--brand press" href="#/ofertas/publicar" aria-label="Publicar oportunidad"><Icon name="plus" size={22} /></a>;
+  if (name === 'perfil') return <a className="glass-btn press" href="#/ajustes" aria-label="Ajustes"><Icon name="settings" size={21} /></a>;
+  return null;
+}
+
+function useScrolled() {
+  const [on, setOn] = useState(false);
+  useEffect(() => {
+    const f = () => setOn(scrollY > 28);
+    f(); addEventListener('scroll', f, { passive: true });
+    return () => removeEventListener('scroll', f);
+  }, []);
+  return on;
+}
 
 const THEME_KEY = 'start-panel-theme';
 const readTheme = () => { try { return localStorage.getItem(THEME_KEY) || 'system'; } catch { return 'system'; } };
@@ -69,6 +99,7 @@ export default function PanelDemo({ photos }) {
   const [nonce, setNonce] = useState(0);
   const [qrOpen, setQrOpen] = useState(false);
   const toastTimer = useRef(0);
+  const scrolled = useScrolled();
 
   const refreshMe = useCallback(async () => {
     const [{ me: m }, n] = await Promise.all([api('me'), api('notifications').catch(() => ({ items: [] }))]);
@@ -89,7 +120,7 @@ export default function PanelDemo({ photos }) {
   // Color de la barra del navegador según tema y pantalla.
   useEffect(() => {
     const meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.content = route.name === 'acceso' ? '#333399' : theme === 'dark' ? '#17173a' : '#ffffff';
+    if (meta) meta.content = route.name === 'acceso' || route.name === 'hazteSocio' ? '#13133d' : theme === 'dark' ? '#0e0e26' : '#f8f8fc';
     document.documentElement.style.colorScheme = theme;
     document.body.style.background = theme === 'dark' ? '#0e0e26' : '#f8f8fc';
   }, [theme, route.name]);
@@ -127,50 +158,50 @@ export default function PanelDemo({ photos }) {
   if (!me) return <div className="pd" data-theme={theme}><div className="pd-boot" aria-busy="true"><Logo className="logo" /></div></div>;
 
   const ctx = { qrOpen, openQr, api, demo, photos, me, refreshMe, toast, celebrate: setParty, reloadScreen: () => setNonce((n) => n + 1), wide, theme, themePref, setTheme };
-  const bare = route.name === 'acceso' || route.name === 'alta';
-  const Screen = SCREENS[route.name] ?? ParaTi;
+  const bare = route.name === 'acceso' || route.name === 'alta' || route.name === 'hazteSocio';
+  const Screen = SCREENS[route.name] ?? Inicio;
   const section = SECTION[route.name];
-  const deep = !wide && DEPTH[route.name];
+  const deep = Boolean(DEPTH[route.name]);
+  const tab = TABS.indexOf(section);
+  const badge = me.badges?.comunidad ?? 0;
+  const goBack = () => back(route.name === 'avisos' ? '/inicio' : route.name === 'ajustes' ? '/perfil' : route.name === 'socio' || route.name === 'admin' ? '/ajustes' : `/${section === 'perfil' ? 'perfil' : section}`);
 
   return (
     <Ctx.Provider value={ctx}>
       <div className="pd" data-theme={theme} data-route={route.name} onClick={interceptLinks}>
         {bare ? (
-          route.name === 'acceso' ? <Acceso /> : <Alta params={route.params} />
+          route.name === 'acceso' ? <Acceso /> : route.name === 'hazteSocio' ? <HazteSocio /> : <Alta params={route.params} />
         ) : (
           <div className={`pd-app ${deep ? 'is-deep' : ''}`}>
             <aside className="pd-side" aria-label="Menú">
               <div><Logo className="logo" /><p className="sub">ÁREA DE SOCIOS_</p></div>
               <nav>
-                {NAV.map(([k, href, icon, label]) => <a key={k} href={href} aria-current={section === k ? 'page' : undefined}><Icon name={icon} />{label}</a>)}
-                {me.canManage && <a href="#/admin" aria-current={section === 'admin' ? 'page' : undefined}><Icon name="shield-check" />Administración</a>}
-                <a href="#/avisos" aria-current={route.name === 'avisos' ? 'page' : undefined}><Icon name="bell" />Avisos{unread > 0 && <span className="badge num">{unread}</span>}</a>
+                {NAV.map(([k, href, icon, label]) => <a key={k} href={href} aria-current={section === k ? 'page' : undefined}><Icon name={icon} />{label}{k === 'comunidad' && badge > 0 && <span className="badge num">{badge}</span>}</a>)}
+                <a href="#/perfil" aria-current={section === 'perfil' ? 'page' : undefined}><Icon name="user" />Mi perfil</a>
               </nav>
-              <a className="me press" href="#/perfil" aria-current={section === 'perfil' ? 'page' : undefined} aria-label="Mi perfil y ajustes">
+              <button className="btn btn--lime btn--block press side-pass" onClick={openQr}><Icon name="qr-code" size={18} /> Mi QR de Start</button>
+              <a className="me press" href="#/ajustes" aria-label="Ajustes">
                 <Avatar person={me} size={36} lime />
                 <span style={{ flex: 1, minWidth: 0 }}><b style={{ display: 'block' }}>{me.name.split(' ')[0]} {me.name.split(' ')[1]?.[0]}.</b><span className="t-soft" style={{ fontSize: 13 }}>{me.role === 'starter' ? `Starter · ${me.dept}` : 'Socio'}</span></span>
-                <Icon name="chevrons-up-down" size={16} className="t-soft" />
+                <Icon name="settings" size={18} className="t-soft" />
               </a>
             </aside>
             <div className="pd-main">
-              {deep ? (
-                <header className="pd-header pd-header--back">
-                  <button className="press" onClick={() => back(`/${section === 'perfil' ? 'perfil' : section}`)} aria-label="Volver" style={{ display: 'flex', gap: 14, alignItems: 'center' }}><Icon name="arrow-left" size={22} />{BACK_TITLE[route.name]}</button>
-                </header>
-              ) : (
-                <header className="pd-header">
-                  <a href="#/comunidad" aria-label="Inicio"><Logo className="logo" /></a>
-                  <a className="pd-bell press" href="#/avisos" aria-label={unread ? `Avisos, ${unread} sin leer` : 'Avisos'}><Icon name="bell" size={22} />{unread > 0 && <span key={unread} className="dot" />}</a>
-                </header>
-              )}
+              <header className={`pd-top ${scrolled ? 'is-scrolled' : ''}`}>
+                {deep
+                  ? <button className="glass-btn press" onClick={goBack} aria-label="Volver"><Icon name="chevron-left" size={24} /></button>
+                  : <button className="glass-btn press only-mobile" onClick={openQr} aria-label="Mi QR de Start" style={{ viewTransitionName: qrOpen ? 'none' : undefined }}><Icon name="qr-code" size={21} /></button>}
+                <span className="pd-top-title" aria-hidden={!scrolled}>{TITLE[route.name]}</span>
+                <span className="pd-top-acts"><Actions name={route.name} me={me} unread={unread} /></span>
+              </header>
               <main className={`pd-screen pd-screen--${route.name}`} key={`${route.name === 'mapa' ? 'mapa' : route.path}#${nonce}`}>
                 <Screen params={route.params} path={route.path} />
               </main>
             </div>
             <nav className="pd-tabbar" aria-label="Secciones">
-              {NAV.map(([k, href, icon, label]) => <a key={k} className="press" href={href} aria-current={section === k ? 'page' : undefined} onClick={(e) => scrollTopIfHere(e, href)}><Icon name={icon} size={22} />{label}</a>)}
-              <a className="press" href="#/perfil" aria-current={section === 'perfil' ? 'page' : undefined} onClick={(e) => scrollTopIfHere(e, '#/perfil')}><Avatar person={me} size={26} lime className={section === 'perfil' ? 'is-on' : ''} />Perfil</a>
-              <span className="ind" aria-hidden="true" style={{ transform: `translateX(${Math.max(0, ['comunidad', 'mapa', 'ofertas', 'perfil'].indexOf(section)) * 100}%)`, opacity: section === 'admin' ? 0 : 1 }} />
+              <span className="ind" aria-hidden="true" style={{ transform: `translateX(${Math.max(0, tab) * 100}%)`, opacity: tab < 0 ? 0 : 1 }} />
+              {NAV.map(([k, href, icon, label]) => <a key={k} className="press" href={href} aria-current={section === k ? 'page' : undefined} onClick={(e) => scrollTopIfHere(e, href)}><span className="tb-ico"><Icon name={icon} size={22} />{k === 'comunidad' && badge > 0 && <span key={badge} className="tb-badge num">{badge}</span>}</span>{label}</a>)}
+              <a className="press" href="#/perfil" aria-current={section === 'perfil' ? 'page' : undefined} onClick={(e) => scrollTopIfHere(e, '#/perfil')}><span className="tb-ico"><Avatar person={me} size={24} lime className={section === 'perfil' ? 'is-on' : ''} /></span>Yo</a>
             </nav>
           </div>
         )}

@@ -51,3 +51,18 @@ Las formas exactas están en `src/panel/demo/api.js` (y sus pruebas en `api.test
 3. **CV**: ¿se sube en el perfil (Storage de Supabase, `panel_files` de #87) y se comparte solo con quien publica la oferta?
 4. **Feed**: ¿qué entra y durante cuánto tiempo? En la demo, eventos de las próximas 2 semanas, ofertas nuevas y sellos recientes.
 5. **Privacidad**: la ficha de una persona enseña sus sellos y su personalidad a toda la comunidad. Hay que añadirlo a `/privacidad` y dejar que cada persona lo oculte.
+
+## Añadido en la versión 2 (con ideas de la demo de Ángel)
+
+| Acción | Entrada | Devuelve | Notas |
+|---|---|---|---|
+| `events` | `{ tab: 'proximos' \| 'mias' \| 'pasados' }` | `{ events, all }` | `all` alimenta el calendario (id, fecha, fin, si vas) |
+| `event` | `{ id }` | `{ event }` | con `isGoing`, `goingCount`, `stamp`, `price`, `membersOnly` |
+| `channels` | — | `{ channels, dms }` | canales (sustituyen a la comunidad de WhatsApp) y mensajes directos, con no leídos |
+| `channel` | `{ id }` (`dm:<persona>` para directos) | `{ channel, messages }` | marca el canal como leído |
+| `channel.send` | `{ id, text }` | `{ message }` | `anuncios` es de solo lectura salvo para la Junta |
+| `message.react` | `{ id, emoji, on }` | `{ ok }` | |
+| `prefs` / `prefs.update` | `{ group, key, value }` | `{ prefs }` | notificaciones y privacidad de Ajustes |
+| `member.join` | `{ plan }` | `{ me }` | alta de socio con pago; la pasarela (Stripe u otra) está por decidir |
+
+Tablas nuevas que harían falta: `channels`, `channel_members`, `messages`, `reactions`, `event_tickets` (sustituye a «apuntados»), `memberships` (temporada, plan, pago) y `user_prefs`. `me.links` (LinkedIn, Instagram, correo, web) va en el perfil y se comparte en el QR como vCard.
