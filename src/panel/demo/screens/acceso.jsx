@@ -1,7 +1,6 @@
 import { useRef, useState } from 'react';
 import Icon from '../ui/Icon.jsx';
 import { Avatar, Carne, Logo, Sheet, useApp } from '../ui/pieces.jsx';
-import { AppleLogo } from './ajustes.jsx';
 import { go } from '../router.js';
 import { FAMILIES, TYPE_NAMES } from '../data.js';
 import { PageTitle } from './comunidad.jsx';
@@ -10,11 +9,15 @@ export function Acceso() {
   const { photos } = useApp();
   const [mail, setMail] = useState(false);
   const [email, setEmail] = useState('nora.prieto@alumnos.uc3m.es');
-  const [err, setErr] = useState('');
+  const [pass, setPass] = useState('');
+  const [err, setErr] = useState({});
   const enter = (e) => {
     e.preventDefault();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) { setErr('Escribe el correo con el que te invitaron.'); return; }
-    go('/alta/1');
+    const x = {};
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) x.email = 'Escribe el correo con el que te invitaron.';
+    if (pass.length < 8) x.pass = 'La contraseña tiene al menos 8 caracteres.';
+    setErr(x);
+    if (!Object.keys(x).length) go('/alta/1');
   };
   return (
     <div className="acceso">
@@ -24,8 +27,7 @@ export function Acceso() {
         <p className="t-mono" style={{ color: 'var(--lime)' }}>Área de socios_</p>
         <h1 className="t-display acceso-h">Somos gente haciendo cosas_</h1>
         <div className="acceso-btns">
-          <button className="btn btn--block btn-apple-w press" onClick={() => go('/alta/1')}><AppleLogo size={20} /> Continuar con Apple</button>
-          <button className="btn btn--block btn-glass press" onClick={() => go('/alta/1')}><GoogleG /> Continuar con Google</button>
+          <button className="btn btn--block btn-apple-w press" onClick={() => go('/alta/1')}><GoogleG /> Continuar con Google</button>
           <button className="btn btn--block btn-text press" onClick={() => setMail(true)} aria-expanded={mail}><Icon name="mail" size={20} /> Entrar con tu correo</button>
         </div>
         <p className="acceso-join">¿Aún no eres socio? <a href="#/hazte-socio">Hazte socio</a></p>
@@ -34,10 +36,16 @@ export function Acceso() {
         <form className="acceso-form" onSubmit={enter} noValidate>
           <div className="field">
             <label htmlFor="acc-mail">Correo de la invitación</label>
-            <input id="acc-mail" className="input" type="email" autoComplete="email" inputMode="email" value={email} onChange={(e) => { setEmail(e.target.value); setErr(''); }} aria-invalid={Boolean(err)} aria-describedby={err ? 'acc-err' : 'acc-hint'} />
-            {err ? <p id="acc-err" className="err">{err}</p> : <p id="acc-hint" className="t-soft" style={{ fontSize: 14 }}>Te mandamos un enlace para entrar, sin contraseña.</p>}
+            <input id="acc-mail" className="input" type="email" autoComplete="email" inputMode="email" value={email} onChange={(e) => { setEmail(e.target.value); setErr({}); }} aria-invalid={Boolean(err.email)} aria-describedby={err.email ? 'acc-err' : undefined} />
+            {err.email && <p id="acc-err" className="err">{err.email}</p>}
           </div>
-          <button className="btn btn--primary btn--block press">Enviarme el enlace</button>
+          <div className="field">
+            <label htmlFor="acc-pass">Contraseña</label>
+            <input id="acc-pass" className="input" type="password" autoComplete="current-password" value={pass} onChange={(e) => { setPass(e.target.value); setErr({}); }} aria-invalid={Boolean(err.pass)} aria-describedby={err.pass ? 'acc-perr' : undefined} />
+            {err.pass && <p id="acc-perr" className="err">{err.pass}</p>}
+          </div>
+          <button className="btn btn--primary btn--block press">Entrar</button>
+          <p className="t-soft" style={{ fontSize: 14, textAlign: 'center' }}>¿Primera vez? Usa el enlace de tu invitación para crear la contraseña. <a href="#/acceso" onClick={(e) => e.preventDefault()} style={{ color: 'var(--brand-text)', fontWeight: 600 }}>He olvidado la contraseña</a></p>
         </form>
       </Sheet>
     </div>
@@ -48,13 +56,16 @@ const STEPS = ['Tu foto', 'Qué estudias', 'Tu personalidad', 'Listo'];
 export function Alta({ params }) {
   const { api, me, refreshMe, celebrate } = useApp();
   const step = Math.min(Math.max(Number(params.paso) || 1, 1), 4);
-  const [f, setF] = useState({ career: me.career, course: me.course, type: me.type });
+  const [f, setF] = useState({ career: '', course: '', type: '', photo: false }); // alguien nuevo: todo por rellenar
+  // Obligatorios (decisión del 17/11 en #87): foto, carrera y curso. Personalidad: un tipo o «No lo sé».
+  const missing = step === 1 && !f.photo ? 'tu foto' : step === 2 && !f.career.trim() ? 'tu carrera' : step === 2 && !f.course ? 'tu curso' : step === 3 && !f.type ? 'tu personalidad (o «No lo sé»)' : null;
   // Dirección del último cambio de paso: avanzar entra por la derecha, volver por la izquierda.
   const prev = useRef(step);
   const dir = step >= prev.current ? 'fwd' : 'back';
   prev.current = step;
   const nextStep = async () => {
-    if (step === 3) await api('profile.update', { ...f, name: me.name });
+    if (missing) return;
+    if (step === 3) await api('profile.update', { career: f.career, course: f.course, name: me.name, ...(f.type !== 'NS' ? { type: f.type } : {}) });
     if (step < 4) return go(`/alta/${step + 1}`, { replace: true });
     await api('onboarding.done');
     await refreshMe();
@@ -68,7 +79,7 @@ export function Alta({ params }) {
       </div>
       <div className="alta-top">
         {step > 1 ? <button className="alta-back press" onClick={() => go(`/alta/${step - 1}`, { replace: true })}><Icon name="arrow-left" size={18} /> Atrás</button> : <span className="t-mono" style={{ color: 'var(--brand-text)' }}>Paso 1 de 4</span>}
-        <button className="t-soft press" onClick={() => go('/inicio', { replace: true })}>Lo hago luego</button>
+        <span className="t-soft" style={{ fontSize: 13 }}>Obligatorio para salir en Gente</span>
       </div>
       <div key={step} className={`alta-step alta-step--${dir}`}>
       {step > 1 && <p className="t-mono" style={{ color: 'var(--brand-text)' }}>Paso {step} de 4</p>}
@@ -76,7 +87,10 @@ export function Alta({ params }) {
         <>
           <h1 className="t-display" style={{ fontSize: 40 }}>Ponle cara a tu carné_</h1>
           <p className="t-soft">Es lo primero que verá la gente en Comunidad.</p>
-          <button className="photo-drop press" onClick={nextStep}><Avatar person={me} size={120} /><span><Icon name="camera" size={18} /> Hacer o subir una foto</span></button>
+          <button className={`photo-drop press ${f.photo ? 'is-done' : ''}`} onClick={async () => { await api('photo.upload'); setF({ ...f, photo: true }); navigator.vibrate?.(10); }}>
+            {f.photo ? <span className="photo-ok"><Avatar person={me} size={120} /><span className="photo-check"><Icon name="check" size={18} stroke={3} /></span></span> : <span className="photo-empty"><Icon name="camera" size={34} /></span>}
+            <span><Icon name="camera" size={18} /> {f.photo ? 'Cambiar foto' : 'Hacer o subir una foto'}</span>
+          </button>
         </>
       )}
       {step === 2 && (
@@ -98,17 +112,18 @@ export function Alta({ params }) {
               </div>
             ))}
           </div>
+          <button type="button" className={`pill press type-ns`} aria-pressed={f.type === 'NS'} onClick={() => setF({ ...f, type: 'NS' })}>No lo sé todavía</button>
         </>
       )}
       {step === 4 && (
         <>
           <h1 className="t-display" style={{ fontSize: 40 }}>Tu carné está listo_</h1>
-          <Carne person={{ ...me, ...f }} own />
+          <Carne person={{ ...me, career: f.career, course: f.course }} own />
           <p className="t-soft">Enséñalo en cada evento: te llevas un sello y subes de nivel.</p>
         </>
       )}
       </div>
-      <div className="alta-cta"><button className={`btn btn--block press btn-next ${step === 4 ? 'btn--lime' : 'btn--primary'}`} onClick={nextStep}>{step === 4 ? 'Entrar en Start' : 'Seguir'} <Icon name="arrow-right" size={18} /></button></div>
+      <div className="alta-cta">{missing && <p className="alta-missing">Falta {missing} para seguir.</p>}<button className={`btn btn--block press btn-next ${step === 4 ? 'btn--lime' : 'btn--primary'}`} onClick={nextStep} disabled={Boolean(missing)}>{step === 4 ? 'Entrar en Start' : 'Seguir'} <Icon name="arrow-right" size={18} /></button></div>
     </div>
   );
 }

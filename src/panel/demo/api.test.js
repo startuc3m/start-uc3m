@@ -96,3 +96,30 @@ describe('api de la demo', () => {
     expect((await api('person', { id: 'lucia' })).person.name.length).toBeGreaterThan(40);
   });
 });
+
+describe('roles y puntos (modelo de la PR #87)', () => {
+  it('«Ver como» cambia el cargo y los permisos', async () => {
+    const { api } = make();
+    expect((await api('me')).me.canManage).toBe(true);
+    await api('demo.settings', { viewAs: 'socio' });
+    const { me } = await api('me');
+    expect([me.canManage, me.canPublish, me.positionLabel]).toEqual([false, false, 'Socio']);
+    await api('demo.settings', { viewAs: 'responsable' });
+    expect((await api('me')).me.positionLabel).toBe('Responsable de RRHH');
+  });
+
+  it('un Responsable solo suma puntos a su departamento; la Junta a cualquiera', async () => {
+    const { api } = make();
+    await api('demo.settings', { viewAs: 'responsable' });
+    await expect(api('points.add', { person: 'hugo', points: 10, reason: 'Ayuda' })).rejects.toThrow('Responsable de su departamento');
+    await api('demo.settings', { viewAs: 'junta' });
+    const before = (await api('ranking')).ranking.find((x) => x.id === 'hugo').points;
+    await api('points.add', { person: 'hugo', points: 10, reason: 'Ayuda en el Camp' });
+    expect((await api('ranking')).ranking.find((x) => x.id === 'hugo').points).toBe(before + 10);
+  });
+
+  it('pagar la cuota no da acceso: queda pendiente', async () => {
+    const { api } = make();
+    expect((await api('member.join', { plan: 'curso' })).status).toBe('pendiente');
+  });
+});

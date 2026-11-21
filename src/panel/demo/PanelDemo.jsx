@@ -14,6 +14,7 @@ import { flushSync } from 'react-dom';
 import DemoPanel from './DemoPanel.jsx';
 import { Avisos, Gente, Persona } from './screens/comunidad.jsx';
 import { Inicio } from './screens/inicio.jsx';
+import { Ranking } from './screens/ranking.jsx';
 import { Canal, Canales } from './screens/canales.jsx';
 import { Evento, Eventos } from './screens/eventos.jsx';
 import { Ajustes, HazteSocio, Socio } from './screens/ajustes.jsx';
@@ -22,9 +23,9 @@ import { Interesados, Oferta, Ofertas, Publicar } from './screens/ofertas.jsx';
 import { Editar, Perfil } from './screens/perfil.jsx';
 import { Acceso, Admin, Alta } from './screens/acceso.jsx';
 
-const SCREENS = { inicio: Inicio, canales: Canales, canal: Canal, gente: Gente, persona: Persona, mapa: Mapa, eventos: Eventos, evento: Evento, ofertas: Ofertas, oferta: Oferta, interesados: Interesados, publicar: Publicar, perfil: Perfil, editar: Editar, ajustes: Ajustes, socio: Socio, avisos: Avisos, admin: Admin };
+const SCREENS = { inicio: Inicio, canales: Canales, canal: Canal, gente: Gente, persona: Persona, mapa: Mapa, eventos: Eventos, evento: Evento, ofertas: Ofertas, oferta: Oferta, interesados: Interesados, publicar: Publicar, perfil: Perfil, editar: Editar, ajustes: Ajustes, socio: Socio, avisos: Avisos, admin: Admin, ranking: Ranking };
 // Título pequeño de la barra de arriba (aparece al bajar, cuando el título grande ya no se ve).
-const TITLE = { inicio: 'Inicio', canales: 'Comunidad', gente: 'Comunidad', mapa: 'Comunidad', canal: 'Canal', eventos: 'Eventos', evento: 'Evento', ofertas: 'Oportunidades', oferta: 'Oportunidad', interesados: 'Interesados', publicar: 'Publicar', perfil: 'Mi perfil', editar: 'Editar perfil', ajustes: 'Ajustes', socio: 'Membresía', avisos: 'Avisos', admin: 'Administración', persona: 'Perfil' };
+const TITLE = { inicio: 'Inicio', canales: 'Comunidad', gente: 'Comunidad', mapa: 'Comunidad', canal: 'Canal', eventos: 'Eventos', evento: 'Evento', ofertas: 'Oportunidades', oferta: 'Oportunidad', interesados: 'Interesados', publicar: 'Publicar', perfil: 'Mi perfil', editar: 'Editar perfil', ajustes: 'Ajustes', socio: 'Membresía', avisos: 'Avisos', admin: 'Administración', persona: 'Perfil', ranking: 'Starter del mes' };
 const NAV = [['inicio', '#/inicio', 'home', 'Inicio'], ['comunidad', '#/comunidad', 'users', 'Comunidad'], ['eventos', '#/eventos', 'calendar', 'Eventos'], ['ofertas', '#/ofertas', 'target', 'Oportunidades']];
 const TABS = ['inicio', 'comunidad', 'eventos', 'ofertas', 'perfil'];
 
@@ -183,7 +184,7 @@ export default function PanelDemo({ photos }) {
               <button className="btn btn--lime btn--block press side-pass" onClick={openQr}><Icon name="qr-code" size={18} /> Mi QR de Start</button>
               <a className="me press" href="#/ajustes" aria-label="Ajustes">
                 <Avatar person={me} size={36} lime />
-                <span style={{ flex: 1, minWidth: 0 }}><b style={{ display: 'block' }}>{me.name.split(' ')[0]} {me.name.split(' ')[1]?.[0]}.</b><span className="t-soft" style={{ fontSize: 13 }}>{me.role === 'starter' ? `Starter · ${me.dept}` : 'Socio'}</span></span>
+                <span style={{ flex: 1, minWidth: 0 }}><b style={{ display: 'block' }}>{me.name.split(' ')[0]} {me.name.split(' ')[1]?.[0]}.</b><span className="t-soft" style={{ fontSize: 13 }}>{me.positionLabel}</span></span>
                 <Icon name="settings" size={18} className="t-soft" />
               </a>
             </aside>

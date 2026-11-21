@@ -57,36 +57,41 @@ export const levelFor = (count) => {
   return { ...cur, next, count, progress: next ? (count - cur.from) / (next.from - cur.from) : 1 };
 };
 
+// Cada persona sigue el modelo de roles de la PR #87 (docs/panel-roles.md):
+// kind (socio | starter), department (solo starters), position (miembro | responsable | junta)
+// y manage_users. `role` y `dept` son alias de kind y department para las pantallas.
 const p = (id, name, career, course, role, dept, type, stamps, bio, extra = {}) => ({
   id, name, initials: name.split(' ').map((w) => w[0]).slice(0, 2).join(''),
-  career, course, role, dept, type, stamps, bio, linkedin: `https://www.linkedin.com/in/${id}-ejemplo`, ...extra,
+  career, course, role, dept, type, stamps, bio, linkedin: `https://www.linkedin.com/in/${id}-ejemplo`,
+  kind: role, department: dept, position: 'miembro', manage_users: false, permissions: [], ...extra,
 });
 
 export const PEOPLE = [
   p('lucia', 'Lucía Martín', 'ADE', '3.º', 'starter', 'Marketing', 'ENFJ', ['camp', 'build', 'skills', 'canas', 'pitch', 'rural', 'next'], 'Me interesan el growth y las marcas que empiezan.', { isNew: false }),
   p('pablo', 'Pablo Herrera', 'Ing. Informática', '2.º', 'socio', null, 'INTP', ['camp', 'build'], 'Backend, bots y cualquier cosa con datos.'),
-  p('marta', 'Marta Gil', 'Derecho', '4.º', 'starter', 'Legal', 'ISTJ', ['camp', 'canas', 'skills'], 'Contratos de startups y propiedad intelectual.'),
+  p('marta', 'Marta Gil', 'Derecho', '4.º', 'starter', 'Legal', 'ISTJ', ['camp', 'canas', 'skills'], 'Contratos de startups y propiedad intelectual.', { position: 'responsable' }),
   p('diego', 'Diego Romero', 'Economía', '3.º', 'socio', null, 'ESTP', ['camp', 'canas', 'pitch', 'invest'], 'Inversión early stage. Siempre en las cañas.'),
   p('sara', 'Sara Núñez', 'Diseño', '1.º', 'socio', null, 'INFP', ['camp'], 'Ilustración, branding y tipografía.', { isNew: true }),
-  p('hugo', 'Hugo Blanco', 'Ing. Industrial', '4.º', 'starter', 'Eventos', 'ENTJ', ['camp', 'build', 'canas', 'pitch', 'rural'], 'Montando el Start Camp desde el primer día.'),
+  p('hugo', 'Hugo Blanco', 'Ing. Industrial', '4.º', 'starter', 'Eventos', 'ENTJ', ['camp', 'build', 'canas', 'pitch', 'rural'], 'Montando el Start Camp desde el primer día.', { position: 'responsable' }),
   p('nora', 'Nora Prieto', 'Periodismo', '2.º', 'socio', null, 'ENFP', [], 'Recién llegada. Quiero aprender a contar startups.', { isNew: true }),
   p('ivan', 'Iván Soler', 'Matemáticas', '1.º', 'socio', null, 'INTJ', [], 'Modelos, finanzas y ajedrez.', { isNew: true }),
   p('elena', 'Elena Vidal', 'ADE + Derecho', '2.º', 'socio', null, 'ESFJ', ['canas'], 'Me encanta organizar cosas con gente.', { isNew: true }),
   p('mario', 'Mario Ortega', 'Ing. Telemática', '3.º', 'socio', null, 'ISTP', [], 'Hardware y prototipos rápidos.', { isNew: true }),
   p('paula', 'Paula Torres', 'Marketing', '1.º', 'socio', null, 'ENFP', [], 'Contenido y redes.', { isNew: true }),
-  p('carla', 'Carla Ruiz', 'Ing. Informática', '2.º', 'starter', 'Marketing', 'ENTP', ['camp', 'build', 'skills'], 'Front y diseño de producto.'),
-  p('gema', 'Gema Castro', 'Publicidad', '3.º', 'starter', 'Marketing', 'ISFJ', ['camp', 'canas', 'skills', 'pitch'], 'Fotos de todos los eventos (sí, también tuyas).'),
-  p('andres', 'Andrés León', 'Comunicación', '2.º', 'starter', 'Marketing', 'ESFP', ['camp', 'canas'], 'Vídeo y reels.'),
-  p('lidia', 'Lidia Wang', 'Bellas Artes', '4.º', 'starter', 'Marketing', 'INFJ', ['camp', 'build', 'skills', 'canas', 'pitch', 'rural', 'next', 'invest'], 'Brand kit 26/27. Si ves algo lima, fui yo.'),
+  p('carla', 'Carla Ruiz', 'Ing. Informática', '2.º', 'starter', 'IT', 'ENTP', ['camp', 'build', 'skills'], 'Front y diseño de producto.'),
+  p('gema', 'Gema Castro', 'Publicidad', '3.º', 'starter', 'Marketing', 'ISFJ', ['camp', 'canas', 'skills', 'pitch'], 'Fotos de todos los eventos (sí, también tuyas).', { position: 'responsable' }),
+  p('andres', 'Andrés León', 'Comunicación', '2.º', 'starter', 'RRHH', 'ESFP', ['camp', 'canas'], 'Entrevistas y bienvenida a la gente nueva.', { position: 'responsable', permissions: ['startskills'] }),
+  p('lidia', 'Lidia Wang', 'Bellas Artes', '4.º', 'starter', 'Junta', 'INFJ', ['camp', 'build', 'skills', 'canas', 'pitch', 'rural', 'next', 'invest'], 'Brand kit 26/27. Si ves algo lima, fui yo.', { position: 'junta', permissions: ['startskills', 'eventos', 'blog'] }),
   p('jorge', 'Jorge Vela', 'Ing. Informática', '4.º', 'socio', null, 'ENTP', ['camp', 'build'], 'Fundando mi primera startup de edtech.'),
   p('ines', 'Inés Ramos', 'Física', '3.º', 'socio', null, 'ENTP', ['skills'], 'Deep tech y energía.'),
 ];
 
 export const ME = {
   id: 'alvaro', name: 'Álvaro Carpintero', initials: 'AC', career: 'Ing. Informática', course: '3.º',
-  role: 'starter', dept: 'IT', type: 'ENTP', number: 42, stamps: ['camp', 'build', 'canas', 'skills', 'pitch'],
+  role: 'starter', dept: 'IT', kind: 'starter', department: 'IT', position: 'miembro', manage_users: true, permissions: ['startskills'], public_consent: true, photo: true,
+  type: 'ENTP', number: 42, stamps: ['camp', 'build', 'canas', 'skills', 'pitch'],
   bio: 'Construyo la web y el área de socios de Start.', linkedin: 'https://www.linkedin.com/in/ejemplo',
-  interests: ['growth', 'astro'], canPublish: true, canManage: true, onboarded: true,
+  interests: ['growth', 'astro'], onboarded: true,
   cv: { name: 'CV-Alvaro-Carpintero.pdf', size: '184 KB', updated: '12 nov' },
   links: { linkedin: 'alvarocarpintero', instagram: 'alvaro.cp', email: 'alvaro.carpintero@alumnos.uc3m.es', web: '' },
   member: { season: '26/27', until: '31 ago 2027', since: 2025 },
@@ -257,3 +262,27 @@ export const LOOKING = {
   mario: 'Ofrece: prototipos de hardware rápidos', paula: 'Ofrece: contenido para redes', carla: 'Tu equipo · Front y diseño de producto',
   pablo: 'Ofrece: bots y backend', jorge: 'Busca: cofundador/a de negocio',
 };
+
+// Mismas reglas que src/panel/model.js de la PR #87. Si cambian allí, se cambian aquí.
+export const canManage = (m) => m?.position === 'junta' || (m?.department === 'IT' && m?.manage_users === true);
+export const canPublish = (m) => ['junta', 'responsable'].includes(m?.position);
+// Sumar puntos manuales: un Responsable, solo a su departamento; la Junta, a cualquiera.
+export const canGivePoints = (m, target) => m?.position === 'junta' || (m?.position === 'responsable' && target?.department === m.department);
+export const positionLabel = (x) => (x.kind !== 'starter' ? 'Socio'
+  : x.position === 'junta' ? 'Junta'
+    : x.position === 'responsable' ? `Responsable de ${x.department}`
+      : `Starter · ${x.department}`);
+export const PERMISSION_SCOPES = { startskills: 'Start Skills', eventos: 'Eventos', blog: 'Blog' };
+
+// «Ver como» del botón DEMO: la misma persona con otro cargo, para enseñar qué cambia.
+export const VIEW_AS = {
+  it: { label: 'IT autorizado', patch: {} },
+  socio: { label: 'Socio', patch: { role: 'socio', kind: 'socio', dept: null, department: null, position: 'miembro', manage_users: false, permissions: [] } },
+  starter: { label: 'Starter', patch: { manage_users: false, permissions: [] } },
+  responsable: { label: 'Responsable RRHH', patch: { dept: 'RRHH', department: 'RRHH', position: 'responsable', manage_users: false, permissions: ['startskills'] } },
+  junta: { label: 'Junta', patch: { dept: 'Junta', department: 'Junta', position: 'junta', manage_users: false, permissions: ['startskills', 'eventos', 'blog'] } },
+};
+
+// Puntos del mes (propuesta de #87: asistencia = 10 por evento, más los puntos manuales).
+export const POINTS_BASE = { hugo: 85, lucia: 70, lidia: 55, gema: 60, alvaro: 50, carla: 45, andres: 40, marta: 30, jorge: 20 };
+export const STARTER_OF_MONTH = { month: 'octubre', person: 'hugo', points: 120, why: 'Montó el Start Camp y fichó en todos los eventos.' };

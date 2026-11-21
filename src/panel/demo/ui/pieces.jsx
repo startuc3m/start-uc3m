@@ -110,7 +110,7 @@ export function Carne({ person, own = false, animateRing = false, className = ''
         <LevelRing progress={lvl.progress} animate={animateRing}><Avatar person={person} size={64} /></LevelRing>
         <div style={{ minWidth: 0 }}>
           <p className="name">{person.name}</p>
-          <p className="sub">{[person.career && !own ? person.career : null, person.course && !own ? person.course : null, person.role === 'starter' ? `Starter${person.dept ? (own ? ' · ' : ' en ') + person.dept : ''}` : 'Socio', own ? person.type : null].filter(Boolean).join(' · ')}</p>
+          <p className="sub">{[!own && person.career, !own && person.course, roleLine(person), own && person.type].filter(Boolean).join(' · ')}</p>
           {own ? <p className="big num">Nº {String(person.number).padStart(4, '0')}</p> : <p className="big">NIVEL {lvl.n}<small>{lvl.name}</small></p>}
         </div>
         {own && (
@@ -250,7 +250,7 @@ export function Sheet({ open, onClose, title, children }) {
   );
 }
 
-export const roleLine = (x) => (x.role === 'starter' ? `Starter${x.dept ? ` · ${x.dept}` : ''}` : x.role === 'socio' ? 'Socio' : '');
+export const roleLine = (x) => x.positionLabel ?? (x.role === 'starter' ? `Starter${x.dept ? ` · ${x.dept}` : ''}` : 'Socio');
 
 // Número que rueda al cambiar (sube: entra desde abajo; baja: desde arriba).
 export function Rolling({ value }) {

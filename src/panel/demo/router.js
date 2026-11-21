@@ -30,6 +30,7 @@ const ROUTES = [
   ['/ajustes', 'ajustes'],
   ['/socio', 'socio'],
   ['/avisos', 'avisos'],
+  ['/ranking', 'ranking'],
   ['/admin', 'admin'],
 ];
 
@@ -44,9 +45,9 @@ export function match(path) {
 }
 
 // Pestaña de la barra inferior a la que pertenece cada pantalla.
-export const SECTION = { inicio: 'inicio', avisos: 'inicio', canales: 'comunidad', gente: 'comunidad', mapa: 'comunidad', canal: 'comunidad', persona: 'comunidad', eventos: 'eventos', evento: 'eventos', ofertas: 'ofertas', oferta: 'ofertas', interesados: 'ofertas', publicar: 'ofertas', perfil: 'perfil', editar: 'perfil', ajustes: 'perfil', socio: 'perfil', admin: 'perfil' };
+export const SECTION = { inicio: 'inicio', avisos: 'inicio', ranking: 'inicio', canales: 'comunidad', gente: 'comunidad', mapa: 'comunidad', canal: 'comunidad', persona: 'comunidad', eventos: 'eventos', evento: 'eventos', ofertas: 'ofertas', oferta: 'ofertas', interesados: 'ofertas', publicar: 'ofertas', perfil: 'perfil', editar: 'perfil', ajustes: 'perfil', socio: 'perfil', admin: 'perfil' };
 // Profundidad: decide si la transición entra desde la derecha (push) o vuelve (pop).
-export const DEPTH = { persona: 1, canal: 1, evento: 1, oferta: 1, interesados: 2, publicar: 1, editar: 1, avisos: 1, ajustes: 1, socio: 2, admin: 2 };
+export const DEPTH = { persona: 1, canal: 1, evento: 1, oferta: 1, interesados: 2, publicar: 1, editar: 1, avisos: 1, ranking: 1, ajustes: 1, socio: 2, admin: 2 };
 
 const read = () => (typeof location === 'undefined' ? '/inicio' : location.hash.replace(/^#/, '') || '/inicio');
 

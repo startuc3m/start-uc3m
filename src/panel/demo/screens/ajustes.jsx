@@ -105,18 +105,35 @@ export function Socio() {
 
 // Hazte socio: desde la pantalla de acceso, para quien aún no lo es. Pago simulado.
 export function HazteSocio() {
-  const { api, photos, refreshMe, celebrate } = useApp();
+  const { api, photos } = useApp();
   const [plan, setPlan] = useState('curso');
-  const [step, setStep] = useState('plan'); // plan → paying → ok
+  const [email, setEmail] = useState('');
+  const [err, setErr] = useState('');
+  const [step, setStep] = useState('plan'); // plan → paying → done
+  // Pagar no da acceso (regla 4.6 de docs/panel-roles.md, PR #87): la solicitud queda
+  // pendiente hasta que IT o la Junta la autoricen y llegue la invitación por correo.
   const pay = async () => {
-    setStep('paying');
-    await Promise.all([api('member.join', { plan }), new Promise((r) => setTimeout(r, 1100))]);
-    await refreshMe();
-    setStep('ok');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) { setErr('Escribe tu correo: ahí te llegará la invitación.'); return; }
+    setErr(''); setStep('paying');
+    await Promise.all([api('member.join', { plan, email }), new Promise((r) => setTimeout(r, 1100))]);
+    setStep('done');
     navigator.vibrate?.([12, 40, 12]);
-    go('/alta/1', { replace: true });
-    celebrate({ kind: 'welcome', title: '¡Ya eres socio!', text: 'Pago hecho. Ahora completa tu perfil y tendrás tu carné listo para el próximo evento.' });
   };
+  if (step === 'done') return (
+    <div className="hazte hazte--done">
+      <div className="hazte-ok">
+        <span className="aldia-check" style={{ transform: 'none', opacity: 1 }}><Icon name="check" size={30} stroke={3} /></span>
+        <h1 className="t-display">Pago recibido_</h1>
+        <p>Ya eres socio de Start para la temporada 26/27.</p>
+        <ol className="hazte-steps">
+          <li className="is-done"><b>Pago hecho</b><span>Te hemos mandado el recibo a {email}.</span></li>
+          <li className="is-now"><b>IT o la Junta activan tu cuenta</b><span>Suele tardar uno o dos días.</span></li>
+          <li><b>Te llega la invitación</b><span>Entras, completas tu perfil y tienes tu carné.</span></li>
+        </ol>
+        <a className="btn btn--lime btn--block press" href="#/acceso">Volver al inicio</a>
+      </div>
+    </div>
+  );
   return (
     <div className="hazte">
       <div className="hazte-hero" style={{ backgroundImage: `url(${photos.equipo})` }}>
@@ -139,6 +156,11 @@ export function HazteSocio() {
         </div>
         <p className="t-soft" style={{ fontSize: 13 }}>Precios de ejemplo: la cuota real la fija la Junta.</p>
         <ul className="perks perks--compact">{PERKS.slice(0, 4).map(([i, t]) => <li key={t}><span className="perk-ico"><Icon name={i} size={16} /></span>{t}</li>)}</ul>
+        <div className="field">
+          <label htmlFor="hz-mail">Tu correo</label>
+          <input id="hz-mail" className="input" type="email" inputMode="email" autoComplete="email" placeholder="nombre@alumnos.uc3m.es" value={email} onChange={(e) => { setEmail(e.target.value); setErr(''); }} aria-invalid={Boolean(err)} aria-describedby={err ? 'hz-err' : 'hz-hint'} />
+          {err ? <p id="hz-err" className="err">{err}</p> : <p id="hz-hint" className="t-soft" style={{ fontSize: 13 }}>Al pagar, IT o la Junta activan tu cuenta y te llega la invitación a este correo.</p>}
+        </div>
         <div className="hazte-cta">
           <button className="btn btn--block btn-apple press" onClick={pay} disabled={step !== 'plan'}>{step === 'paying' ? 'Pagando…' : <>Pagar con <AppleLogo /> Pay</>}</button>
           <button className="btn btn--block btn--ghost press" onClick={pay} disabled={step !== 'plan'}><Icon name="credit-card" size={18} /> Pagar con tarjeta</button>

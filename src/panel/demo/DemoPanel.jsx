@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Icon from './ui/Icon.jsx';
 import { Sheet, useApp } from './ui/pieces.jsx';
 import { clearApiCache, go } from './router.js';
+import { VIEW_AS } from './data.js';
 
 // Botón «Demo»: solo existe en el prototipo. Sirve para probar estados y
 // animaciones sin tener que provocarlos de verdad.
@@ -24,6 +25,7 @@ export default function DemoPanel() {
       <Sheet open={open} onClose={() => setOpen(false)} title="Panel de la demo">
         <div className="demo-panel">
           <p className="t-soft" style={{ fontSize: 14 }}>Datos inventados. Lo que hagas se guarda en este navegador.</p>
+          <div className="row row--wrap"><span>Ver como</span><span className="opts opts--wrap">{Object.entries(VIEW_AS).map(([k, v]) => <Opt key={k} k="viewAs" v={k} label={v.label} />)}</span></div>
           <div className="row"><span>Tema</span><span className="opts"><T v="system" label="Auto" /><T v="light" label="Claro" icon="sun" /><T v="dark" label="Oscuro" icon="moon" /></span></div>
           <div className="row"><span>Red</span><span className="opts"><Opt k="latency" v="none" label="Instantánea" /><Opt k="latency" v="normal" label="Normal" /><Opt k="latency" v="slow" label="Lenta" /></span></div>
           <div className="row"><span>Sin datos</span><span className="opts"><Opt k="empty" v={false} label="No" /><Opt k="empty" v={true} label="Sí" /></span></div>

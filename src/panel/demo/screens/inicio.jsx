@@ -4,6 +4,7 @@ import { Avatar, Carne, Img, Load, OfferLogo, Rolling, Sello, Skeleton, Stack, b
 import { useApi } from '../router.js';
 import { PullIndicator, usePull } from '../ui/Pull.jsx';
 import { NextTicket, PageTitle } from './comunidad.jsx';
+import { StarterMes } from './ranking.jsx';
 
 // Inicio: lo tuyo y lo nuevo en Start. La estructura viene de la demo de Ángel, recortada:
 // cada bloque responde a una pregunta («¿qué tengo?», «¿qué hay de nuevo?», «¿a quién
@@ -29,6 +30,7 @@ export function Inicio() {
               </nav>
               {d.nextEvent && <NextTicket e={d.nextEvent} />}
               {d.announcement && <Novedades d={d} onChange={q.setData} />}
+              {d.starterOfMonth && <StarterMes s={d.starterOfMonth} compact />}
               {d.events.length > 0 && (
                 <Section title="Próximos eventos" href="#/eventos">
                   <ul className="rail">{d.events.map((e) => <li key={e.id}><MiniEvent e={e} /></li>)}</ul>

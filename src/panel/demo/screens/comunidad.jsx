@@ -76,6 +76,14 @@ export function Gente() {
               <Empty icon="search" title={text ? `Nadie coincide con «${text}»` : 'Aún no hay nadie aquí'}>Prueba con otro nombre o quita los filtros.</Empty>
             ) : (
               <>
+                {d.leaders?.length > 0 && (
+                  <section className="home-sec" aria-label="Junta y responsables">
+                    <h2 className="t-h home-h">Junta y responsables</h2>
+                    <ul className="rail leaders">
+                      {d.leaders.map((x) => <li key={x.id}><a className="card leader press" href={`#/persona/${x.id}`}><Avatar person={x} size={52} /><b>{x.name.split(' ')[0]}</b><span className={`leader-pos ${x.position === 'junta' ? 'is-junta' : ''}`}>{x.position === 'junta' ? 'Junta' : x.department}</span></a></li>)}
+                    </ul>
+                  </section>
+                )}
                 <p className="t-soft num" aria-live="polite">{d.total} {d.total === 1 ? 'persona' : 'personas'}</p>
                 <ul className="people-list">
                   {d.people.map((x) => (

@@ -7,7 +7,7 @@ import { LINKS } from '../screens/perfil.jsx';
 // Tarjeta de contacto (vCard) con tus enlaces: es lo que recibe quien escanea tu QR.
 export function vcard(me) {
   const l = me.links ?? {};
-  return ['BEGIN:VCARD', 'VERSION:3.0', `FN:${me.name}`, `ORG:Start UC3M`, `TITLE:${me.role === 'starter' ? `Starter · ${me.dept}` : 'Socio'}`, l.email && `EMAIL:${l.email}`, l.linkedin && `URL;TYPE=LinkedIn:https://www.linkedin.com/in/${l.linkedin}`, l.instagram && `URL;TYPE=Instagram:https://instagram.com/${l.instagram}`, l.web && `URL:${l.web}`, 'END:VCARD'].filter(Boolean).join('\n');
+  return ['BEGIN:VCARD', 'VERSION:3.0', `FN:${me.name}`, `ORG:Start UC3M`, `TITLE:${me.positionLabel}`, l.email && `EMAIL:${l.email}`, l.linkedin && `URL;TYPE=LinkedIn:https://www.linkedin.com/in/${l.linkedin}`, l.instagram && `URL;TYPE=Instagram:https://instagram.com/${l.instagram}`, l.web && `URL:${l.web}`, 'END:VCARD'].filter(Boolean).join('\n');
 }
 
 // QR a pantalla grande para fichar en la entrada de un evento. El QR "crece" desde el

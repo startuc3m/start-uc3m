@@ -66,3 +66,21 @@ Las formas exactas están en `src/panel/demo/api.js` (y sus pruebas en `api.test
 | `member.join` | `{ plan }` | `{ me }` | alta de socio con pago; la pasarela (Stripe u otra) está por decidir |
 
 Tablas nuevas que harían falta: `channels`, `channel_members`, `messages`, `reactions`, `event_tickets` (sustituye a «apuntados»), `memberships` (temporada, plan, pago) y `user_prefs`. `me.links` (LinkedIn, Instagram, correo, web) va en el perfil y se comparte en el QR como vCard.
+
+## Solapes con la PR #87 (leer antes de fusionar)
+
+Esta demo y el backend de Estrella (#87) tocan las mismas decisiones. **Manda #87** (`docs/panel-roles.md` y `docs/panel.md`); la demo las copia para enseñarlas, no las define. Quien revise o fusione cualquiera de las dos PRs debe comprobar que siguen coincidiendo:
+
+| Tema | Fuente de verdad en #87 | Dónde lo imita la demo |
+|---|---|---|
+| Roles: `kind`, `department`, `position`, `manage_users` | `docs/panel-roles.md` §1-2, `src/panel/model.js` | `src/panel/demo/data.js` (`canManage`, `canPublish`, `positionLabel`) |
+| Permisos de edición por sección (`startskills`, `eventos`, `blog`) | `panel_permissions`, migración `20261121223358` | `PERMISSION_SCOPES`, apartado «Gestión» de Yo |
+| Puntos manuales (Responsable solo a su departamento; Junta a cualquiera) | §3 (pendiente) | `canGivePoints`, acción `points.add`, pantalla `/ranking` |
+| Starter del mes y portada (solo con `public_consent`) | §5 y §7 (por decidir) | `STARTER_OF_MONTH`, tarjeta en Inicio |
+| Pagar no da acceso | regla 4.6 | `member.join` devuelve `pendiente`; pantalla «Pago recibido» |
+| Acceso: Google y correo/contraseña | `docs/panel.md` | Pantalla de acceso (sin Apple ni enlace mágico) |
+| Alta: nombre, carrera, curso y foto obligatorios; personalidad o «No lo sé» | `docs/panel.md` | Alta guiada con «Seguir» bloqueado hasta completar |
+
+Si una regla cambia en #87, hay que cambiar también la fila correspondiente de la demo (o al revés, si se decide que la demo propone algo mejor). La API real debería devolver en `me` el cargo y los permisos ya calculados (`positionLabel`, `canManage`, `canPublish`, `permissions`), para que el front no repita reglas.
+
+Funciones de la demo que **no están en ninguna fase de #87** y hay que acordar antes de construirlas: canales y mensajes (sustituir WhatsApp), eventos con entradas, pago de la cuota dentro de la app, seguir a gente y el grafo o mapa de afinidades.

@@ -424,3 +424,65 @@
 .cal { z-index: 6; }
 /* Avisos: un poco de aire entre uno y otro, sobre todo cuando van seguidos los no leídos. */
 .avisos ul { gap: 6px; }
+
+/* ---------- Roles, puntos y Starter del mes ---------- */
+.leaders { gap: 8px; }
+.leader { width: 104px; padding: 12px 8px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; }
+.leader b { font-size: 14px; }
+.leader-pos { font-size: 11px; font-weight: 700; color: var(--brand-text); line-height: 1.2; }
+.leader-pos.is-junta { background: var(--lime); color: var(--ink-fixed); padding: 1px 8px; border-radius: 99px; }
+.gest-pos { text-transform: none; letter-spacing: 0; font-family: var(--f-body); font-size: 12px; font-weight: 700; }
+.som { position: relative; display: flex; align-items: center; gap: 14px; padding: 18px 16px 16px; background: linear-gradient(135deg, var(--lime), #eaffa0); color: var(--ink-fixed); border: 0; overflow: hidden; }
+.som::after { content: ''; position: absolute; right: -30px; top: -40px; width: 140px; height: 140px; border-radius: 99px; background: #ffffff59; }
+.som .avatar { box-shadow: 0 0 0 3px #fff; }
+.som .grow { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; position: relative; z-index: 1; }
+.som-badge { position: absolute; top: 8px; left: 16px; font-size: 9.5px; letter-spacing: .14em; font-weight: 700; }
+.som:not(.som--compact) .som-badge { position: static; display: block; }
+.som:not(.som--compact) { flex-wrap: wrap; }
+.som:not(.som--compact) .som-badge { flex-basis: 100%; }
+.som--compact { padding-top: 26px; }
+.som-name { font-size: 18px; line-height: 1.2; }
+.som-pos { font-size: 13px; font-weight: 600; opacity: .8; }
+.som-why { font-size: 14px; margin-top: 4px; }
+.som-in { width: 38px; height: 38px; border-radius: 99px; background: var(--ink-fixed); color: var(--lime); display: grid; place-items: center; flex: none; position: relative; z-index: 1; }
+.give-hint { display: flex; gap: 10px; align-items: center; padding: 12px 14px; font-size: 14px; background: color-mix(in srgb, var(--brand-text) 8%, var(--surface)); }
+.rank { padding: 0; overflow: hidden; }
+.rank-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; }
+.rank-row + .rank-row { border-top: 1px solid var(--line); }
+.rank-row.is-me { background: color-mix(in srgb, var(--lime) 22%, transparent); }
+.rank-n { width: 26px; text-align: center; font-weight: 700; color: var(--ink-soft); flex: none; }
+.rank-n.is-top { width: 26px; height: 26px; border-radius: 99px; display: grid; place-items: center; color: var(--ink-fixed); font-size: 13px; }
+.rank-n.is-1 { background: var(--lime); } .rank-n.is-2 { background: var(--cyan); } .rank-n.is-3 { background: var(--lavender); }
+.rank-who { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; }
+.rank-who .grow { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.rank-who b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rank-who .t-soft { font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rank-pts { font-family: var(--f-display); font-weight: 400; font-size: 22px; color: var(--brand-text); flex: none; }
+.rank-pts small { font-family: var(--f-body); font-size: 11px; color: var(--ink-soft); }
+.rank-give { width: 34px; height: 34px; border-radius: 99px; display: grid; place-items: center; background: var(--cobalt); color: #fff; flex: none; }
+
+/* Alta: obligatorios */
+.alta-missing { font-size: 13px; color: var(--ink-soft); text-align: center; margin-bottom: 8px; }
+.photo-empty { width: 120px; height: 120px; border-radius: 99px; display: grid; place-items: center; background: var(--paper-2); color: var(--ink-soft); border: 2px dashed var(--line); }
+.photo-ok { position: relative; display: inline-block; animation: pd-pop 320ms cubic-bezier(.23,1,.32,1) both; }
+.photo-check { position: absolute; right: 2px; bottom: 6px; width: 32px; height: 32px; border-radius: 99px; display: grid; place-items: center; background: var(--lime); color: var(--ink-fixed); box-shadow: 0 0 0 3px var(--paper); }
+.type-ns { align-self: flex-start; }
+
+/* Hazte socio: pendiente de activar */
+.hazte--done { display: grid; place-items: center; padding: calc(env(safe-area-inset-top) + 24px) 20px calc(env(safe-area-inset-bottom) + 24px); background: var(--navy); color: #fff; }
+.hazte-ok { width: 100%; max-width: 440px; display: flex; flex-direction: column; gap: 14px; }
+.hazte-ok h1 { color: #fff; font-size: 48px; }
+.hazte-ok > p { color: var(--lavender); }
+.hazte-steps { list-style: none; margin: 6px 0 10px; padding: 0; display: flex; flex-direction: column; gap: 0; }
+.hazte-steps li { position: relative; padding: 0 0 18px 34px; display: flex; flex-direction: column; gap: 2px; }
+.hazte-steps li::before { content: ''; position: absolute; left: 6px; top: 4px; width: 14px; height: 14px; border-radius: 99px; border: 2px solid #ffffff59; background: var(--navy); }
+.hazte-steps li::after { content: ''; position: absolute; left: 13px; top: 22px; bottom: 2px; width: 2px; background: #ffffff26; }
+.hazte-steps li:last-child::after { display: none; }
+.hazte-steps li.is-done::before { background: var(--lime); border-color: var(--lime); }
+.hazte-steps li.is-now::before { border-color: var(--lime); box-shadow: 0 0 0 4px #d6ff4f33; }
+.hazte-steps span { color: var(--lavender); font-size: 14px; }
+
+/* Panel DEMO: «Ver como» en varias líneas */
+.demo-panel .row--wrap { flex-direction: column; align-items: flex-start; gap: 8px; }
+.demo-panel .opts--wrap { flex-wrap: wrap; }
+.hazte-ok .aldia-check svg path { stroke-dashoffset: 0; }

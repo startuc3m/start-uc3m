@@ -3,11 +3,11 @@
 // que exista el backend se cambia este archivo y las pantallas no se tocan.
 // El estado de la demo vive en localStorage para que «Me interesa», los sellos o
 // el perfil sobrevivan a una recarga; «Reiniciar demo» lo borra.
-import { CHANNELS, DMS, LOOKING, MESSAGES, STARTUPS, SUPPORT, TODAY, CVS, EVENTS, FEED, ME, NOTIFICATIONS, OFFERS, PEOPLE, STAMPS, COMPANIES, TYPE_COUNTS, FAMILIES, TYPE_NAMES, familyOf, levelFor } from './data.js';
+import { POINTS_BASE, STARTER_OF_MONTH, VIEW_AS, canGivePoints, canManage, canPublish, positionLabel, CHANNELS, DMS, LOOKING, MESSAGES, STARTUPS, SUPPORT, TODAY, CVS, EVENTS, FEED, ME, NOTIFICATIONS, OFFERS, PEOPLE, STAMPS, COMPANIES, TYPE_COUNTS, FAMILIES, TYPE_NAMES, familyOf, levelFor } from './data.js';
 
 const KEY = 'start-panel-demo';
 
-export const DEMO_DEFAULTS = { latency: 'normal', empty: false, error: false, extreme: false };
+export const DEMO_DEFAULTS = { latency: 'normal', empty: false, error: false, extreme: false, viewAs: 'it' };
 
 // «Datos extremos»: para ver dónde se rompe la interfaz con contenido real feo.
 const extremePerson = (x) => ({
@@ -31,6 +31,8 @@ function fresh() {
     reactions: {},
     following: [],
     supported: false,
+    points: [],
+    applications: [],
     prefs: { notif: { anuncios: true, eventos: true, ofertas: true, canales: false, mensajes: true }, privacy: { gente: true, email: true, cv: true } },
     settings: { ...DEMO_DEFAULTS },
   };
@@ -50,7 +52,10 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
     try { storage?.setItem(KEY, JSON.stringify(state)); } catch {}
   }
 
-  const person = (id) => (id === state.me.id ? state.me : PEOPLE.find((x) => x.id === id));
+  // Tú, con el cargo que se esté probando en «Ver como» (botón DEMO).
+  const meNow = () => ({ ...state.me, ...(VIEW_AS[state.settings.viewAs]?.patch ?? {}) });
+  const person = (id) => (id === state.me.id ? meNow() : PEOPLE.find((x) => x.id === id));
+  const pointsOf = (id) => (POINTS_BASE[id] ?? 0) + state.points.filter((x) => x.person === id).reduce((n, x) => n + x.points, 0);
   const allOffers = () => [...state.offers, ...OFFERS];
   const decorateOffer = (o) => {
     const mine = state.interests.includes(o.id);
@@ -71,7 +76,7 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
   };
   const decoratePerson = (x0) => {
     const x = state.settings.extreme ? extremePerson(x0) : x0;
-    return { ...x, family: familyOf(x.type), typeName: TYPE_NAMES[x.type], level: levelFor(x.stamps.length), stampList: x.stamps.map((s) => STAMPS[s]) };
+    return { ...x, family: familyOf(x.type), typeName: TYPE_NAMES[x.type], level: levelFor(x.stamps.length), stampList: x.stamps.map((s) => STAMPS[s]), positionLabel: positionLabel(x), canManage: canManage(x), canPublish: canPublish(x) };
   };
 
   const decorateEvent = (e) => {
@@ -93,7 +98,7 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
   const badges = () => ({ comunidad: state.settings.empty ? 0 : CHANNELS.reduce((n, c) => n + unreadOf(c.id), 0) + DMS.filter((d) => !state.channelRead[`dm:${d.id}`] && d.messages.at(-1).from !== state.me.id).length });
 
   const actions = {
-    me: () => ({ me: { ...decoratePerson(state.me), badges: badges() } }),
+    me: () => ({ me: { ...decoratePerson(meNow()), badges: badges(), viewAs: state.settings.viewAs } }),
 
     feed: () => {
       if (state.settings.empty) return { items: [], newcomers: [] };
@@ -118,7 +123,8 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
       const list = PEOPLE.filter((x) => (filter === 'todos' || x.role === filter.replace(/s$/, ''))
         && (!type || x.type === type)
         && (!needle || normalize(`${x.name} ${x.career}`).includes(needle))).map(decoratePerson);
-      return { people: list, total: list.length };
+      const leaders = filter === 'todos' && !needle && !type ? PEOPLE.filter((x) => x.position !== 'miembro').sort((a, b) => (a.position === 'junta' ? -1 : b.position === 'junta' ? 1 : 0)).map(decoratePerson) : [];
+      return { people: list, total: list.length, leaders };
     },
 
     person: ({ id }) => {
@@ -212,9 +218,36 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
         offers: offers.filter((o) => !o.isInterested && !o.isMine).sort((a, b) => b.interestedCount - a.interestedCount).slice(0, 4),
         people,
         startups: STARTUPS.map((x) => ({ ...x, founder: decoratePerson(person(x.founder)) })),
+        starterOfMonth: { ...STARTER_OF_MONTH, person: decoratePerson(person(STARTER_OF_MONTH.person)) },
         stamp: { stamp: STAMPS.camp, count: 48, mine: state.me.stamps.includes('camp'), myCount: state.me.stamps.length },
       };
     },
+    // Puntos del mes y Starter del mes (solo Starters; los socios no entran en el ranking).
+    ranking: () => {
+      const me = meNow();
+      const starters = [...PEOPLE.filter((x) => x.kind === 'starter'), ...(me.kind === 'starter' ? [me] : [])]
+        .map((x) => ({ ...decoratePerson(x), points: pointsOf(x.id), canGive: canGivePoints(me, x) && x.id !== me.id }))
+        .sort((a, b) => b.points - a.points);
+      const som = person(STARTER_OF_MONTH.person);
+      return {
+        month: 'noviembre', ranking: starters, myRank: starters.findIndex((x) => x.id === me.id) + 1 || null,
+        starterOfMonth: { ...STARTER_OF_MONTH, person: decoratePerson(som) },
+        canGive: me.position === 'junta' || me.position === 'responsable', scope: me.position === 'junta' ? 'todo el equipo' : me.department,
+        log: state.points.slice(-5).reverse().map((x) => ({ ...x, person: person(x.person) })),
+      };
+    },
+    'points.add': ({ person: pid, points, reason }) => {
+      const me = meNow(), target = person(pid);
+      const n = Number(points);
+      if (!target || target.kind !== 'starter') throw new Error('Solo los Starters suman puntos.');
+      if (!canGivePoints(me, target) || target.id === me.id) throw new Error('Solo la Junta, o el Responsable de su departamento, puede sumarle puntos.');
+      if (!Number.isInteger(n) || n < 1 || n > 50) throw new Error('Puntos: entre 1 y 50.');
+      if (!String(reason ?? '').trim()) throw new Error('Motivo: di qué ha hecho.');
+      state.points = [...state.points, { person: pid, points: n, reason: String(reason).trim(), by: me.id, at: 'ahora' }];
+      save();
+      return { points: pointsOf(pid) };
+    },
+
     'support.toggle': ({ on }) => { state.supported = on; save(); return { count: SUPPORT.count + (on ? 1 : 0), supported: on }; },
     follow: ({ id, on }) => { state.following = on ? [...new Set([...state.following, id])] : state.following.filter((x) => x !== id); save(); return { on }; },
 
@@ -271,10 +304,11 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
       return { prefs: state.prefs };
     },
     // Hacerse socio desde la pantalla de acceso. En la demo el pago siempre sale bien.
-    'member.join': ({ plan = 'curso' } = {}) => {
-      state.me = { ...state.me, member: { season: '26/27', until: '31 ago 2027', since: 2026, plan } };
+    // Pagar no da acceso: queda pendiente hasta que IT o la Junta autoricen e inviten (regla 4.6 de #87).
+    'member.join': ({ plan = 'curso', email = '' } = {}) => {
+      state.applications = [...state.applications, { plan, email, at: 'ahora', status: 'pendiente' }];
       save();
-      return actions.me();
+      return { status: 'pendiente' };
     },
 
     // Fichar en un evento con el QR del carné. En la demo siempre da el sello INVEST.
@@ -309,7 +343,14 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
       save();
       return actions.me();
     },
-    'onboarding.done': () => { state.me = { ...state.me, onboarded: true }; save(); return actions.me(); },
+    // Solo los perfiles completos salen en Gente y en el mapa: nombre, carrera, curso y foto son obligatorios.
+    'photo.upload': () => { state.me = { ...state.me, photo: true }; save(); return actions.me(); },
+    'onboarding.done': () => {
+      const m = state.me;
+      const missing = [!m.photo && 'foto', !String(m.career ?? '').trim() && 'carrera', !m.course && 'curso'].filter(Boolean);
+      if (missing.length) throw new Error(`Falta: ${missing.join(', ')}.`);
+      state.me = { ...m, onboarded: true }; save(); return actions.me();
+    },
 
     // Ajustes del panel «Demo» (no existen en el backend real).
     'demo.settings': (input) => { state.settings = { ...state.settings, ...input }; save(); return { settings: state.settings }; },
