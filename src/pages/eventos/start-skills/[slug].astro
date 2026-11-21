@@ -1,0 +1,218 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { getStartSkills, estados, fechaLarga, fechaCorta, iniciales, megas, programa } from '../../../lib/startskills';
+import { bloqueVacio } from '../../../lib/startskills-vacio.mjs';
+export function getStaticPaths() {
+  const { bloques } = getStartSkills();
+  const est = estados(bloques);
+  return bloques.map((b, i) => ({ params: { slug: b.slug }, props: { b, total: bloques.length, siguiente: bloques[i + 1] ?? null, celebrado: est.get(b.slug) === 'celebrado' } }));
+}
+const { b, total, siguiente, celebrado } = Astro.props;
+const asociaciones = [...new Set(b.participantes.map((p) => p.asociacion).filter((a): a is string => !!a))];
+const lugarHora = [b.lugar, b.hora].filter(Boolean).join(' · ');
+const f = b.formador;
+const tonos = ['bg-cobalt text-white', 'bg-lavender text-ink', 'bg-navy text-lavender', 'bg-white text-cobalt'];
+const nn = (i: number) => String(i + 1).padStart(2, '0');
+const descripcion = b.tema
+  ? b.tema.slice(0, 155)
+  : `Sesión ${b.numero} de ${total} de ${programa.titulo}: ${b.titulo}${b.formador ? ` con ${b.formador.nombre}` : ''}, ${fechaLarga(b.fecha)}.`;
+// Un bloque futuro sin nada aún no se indexa: sería una página casi vacía en Google.
+const vacio = bloqueVacio(b);
+---
+<Base title={`${b.titulo} · ${programa.titulo}`} description={descripcion} tone="dark" noindex={vacio}>
+  <section class="bg-cobalt text-white">
+    <div class="container-x flex flex-col gap-8 pb-10 pt-12 md:flex-row md:items-end md:justify-between md:gap-12 md:pb-16 md:pt-16">
+      <div class="min-w-0 md:flex-1">
+        <a href="/eventos/start-skills" class="mono -my-3 inline-block py-3 text-lavender hover:text-white">← Start Skills</a>
+        <h1 class="display mt-5 text-[clamp(44px,10vw,136px)]" data-split>{b.titulo}_</h1>
+      </div>
+      <div class="flex min-w-0 flex-col gap-3.5 border-lavender md:w-72 md:shrink-0 md:border-l md:pl-6" data-reveal>
+        <p class="display text-4xl">Sesión {b.numero} <span class="text-lavender">de {total}</span></p>
+        <p class="display text-4xl leading-[1.1] [text-wrap:balance] first-letter:uppercase">{fechaLarga(b.fecha)}</p>
+        {lugarHora && <p class="mono text-lavender">{lugarHora}</p>}
+      </div>
+    </div>
+  </section>
+
+  <section class="container-x flex flex-col gap-12 py-12 md:py-20 lg:flex-row lg:gap-16">
+    {(b.tema || f) && (
+      <div class="flex min-w-0 flex-col gap-8 lg:w-80 lg:shrink-0">
+        {b.tema && (
+          <div>
+            <span class="eyebrow text-cobalt">El tema</span>
+            <p class="mt-3 text-[19px] leading-relaxed">{b.tema}</p>
+          </div>
+        )}
+        {f && (
+          <div class={`flex flex-col gap-3.5 ${b.tema ? 'border-t border-line pt-6' : ''}`}>
+            <span class="eyebrow text-cobalt">Formador</span>
+            {f.foto
+              ? <img src={f.foto} alt={f.nombre} width="240" height="300" loading="lazy" class="aspect-[4/5] w-40 md:w-60 max-w-full rounded-brand object-cover" />
+              : <div class="display grid aspect-[4/5] w-40 md:w-60 max-w-full place-items-center rounded-brand bg-gradient-to-br from-cobalt to-cobalt-deep text-[56px] text-lavender" aria-hidden="true">{iniciales(f.nombre)}</div>}
+            <div>
+              <p class="text-2xl font-bold">{f.nombre}</p>
+              {f.cargo && <p class="mt-0.5">{f.cargo}</p>}
+            </div>
+            {f.linkedin && <a href={f.linkedin} target="_blank" rel="noopener" class="btn btn-primary self-start !px-5 !py-3">Ver su LinkedIn ↗</a>}
+          </div>
+        )}
+      </div>
+    )}
+
+    <div class="min-w-0 flex-1">
+      <div class="flex flex-wrap items-end justify-between gap-5">
+        <div>
+          {b.fotos.length > 0 && <span class="eyebrow text-cobalt">{b.fotos.length} {b.fotos.length === 1 ? 'foto' : 'fotos'}{b.zip ? ` · ${megas(b.zip.bytes)}` : ''}</span>}
+          <h2 class="display mt-2.5 text-[clamp(40px,6vw,64px)]">Galería</h2>
+        </div>
+        {b.zip && (
+          <a href={b.zip.src} download class="btn btn-lime">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 21h16"></path></svg>
+            Descargar todas las fotos (.zip)
+          </a>
+        )}
+      </div>
+      {b.fotos.length > 0 ? (
+        <ul class="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3">
+          {b.fotos.map((p, i) => (
+            <li class="relative">
+              <a href={p.src} data-lightbox class="group block aspect-[4/3] overflow-hidden rounded-brand bg-cobalt">
+                <img src={p.thumb} srcset={p.small ? `${p.small} 400w, ${p.thumb} 800w` : undefined} sizes="(min-width: 1024px) 33vw, 50vw" width={p.ancho} height={p.alto} alt={`Foto ${nn(i)} de ${b.titulo}`} loading="lazy" decoding="async" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+              </a>
+              <a href={p.src} download aria-label={`Descargar foto ${nn(i)} de ${b.titulo}`} class="absolute bottom-2.5 right-2.5 grid h-11 w-11 place-items-center rounded-brand bg-white text-cobalt">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 21h16"></path></svg>
+              </a>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="mt-8 rounded-brand border border-dashed border-lavender bg-white p-8 text-lg">{celebrado ? 'Las fotos de esta sesión llegarán pronto.' : 'Las fotos se publican después de la sesión.'}</p>
+      )}
+    </div>
+  </section>
+
+  <section class="bg-paper-2">
+    <div class="container-x py-12 md:py-20">
+      <div class="flex flex-wrap items-end justify-between gap-5">
+        <div>
+          {b.participantes.length > 0 && <span class="eyebrow text-cobalt">{b.participantes.length} {b.participantes.length === 1 ? 'persona' : 'personas'}{asociaciones.length > 0 ? ` · ${asociaciones.length} ${asociaciones.length === 1 ? 'asociación' : 'asociaciones'}` : ''}</span>}
+          <h2 class="display mt-2.5 text-[clamp(40px,6vw,64px)]">Participantes</h2>
+        </div>
+        {asociaciones.length > 1 && (
+          <div class="-mx-4 -my-1 flex gap-2 overflow-x-auto px-4 py-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 [&::-webkit-scrollbar]:hidden" role="group" aria-label="Filtrar por asociación">
+            <span class="sr-only" aria-live="polite" data-filtro-aviso></span>
+            {['Todas', ...asociaciones].map((a, i) => <button type="button" data-filter={a} aria-pressed={String(i === 0)} class={`eyebrow min-h-11 shrink-0 whitespace-nowrap rounded-full border px-3.5 py-2 ${i === 0 ? 'border-cobalt bg-cobalt text-white' : 'border-line bg-white text-ink'}`}>{a}</button>)}
+          </div>
+        )}
+      </div>
+      {b.participantes.length > 0 ? (
+        <>
+          <ul class="mt-8 grid grid-cols-2 gap-3 sm:mt-10 sm:gap-4 lg:grid-cols-4">
+            {b.participantes.map((p, i) => {
+              const cls = 'flex flex-col overflow-hidden rounded-brand border border-line bg-white';
+              const inner = (
+                <>
+                  <span class="mono flex items-center justify-between bg-cobalt px-3 py-1.5 text-[10px] text-white"><span>Start Skills</span><span>B{b.numero}</span></span>
+                  <span class="flex flex-col items-start gap-2.5 px-3 py-3 sm:flex-row sm:items-center sm:gap-3 sm:py-3.5">
+                    {p.foto
+                      ? <img src={p.foto} alt="" width="52" height="52" loading="lazy" decoding="async" class="h-11 w-11 flex-none rounded-full object-cover sm:h-[52px] sm:w-[52px]" />
+                      : <span aria-hidden="true" class={`display grid h-11 w-11 flex-none place-items-center rounded-full text-base sm:h-[52px] sm:w-[52px] sm:text-lg ${tonos[i % tonos.length]}`}>{iniciales(p.nombre)}</span>}
+                    <span class="flex min-w-0 flex-col gap-0.5">
+                      <span class="text-[14px] font-bold leading-tight sm:text-[15px]">{p.nombre}</span>
+                      {p.asociacion && <span class="mono text-[10px] text-cobalt">{p.asociacion}</span>}
+                    </span>
+                    {p.linkedin && <span aria-hidden="true" class="text-[13px] text-cobalt sm:ml-auto">in ↗</span>}
+                  </span>
+                </>
+              );
+              return (
+                <li data-asoc={p.asociacion ?? ''} class="min-w-0">
+                  {p.linkedin
+                    ? <a href={p.linkedin} target="_blank" rel="noopener" aria-label={`${p.nombre} en LinkedIn`} class={`${cls} hover:border-cobalt`}>{inner}</a>
+                    : <div class={cls}>{inner}</div>}
+                </li>
+              );
+            })}
+          </ul>
+          {b.participantes.some((p) => p.linkedin) && <p class="mt-6 text-sm">Pulsa en una persona para abrir su LinkedIn.</p>}
+        </>
+      ) : (
+        <p class="mt-8 rounded-brand border border-dashed border-lavender bg-white p-8 text-lg">{celebrado ? 'La lista de participantes llegará pronto.' : 'La lista se publica después de la sesión.'}</p>
+      )}
+    </div>
+  </section>
+
+  <nav aria-label="Otros bloques" class="border-t border-line">
+    <div class="container-x grid gap-8 pb-12 pt-10 sm:grid-cols-2 md:pb-16">
+      <a href="/eventos/start-skills" class="group flex flex-col gap-1.5"><span class="eyebrow text-cobalt">← Todos los bloques</span><span class="display text-3xl group-hover:underline md:text-4xl">Start Skills</span></a>
+      {siguiente && <a href={`/eventos/start-skills/${siguiente.slug}`} class="group flex flex-col gap-1.5 sm:items-end sm:text-right"><span class="eyebrow text-cobalt">Siguiente · {fechaCorta(siguiente.fecha)} →</span><span class="display text-3xl group-hover:underline md:text-4xl">Bloque {siguiente.numero}: {siguiente.titulo}</span></a>}
+    </div>
+  </nav>
+
+  {b.fotos.length > 0 && (
+    <dialog id="lightbox" aria-label="Galería de fotos" data-lenis-prevent class="m-auto max-h-[96vh] max-w-[96vw] bg-transparent p-0 text-white backdrop:bg-navy/90">
+      <div class="relative flex flex-col items-center gap-3 rounded-brand bg-navy p-2">
+        <img data-lb-img alt="" class="max-h-[calc(96vh-6rem)] max-w-full object-contain transition-opacity" />
+        <div class="flex items-center gap-3">
+          <button type="button" data-lb-prev aria-label="Foto anterior" class="btn btn-on-blue !px-4 !py-3">←</button>
+          <span data-lb-count class="mono text-lavender"></span>
+          <button type="button" data-lb-next aria-label="Foto siguiente" class="btn btn-on-blue !px-4 !py-3">→</button>
+          <button type="button" data-lb-close aria-label="Cerrar" class="btn btn-outline !px-4 !py-3">Cerrar ✕</button>
+        </div>
+      </div>
+    </dialog>
+  )}
+</Base>
+<script>
+  // Filtro por asociación (como el de equipo).
+  const botones = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
+  const cards = document.querySelectorAll<HTMLElement>('[data-asoc]');
+  botones.forEach((b) => b.addEventListener('click', () => {
+    const sel = b.dataset.filter!;
+    botones.forEach((x) => {
+      const on = x === b;
+      ['bg-cobalt', 'text-white', 'border-cobalt'].forEach((c) => x.classList.toggle(c, on));
+      ['bg-white', 'text-ink', 'border-line'].forEach((c) => x.classList.toggle(c, !on));
+      x.setAttribute('aria-pressed', String(on));
+    });
+    let n = 0;
+    cards.forEach((c) => { const ver = sel === 'Todas' || c.dataset.asoc === sel; c.style.display = ver ? '' : 'none'; if (ver) n++; });
+    const aviso = document.querySelector('[data-filtro-aviso]');
+    if (aviso) aviso.textContent = `${n} ${n === 1 ? 'persona' : 'personas'}${sel === 'Todas' ? '' : ` de ${sel}`}`;
+  }));
+
+  // Lightbox accesible con <dialog>; sin JS el enlace abre la foto.
+  const dlg = document.getElementById('lightbox') as HTMLDialogElement | null;
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-lightbox]')];
+  if (dlg && links.length) {
+    const img = dlg.querySelector<HTMLImageElement>('[data-lb-img]')!;
+    const count = dlg.querySelector<HTMLElement>('[data-lb-count]')!;
+    let i = 0;
+    const show = (n: number) => {
+      i = (n + links.length) % links.length;
+      // Mientras carga la siguiente, la anterior se atenúa: no se ve una foto con el número de otra.
+      img.style.opacity = '0.3';
+      img.onload = () => (img.style.opacity = '1');
+      img.src = links[i].href;
+      img.alt = links[i].querySelector('img')?.alt ?? '';
+      count.textContent = `${i + 1} / ${links.length}`;
+    };
+    links.forEach((a, n) => a.addEventListener('click', (e) => {
+      if (e.metaKey || e.ctrlKey || e.shiftKey) return;
+      e.preventDefault();
+      show(n);
+      dlg.showModal();
+      // Con la foto abierta la página de detrás no se mueve (ni rueda ni trackpad).
+      document.documentElement.style.overflow = 'hidden';
+      dlg.querySelector<HTMLElement>('[data-lb-close]')!.focus();
+    }));
+    dlg.querySelector('[data-lb-prev]')!.addEventListener('click', () => show(i - 1));
+    dlg.querySelector('[data-lb-next]')!.addEventListener('click', () => show(i + 1));
+    dlg.querySelector('[data-lb-close]')!.addEventListener('click', () => dlg.close());
+    dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+    dlg.addEventListener('keydown', (e) => { if (e.key === 'ArrowLeft') show(i - 1); if (e.key === 'ArrowRight') show(i + 1); });
+    // <dialog> cierra con Escape; al cerrar devolvemos el foco a la miniatura abierta.
+    dlg.addEventListener('close', () => { document.documentElement.style.overflow = ''; links[i].focus(); });
+    dlg.addEventListener('wheel', (e) => e.preventDefault(), { passive: false });
+  }
+</script>
