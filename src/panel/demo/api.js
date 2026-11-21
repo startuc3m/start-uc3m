@@ -3,7 +3,7 @@
 // que exista el backend se cambia este archivo y las pantallas no se tocan.
 // El estado de la demo vive en localStorage para que «Me interesa», los sellos o
 // el perfil sobrevivan a una recarga; «Reiniciar demo» lo borra.
-import { CHANNELS, DMS, MESSAGES, TODAY, CVS, EVENTS, FEED, ME, NOTIFICATIONS, OFFERS, PEOPLE, STAMPS, COMPANIES, TYPE_COUNTS, FAMILIES, TYPE_NAMES, familyOf, levelFor } from './data.js';
+import { CHANNELS, DMS, LOOKING, MESSAGES, STARTUPS, SUPPORT, TODAY, CVS, EVENTS, FEED, ME, NOTIFICATIONS, OFFERS, PEOPLE, STAMPS, COMPANIES, TYPE_COUNTS, FAMILIES, TYPE_NAMES, familyOf, levelFor } from './data.js';
 
 const KEY = 'start-panel-demo';
 
@@ -29,6 +29,8 @@ function fresh() {
     channelRead: {},
     sent: {},
     reactions: {},
+    following: [],
+    supported: false,
     prefs: { notif: { anuncios: true, eventos: true, ofertas: true, canales: false, mensajes: true }, privacy: { gente: true, email: true, cv: true } },
     settings: { ...DEMO_DEFAULTS },
   };
@@ -63,6 +65,7 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
       interestedCount: X ? 999 : all.length,
       interestedPeople: all.slice(0, 3).map(person).filter(Boolean),
       isInterested: mine,
+      daysLeft: o.closes ? Math.round((new Date(`${o.closes}T12:00:00`) - new Date(`${TODAY}T12:00:00`)) / 864e5) : null,
       isMine: Boolean(o.mine || o.createdByMe),
     };
   };
@@ -189,11 +192,37 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
       return { offer: decorateOffer(o) };
     },
 
+    // Inicio: lo tuyo y lo nuevo, en piezas cortas (cada carrusel con pocas tarjetas).
+    home: () => {
+      const empty = state.settings.empty;
+      const events = EVENTS.map(decorateEvent).filter((e) => !e.past).sort((a, b) => a.date.localeCompare(b.date));
+      const offers = allOffers().map(decorateOffer);
+      const ann = messagesOf('anuncios').at(-1);
+      const newcomers = PEOPLE.filter((x) => x.isNew);
+      const same = PEOPLE.filter((x) => x.career === state.me.career && !x.isNew);
+      const people = [...newcomers.slice(0, 3), ...same.slice(0, 2)].map((x) => ({ ...decoratePerson(x), looking: LOOKING[x.id] ?? x.bio, reason: x.isNew ? 'Nuevo en Start' : 'Estudia lo mismo que tú', isFollowing: state.following.includes(x.id) }));
+      if (empty) return { counts: { planes: 0, mensajes: 0, oportunidades: 0 }, nextEvent: null, announcement: null, support: null, unread: 0, events: [], offers: [], people: [], startups: [], stamp: null };
+      return {
+        counts: { planes: events.length, mensajes: badges().comunidad, oportunidades: offers.filter((o) => !o.isInterested && (o.daysLeft ?? 99) >= 0).length },
+        nextEvent: events.find((e) => e.isGoing) ?? null,
+        announcement: { ...ann, channel: 'anuncios' },
+        support: { ...SUPPORT, count: SUPPORT.count + (state.supported ? 1 : 0), supported: state.supported },
+        unread: badges().comunidad,
+        events: events.slice(0, 5),
+        offers: offers.filter((o) => !o.isInterested && !o.isMine).sort((a, b) => b.interestedCount - a.interestedCount).slice(0, 4),
+        people,
+        startups: STARTUPS.map((x) => ({ ...x, founder: decoratePerson(person(x.founder)) })),
+        stamp: { stamp: STAMPS.camp, count: 48, mine: state.me.stamps.includes('camp'), myCount: state.me.stamps.length },
+      };
+    },
+    'support.toggle': ({ on }) => { state.supported = on; save(); return { count: SUPPORT.count + (on ? 1 : 0), supported: on }; },
+    follow: ({ id, on }) => { state.following = on ? [...new Set([...state.following, id])] : state.following.filter((x) => x !== id); save(); return { on }; },
+
     events: ({ tab = 'proximos' } = {}) => {
       if (state.settings.empty) return { events: [], all: [] };
       const all = EVENTS.map(decorateEvent).sort((a, b) => a.date.localeCompare(b.date));
       const list = tab === 'pasados' ? all.filter((e) => e.past).reverse() : tab === 'mias' ? all.filter((e) => e.isGoing && !e.past) : all.filter((e) => !e.past);
-      return { events: list, all: all.map(({ id, date, end, title, isGoing, past }) => ({ id, date, end, title, isGoing, past })) };
+      return { events: list, all };
     },
     event: ({ id }) => {
       const e = EVENTS.find((x) => x.id === id);

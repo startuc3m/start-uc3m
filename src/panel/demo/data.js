@@ -108,43 +108,43 @@ export const COMPANIES = {
 
 export const OFFERS = [
   {
-    id: 'growth', title: 'Prácticas de growth', company: 'lumen', kind: 'Prácticas', kindColor: 'cyan', deadline: 'Hasta el 5 dic',
+    id: 'growth', closes: '2026-12-05', title: 'Prácticas de growth', company: 'lumen', kind: 'Prácticas', kindColor: 'cyan', deadline: 'Hasta el 5 dic',
     place: 'Híbrida · Madrid', duration: '6 meses', hours: '20 h/semana', pay: 'Remunerada', cover: 'oficina',
     desc: 'Buscan a alguien de ADE, Marketing o Economía para el equipo de crecimiento: campañas, análisis de datos y pruebas A/B. 20 h a la semana, remunerado y compatible con clases.',
     contact: 'Hugo', interested: ['lucia', 'diego', 'sara', 'hugo', 'marta', 'pablo', 'gema', 'andres', 'carla', 'jorge', 'ines', 'lidia'], isNew: true,
   },
   {
-    id: 'astro', title: 'Desarrollo web con Astro', company: 'start', kind: 'Proyecto', kindColor: 'lavender', deadline: 'Hasta el 10 dic',
+    id: 'astro', closes: '2026-12-10', title: 'Desarrollo web con Astro', company: 'start', kind: 'Proyecto', kindColor: 'lavender', deadline: 'Hasta el 10 dic',
     place: 'Remoto', duration: '3 meses', hours: '5 h/semana', pay: 'Voluntario', cover: 'equipo',
     desc: 'Ayúdanos con la web de Start: páginas nuevas, rendimiento y el área de socios. Aprendes Astro, React y a trabajar con PRs revisadas.',
     contact: 'Álvaro', interested: ['pablo', 'carla', 'jorge', 'ines'], mine: true,
   },
   {
-    id: 'analista', title: 'Analista de inversión junior', company: 'arrayan', kind: 'Prácticas', kindColor: 'cyan', deadline: 'Hasta el 15 dic',
+    id: 'analista', closes: '2026-12-15', title: 'Analista de inversión junior', company: 'arrayan', kind: 'Prácticas', kindColor: 'cyan', deadline: 'Hasta el 15 dic',
     place: 'Presencial · Madrid', duration: '6 meses', hours: '25 h/semana', pay: 'Remunerada', cover: 'pitch',
     desc: 'Análisis de startups en fase semilla: due diligence, modelos financieros y seguimiento de cartera. Perfil de Economía, ADE o Matemáticas.',
     contact: 'Diego', interested: ['hugo', 'ines', 'jorge', 'diego', 'ivan', 'marta', 'pablo', 'lucia', 'elena'],
   },
   {
-    id: 'invest', title: 'Voluntariado Start to Invest', company: 'start', kind: 'Voluntariado', kindColor: 'yellow', deadline: '30 nov',
+    id: 'invest', closes: '2026-11-30', title: 'Voluntariado Start to Invest', company: 'start', kind: 'Voluntariado', kindColor: 'yellow', deadline: '30 nov',
     place: 'Campus de Getafe', duration: '1 día', hours: '6 h', pay: 'Sello INVEST', cover: 'sala',
     desc: 'Recepción, acreditaciones y apoyo en las mesas del Start to Invest. Comida incluida y sello del evento.',
     contact: 'Lidia', interested: ['gema', 'andres', 'elena', 'hugo', 'lucia', 'sara', 'paula'],
   },
   {
-    id: 'hardware', title: 'Prototipado de hardware', company: 'kilo', kind: 'Prácticas', kindColor: 'cyan', deadline: 'Hasta el 20 dic',
+    id: 'hardware', closes: '2026-12-20', title: 'Prototipado de hardware', company: 'kilo', kind: 'Prácticas', kindColor: 'cyan', deadline: 'Hasta el 20 dic',
     place: 'Leganés', duration: '4 meses', hours: '20 h/semana', pay: 'Remunerada', cover: 'portatiles',
     desc: 'Electrónica, impresión 3D y pruebas de campo con un equipo de cinco personas.',
     contact: 'Mario', interested: ['mario', 'pablo'],
   },
   {
-    id: 'hack-ia', title: 'Hackathon de IA para el bien común', company: 'racks', kind: 'Hackathon', kindColor: 'lime', deadline: 'Hasta el 1 feb',
+    id: 'hack-ia', closes: '2027-02-01', title: 'Hackathon de IA para el bien común', company: 'racks', kind: 'Hackathon', kindColor: 'lime', deadline: 'Hasta el 1 feb',
     place: 'Campus de Leganés', duration: '2 días', hours: '13–14 feb', pay: 'Premios', cover: 'portatiles',
     desc: 'Equipos de 3 a 5 personas, retos de ONG reales y mentores de la industria. No hace falta saber programar: también se buscan perfiles de negocio y diseño.',
     contact: 'Pablo', interested: ['pablo', 'carla', 'lucia'],
   },
   {
-    id: 'beca-mvp', title: 'Ayuda para tu primer MVP', company: 'fundacion', kind: 'Beca', kindColor: 'yellow', deadline: 'Hasta el 15 ene',
+    id: 'beca-mvp', closes: '2027-01-15', title: 'Ayuda para tu primer MVP', company: 'fundacion', kind: 'Beca', kindColor: 'yellow', deadline: 'Hasta el 15 ene',
     place: 'Remoto', duration: '3 meses', hours: 'Libre', pay: '500 € + mentoría', cover: 'oficina',
     desc: 'Para socios con una idea en marcha: 500 € para construir la primera versión y tres sesiones con un mentor.',
     contact: 'Lidia', interested: ['jorge', 'ines'],
@@ -235,3 +235,21 @@ export const NOTIFICATIONS = [
   { id: 'n6', kind: 'channel', channel: 'anuncios', text: 'Nuevo anuncio en <b>Anuncios</b>: gracias por el Start Camp.', when: 'hace 3 h', at: 'hoy', unread: true, href: '#/canal/anuncios' },
   { id: 'n5', kind: 'joined', person: 'nora', text: '<b>Nora Prieto</b> ha entrado en Start. Es ENFP, como 9 más.', when: 'hace 6 días', at: 'antes', unread: false, href: '#/persona/nora' },
 ];
+
+// Startups de socios (inventadas): las enseña Inicio para que la gente se conozca por lo que hace.
+export const STARTUPS = [
+  { id: 'repaso', name: 'Repaso', pitch: 'Tus apuntes convertidos en tests para el examen, por asignatura.', founder: 'jorge', tag: 'Busca gente', sector: 'Edtech', color: '#333399' },
+  { id: 'ruta', name: 'Ruta Campus', pitch: 'Coche compartido entre estudiantes para llegar a Getafe y Leganés.', founder: 'ines', tag: 'Abre la beta', sector: 'Movilidad', color: '#1D7A4F' },
+  { id: 'brote', name: 'Brote', pitch: 'Huertos en azoteas de oficinas, con sensores que avisan cuándo regar.', founder: 'mario', tag: 'Busca cofundador/a', sector: 'Agro', color: '#9A5B00' },
+  { id: 'eco', name: 'Eco', pitch: 'Un agente que resume las actas de las asociaciones de la uni.', founder: 'pablo', tag: 'Busca gente', sector: 'IA', color: '#12123A' },
+];
+
+// Petición de apoyo en redes que la Junta destaca en Inicio.
+export const SUPPORT = { id: 'reel-camp', title: 'Reel del Start Camp', where: 'Instagram', goal: 200, count: 143, text: 'Un like y compartir en stories ayuda a que llegue a más gente.' };
+
+// Qué busca u ofrece cada persona (lo enseña «Gente para ti»).
+export const LOOKING = {
+  nora: 'Busca: aprender cómo se monta una startup', ivan: 'Primer año. Modelos, finanzas y ajedrez.', elena: 'Busca: equipo para el próximo Start Camp',
+  mario: 'Ofrece: prototipos de hardware rápidos', paula: 'Ofrece: contenido para redes', carla: 'Tu equipo · Front y diseño de producto',
+  pablo: 'Ofrece: bots y backend', jorge: 'Busca: cofundador/a de negocio',
+};

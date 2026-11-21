@@ -1,8 +1,7 @@
 import { useDeferredValue, useState } from 'react';
 import Icon from '../ui/Icon.jsx';
-import { Avatar, Carne, Empty, FakeQr, Img, Load, OfferLogo, Rolling, Sello, Sellos, Skeleton, Stack, TypeTag, roleLine, useApp } from '../ui/pieces.jsx';
+import { Avatar, Carne, Empty, FakeQr, Load, OfferLogo, Sello, Sellos, Skeleton, Stack, TypeTag, roleLine, useApp } from '../ui/pieces.jsx';
 import { go, useApi } from '../router.js';
-import { PullIndicator, usePull } from '../ui/Pull.jsx';
 
 const COM_TABS = [['canales', '/comunidad', 'Canales'], ['mensajes', '/comunidad/mensajes', 'Mensajes'], ['gente', '/comunidad/gente', 'Gente'], ['mapa', '/comunidad/mapa', 'Mapa']];
 // Cabecera común de Comunidad: título grande y las cuatro pestañas.
@@ -32,51 +31,6 @@ export function PageTitle({ eyebrow, sub, children, action }) {
   );
 }
 
-/* ---------- Para ti ---------- */
-// Historias vistas: el aro se apaga cuando ya has entrado a ver a esa persona (como en Instagram).
-const readSeen = () => { try { return JSON.parse(localStorage.getItem('pd-seen') || '[]'); } catch { return []; } };
-const markSeen = (id) => { try { localStorage.setItem('pd-seen', JSON.stringify([...new Set([...readSeen(), id])])); } catch {} };
-
-const FULL_DATE = new Intl.DateTimeFormat('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
-export function Inicio() {
-  const { api, photos, me } = useApp();
-  const seen = readSeen();
-  const q = useApi(api, 'feed', {}, []);
-  const { pull, refreshing } = usePull(q.reload);
-  return (
-    <>
-      <PullIndicator pull={pull} refreshing={refreshing} />
-      <PageTitle eyebrow={FULL_DATE.format(new Date('2026-11-21T12:00:00'))} sub="Lo tuyo y lo nuevo en Start.">Hola, {me.name.split(' ')[0]}</PageTitle>
-      <Load q={q} skeleton={<><div className="skel" style={{ height: 92 }} /><Skeleton h={260} n={2} /></>}>
-        {(d) => (
-          <div className="two-col">
-            <div className="col-main">
-              {d.nextEvent && <NextTicket e={d.nextEvent} />}
-              {d.newcomers.length > 0 && (
-                <section aria-labelledby="nuevos">
-                  <div className="section-h" style={{ marginBottom: 10 }}><h2 id="nuevos" className="t-h">Nuevos en Start</h2><a className="link" href="#/comunidad/gente">Ver todos</a></div>
-                  <ul className="stories">
-                    {d.newcomers.map((x, i) => (
-                      <li key={x.id}><a className={`story press ${seen.includes(x.id) ? 'story--seen' : ''}`} href={`#/persona/${x.id}`} onClick={() => markSeen(x.id)}><span className="ring"><Avatar person={x} size={60} /></span>{x.name.split(' ')[0]}</a></li>
-                    ))}
-                  </ul>
-                </section>
-              )}
-              {d.items.length === 0 ? (
-                <Empty icon="sparkles" title="Aún no hay nada por aquí" action={<a className="btn btn--primary press" href="#/comunidad/gente">Conoce a la gente de Start</a>}>Cuando haya eventos, ofertas o sellos nuevos, aparecerán aquí solos.</Empty>
-              ) : d.items.map((it) => <FeedItem key={it.id} it={it} photos={photos} api={api} onChange={q.reload} />)}
-            </div>
-            <aside className="col-side">
-              <Carne person={me} own />
-              {d.sameCareer?.length > 0 && <SameCareer people={d.sameCareer} career={me.career} />}
-            </aside>
-          </div>
-        )}
-      </Load>
-    </>
-  );
-}
-
 // Tu próxima entrada: el plan más cercano al que vas, con el QR a mano para la puerta.
 export function NextTicket({ e }) {
   const { openQr, me } = useApp();
@@ -94,83 +48,6 @@ export function NextTicket({ e }) {
       </button>
     </section>
   );
-}
-
-function SameCareer({ people }) {
-  return (
-    <section aria-labelledby="misma">
-      <div className="section-h" style={{ marginBottom: 10 }}><h2 id="misma" className="t-h">Estudian lo mismo que tú</h2><a className="link" href="#/comunidad/gente">Ver más</a></div>
-      <ul className="mini-people">
-        {people.map((x) => (
-          <li key={x.id} className="card">
-            <Avatar person={x} size={52} />
-            <b>{x.name.split(' ')[0]}</b>
-            <span className="t-soft">{x.career.replace('Ing. ', '')} · {x.course}</span>
-            <a className="btn btn--soft press" href={`#/persona/${x.id}`} style={{ minHeight: 34, fontSize: 14, padding: '0 12px' }}>Ver perfil</a>
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-}
-
-function FeedItem({ it, photos, api, onChange }) {
-  const { celebrate, toast, openQr, me } = useApp();
-  const [busy, setBusy] = useState(false);
-  const [local, setLocal] = useState({});
-  if (it.kind === 'event') {
-    const e = { ...it.event, ...local };
-    const toggle = async () => {
-      if (busy) return;
-      const on = !e.isGoing;
-      setLocal({ isGoing: on, goingCount: e.goingCount + (on ? 1 : -1) });
-      if (on) celebrate({ kind: 'going', title: '¡Te esperamos!', text: `Nos vemos en ${e.title}, el ${e.day} de ${e.month.toLowerCase()}. En la entrada, enseña el QR de tu carné y el sello ${e.stamp.label} será tuyo.`, stamp: { ...e.stamp, pending: true } });
-      setBusy(true);
-      try { await api('event.going', { id: e.id, on }); } catch (err) { setLocal({}); toast(err.message); } finally { setBusy(false); }
-    };
-    return (
-      <article className="card feed-card">
-        <a className="cover" href={`#/evento/${e.id}`}><Img src={photos[e.cover]} alt={`Foto de ${e.title}`} />
-          <span className="date"><b>{e.day}</b><span>{e.month}</span></span>
-        </a>
-        <div className="body">
-          <p className="t-mono t-soft" style={{ color: 'var(--brand-text)' }}>Próximo evento · Sello {e.stamp.label} al fichar</p>
-          <a href={`#/evento/${e.id}`}><h3 className="title">{e.title}</h3></a>
-          <div className="feed-row">
-            <Stack people={e.isGoing ? [me, ...e.goingPeople].slice(0, 3) : e.goingPeople} />
-            <span className="grow t-soft num"><Rolling value={e.goingCount} /> van{e.isGoing ? ', tú también' : ''}</span>
-            {e.isGoing && <button className="btn btn--soft press" style={{ minHeight: 40, borderRadius: 999, fontSize: 15 }} onClick={openQr}>Mi QR</button>}
-            <button className={`btn btn-morph ${e.isGoing ? 'btn--soft' : 'btn--lime'} press`} style={{ minHeight: 40, borderRadius: 999 }} onClick={toggle} aria-pressed={e.isGoing}>
-              <span key={String(e.isGoing)} className="btn-label">{e.isGoing ? <><Icon name="check" size={18} className="check-draw" /> Vas</> : 'Voy'}</span>
-            </button>
-          </div>
-        </div>
-      </article>
-    );
-  }
-  if (it.kind === 'offer') {
-    const o = it.offer;
-    return (
-      <a className="card feed-row press" href={`#/oferta/${o.id}`} style={{ padding: 14 }}>
-        <OfferLogo company={o.company} />
-        <span className="grow">
-          <span className="t-mono" style={{ color: 'var(--brand-text)', display: 'block' }}>Oferta nueva</span>
-          <b style={{ fontSize: 17 }}>{o.title}</b>
-          <span className="t-soft" style={{ display: 'block', fontSize: 14 }}>{o.company.name}{o.company.isStart ? '' : ' (ejemplo)'} · {o.interestedCount} de Start apuntados</span>
-        </span>
-        <Icon name="chevron-right" className="t-soft" />
-      </a>
-    );
-  }
-  if (it.kind === 'stamp') {
-    return (
-      <a className="card stamp-card press" href="#/perfil">
-        <Sello stamp={it.stamp} size={64} rotate={-8} />
-        <span><b style={{ fontSize: 17 }}>{it.count} personas consiguieron el sello {it.stamp.name}</b>{it.mine && <span className="t-marker" style={{ display: 'block', fontSize: 15, marginTop: 4 }}>Tú incluido. Ya llevas {it.myCount}.</span>}</span>
-      </a>
-    );
-  }
-  return null;
 }
 
 /* ---------- Gente ---------- */

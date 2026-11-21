@@ -4,6 +4,7 @@ import Icon from '../ui/Icon.jsx';
 import { Avatar, Empty, Img, Load, OfferLogo, Rolling, Sheet, Skeleton, Stack, burst, roleLine, useApp } from '../ui/pieces.jsx';
 import { back, go, useApi } from '../router.js';
 import { PageTitle } from './comunidad.jsx';
+import { MiniOffer } from './inicio.jsx';
 
 const TABS = [['todas', '/ofertas', 'Todas'], ['interesan', '/ofertas/interesan', 'Me interesan'], ['mias', '/ofertas/mias', 'Publicadas']];
 
@@ -38,6 +39,9 @@ export function Ofertas({ path }) {
                 : (text || kind) ? <Empty icon="search" title="Nada con esos filtros" action={<button className="btn btn--soft press" onClick={() => { setText(''); setKind(null); }}>Quitar filtros</button>}>Prueba con otra palabra o con otro tipo.</Empty>
                 : <Empty icon="briefcase" title="No hay oportunidades ahora mismo">Te avisaremos con la campana cuando se publique una.</Empty>
             ) : (
+              <>
+              {tab === 'todas' && !text && !kind && <Destacadas offers={d.offers} />}
+              {tab === 'todas' && !text && !kind && <h2 className="t-h home-h">Todas las oportunidades</h2>}
               <ul className="offer-list">
                 {d.offers.map((o) => {
                   const sel = wide && (selected ?? d.offers[0].id) === o.id;
@@ -56,11 +60,39 @@ export function Ofertas({ path }) {
                   );
                 })}
               </ul>
+              </>
             )}
           </Load>
         </div>
         {wide && q.data?.offers.length > 0 && <aside className="col-side col-side--panel"><OfertaDetalle key={selected ?? q.data.offers[0].id} id={selected ?? q.data.offers[0].id} onChange={q.reload} compact /></aside>}
       </div>
+    </>
+  );
+}
+
+// Arriba del todo, dos atajos: lo que más encaja contigo y lo que está a punto de cerrar.
+function Destacadas({ offers }) {
+  const paraTi = offers.filter((o) => !o.isInterested && !o.isMine).sort((a, b) => b.interestedCount - a.interestedCount).slice(0, 4);
+  const pronto = offers.filter((o) => o.daysLeft != null && o.daysLeft >= 0 && o.daysLeft <= 14).sort((a, b) => a.daysLeft - b.daysLeft).slice(0, 3);
+  return (
+    <>
+      {paraTi.length > 0 && (
+        <section className="home-sec" aria-label="Para ti">
+          <div className="section-h"><h2 className="t-h home-h">Para ti</h2></div>
+          <p className="t-soft home-sub">Lo que más se mueve entre la gente de Start</p>
+          <ul className="rail">{paraTi.map((o) => <li key={o.id}><MiniOffer o={o} /></li>)}</ul>
+        </section>
+      )}
+      {pronto.length > 0 && (
+        <section className="home-sec" aria-label="Cierran pronto">
+          <div className="section-h"><h2 className="t-h home-h">Cierran pronto</h2></div>
+          <ul className="card news">
+            {pronto.map((o) => (
+              <li key={o.id}><a className="news-row press" href={`#/oferta/${o.id}`}><OfferLogo company={o.company} size={40} /><span className="grow"><span className="news-text" style={{ fontWeight: 700 }}>{o.title}</span><span className="t-soft news-by">{o.company.name}{o.company.isStart ? '' : ' (ejemplo)'} · {o.kind}</span></span><span className="soon-pill num">{o.daysLeft === 0 ? 'Hoy' : `${o.daysLeft} d`}</span></a></li>
+            ))}
+          </ul>
+        </section>
+      )}
     </>
   );
 }
