@@ -204,3 +204,104 @@ function escapeHtml(value) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
 }
+
+/**
+ * Confirmación de pago de una mentoría. Misma identidad que el correo de
+ * bienvenida, sin número de socio. Nunca lanza, por la misma razón: el
+ * pago ya está registrado y Stripe no debe reintentarlo.
+ */
+export async function sendMentoriaEmail(payment) {
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.EMAIL_FROM;
+  if (!apiKey || !from) return { ok: false, skipped: true, error: 'RESEND_NOT_CONFIGURED' };
+
+  try {
+    const resend = new Resend(apiKey);
+    const { error } = await resend.emails.send({
+      from,
+      replyTo: CONTACT_EMAIL,
+      to: payment.email,
+      subject: 'Mentoría de Start UC3M: pago confirmado',
+      html: mentoriaHtml({ name: payment.full_name, priceCents: payment.price_cents }),
+      text: mentoriaText({ name: payment.full_name, priceCents: payment.price_cents }),
+    });
+    if (error) return { ok: false, error: String(error.message || error) };
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: String((err && err.message) || err) };
+  }
+}
+
+export function mentoriaText({ name, priceCents }) {
+  return [
+    'Hola ' + name + ',',
+    '',
+    'Hemos recibido tu pago de la mentoría de Start UC3M en Mad Tech Campus.',
+    '',
+    '  Importe: ' + formatEuros(priceCents),
+    '',
+    'El recibo del pago te llega aparte, de Stripe.',
+    'Cualquier cosa, escríbenos a ' + CONTACT_EMAIL + '.',
+    '',
+    'Nos vemos pronto,',
+    'El equipo de Start UC3M',
+  ].join('\n');
+}
+
+export function mentoriaHtml({ name, priceCents }) {
+  return `<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>Mentoría de Start UC3M</title>
+  </head>
+  <body style="margin:0;padding:0;background-color:#0a1338;">
+    <div style="display:none;max-height:0;overflow:hidden;opacity:0;">
+      Hemos recibido tu pago de la mentor&iacute;a en Mad Tech Campus.
+    </div>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#0a1338" style="background-color:#0a1338;padding:32px 12px;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:520px;font-family:Helvetica,Arial,sans-serif;">
+            <tr>
+              <td align="center" style="padding:0 0 24px 0;">
+                <img src="${LOGO}" width="150" alt="Start UC3M"
+                     style="display:block;width:150px;max-width:60%;height:auto;border:0;color:#ffffff;font-family:Helvetica,Arial,sans-serif;font-size:20px;font-weight:bold;letter-spacing:.04em;" />
+              </td>
+            </tr>
+            <tr>
+              <td bgcolor="#0e1a52" style="background-color:#0e1a52;border-radius:14px;padding:34px 32px;">
+                <p style="margin:0 0 14px 0;font-size:16px;line-height:1.5;color:#ffffff;">Hola ${escapeHtml(name)},</p>
+                <p style="margin:0 0 22px 0;font-size:16px;line-height:1.6;color:#bcc7ea;">
+                  Hemos recibido tu pago de la <span style="color:#ffffff;font-weight:bold;">mentor&iacute;a de Start UC3M</span> en Mad Tech Campus.
+                </p>
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="font-size:14px;margin:0 0 22px 0;">
+                  <tr>
+                    <td style="padding:9px 0;border-top:1px solid #1d2a63;border-bottom:1px solid #1d2a63;color:#93a0cd;">Importe</td>
+                    <td align="right" style="padding:9px 0;border-top:1px solid #1d2a63;border-bottom:1px solid #1d2a63;color:#ffffff;">${formatEuros(priceCents)}</td>
+                  </tr>
+                </table>
+                <p style="margin:0 0 16px 0;font-size:14px;line-height:1.65;color:#bcc7ea;">El recibo del pago te llega aparte, de Stripe.</p>
+                <p style="margin:0;font-size:14px;line-height:1.65;color:#bcc7ea;">
+                  Cualquier cosa, escr&iacute;benos a
+                  <a href="mailto:${CONTACT_EMAIL}" style="color:#4cc9f0;text-decoration:underline;">${CONTACT_EMAIL}</a>.
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td align="center" style="padding:26px 24px 8px 24px;">
+                <p style="margin:0;font-size:13px;line-height:1.6;color:#6f7cae;">
+                  El equipo de Start UC3M &middot;
+                  <a href="${SITE}" style="color:#6f7cae;text-decoration:underline;">startuc3m.es</a>
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>`;
+}

@@ -54,6 +54,8 @@ STRIPE_SECRET_KEY
 STRIPE_WEBHOOK_SECRET
 STRIPE_PRODUCT_STANDARD      # opcional: si no se pone, el producto se crea al vuelo
 STRIPE_PRODUCT_PREMIUM       # opcional
+STRIPE_PRODUCT_MENTORIA      # opcional: producto de Stripe de las mentorías
+NOTION_MENTORIAS_DATABASE_ID # opcional: base de Notion donde se crea una ficha por pago de mentoría
 RESEND_API_KEY
 EMAIL_FROM                   # "Start UC3M <socios@startuc3m.es>"
 CONTACT_EMAIL                # opcional, sale en el correo de bienvenida
@@ -129,6 +131,31 @@ La base vive en el Notion **de Start**, no en una cuenta personal.
 ### 4. Resend
 
 Dominio verificado de Start y `EMAIL_FROM` con una dirección de ese dominio.
+
+## Mentorías (15 €, Mad Tech Campus)
+
+Pago suelto con el mismo Stripe, el mismo webhook y la misma base de datos que los socios. La página **`/mentorias` no se enlaza desde la web**: se reparte el enlace directamente. Lleva `noindex` y está fuera del sitemap.
+
+| Pieza | Qué hace |
+|---|---|
+| `src/pages/mentorias/index.astro` + `src/socios/Mentorias.jsx` | Formulario: nombre, email, teléfono y privacidad. Mismo diseño que el alta de socio |
+| `api/mentorias/checkout.mjs` | Valida, crea la fila `pending` y abre Stripe Checkout con `metadata.kind = "mentoria"` |
+| `api/_lib/mentorias.mjs` | Precio (`MENTORIA_PRICE_CENTS = 1500`) y lo que hace el webhook con estos pagos |
+| `api/stripe/webhook.mjs` | Si la sesión trae `metadata.kind = "mentoria"`, la marca pagada y manda el correo de confirmación. Si no, alta de socio como siempre |
+| `db/schema.sql` | Tabla `mentoria_payments` y funciones `create_`, `confirm_` y `expire_mentoria_payment` |
+| `src/pages/mentorias/gracias.astro` | Vuelta desde Stripe |
+
+- **Sin aforo y sin número:** cada pago es una fila. Una persona puede pagar más de una mentoría.
+- **Como en socios:** si alguien vuelve a pulsar o regresa desde Stripe en los 31 minutos que dura la sesión, se reabre el mismo pago en vez de crear otro. La caducidad de una sesión antigua no anula la nueva.
+- **Ficha en Notion (opcional):** con `NOTION_MENTORIAS_DATABASE_ID`, cada pago crea una fila en esa base, con el mismo sistema que socios (columnas reconocidas por tipo y nombre: título, Email, Teléfono, Importe, Fecha de pago y Stripe payment intent). La base hay que conectarla a la integración (*··· › Conexiones*). Sin la variable, no hace nada.
+- **El precio lo fija el servidor.** Para cambiarlo, edita `MENTORIA_PRICE_CENTS`. Lo que muestra el formulario (`PRICE_LABEL` en `Mentorias.jsx`) es solo informativo: cámbialo a la vez.
+- **Quién ha pagado:** en Stripe (Pagos) o en la base de datos:
+
+```sql
+select full_name, email, phone, paid_at from mentoria_payments where status = 'paid' order by paid_at;
+```
+
+- **No consume números de socio** ni toca la tabla `memberships`. Lo cubren los tests de `db/test-api.js`.
 
 ## Operativa
 

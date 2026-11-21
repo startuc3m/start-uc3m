@@ -3,6 +3,7 @@ import { query } from '../_lib/db.mjs';
 import { readRawBody, sendJson, methodNotAllowed } from '../_lib/http.mjs';
 import { sendWelcomeEmail } from '../_lib/email.mjs';
 import { createNotionMember } from '../_lib/notion.mjs';
+import { isMentoriaSession, handleMentoriaCompleted, handleMentoriaExpired } from '../_lib/mentorias.mjs';
 
 // Sin esto Vercel parsea el cuerpo y la firma de Stripe deja de validar.
 export const config = { api: { bodyParser: false } };
@@ -30,10 +31,16 @@ export default async function handler(req, res) {
   }
 
   try {
+    // Un solo endpoint para dos cobros: las mentorías llevan metadata.kind
+    // y van por su camino; todo lo demás sigue siendo un alta de socio.
     if (event.type === 'checkout.session.completed') {
-      await handleCompleted(await sesionCompleta(stripe, event.data.object));
+      const session = await sesionCompleta(stripe, event.data.object);
+      if (isMentoriaSession(session)) await handleMentoriaCompleted(session);
+      else await handleCompleted(session);
     } else if (event.type === 'checkout.session.expired') {
-      await handleExpired(await sesionCompleta(stripe, event.data.object));
+      const session = await sesionCompleta(stripe, event.data.object);
+      if (isMentoriaSession(session)) await handleMentoriaExpired(session);
+      else await handleExpired(session);
     }
     return sendJson(res, 200, { received: true });
   } catch (err) {

@@ -122,3 +122,13 @@ header.sticky { transition: transform .35s cubic-bezier(.2,.7,.2,1); }
 .ph { background: linear-gradient(135deg, var(--color-cobalt) 0%, var(--color-cobalt-deep) 100%); overflow: hidden; }
 .ph:not(.absolute):not(.fixed) { position: relative; }
 .ph::after { content: ''; position: absolute; inset: 0; background: url('/brand/logo-wordmark-white.png') center / min(45%, 220px) no-repeat; opacity: .14; }
+
+/* Start Skills en modo de alto contraste (Windows): los fondos y las sombras desaparecen,
+   así que el estado se marca con bordes y outline en colores del sistema. */
+@media (forced-colors: active) {
+  [data-ir][data-estado="celebrado"] { border-width: 6px; }
+  [data-ir][aria-current] { outline: 3px solid Highlight; outline-offset: 3px; }
+  [data-linea] { forced-color-adjust: none; background: CanvasText; }
+  [data-filter][aria-pressed="true"] { forced-color-adjust: none; background: Highlight; color: HighlightText; border-width: 3px; }
+  #lightbox::backdrop { background: Canvas; opacity: .95; }
+}

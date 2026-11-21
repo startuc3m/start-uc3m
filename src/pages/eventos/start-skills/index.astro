@@ -1,0 +1,159 @@
+---
+import Base from '../../../layouts/Base.astro';
+import PageHead from '../../../components/PageHead.astro';
+import { getStartSkills, estados, programa, fechaCorta, fechaLarga, rangoMeses, introPrograma } from '../../../lib/startskills';
+const { bloques } = getStartSkills();
+const est = estados(bloques);
+const chip = {
+  celebrado: { t: 'Celebrado', c: 'bg-cobalt text-white' },
+  proximo: { t: 'Próximo', c: 'bg-cyan text-ink' },
+  'por-llegar': { t: 'Por llegar', c: 'bg-paper-2 text-ink' },
+};
+const proximo = bloques.find((b) => est.get(b.slug) === 'proximo');
+const celebrados = bloques.filter((b) => est.get(b.slug) === 'celebrado').length;
+const tramos = Math.max(celebrados - 1, 0);
+const fotos = bloques.flatMap((b) => b.fotos.map((f, i) => ({ ...f, label: `Bloque ${b.numero} · ${b.titulo}`, n: i + 1 })));
+const rango = rangoMeses(bloques);
+const intro = introPrograma(bloques);
+---
+<Base title="Start Skills" description={`Programa de liderazgo de Start UC3M: ${bloques.length} sábados con formadores profesionales y estudiantes de varias asociaciones. Consulta fechas, formadores y fotos.`} tone="dark">
+  <section class="bg-cobalt text-white">
+    <div class="container-x flex flex-col gap-10 pb-10 pt-12 md:flex-row md:items-end md:justify-between md:gap-14 md:pb-16 md:pt-20">
+      <div class="min-w-0 md:flex-1">
+        <span class="eyebrow text-lavender">Programa de liderazgo · Curso {programa.curso}</span>
+        <h1 class="display mt-4 text-[clamp(44px,10vw,128px)]" data-split>{programa.titulo}_</h1>
+        <p class="mt-8 max-w-2xl text-xl text-lavender">{intro}</p>
+      </div>
+      <dl class="grid grid-cols-2 gap-8 border-t border-lavender pt-6 md:w-80 md:shrink-0" data-reveal>
+        <div><dt class="eyebrow text-lavender">Sesiones</dt><dd class="display mt-2 text-[44px] leading-none">{bloques.length}</dd></div>
+        {rango && <div><dt class="eyebrow text-lavender">De</dt><dd class="display mt-2 min-w-0 text-[clamp(30px,9vw,44px)] leading-none [overflow-wrap:anywhere]">{rango}</dd></div>}
+      </dl>
+    </div>
+  </section>
+
+  <section class="container-x pb-12 pt-14 md:pb-16 md:pt-24" aria-labelledby="bloques-titulo">
+    <h2 id="bloques-titulo" class="sr-only">Bloques del programa</h2>
+    <div data-carrusel>
+      <!-- Móvil: carrusel deslizable (se ve asomar la siguiente card). Escritorio: las 5 en fila. -->
+      <ol class="-mx-4 -my-1 flex snap-x snap-mandatory scroll-px-4 gap-4 overflow-x-auto px-4 py-1 [scrollbar-width:none] md:-mx-8 md:scroll-px-8 md:px-8 lg:-mx-16 lg:scroll-px-16 lg:px-16 xl:mx-0 xl:grid xl:grid-cols-5 xl:gap-5 xl:overflow-visible xl:px-0 [&::-webkit-scrollbar]:hidden" data-pista data-stagger>
+        {bloques.map((b) => {
+          const e = est.get(b.slug)!;
+          return (
+            <li class="flex w-[82%] shrink-0 snap-start sm:w-[45%] lg:w-[31%] xl:w-auto" data-card={b.slug} data-reveal>
+              <a href={`/eventos/start-skills/${b.slug}`} class={`group flex min-h-[220px] min-w-0 flex-1 flex-col gap-3.5 rounded-brand border bg-white p-5 transition-colors hover:border-cobalt md:min-h-[240px] ${e === 'proximo' ? 'border-cobalt' : 'border-line'}`}>
+                <span class={`mono self-start rounded-full px-2 py-1 text-[11px] ${chip[e].c}`}>{chip[e].t}</span>
+                <span class="display text-[34px] text-cobalt group-hover:underline">{b.titulo}</span>
+                {b.tema && <span class="text-[15px] leading-snug">{b.tema}</span>}
+                <span class="mt-auto flex flex-col gap-0.5 border-t border-line pt-3">
+                  <span class="mono">{fechaCorta(b.fecha)}</span>
+                  <span class="text-sm">{b.formador?.nombre ?? 'Formador por anunciar'}</span>
+                </span>
+              </a>
+            </li>
+          );
+        })}
+      </ol>
+
+      <!-- La numeración, debajo de las cards. En móvil cada número lleva a su card. -->
+      <div class="relative mt-6 xl:mt-8">
+        <div class="absolute left-[24px] right-[24px] top-[23px] h-0.5 bg-line xl:right-0" data-linea aria-hidden="true"></div>
+        <!-- Progreso: del centro del 1 al centro del último celebrado. --k = tramos recorridos, --t = tramos totales.
+             Todo en px a propósito (botones de 48 px, centro a 24 px; en escritorio xl:grid-cols-5 con gap de 20 px):
+             con letra grande del navegador, los rem crecerían y la línea dejaría de pasar por los centros. -->
+        <div class="absolute left-[24px] top-[23px] h-0.5 w-[calc((100%-48px)/var(--t)*var(--k))] bg-cobalt xl:w-[calc(((100%-80px)/5+20px)*var(--k))]" data-linea style={`--k:${tramos};--t:${Math.max(bloques.length - 1, 1)}`} aria-hidden="true"></div>
+        <ol class="relative flex justify-between xl:grid xl:grid-cols-5 xl:gap-[20px]" aria-label="Ir a un bloque" data-numeros>
+          {bloques.map((b, i) => {
+            const e = est.get(b.slug)!;
+            return (
+              <li>
+                <button type="button" data-ir={i} aria-label={`Bloque ${b.numero}: ${b.titulo}`} class={`display grid h-[48px] w-[48px] place-items-center rounded-full border-2 border-cobalt text-[22px] ring-cobalt ring-offset-2 ring-offset-paper transition-shadow xl:pointer-events-none ${e === 'celebrado' ? 'bg-cobalt text-white' : 'bg-white text-cobalt'}`} data-estado={e}>{b.numero}</button>
+              </li>
+            );
+          })}
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  {proximo && (
+    <section class="bg-navy text-white">
+      <div class="container-x flex flex-col gap-8 py-12 md:flex-row md:items-center md:justify-between md:py-16">
+        <div class="min-w-0">
+          <span class="eyebrow text-lavender">Próxima sesión · {fechaLarga(proximo.fecha)}</span>
+          <p class="display mt-3 text-[clamp(36px,6vw,56px)]">Bloque {proximo.numero}: {proximo.titulo}</p>
+          {proximo.formador && <p class="mt-2 text-[17px] text-lavender">Con {proximo.formador.nombre}</p>}
+        </div>
+        <a href={`/eventos/start-skills/${proximo.slug}`} class="btn btn-on-blue self-start">Ver el bloque <span class="font-mono">→</span></a>
+      </div>
+    </section>
+  )}
+
+  {fotos.length > 0 && (
+    <section class="container-x py-14 md:py-24">
+      <span class="eyebrow text-cobalt">Fotos de todos los bloques</span>
+      <h2 class="display mt-2.5 text-[clamp(40px,6vw,64px)]">Galería</h2>
+      <ul class="mt-8 grid grid-cols-2 gap-3 md:mt-10 md:grid-cols-4" data-stagger>
+        {fotos.map((f) => (
+          <li data-reveal>
+            <a href={f.src} download class="group relative block aspect-[4/3] overflow-hidden rounded-brand bg-cobalt" aria-label={`Descargar foto ${String(f.n).padStart(2, '0')} de ${f.label}`}>
+              <img src={f.thumb} srcset={f.small ? `${f.small} 400w, ${f.thumb} 800w` : undefined} sizes="(min-width: 768px) 25vw, 50vw" width={f.ancho} height={f.alto} alt={`Foto ${String(f.n).padStart(2, '0')} de ${f.label}`} loading="lazy" decoding="async" class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+              <span class="mono absolute left-3 top-3 rounded-full bg-navy/70 px-2 py-1 text-[11px] text-white">{f.label}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p class="mt-6 text-sm">Cada foto se descarga en alta resolución. También las tienes por bloque.</p>
+    </section>
+  )}
+</Base>
+<script>
+  // Carrusel de bloques en móvil: los números de debajo llevan a su card y marcan la que se ve.
+  const raiz = document.querySelector<HTMLElement>('[data-carrusel]');
+  const pista = raiz?.querySelector<HTMLElement>('[data-pista]');
+  const cards = [...(raiz?.querySelectorAll<HTMLElement>('[data-card]') ?? [])];
+  const botones = [...(raiz?.querySelectorAll<HTMLButtonElement>('[data-ir]') ?? [])];
+  const movil = matchMedia('(max-width: 1279px)');
+  const suave = matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+
+  const irA = (i: number, behavior: ScrollBehavior = suave) => {
+    if (!pista || !cards[i] || !movil.matches) return;
+    const delta = cards[i].getBoundingClientRect().left - pista.getBoundingClientRect().left;
+    pista.scrollTo({ left: pista.scrollLeft + delta - (parseFloat(getComputedStyle(pista).scrollPaddingLeft) || 0), behavior });
+  };
+  const marcar = (i: number) =>
+    botones.forEach((b, j) => {
+      const on = movil.matches && i === j;
+      b.classList.toggle('ring-2', on);
+      if (on) b.setAttribute('aria-current', 'true');
+      else b.removeAttribute('aria-current');
+    });
+
+  // En escritorio los números son solo indicador: fuera del orden de tabulación.
+  const numeros = raiz?.querySelector('[data-numeros]');
+  const tabulables = () => {
+    botones.forEach((b) => (b.tabIndex = movil.matches ? 0 : -1));
+    numeros?.toggleAttribute('aria-hidden', !movil.matches);
+  };
+  tabulables();
+  botones.forEach((b, i) => b.addEventListener('click', () => irA(i)));
+
+  // La card más visible manda.
+  const visibles = new Map<Element, number>();
+  const io = new IntersectionObserver(
+    (entradas) => {
+      entradas.forEach((e) => visibles.set(e.target, e.intersectionRatio));
+      let mejor = 0;
+      cards.forEach((c, i) => { if ((visibles.get(c) ?? 0) > (visibles.get(cards[mejor]) ?? 0)) mejor = i; });
+      marcar(mejor);
+    },
+    { root: pista, threshold: [0.25, 0.5, 0.75, 1] },
+  );
+  cards.forEach((c) => io.observe(c));
+
+  // En móvil empieza en el bloque actual (el próximo), ya marcado abajo; si ya se celebraron todos, en el último.
+  const actual = cards.findIndex((c) => c.querySelector('a.border-cobalt'));
+  const inicio = actual >= 0 ? actual : cards.length - 1;
+  irA(inicio, 'auto');
+  marcar(inicio);
+  movil.addEventListener('change', () => { tabulables(); irA(inicio, 'auto'); marcar(movil.matches ? inicio : -1); });
+</script>

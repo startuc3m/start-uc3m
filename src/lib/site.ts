@@ -12,13 +12,13 @@ export const site = {
     youtube: 'https://www.youtube.com/@StartUC3MG',
   },
   nav: [
-    { label: 'Eventos', href: '/eventos' },
+    { label: 'Eventos', href: '/eventos', children: [{ label: 'Todos los eventos', href: '/eventos' }, { label: 'Start Skills', href: '/eventos/start-skills' }] },
     { label: 'Podcast', href: '/podcast' },
     { label: 'Equipo', href: '/equipo' },
     { label: 'Blog', href: '/blog' },
     { label: 'Patrocina', href: '/patrocina' },
     { label: 'Recursos', href: '/recursos' },
-  ],
+  ] as { label: string; href: string; children?: { label: string; href: string }[] }[],
   // logo: ruta en public/logos (los que faltan van en texto hasta que Partnerships pase el SVG)
   sponsors: [
     { name: 'NomuLabs', logo: '/logos/nomulabs.png', tier: 'Partner' },
@@ -65,7 +65,6 @@ export const site = {
     { name: "Alba Sanz", role: 'Asociada', depts: ["Marketing", "Legal"], linkedin: '' },
     { name: "Liliya Shulyak", role: 'Asociada', depts: ["Marketing"], linkedin: 'https://www.linkedin.com/in/liliya-shulyak-26077a3a1' },
     { name: "Álvaro González", role: 'Asociado', depts: ["Eventos"], linkedin: '', photo: 'alvaro_gonzalez.jpg' },
-    { name: "Fernando Lozano", role: 'Asociado', depts: ["Comunicación"], linkedin: 'https://www.linkedin.com/in/fernando-lozano1' },
     { name: "Alberto Freire", role: 'Asociado', depts: ["Partnerships"], linkedin: '' },
     { name: "Claudia López", role: 'Asociada', depts: ["Marketing"], linkedin: '', photo: 'claudia_lopez.jpg' },
     { name: "Claudia Carrillo", role: 'Asociada', depts: ["Partnerships"], linkedin: 'https://www.linkedin.com/in/claudia-carrillo-espinosa-493870291' },

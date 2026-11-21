@@ -1,0 +1,178 @@
+{
+  "fuente": "seed",
+  "actualizado": "2026-11-18T00:00:00.000Z",
+  "bloques": [
+    {
+      "slug": "conocete",
+      "numero": 1,
+      "titulo": "Conócete",
+      "tema": "",
+      "fecha": "2026-10-24",
+      "hora": null,
+      "lugar": null,
+      "formador": {
+        "nombre": "Andrea Sabio",
+        "cargo": null,
+        "linkedin": null,
+        "foto": null
+      },
+      "participantes": [
+        {
+          "nombre": "Belén",
+          "asociacion": "Start Comillas",
+          "linkedin": null,
+          "foto": null
+        },
+        {
+          "nombre": "Paula",
+          "asociacion": "Start Comillas",
+          "linkedin": null,
+          "foto": null
+        },
+        {
+          "nombre": "Luis",
+          "asociacion": "Business Club Zaragoza",
+          "linkedin": null,
+          "foto": null
+        },
+        {
+          "nombre": "Oleh",
+          "asociacion": "BIC",
+          "linkedin": null,
+          "foto": null
+        },
+        {
+          "nombre": "Javier",
+          "asociacion": "BIC",
+          "linkedin": null,
+          "foto": null
+        },
+        {
+          "nombre": "Sergio",
+          "asociacion": "BIC",
+          "linkedin": null,
+          "foto": null
+        },
+        {
+          "nombre": "Gustavo",
+          "asociacion": "BIC",
+          "linkedin": null,
+          "foto": null
+        },
+        {
+          "nombre": "Sofía",
+          "asociacion": "Start UC3M",
+          "linkedin": null,
+          "foto": null
+        },
+        {
+          "nombre": "Estrella",
+          "asociacion": "Start UC3M",
+          "linkedin": null,
+          "foto": null
+        },
+        {
+          "nombre": "Guillermo",
+          "asociacion": "Start UC3M",
+          "linkedin": null,
+          "foto": null
+        },
+        {
+          "nombre": "Dimana",
+          "asociacion": "Start UC3M",
+          "linkedin": null,
+          "foto": null
+        },
+        {
+          "nombre": "Lion",
+          "asociacion": "Start UC3M",
+          "linkedin": null,
+          "foto": null
+        },
+        {
+          "nombre": "Lidia",
+          "asociacion": "Start UC3M",
+          "linkedin": null,
+          "foto": null
+        },
+        {
+          "nombre": "Irene",
+          "asociacion": "Start UC3M",
+          "linkedin": null,
+          "foto": null
+        },
+        {
+          "nombre": "Ioana",
+          "asociacion": "Start UC3M",
+          "linkedin": null,
+          "foto": null
+        },
+        {
+          "nombre": "Lucas",
+          "asociacion": "Start UC3M",
+          "linkedin": null,
+          "foto": null
+        }
+      ],
+      "fotos": [],
+      "zip": null
+    },
+    {
+      "slug": "conecta",
+      "numero": 2,
+      "titulo": "Conecta",
+      "tema": "",
+      "fecha": "2026-11-21",
+      "hora": null,
+      "lugar": null,
+      "formador": {
+        "nombre": "Carmen Vázquez",
+        "cargo": null,
+        "linkedin": null,
+        "foto": null
+      },
+      "participantes": [],
+      "fotos": [],
+      "zip": null
+    },
+    {
+      "slug": "gestiona",
+      "numero": 3,
+      "titulo": "Gestiona",
+      "tema": "",
+      "fecha": "2027-02-13",
+      "hora": null,
+      "lugar": null,
+      "formador": null,
+      "participantes": [],
+      "fotos": [],
+      "zip": null
+    },
+    {
+      "slug": "lidera",
+      "numero": 4,
+      "titulo": "Lidera",
+      "tema": "",
+      "fecha": "2027-03-13",
+      "hora": null,
+      "lugar": null,
+      "formador": null,
+      "participantes": [],
+      "fotos": [],
+      "zip": null
+    },
+    {
+      "slug": "proyectate",
+      "numero": 5,
+      "titulo": "Proyéctate",
+      "tema": "",
+      "fecha": "2027-04-10",
+      "hora": null,
+      "lugar": null,
+      "formador": null,
+      "participantes": [],
+      "fotos": [],
+      "zip": null
+    }
+  ]
+}
