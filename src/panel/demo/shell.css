@@ -419,3 +419,8 @@
 .pop-cta .btn { min-height: 40px; border-radius: 999px; font-size: 14px; padding: 0 14px; }
 .pop-cta .btn--lime { flex: 1; }
 @media (prefers-reduced-motion: reduce) { .cal-pop, .cal-day.has-ev .cal-stamp, .cal-grid > * { animation: pd-fade 150ms ease both !important; } }
+
+/* La ventanita del calendario queda por encima de lo que viene debajo (pestañas y tarjetas). */
+.cal { z-index: 6; }
+/* Avisos: un poco de aire entre uno y otro, sobre todo cuando van seguidos los no leídos. */
+.avisos ul { gap: 6px; }

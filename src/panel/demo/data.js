@@ -36,6 +36,10 @@ export const STAMPS = {
   rural: { id: 'rural', label: 'RURAL', name: 'Casa rural', date: 'OCT 26', color: 'cyan' },
   next: { id: 'next', label: 'NEXT', name: 'Next Gen Summit', date: 'MAR 26', color: 'lavender' },
   invest: { id: 'invest', label: 'INVEST', name: 'Start to Invest', date: 'NOV 26', color: 'yellow' },
+  canasNov: { id: 'canasNov', label: 'CAÑAS', name: 'Cañas de noviembre', date: 'NOV 26', color: 'yellow' },
+  podcast: { id: 'podcast', label: 'PODCAST', name: 'Podcast en directo', date: 'DIC 26', color: 'cyan' },
+  cena: { id: 'cena', label: 'CENA', name: 'Cena de Navidad', date: 'DIC 26', color: 'lavender' },
+  rural27: { id: 'rural27', label: 'RURAL', name: 'Casa rural', date: 'ENE 27', color: 'lime' },
 };
 
 // Niveles: se sube con sellos.
@@ -156,15 +160,15 @@ export const OFFER_KINDS = ['Prácticas', 'Proyecto', 'Voluntariado', 'Hackathon
 // consigue al fichar con el QR; los pasados ya no se pueden apuntar.
 export const TODAY = '2026-11-21';
 export const EVENTS = [
-  { id: 'canas-nov', title: 'Cañas de noviembre', date: '2026-11-27', time: '19:30', where: 'La Oficina, Getafe', kind: 'Social', price: 'Gratis', stamp: 'canas', cover: 'equipo', going: ['jorge', 'pablo', 'lucia', 'diego'], goingCount: 35,
+  { id: 'canas-nov', title: 'Cañas de noviembre', date: '2026-11-27', time: '19:30', where: 'La Oficina, Getafe', kind: 'Social', price: 'Gratis', stamp: 'canasNov', cover: 'equipo', going: ['jorge', 'pablo', 'lucia', 'diego'], goingCount: 35,
     desc: 'Las cañas de cada mes: llega quien quiera, se presenta la gente nueva y se cuenta en qué anda cada uno. Ficha con tu QR en la puerta.' },
   { id: 'invest', title: 'Start to Invest', date: '2026-11-30', time: '10:00', where: 'Campus de Getafe', kind: 'Formación', price: 'Gratis para socios', stamp: 'invest', cover: 'sala', going: ['lucia', 'pablo', 'sara', 'diego', 'hugo'], goingCount: 23,
     desc: 'Una mañana con fondos y business angels: cómo se decide una inversión, qué miran en un pitch y ronda de preguntas. Plazas limitadas.' },
-  { id: 'podcast-38', title: 'Podcast en directo', date: '2026-12-03', time: '18:00', where: 'Campus Puerta de Toledo', kind: 'Podcast', price: 'Gratis', stamp: 'pitch', cover: 'pitch', going: ['gema', 'andres', 'jorge'], goingCount: 49,
+  { id: 'podcast-38', title: 'Podcast en directo', date: '2026-12-03', time: '18:00', where: 'Campus Puerta de Toledo', kind: 'Podcast', price: 'Gratis', stamp: 'podcast', cover: 'pitch', going: ['gema', 'andres', 'jorge'], goingCount: 49,
     desc: 'Grabamos un episodio con público. Al final hay turno de preguntas para la invitada.' },
-  { id: 'cena', title: 'Cena de Navidad', date: '2026-12-18', time: '21:00', where: 'Madrid centro', kind: 'Social', price: '25 € socios', membersOnly: true, stamp: 'canas', cover: 'equipo', going: ['lidia', 'gema', 'jorge'], goingCount: 64,
+  { id: 'cena', title: 'Cena de Navidad', date: '2026-12-18', time: '21:00', where: 'Madrid centro', kind: 'Social', price: '25 € socios', membersOnly: true, stamp: 'cena', cover: 'equipo', going: ['lidia', 'gema', 'jorge'], goingCount: 64,
     desc: 'Cerramos el cuatrimestre todos juntos. Solo socios; la entrada se paga al apuntarte.' },
-  { id: 'rural', title: 'Casa rural', date: '2027-01-22', end: '2027-01-24', time: '17:00', where: 'Sierra de Gredos', kind: 'Viaje', price: '79 € socios', membersOnly: true, few: 'Quedan 18 plazas', stamp: 'rural', cover: 'portatiles', going: ['hugo', 'gema', 'pablo'], goingCount: 22,
+  { id: 'rural', title: 'Casa rural', date: '2027-01-22', end: '2027-01-24', time: '17:00', where: 'Sierra de Gredos', kind: 'Viaje', price: '79 € socios', membersOnly: true, few: 'Quedan 18 plazas', stamp: 'rural27', cover: 'portatiles', going: ['hugo', 'gema', 'pablo'], goingCount: 22,
     desc: 'Tres días fuera con la gente de Start: talleres por la mañana, monte por la tarde y cena todos juntos.' },
   { id: 'camp', title: 'Start Camp', date: '2026-11-13', end: '2026-11-15', time: '09:00', where: 'Campus de Leganés', kind: 'Hackathon', price: 'Gratis', stamp: 'camp', cover: 'pitch', going: ['lucia', 'hugo', 'carla'], goingCount: 60, past: true,
     desc: 'Tres días para pasar de una idea a una demo. 14 proyectos presentados.' },
