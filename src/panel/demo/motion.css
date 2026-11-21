@@ -1,0 +1,197 @@
+/* Motion del área de socios. Curvas de panel.css (--ease-out, --ease-drawer);
+   en los pseudo-elementos de View Transitions (cuelgan de <html>) van en literal.
+   Regla: solo transform y opacity (y filter para el cruce del botón). */
+
+/* ---------- Navegación (View Transitions) ---------- */
+/* Cabecera, menú y barra se quedan quietos: solo se mueve el contenido. */
+.pd-header { view-transition-name: pd-header; }
+.pd-side { view-transition-name: pd-side; }
+.pd-tabbar { view-transition-name: pd-tabbar; }
+.tab-line { view-transition-name: tab-line; }
+.seg-bg { view-transition-name: seg-bg; }
+
+/* Avanzar: la pantalla nueva entra desde la derecha y la vieja se aparta un poco (iOS). */
+html[data-nav='push']::view-transition-old(root) { animation: 300ms cubic-bezier(.32,.72,0,1) both vt-back-out; }
+html[data-nav='push']::view-transition-new(root) { animation: 300ms cubic-bezier(.32,.72,0,1) both vt-in-right; }
+/* Volver: exactamente al revés, para que el camino se entienda. */
+html[data-nav='pop']::view-transition-old(root) { animation: 300ms cubic-bezier(.32,.72,0,1) both vt-out-right; z-index: 2; }
+html[data-nav='pop']::view-transition-new(root) { animation: 300ms cubic-bezier(.32,.72,0,1) both vt-back-in; }
+/* Cambio de sección o de pestaña: el contenido cambia al instante… */
+html[data-nav='none']::view-transition-old(root),
+html[data-nav='none']::view-transition-new(root) { animation: none; }
+/* …y solo se desliza el indicador. */
+::view-transition-group(tab-line), ::view-transition-group(seg-bg) { animation-duration: 240ms; animation-timing-function: cubic-bezier(.23,1,.32,1); }
+::view-transition-group(pd-header), ::view-transition-group(pd-tabbar), ::view-transition-group(pd-side) { animation-duration: 200ms; }
+/* Con movimiento reducido: un fundido corto, sin desplazamientos. */
+html[data-nav='fade']::view-transition-old(root), html[data-nav='fade']::view-transition-new(root) { animation-duration: 150ms; }
+html[data-nav='fade']::view-transition-group(*) { animation-duration: 0s; }
+
+@keyframes vt-in-right { from { transform: translateX(100%); } }
+@keyframes vt-out-right { to { transform: translateX(100%); } }
+@keyframes vt-back-out { to { transform: translateX(-28%); opacity: .4; } }
+@keyframes vt-back-in { from { transform: translateX(-28%); opacity: .4; } }
+
+/* La línea de la pestaña ahora es un elemento propio (no box-shadow) para poder deslizarse. */
+.tabs a, .tabs button { position: relative; }
+.tabs [aria-selected='true'], .tabs [aria-current='page'] { box-shadow: none; }
+.tab-line { position: absolute; left: 0; right: 0; bottom: -1px; height: 3px; border-radius: 3px 3px 0 0; background: var(--brand-text); }
+.segmented a { position: relative; isolation: isolate; }
+.segmented a[aria-current='page'] { background: none; box-shadow: none; }
+.seg-bg { position: absolute; inset: 0; z-index: -1; border-radius: 7px; background: var(--surface); box-shadow: 0 1px 3px #12123a1a; }
+
+/* ---------- Entrada de contenido ---------- */
+/* Del esqueleto al contenido: aparece, no salta. Corto y sutil porque se ve a menudo. */
+.people-list > li, .offer-list > li, .col-main > .card, .col-main > section, .families > section, .oferta, .ficha, .two-col--profile {
+  animation: pd-rise 260ms cubic-bezier(.23,1,.32,1) both;
+}
+.people-list > li:nth-child(2), .offer-list > li:nth-child(2), .families > section:nth-child(2) { animation-delay: 35ms; }
+.people-list > li:nth-child(3), .offer-list > li:nth-child(3), .families > section:nth-child(3) { animation-delay: 70ms; }
+.people-list > li:nth-child(4), .offer-list > li:nth-child(4), .families > section:nth-child(4) { animation-delay: 105ms; }
+.people-list > li:nth-child(5), .offer-list > li:nth-child(5) { animation-delay: 140ms; }
+.people-list > li:nth-child(n+6), .offer-list > li:nth-child(n+6) { animation-delay: 175ms; }
+@keyframes pd-rise { from { opacity: 0; transform: translateY(8px); } }
+
+/* ---------- Botón que cambia de estado (Me interesa → Te interesa) ---------- */
+.btn-morph { transition: background-color 200ms ease, color 200ms ease, transform 140ms cubic-bezier(.23,1,.32,1); }
+.btn-label { display: inline-flex; align-items: center; gap: 8px; transition: opacity 200ms ease, filter 200ms ease, transform 200ms cubic-bezier(.23,1,.32,1);
+  @starting-style { opacity: 0; filter: blur(4px); transform: translateY(4px); } }
+.check-draw path { stroke-dasharray: 24; stroke-dashoffset: 0; animation: pd-draw 300ms 80ms cubic-bezier(.23,1,.32,1) backwards; }
+@keyframes pd-draw { from { stroke-dashoffset: 24; } }
+.rolling { display: inline-block; overflow: hidden; vertical-align: bottom; }
+.rolling > span { display: inline-block; }
+/* Tu avatar entra en la pila de apuntados. */
+.stack .avatar { transition: transform 260ms cubic-bezier(.23,1,.32,1), opacity 200ms ease;
+  @starting-style { transform: scale(.6) translateX(-6px); opacity: 0; } }
+
+/* ---------- Toast ---------- */
+.toast-region { position: fixed; z-index: 80; left: 0; right: 0; bottom: 0; pointer-events: none; }
+.toast { transition: transform 260ms cubic-bezier(.23,1,.32,1), opacity 200ms ease;
+  @starting-style { transform: translate(-50%, 120%); opacity: 0; } }
+.toast.is-leaving { transform: translate(-50%, 120%); opacity: 0; transition-duration: 200ms; }
+
+/* ---------- Celebraciones ---------- */
+.party { animation: pd-fade 220ms ease both; }
+.party-card { animation: pd-pop 280ms cubic-bezier(.23,1,.32,1) both; }
+/* El sello cae y golpea; después entra el texto (coreografía: primero lo importante). */
+.party-stamp { animation: pd-slam 520ms 120ms cubic-bezier(.23,1,.32,1) both; position: relative; }
+.party-stamp::before { content: ''; position: absolute; inset: -6px; border-radius: 999px; border: 3px solid var(--lime); opacity: 0; animation: pd-ring 600ms 380ms cubic-bezier(.23,1,.32,1) both; }
+.party-card > h2 { animation: pd-rise 280ms 360ms cubic-bezier(.23,1,.32,1) both; }
+.party-card > p, .party-card > .party-people { animation: pd-rise 280ms 420ms cubic-bezier(.23,1,.32,1) both; }
+.party-card > .btn { animation: pd-rise 280ms 480ms cubic-bezier(.23,1,.32,1) both; }
+/* Sin sello (¡Apuntado!), el texto no espera. */
+.party-card:not(:has(.party-stamp)) > * { animation-delay: 80ms; }
+@keyframes pd-fade { from { opacity: 0; } }
+@keyframes pd-pop { from { opacity: 0; transform: scale(.96) translateY(8px); } }
+@keyframes pd-slam {
+  0% { opacity: 0; transform: scale(1.7) rotate(-28deg); }
+  55% { opacity: 1; transform: scale(.94) rotate(-8deg); }
+  75% { transform: scale(1.03) rotate(-11deg); }
+  100% { transform: scale(1) rotate(-10deg); }
+}
+@keyframes pd-ring { 0% { opacity: .9; transform: scale(.9); } 100% { opacity: 0; transform: scale(1.35); } }
+
+/* ---------- Barra inferior ---------- */
+.pd-tabbar .ind { transition: transform 240ms cubic-bezier(.23,1,.32,1), opacity 150ms ease; }
+
+/* ---------- Movimiento reducido: sin desplazamientos, solo fundidos cortos ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .people-list > li, .offer-list > li, .col-main > .card, .col-main > section, .families > section, .oferta, .ficha, .two-col--profile,
+  .party-card, .party-card > *, .party-stamp { animation: pd-fade 150ms ease both !important; }
+  .party-stamp::before, .check-draw path { animation: none; }
+  .btn-label, .stack .avatar, .toast { transition-property: opacity; }
+  .press:active { transform: none; }
+}
+
+/* En las fichas (sin barra inferior) el aviso sube por encima del botón fijo. */
+.toast { width: max-content; }
+.pd:has(.is-deep) .toast { bottom: calc(96px + env(safe-area-inset-bottom)); }
+
+/* ---------- QR a pantalla grande ---------- */
+/* El QR del carné y el de la ventana comparten nombre: el navegador interpola tamaño y posición. */
+html[data-nav='qr']::view-transition-old(root), html[data-nav='qr']::view-transition-new(root) { animation: none; }
+::view-transition-group(my-qr) { animation-duration: 380ms; animation-timing-function: cubic-bezier(.32,.72,0,1); }
+::view-transition-group(qr-layer) { animation-duration: 260ms; }
+.qr-modal { view-transition-name: qr-layer; }
+.qr-huge .qr-beam { position: absolute; left: 6%; right: 6%; top: 8%; height: 3px; border-radius: 3px; background: var(--lime); box-shadow: 0 0 18px 4px #d6ff4f99; opacity: 0; }
+.qr-huge.is-scanning .qr-beam { animation: qr-scan 900ms cubic-bezier(.77,0,.175,1) both; }
+@keyframes qr-scan { 0% { opacity: 0; transform: translateY(0); } 10% { opacity: 1; } 90% { opacity: 1; } 100% { opacity: 0; transform: translateY(calc(var(--qr) * .82)); } }
+.qr-ok { position: absolute; inset: 0; display: grid; place-items: center; background: #1d7a4fe6; color: #fff; border-radius: 14px; animation: pd-pop 260ms cubic-bezier(.23,1,.32,1) both; }
+.qr-ok path { stroke-dasharray: 24; animation: pd-draw 320ms 60ms cubic-bezier(.23,1,.32,1) backwards; }
+@media (prefers-reduced-motion: reduce) { .qr-huge.is-scanning .qr-beam { animation: pd-fade 300ms ease both; } }
+
+/* Mapa: las burbujas aparecen escalonadas y la tuya late una vez (sin bucle infinito). */
+.bubble { animation: pd-bubble 360ms calc(var(--i) * 40ms + 80ms) cubic-bezier(.23,1,.32,1) both; }
+@keyframes pd-bubble { from { opacity: 0; transform: scale(.85); } }
+.bubble.is-me { animation: pd-bubble 360ms 80ms cubic-bezier(.23,1,.32,1) both, pd-beat 900ms 600ms cubic-bezier(.23,1,.32,1) 2; }
+@keyframes pd-beat { 0%, 100% { transform: scale(1); } 30% { transform: scale(1.08); } }
+@media (hover: hover) and (pointer: fine) { .bubble { transition: transform 200ms cubic-bezier(.23,1,.32,1); } .bubble:hover { transform: scale(1.05); } }
+@media (prefers-reduced-motion: reduce) { .bubble, .bubble.is-me { animation: pd-fade 150ms ease both; } }
+
+/* ---------- Alta guiada ---------- */
+/* La barra se rellena (también la primera vez: arranca vacía con @starting-style). */
+.steps b { transition: transform 520ms cubic-bezier(.23,1,.32,1) 120ms; }
+.steps b.on { @starting-style { transform: scaleX(0); } }
+/* Cada paso entra desde el lado hacia el que vas. */
+.alta-step--fwd { animation: alta-in-r 340ms cubic-bezier(.23,1,.32,1) both; }
+.alta-step--back { animation: alta-in-l 340ms cubic-bezier(.23,1,.32,1) both; }
+@keyframes alta-in-r { from { opacity: 0; transform: translateX(28px); } }
+@keyframes alta-in-l { from { opacity: 0; transform: translateX(-28px); } }
+/* Dentro del paso, primero el título y luego lo demás. */
+.alta-step > :nth-child(2) { animation: pd-rise 300ms 60ms cubic-bezier(.23,1,.32,1) both; }
+.alta-step > :nth-child(n+3) { animation: pd-rise 300ms 120ms cubic-bezier(.23,1,.32,1) both; }
+.btn-next .ico { transition: transform 200ms cubic-bezier(.23,1,.32,1); }
+@media (hover: hover) and (pointer: fine) { .btn-next:hover .ico { transform: translateX(3px); } }
+.btn-next:active .ico { transform: translateX(4px); }
+/* Elegir curso o tipo: el elegido «salta» un poco. */
+.type-picker .type, .pill { transition: background-color 160ms ease, color 160ms ease, transform 160ms cubic-bezier(.23,1,.32,1); }
+.type-picker .type[aria-current='true'], .alta .pill[aria-pressed='true'] { animation: pd-pick 260ms cubic-bezier(.23,1,.32,1); }
+@keyframes pd-pick { 40% { transform: scale(1.06); } }
+@media (prefers-reduced-motion: reduce) {
+  .alta-step--fwd, .alta-step--back, .alta-step > * { animation: pd-fade 150ms ease both !important; }
+  .steps b { transition-duration: 0ms; }
+}
+
+/* ---------- Pulido: detalles de apps sociales ---------- */
+.toast { pointer-events: auto; }
+.toast-action { margin-left: 6px; padding: 4px 8px; border-radius: 6px; color: var(--lime); font-weight: 700; }
+.pd[data-theme='dark'] .toast-action { color: var(--cobalt); }
+.search-clear { width: 28px; height: 28px; border-radius: 99px; display: grid; place-items: center; background: var(--paper-2); color: var(--ink-soft); flex: none; }
+.search input::-webkit-search-cancel-button { display: none; }
+/* El punto de la campana salta cuando llega un aviso nuevo. */
+.pd-bell .dot { animation: pd-dot 360ms cubic-bezier(.23,1,.32,1) both; }
+@keyframes pd-dot { 0% { transform: scale(.5); opacity: 0; } 60% { transform: scale(1.25); opacity: 1; } 100% { transform: scale(1); } }
+/* Cabecera translúcida: el contenido se intuye por debajo al hacer scroll. */
+.pd-header { background: color-mix(in srgb, var(--surface) 84%, transparent); -webkit-backdrop-filter: saturate(180%) blur(16px); backdrop-filter: saturate(180%) blur(16px); }
+.pd-tabbar { background: color-mix(in srgb, var(--surface) 88%, transparent); -webkit-backdrop-filter: saturate(180%) blur(16px); backdrop-filter: saturate(180%) blur(16px); }
+/* La pestaña elegida de la barra inferior da un saltito muy corto (feedback, no fiesta). */
+.pd-tabbar a[aria-current='page'] .ico, .pd-tabbar a[aria-current='page'] .avatar { animation: pd-tab 220ms cubic-bezier(.23,1,.32,1); }
+@keyframes pd-tab { 40% { transform: scale(.88); } }
+/* Escritorio: las tarjetas pulsables se marcan al pasar el ratón. */
+@media (hover: hover) and (pointer: fine) {
+  .card.press { transition: border-color 160ms ease, transform 140ms cubic-bezier(.23,1,.32,1); }
+  .card.press:hover { border-color: color-mix(in srgb, var(--brand-text) 45%, var(--line)); }
+  .pd-side nav a { transition: background-color 120ms ease; }
+}
+@media (prefers-reduced-motion: reduce) { .pd-bell .dot, .pd-tabbar a .ico, .pd-tabbar a .avatar { animation: none !important; } }
+
+/* Fotos: aparecen con un fundido al cargar, sobre el color de fondo (sin saltos). */
+.cover-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 320ms ease; border-radius: inherit; }
+.cover-img.is-loaded { opacity: 1; }
+
+/* Tirar para recargar */
+.pull { display: grid; place-items: center; overflow: hidden; margin: -18px 0 0; transition: height 280ms cubic-bezier(.32,.72,0,1); }
+.pull.is-pulling:not(.is-refreshing) { transition: none; }
+.pull-mark { width: 34px; color: var(--brand-text); display: block; }
+.pull-mark svg { width: 100%; height: auto; display: block; }
+.pull.is-refreshing .pull-mark { animation: pd-spin 700ms linear infinite; opacity: 1 !important; }
+@keyframes pd-spin { to { rotate: 360deg; } }
+:where(html:has(.pd)) { overscroll-behavior-y: contain; }
+@media (min-width: 1024px) { .pull { display: none; } }
+/* Móvil nativo: mantener pulsado un botón no abre el menú de enlace ni selecciona texto. */
+.press { -webkit-touch-callout: none; }
+.pd img { -webkit-user-drag: none; }
+
+/* Al avanzar o volver, los indicadores con nombre viajan con su página (no se quedan flotando). */
+html:is([data-nav='push'], [data-nav='pop']) :is(.tab-line, .seg-bg, .carne .qr) { view-transition-name: none !important; }
+/* Arrastrar la hoja: el gesto es nuestro, no del scroll del navegador. */
+.sheet-drag { touch-action: none; }
