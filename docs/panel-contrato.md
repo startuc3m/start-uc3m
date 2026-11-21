@@ -73,8 +73,8 @@ Esta demo y el backend de Estrella (#87) tocan las mismas decisiones. **Manda #8
 
 | Tema | Fuente de verdad en #87 | Dónde lo imita la demo |
 |---|---|---|
-| Roles: `kind`, `department`, `position`, `manage_users` | `docs/panel-roles.md` §1-2, `src/panel/model.js` | `src/panel/demo/data.js` (`canManage`, `canPublish`, `positionLabel`) |
-| Permisos de edición por sección (`startskills`, `eventos`, `blog`) | `panel_permissions`, migración `20261121223358` | `PERMISSION_SCOPES`, apartado «Gestión» de Yo |
+| Roles: `kind`, `department`, `position`, `manage_users` | `docs/panel-roles.md` §1-2, `src/panel/model.js` | `src/panel/demo/data.js` (`canManage`, `canPublish`, `positionLabel`); pantallas Gestión (`/gestion`, con la tabla «Quién puede hacer qué» de §3) y Personas (`/admin`, acciones `members` y `member.change` con las reglas §4.1 y §4.3) |
+| Permisos de edición por sección (`startskills`, `eventos`, `blog`) | `panel_permissions`, migración `20261121223358` | **No se muestran en la app.** Decisión de Álvaro (22/11): la web y su gestor de contenidos van aparte; la app solo gestiona lo de dentro de la app (oportunidades, puntos, personas). Hablar con Estrella dónde se administran esos permisos |
 | Puntos manuales (Responsable solo a su departamento; Junta a cualquiera) | §3 (pendiente) | `canGivePoints`, acción `points.add`, pantalla `/ranking` |
 | Starter del mes y portada (solo con `public_consent`) | §5 y §7 (por decidir) | `STARTER_OF_MONTH`, tarjeta en Inicio |
 | Pagar no da acceso | regla 4.6 | `member.join` devuelve `pendiente`; pantalla «Pago recibido» |

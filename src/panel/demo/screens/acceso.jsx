@@ -128,41 +128,6 @@ export function Alta({ params }) {
   );
 }
 
-export function Admin() {
-  const { toast } = useApp();
-  const [text, setText] = useState('Nora Prieto <nora.prieto@alumnos.uc3m.es>\nivan.soler@alumnos.uc3m.es\ncorreo-mal');
-  const rows = text.split(/\n/).map((l) => l.trim()).filter(Boolean).map((l) => {
-    const m = l.match(/^(.*)<(.+)>$/);
-    const email = (m ? m[2] : l).trim();
-    return { line: l, name: m ? m[1].trim() : '', email, ok: /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) };
-  });
-  const ok = rows.filter((r) => r.ok).length;
-  return (
-    <>
-      <PageTitle eyebrow="Administración">Invitar a Start</PageTitle>
-      <div className="two-col">
-        <div className="col-main">
-          <div className="card form">
-            <div className="field"><label htmlFor="inv">Pega correos, uno por línea</label><textarea id="inv" className="input" rows={6} value={text} onChange={(e) => setText(e.target.value)} /></div>
-            <ul style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              {rows.map((r, i) => <li key={i} className="feed-row" style={{ fontSize: 15 }}><Icon name={r.ok ? 'check' : 'x'} size={16} className={r.ok ? '' : 'err'} /><span className="grow">{r.name && <b>{r.name} · </b>}{r.email}</span>{!r.ok && <span className="err" style={{ fontSize: 14 }}>Correo inválido</span>}</li>)}
-            </ul>
-            <button className="btn btn--primary press" disabled={!ok} onClick={() => toast(`${ok} invitaciones enviadas (demo)`)}><Icon name="mail" size={18} /> Enviar {ok} {ok === 1 ? 'invitación' : 'invitaciones'}</button>
-          </div>
-        </div>
-        <aside className="col-side">
-          <div className="card form">
-            <p className="t-h">Últimas invitaciones</p>
-            {[['Nora Prieto', 'Aceptada', 'ok'], ['Iván Soler', 'Aceptada', 'ok'], ['Elena Vidal', 'Pendiente', 'warn'], ['Mario Ortega', 'Rebotó', 'danger']].map(([n, s, c]) => (
-              <div key={n} className="feed-row"><span className="grow">{n}</span><span className={`state state--${c}`}>{s}</span></div>
-            ))}
-          </div>
-        </aside>
-      </div>
-    </>
-  );
-}
-
 // Logo de Google para el botón de acceso (según su guía de marca para "Sign in with Google").
 const GoogleG = () => (
   <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true">

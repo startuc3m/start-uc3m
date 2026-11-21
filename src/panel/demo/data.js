@@ -272,7 +272,8 @@ export const positionLabel = (x) => (x.kind !== 'starter' ? 'Socio'
   : x.position === 'junta' ? 'Junta'
     : x.position === 'responsable' ? `Responsable de ${x.department}`
       : `Starter · ${x.department}`);
-export const PERMISSION_SCOPES = { startskills: 'Start Skills', eventos: 'Eventos', blog: 'Blog' };
+// Los permisos de editar la web (startskills, eventos, blog: panel_permissions en #87) son del
+// gestor de contenidos de la web, no de la app: la demo no los enseña.
 
 // «Ver como» del botón DEMO: la misma persona con otro cargo, para enseñar qué cambia.
 export const VIEW_AS = {

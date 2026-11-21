@@ -33,6 +33,7 @@ function fresh() {
     supported: false,
     points: [],
     applications: [],
+    changes: {}, // cambios de cargo hechos desde Gestión › Personas
     prefs: { notif: { anuncios: true, eventos: true, ofertas: true, canales: false, mensajes: true }, privacy: { gente: true, email: true, cv: true } },
     settings: { ...DEMO_DEFAULTS },
   };
@@ -54,7 +55,12 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
 
   // Tú, con el cargo que se esté probando en «Ver como» (botón DEMO).
   const meNow = () => ({ ...state.me, ...(VIEW_AS[state.settings.viewAs]?.patch ?? {}) });
-  const person = (id) => (id === state.me.id ? meNow() : PEOPLE.find((x) => x.id === id));
+  const person = (id) => {
+    if (id === state.me.id) return meNow();
+    const x = PEOPLE.find((y) => y.id === id);
+    return x && state.changes[id] ? { ...x, ...state.changes[id] } : x;
+  };
+  const people = () => PEOPLE.map((x) => person(x.id));
   const pointsOf = (id) => (POINTS_BASE[id] ?? 0) + state.points.filter((x) => x.person === id).reduce((n, x) => n + x.points, 0);
   const allOffers = () => [...state.offers, ...OFFERS];
   const decorateOffer = (o) => {
@@ -120,10 +126,10 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
     people: ({ q = '', filter = 'todos', type = null } = {}) => {
       if (state.settings.empty) return { people: [], total: 0 };
       const needle = normalize(q);
-      const list = PEOPLE.filter((x) => (filter === 'todos' || x.role === filter.replace(/s$/, ''))
+      const list = people().filter((x) => x.active !== false && (filter === 'todos' || x.role === filter.replace(/s$/, ''))
         && (!type || x.type === type)
         && (!needle || normalize(`${x.name} ${x.career}`).includes(needle))).map(decoratePerson);
-      const leaders = filter === 'todos' && !needle && !type ? PEOPLE.filter((x) => x.position !== 'miembro').sort((a, b) => (a.position === 'junta' ? -1 : b.position === 'junta' ? 1 : 0)).map(decoratePerson) : [];
+      const leaders = filter === 'todos' && !needle && !type ? people().filter((x) => x.position !== 'miembro').sort((a, b) => (a.position === 'junta' ? -1 : b.position === 'junta' ? 1 : 0)).map(decoratePerson) : [];
       return { people: list, total: list.length, leaders };
     },
 
@@ -222,10 +228,38 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
         stamp: { stamp: STAMPS.camp, count: 48, mine: state.me.stamps.includes('camp'), myCount: state.me.stamps.length },
       };
     },
+    // Gestión › Personas: quién es quién y qué puedes cambiar tú (reglas de docs/panel-roles.md §4).
+    members: () => {
+      const me = meNow();
+      if (!canManage(me)) throw new Error('Solo IT autorizado y la Junta gestionan personas.');
+      const list = [me, ...people()].map((x) => ({
+        ...decoratePerson(x), active: x.active !== false,
+        editable: x.id !== me.id && (me.position === 'junta' || x.position !== 'junta'),
+        why: x.id === me.id ? 'Tus permisos los cambia otra persona' : me.position !== 'junta' && x.position === 'junta' ? 'Solo la Junta cambia cargos de Junta' : null,
+      }));
+      return { members: list, departments: ['Junta', 'IT', 'Marketing', 'Eventos', 'RRHH', 'Legal'], isJunta: me.position === 'junta' };
+    },
+    'member.change': ({ id, kind, department, position, active }) => {
+      const me = meNow(), target = person(id);
+      if (!canManage(me)) throw new Error('Solo IT autorizado y la Junta gestionan personas.');
+      if (!target) throw new Error('Esa persona ya no está.');
+      if (id === me.id) throw new Error('Nadie cambia sus propios permisos: tiene que hacerlo otra persona.');
+      if (me.position !== 'junta' && (target.position === 'junta' || position === 'junta')) throw new Error('Solo la Junta da o quita cargos de Junta.');
+      const k = kind ?? target.kind;
+      const patch = k === 'socio'
+        ? { kind: 'socio', role: 'socio', department: null, dept: null, position: 'miembro', manage_users: false }
+        : { kind: 'starter', role: 'starter', department: department ?? target.department ?? 'IT', dept: department ?? target.department ?? 'IT', position: position ?? target.position };
+      if (k === 'starter' && !patch.department) throw new Error('Un Starter necesita departamento.');
+      if (active !== undefined) patch.active = active;
+      state.changes = { ...state.changes, [id]: { ...(state.changes[id] ?? {}), ...patch } };
+      save();
+      return { member: decoratePerson(person(id)) };
+    },
+
     // Puntos del mes y Starter del mes (solo Starters; los socios no entran en el ranking).
     ranking: () => {
       const me = meNow();
-      const starters = [...PEOPLE.filter((x) => x.kind === 'starter'), ...(me.kind === 'starter' ? [me] : [])]
+      const starters = [...people().filter((x) => x.kind === 'starter'), ...(me.kind === 'starter' ? [me] : [])]
         .map((x) => ({ ...decoratePerson(x), points: pointsOf(x.id), canGive: canGivePoints(me, x) && x.id !== me.id }))
         .sort((a, b) => b.points - a.points);
       const som = person(STARTER_OF_MONTH.person);

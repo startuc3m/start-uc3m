@@ -486,3 +486,39 @@
 .demo-panel .row--wrap { flex-direction: column; align-items: flex-start; gap: 8px; }
 .demo-panel .opts--wrap { flex-wrap: wrap; }
 .hazte-ok .aldia-check svg path { stroke-dashoffset: 0; }
+
+/* Tarjetas de color (personalidad, etc.): el color gana a la tarjeta base en claro y en oscuro. */
+.card.bg-lime { background: var(--lime); } .card.bg-cyan { background: var(--cyan); }
+.card.bg-lavender { background: var(--lavender); } .card.bg-yellow { background: var(--yellow); }
+.card:is(.bg-lime, .bg-cyan, .bg-lavender, .bg-yellow) { border-color: transparent; color: var(--ink-fixed); }
+.card:is(.bg-lime, .bg-cyan, .bg-lavender, .bg-yellow) .ico { color: var(--ink-fixed); }
+
+/* ---------- Gestión (de la app) ---------- */
+.gest-me, .gest-entry { display: flex; align-items: center; gap: 14px; padding: 14px 16px; }
+.gest-me .grow, .gest-entry .grow, .gest-action .grow { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.gest-me b { font-size: 18px; }
+.gest-entry .t-soft, .gest-action .t-soft { font-size: 13.5px; }
+.gest-ico { width: 40px; height: 40px; flex: none; border-radius: 12px; display: grid; place-items: center; background: color-mix(in srgb, var(--brand-text) 12%, transparent); color: var(--brand-text); }
+.gest-actions { display: flex; flex-direction: column; gap: 8px; }
+.gest-action { display: flex; align-items: center; gap: 14px; padding: 14px 16px; }
+.matrix-wrap { padding: 0; overflow-x: auto; }
+.matrix { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 520px; }
+.matrix th, .matrix td { padding: 10px 8px; border-bottom: 1px solid var(--line); text-align: center; vertical-align: middle; }
+.matrix tbody tr:last-child > * { border-bottom: 0; }
+.matrix thead th { font-family: var(--f-mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); font-weight: 600; position: relative; padding-top: 14px; }
+.matrix tbody th { text-align: left; font-weight: 600; font-size: 13.5px; line-height: 1.3; min-width: 170px; padding-left: 14px; }
+.matrix .is-me { background: color-mix(in srgb, var(--lime) 28%, transparent); color: var(--ink); }
+.matrix-you { display: block; margin: 4px auto 0; width: max-content; padding: 1px 6px; border-radius: 99px; background: var(--lime); color: var(--ink-fixed); font-family: var(--f-body); font-size: 10px; letter-spacing: 0; text-transform: none; font-weight: 700; }
+.matrix td .ico { color: var(--ok); }
+.pd[data-theme='dark'] .matrix td .ico { color: #6fd3a3; }
+.matrix-note { font-size: 11.5px; font-weight: 600; color: var(--brand-text); line-height: 1.2; }
+.matrix-no { color: var(--line); font-size: 18px; }
+.members { padding: 0; overflow: hidden; }
+.members li + li .member { border-top: 1px solid var(--line); }
+.member { width: 100%; display: flex; align-items: center; gap: 12px; padding: 10px 14px; text-align: left; }
+.member .grow { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.member b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.member .t-soft { font-size: 13px; }
+.pill[disabled] { opacity: .4; pointer-events: none; }
+/* La primera columna (la acción) se queda fija al desplazar la tabla. */
+.matrix tbody th, .matrix thead th:first-child { position: sticky; left: 0; z-index: 1; background: var(--surface); }

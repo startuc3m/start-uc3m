@@ -3,7 +3,7 @@ import Icon from '../ui/Icon.jsx';
 import { Avatar, Carne, Load, OfferLogo, Sellos, Skeleton, useApp } from '../ui/pieces.jsx';
 import { back, useApi } from '../router.js';
 import { PageTitle } from './comunidad.jsx';
-import { FAMILIES, PERMISSION_SCOPES, TYPE_NAMES, familyOf } from '../data.js';
+import { FAMILIES, TYPE_NAMES, familyOf } from '../data.js';
 
 export function Perfil() {
   const { api, me, toast, wide } = useApp();
@@ -124,33 +124,16 @@ export function Editar() {
   );
 }
 
-// Gestión: solo aparece si tu cargo da algún permiso (modelo de docs/panel-roles.md, PR #87).
-// Responsable: publicar y sumar puntos a su departamento. IT autorizado: usuarios y permisos.
-// Junta: todo. Los permisos de editar secciones de la web van aparte del cargo.
+// Entrada a Gestión: solo si tu cargo te deja gestionar algo dentro de la app.
 function Gestion({ me }) {
-  const { toast } = useApp();
-  const scopes = me.permissions ?? [];
-  const rows = [
-    me.canPublish && ['plus', 'Publicar una oportunidad', 'Te llegan los interesados con su CV', '#/ofertas/publicar'],
-    (me.position === 'responsable' || me.position === 'junta') && ['sparkles', 'Sumar puntos', me.position === 'junta' ? 'A cualquier Starter' : `A la gente de ${me.department}`, '#/ranking'],
-    me.canManage && ['users', 'Usuarios e invitaciones', 'Invitar, cambiar cargos y quitar acceso', '#/admin'],
-    me.canManage && ['shield-check', 'Permisos de edición de la web', 'Quién puede editar Start Skills, Eventos o Blog', '#/admin'],
-    ...scopes.map((k) => ['pencil', `Editar ${PERMISSION_SCOPES[k]} en la web`, 'Por ahora se edita en Notion', null, k]),
-  ].filter(Boolean);
-  if (!rows.length) return null;
+  const n = [me.canPublish, me.position === 'responsable' || me.position === 'junta', me.canManage].filter(Boolean).length;
+  if (!n) return null;
   return (
-    <section aria-labelledby="gest-t">
-      <div className="section-h" style={{ marginBottom: 4 }}><h2 id="gest-t" className="t-h">Gestión</h2><span className="chip bg-lavender gest-pos">{me.positionLabel}{me.manage_users && me.position !== 'junta' ? ' · admin' : ''}</span></div>
-      <p className="t-soft" style={{ fontSize: 14, marginBottom: 10 }}>Lo ves por tu cargo. Lo que no te toca no aparece.</p>
-      <ul className="card links">
-        {rows.map(([icon, t, sub, href, scope]) => (
-          <li key={t}>
-            {href ? <a className="link-row press" href={href}><Icon name={icon} className="set-ico" /><span className="grow"><span className="link-val">{t}</span><span className="t-soft" style={{ display: 'block', fontSize: 13 }}>{sub}</span></span><Icon name="chevron-right" className="t-soft" /></a>
-              : <button className="link-row press" style={{ width: '100%' }} onClick={() => toast(`${PERMISSION_SCOPES[scope]}: de momento se edita desde Notion; el editor del panel llegará más adelante.`)}><Icon name={icon} className="set-ico" /><span className="grow"><span className="link-val">{t}</span><span className="t-soft" style={{ display: 'block', fontSize: 13 }}>{sub}</span></span><Icon name="external-link" size={16} className="t-soft" /></button>}
-          </li>
-        ))}
-      </ul>
-    </section>
+    <a className="card gest-entry press" href="#/gestion">
+      <span className="gest-ico"><Icon name="shield-check" size={20} /></span>
+      <span className="grow"><b>Gestión</b><span className="t-soft">{me.positionLabel} · {[me.canPublish && 'oportunidades', (me.position === 'responsable' || me.position === 'junta') && 'puntos', me.canManage && 'personas'].filter(Boolean).join(', ')}</span></span>
+      <Icon name="chevron-right" className="t-soft" />
+    </a>
   );
 }
 

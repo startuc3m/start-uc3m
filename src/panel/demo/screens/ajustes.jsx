@@ -37,7 +37,8 @@ export function Ajustes() {
               <h2 id="s-cuenta" className="set-h">Cuenta</h2>
               <div className="card set-card">
                 <a className="set-row press" href="#/socio"><Icon name="badge-check" className="set-ico" /><span className="grow set-label">Membresía</span><span className="t-soft">Socio {me.member?.season}</span><Icon name="chevron-right" className="t-soft" /></a>
-                {me.canManage && <a className="set-row press" href="#/admin"><Icon name="shield-check" className="set-ico" /><span className="grow set-label">Administración</span><span className="t-soft">IT</span><Icon name="chevron-right" className="t-soft" /></a>}
+                <a className="set-row press" href="#/gestion"><Icon name="shield-check" className="set-ico" /><span className="grow"><span className="set-label">Tu cargo y permisos</span><span className="set-hint">Qué puedes hacer en la app y quién puede hacer qué</span></span><span className="t-soft">{me.positionLabel}</span><Icon name="chevron-right" className="t-soft" /></a>
+                {me.canManage && <a className="set-row press" href="#/admin"><Icon name="users" className="set-ico" /><span className="grow set-label">Personas e invitaciones</span><Icon name="chevron-right" className="t-soft" /></a>}
               </div>
             </section>
             <section className="set-group" aria-labelledby="s-avisos">

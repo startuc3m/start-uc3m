@@ -21,11 +21,12 @@ import { Ajustes, HazteSocio, Socio } from './screens/ajustes.jsx';
 import { Mapa } from './screens/mapa.jsx';
 import { Interesados, Oferta, Ofertas, Publicar } from './screens/ofertas.jsx';
 import { Editar, Perfil } from './screens/perfil.jsx';
-import { Acceso, Admin, Alta } from './screens/acceso.jsx';
+import { Acceso, Alta } from './screens/acceso.jsx';
+import { Admin, Gestion } from './screens/gestion.jsx';
 
-const SCREENS = { inicio: Inicio, canales: Canales, canal: Canal, gente: Gente, persona: Persona, mapa: Mapa, eventos: Eventos, evento: Evento, ofertas: Ofertas, oferta: Oferta, interesados: Interesados, publicar: Publicar, perfil: Perfil, editar: Editar, ajustes: Ajustes, socio: Socio, avisos: Avisos, admin: Admin, ranking: Ranking };
+const SCREENS = { inicio: Inicio, canales: Canales, canal: Canal, gente: Gente, persona: Persona, mapa: Mapa, eventos: Eventos, evento: Evento, ofertas: Ofertas, oferta: Oferta, interesados: Interesados, publicar: Publicar, perfil: Perfil, editar: Editar, ajustes: Ajustes, socio: Socio, avisos: Avisos, admin: Admin, ranking: Ranking, gestion: Gestion };
 // Título pequeño de la barra de arriba (aparece al bajar, cuando el título grande ya no se ve).
-const TITLE = { inicio: 'Inicio', canales: 'Comunidad', gente: 'Comunidad', mapa: 'Comunidad', canal: 'Canal', eventos: 'Eventos', evento: 'Evento', ofertas: 'Oportunidades', oferta: 'Oportunidad', interesados: 'Interesados', publicar: 'Publicar', perfil: 'Mi perfil', editar: 'Editar perfil', ajustes: 'Ajustes', socio: 'Membresía', avisos: 'Avisos', admin: 'Administración', persona: 'Perfil', ranking: 'Starter del mes' };
+const TITLE = { inicio: 'Inicio', canales: 'Comunidad', gente: 'Comunidad', mapa: 'Comunidad', canal: 'Canal', eventos: 'Eventos', evento: 'Evento', ofertas: 'Oportunidades', oferta: 'Oportunidad', interesados: 'Interesados', publicar: 'Publicar', perfil: 'Mi perfil', editar: 'Editar perfil', ajustes: 'Ajustes', socio: 'Membresía', avisos: 'Avisos', admin: 'Personas', persona: 'Perfil', ranking: 'Starter del mes', gestion: 'Gestión' };
 const NAV = [['inicio', '#/inicio', 'home', 'Inicio'], ['comunidad', '#/comunidad', 'users', 'Comunidad'], ['eventos', '#/eventos', 'calendar', 'Eventos'], ['ofertas', '#/ofertas', 'target', 'Oportunidades']];
 const TABS = ['inicio', 'comunidad', 'eventos', 'ofertas', 'perfil'];
 
@@ -166,7 +167,7 @@ export default function PanelDemo({ photos }) {
   const deep = Boolean(DEPTH[route.name]);
   const tab = TABS.indexOf(section);
   const badge = me.badges?.comunidad ?? 0;
-  const goBack = () => back(route.name === 'avisos' ? '/inicio' : route.name === 'ajustes' ? '/perfil' : route.name === 'socio' || route.name === 'admin' ? '/ajustes' : `/${section === 'perfil' ? 'perfil' : section}`);
+  const goBack = () => back(route.name === 'avisos' ? '/inicio' : route.name === 'ajustes' ? '/perfil' : route.name === 'socio' ? '/ajustes' : route.name === 'admin' ? '/gestion' : route.name === 'gestion' ? '/perfil' : `/${section === 'perfil' ? 'perfil' : section}`);
 
   return (
     <Ctx.Provider value={ctx}>
