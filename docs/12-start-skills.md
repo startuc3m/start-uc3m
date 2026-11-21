@@ -35,12 +35,12 @@ El estado de cada bloque (*Celebrado*, *Próximo* o *Por llegar*) se calcula en 
 La web es estática. El contenido **no se edita en el código**: sale de Notion.
 
 1. En cada build de Vercel se ejecuta `scripts/sync-startskills.mjs`.
-2. El script lee Notion con el token `NOTION_API_KEY` (el mismo que usan los socios) y las bases de datos de Start Skills.
+2. El script lee Notion con el token `NOTION_STARTSKILLS_API_KEY` (la integración propia de Start Skills) o, si no existe, con `NOTION_API_KEY` (el de socios), y las bases de datos de Start Skills.
 3. Descarga las fotos y las copia dentro de la web. Las URLs de las fotos de Notion caducan a la hora, por eso no se enlazan directamente.
 4. Genera un `.zip` por bloque con todas sus fotos.
 5. Escribe `src/data/startskills.generated.json`, que es lo que lee la web.
 
-Si falta `NOTION_API_KEY` o `NOTION_STARTSKILLS_DATABASE_ID`, el build usa sin avisar el archivo de respaldo `src/data/startskills.seed.json`. Ese archivo es una copia de ejemplo versionada en git. **No es la fuente de verdad.**
+Si no hay token (ni `NOTION_STARTSKILLS_API_KEY` ni `NOTION_API_KEY`) o falta `NOTION_STARTSKILLS_DATABASE_ID`, el build usa sin avisar el archivo de respaldo `src/data/startskills.seed.json`. Ese archivo es una copia de ejemplo versionada en git. **No es la fuente de verdad.**
 
 Un cambio en Notion aparece en la web **en el siguiente build**. Hay dos formas de provocarlo:
 
@@ -113,7 +113,7 @@ Esto se hace una vez por entorno. Después, solo hay que tocarlo si cambian las 
 
 1. Conecta la integración de Notion de Start a la página **Start Skills** (*··· → Conexiones → Añadir conexión*). Así llega a las dos bases. Si no lo haces, el build no ve nada.
 2. Copia el **ID de la base Bloques**. Es la parte de 32 caracteres de la URL de la base, antes del `?v=`.
-3. El token es el mismo que el de socios (`NOTION_API_KEY`). No hace falta crear otro.
+3. El token tiene que ser **el de la integración que conectaste en el paso 1**. Si es la de socios, basta con `NOTION_API_KEY`. Si Start Skills tiene su propia integración (otro token `ntn_…`), ponlo en `NOTION_STARTSKILLS_API_KEY`: tiene prioridad sobre `NOTION_API_KEY` solo para Start Skills.
 
 ### 2. Variables de entorno en Vercel
 
@@ -121,7 +121,8 @@ En Vercel → *Settings → Environment Variables*, crea las siguientes variable
 
 | Variable | Valor | Obligatoria |
 |---|---|---|
-| `NOTION_API_KEY` | Token de la integración de Notion | Sí |
+| `NOTION_API_KEY` | Token de la integración de Notion de socios | Sí |
+| `NOTION_STARTSKILLS_API_KEY` | Token de la integración propia de Start Skills. Si existe, se usa en lugar de `NOTION_API_KEY` para Start Skills | No |
 | `NOTION_STARTSKILLS_DATABASE_ID` | ID de la base *Bloques* | Sí |
 | `NOTION_STARTSKILLS_PARTICIPANTES_DATABASE_ID` | ID de la base *Participantes*. Solo si el script no la encuentra por la relación | No |
 
@@ -147,7 +148,7 @@ npm run sync:startskills   # lee Notion, baja fotos y genera src/data/startskill
 npm run dev                # http://localhost:4321/eventos/start-skills
 ```
 
-Para probar en local, pon `NOTION_API_KEY` y `NOTION_STARTSKILLS_DATABASE_ID` en tu `.env` (la de Participantes es opcional) (nunca en git). Si `npm run sync:startskills` termina sin error y `src/data/startskills.generated.json` tiene tus bloques, la sincronización funciona.
+Para probar en local, pon el token (`NOTION_STARTSKILLS_API_KEY` o `NOTION_API_KEY`) y `NOTION_STARTSKILLS_DATABASE_ID` en tu `.env` (la de Participantes es opcional) (nunca en git). Si `npm run sync:startskills` termina sin error y `src/data/startskills.generated.json` tiene tus bloques, la sincronización funciona.
 
 ---
 
@@ -155,7 +156,7 @@ Para probar en local, pon `NOTION_API_KEY` y `NOTION_STARTSKILLS_DATABASE_ID` en
 
 | Síntoma | Causa probable | Qué hacer |
 |---|---|---|
-| El build falla con «Notion respondió 401» o «404» | Token mal copiado, ID de base mal copiado o base no compartida con la integración | Revisa `NOTION_API_KEY` y los IDs. Comprueba en Notion que las dos bases están conectadas a la integración (*··· → Conexiones*) |
+| El build falla con «Notion respondió 401» o «404» | Token mal copiado, ID de base mal copiado, base no compartida con la integración o token de **otra** integración | El mensaje dice qué variable de token se usó. Revisa ese token y los IDs. Si las bases están conectadas a una integración distinta de la de socios, pon su token en `NOTION_STARTSKILLS_API_KEY`. Comprueba en Notion que las dos bases están conectadas a la integración (*··· → Conexiones*) |
 | Falta una foto en la web | No es un bloque de imagen (es un enlace, un adjunto o un vídeo) o no es una foto en JPG, PNG, GIF, WebP o AVIF (los SVG y otros formatos se descartan por seguridad; el log lo avisa) | Súbela como imagen JPG o PNG en el cuerpo de la página y lanza la actualización manual |
 | El build falla con «no se pudo descargar…» | Notion o la red fallaron, la imagen pesa más de 25 MB o es un enlace externo que no es https | Si es puntual, vuelve a lanzar el build. Si no, sube la foto a Notion como imagen (JPG o PNG, menos de 25 MB). La web sigue con las fotos anteriores mientras tanto |
 | El build falla con «Notion no devolvió ningún bloque publicable» | Todos los bloques están ocultos, sin fecha o con el título mal | Revisa la base Bloques. Para no publicar una página vacía, el build no cambia nada |

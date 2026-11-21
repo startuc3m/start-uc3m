@@ -2,7 +2,9 @@
 //   - Lee la base "Bloques" (y los participantes) y escribe
 //     src/data/startskills.generated.json con el contrato de src/lib/startskills.ts.
 //   - Descarga las fotos (las URLs de Notion caducan en ~1 h) a public/startskills/.
-// Sin NOTION_API_KEY / NOTION_STARTSKILLS_DATABASE_ID no hace nada: la web usa la
+// Token: NOTION_STARTSKILLS_API_KEY si existe (integración propia de Start Skills); si no,
+// NOTION_API_KEY (la de socios).
+// Sin token / NOTION_STARTSKILLS_DATABASE_ID no hace nada: la web usa la
 // semilla src/data/startskills.seed.json. Ver docs/12-start-skills.md.
 import { cp, mkdir, rename, rm, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
@@ -25,7 +27,8 @@ for (const f of ['.env.local', '.env']) {
   try { process.loadEnvFile(join(raiz, f)); } catch (e) { if (e.code !== 'ENOENT') throw e; }
 }
 
-const token = process.env.NOTION_API_KEY;
+const tokenVar = process.env.NOTION_STARTSKILLS_API_KEY ? 'NOTION_STARTSKILLS_API_KEY' : 'NOTION_API_KEY';
+const token = process.env[tokenVar];
 const bloquesDb = process.env.NOTION_STARTSKILLS_DATABASE_ID;
 let participantesDb = process.env.NOTION_STARTSKILLS_PARTICIPANTES_DATABASE_ID;
 
@@ -90,9 +93,9 @@ async function notion(path, { method = 'GET', body, que } = {}) {
   if (!res.ok) {
     const detalle = await res.text().catch(() => '');
     let pista = '';
-    if (res.status === 401) pista = ' Revisa NOTION_API_KEY (token inválido o caducado).';
+    if (res.status === 401) pista = ` Revisa ${tokenVar} (token inválido o caducado).`;
     else if (res.status === 404)
-      pista = ` Revisa ${que ?? 'el id de la base'} y que la integración esté invitada a esa base en Notion (Conexiones).`;
+      pista = ` Revisa ${que ?? 'el id de la base'} y que la integración de ${tokenVar} esté invitada a esa base en Notion (Conexiones).`;
     throw new NotionError(`Start Skills: Notion respondió ${res.status} en ${path}.${pista} ${detalle.slice(0, 200)}`);
   }
   return res.json();
