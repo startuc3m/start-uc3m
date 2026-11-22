@@ -40,6 +40,11 @@ export const STAMPS = {
   podcast: { id: 'podcast', label: 'PODCAST', name: 'Podcast en directo', date: 'DIC 26', color: 'cyan' },
   cena: { id: 'cena', label: 'CENA', name: 'Cena de Navidad', date: 'DIC 26', color: 'lavender' },
   rural27: { id: 'rural27', label: 'RURAL', name: 'Casa rural', date: 'ENE 27', color: 'lime' },
+  feria: { id: 'feria', label: 'FERIA', name: 'Feria de empleo', date: 'NOV 26', color: 'cyan' },
+  notion: { id: 'notion', label: 'SKILLS', name: 'Start Skills: Notion', date: 'NOV 26', color: 'lavender' },
+  cafe: { id: 'cafe', label: 'CAFÉ', name: 'Café con founders', date: 'DIC 26', color: 'yellow' },
+  pitchDic: { id: 'pitchDic', label: 'PITCH', name: 'Noche de pitch', date: 'DIC 26', color: 'lime' },
+  after: { id: 'after', label: 'AFTER', name: 'Afterwork', date: 'DIC 26', color: 'cyan' },
 };
 
 // Niveles: se sube con sellos.
@@ -175,6 +180,16 @@ export const EVENTS = [
     desc: 'Cerramos el cuatrimestre todos juntos. Solo socios; la entrada se paga al apuntarte.' },
   { id: 'rural', title: 'Casa rural', date: '2027-01-22', end: '2027-01-24', time: '17:00', where: 'Sierra de Gredos', kind: 'Viaje', price: '79 € socios', membersOnly: true, few: 'Quedan 18 plazas', stamp: 'rural27', cover: 'portatiles', going: ['hugo', 'gema', 'pablo'], goingCount: 22,
     desc: 'Tres días fuera con la gente de Start: talleres por la mañana, monte por la tarde y cena todos juntos.' },
+  { id: 'notion', title: 'Start Skills: Notion para equipos', date: '2026-11-25', time: '18:00', where: 'Campus de Getafe', kind: 'Formación', price: 'Gratis', stamp: 'notion', cover: 'portatiles', going: ['carla', 'pablo', 'gema'], goingCount: 28,
+    desc: 'Dos horas para montar el Notion de tu equipo: tareas, documentos y bases de datos que se usan de verdad.' },
+  { id: 'cafe', title: 'Café con founders', date: '2026-12-01', time: '10:00', where: 'Cafetería de Leganés', kind: 'Networking', price: 'Gratis', stamp: 'cafe', cover: 'oficina', going: ['jorge', 'ines'], goingCount: 14,
+    desc: 'Desayuno informal con tres founders que salieron de la UC3M. Pregunta lo que quieras.' },
+  { id: 'pitch-dic', title: 'Noche de pitch', date: '2026-12-10', time: '19:00', where: 'Campus Puerta de Toledo', kind: 'Pitch', price: 'Gratis', stamp: 'pitchDic', cover: 'pitch', going: ['diego', 'lucia', 'hugo'], goingCount: 41,
+    desc: 'Cinco proyectos de socios presentan en tres minutos y el público vota. Al final, cervezas.' },
+  { id: 'after', title: 'Afterwork de diciembre', date: '2026-12-12', time: '20:00', where: 'Madrid centro', kind: 'Social', price: 'Gratis', stamp: 'after', cover: 'equipo', going: ['gema', 'andres'], goingCount: 33,
+    desc: 'Para cerrar la semana con la gente de Start antes de los exámenes.' },
+  { id: 'feria', title: 'Feria de empleo UC3M', date: '2026-11-06', time: '10:00', where: 'Campus de Leganés', kind: 'Empleo', price: 'Gratis', stamp: 'feria', cover: 'oficina', going: ['marta', 'lucia'], goingCount: 52, past: true,
+    desc: 'Stand de Start en la feria de empleo de la universidad.' },
   { id: 'camp', title: 'Start Camp', date: '2026-11-13', end: '2026-11-15', time: '09:00', where: 'Campus de Leganés', kind: 'Hackathon', price: 'Gratis', stamp: 'camp', cover: 'pitch', going: ['lucia', 'hugo', 'carla'], goingCount: 60, past: true,
     desc: 'Tres días para pasar de una idea a una demo. 14 proyectos presentados.' },
   { id: 'canas-oct', title: 'Cañas de bienvenida', date: '2026-10-08', time: '19:30', where: 'La Oficina, Getafe', kind: 'Social', price: 'Gratis', stamp: 'canas', cover: 'equipo', going: ['diego', 'gema'], goingCount: 71, past: true,

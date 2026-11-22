@@ -599,3 +599,88 @@
 .otp-links { display: flex; justify-content: space-between; }
 .link-btn { color: var(--brand-text); font-weight: 600; font-size: 14px; }
 @media (prefers-reduced-motion: reduce) { .otp-box { animation: none !important; } }
+
+/* Hojas: el contenido nunca es más ancho que la hoja (nada de barra horizontal). */
+.sheet { overflow-x: hidden; }
+.sheet .acceso-form { width: auto; max-width: none; margin: 0; padding: 0; background: none; }
+.sheet > * { min-width: 0; max-width: 100%; }
+
+/* ---------- Calendario estilo Apple ---------- */
+.ac { padding: 18px 14px 6px; display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
+.ac-h { display: flex; align-items: center; gap: 6px; padding: 0 4px; }
+.ac-title { font-size: 26px; font-weight: 700; letter-spacing: -.01em; line-height: 1.1; margin-right: auto; overflow: hidden; }
+.ac-year { color: var(--brand-text); font-weight: 600; }
+.ac-count { font-size: 13px; color: var(--ink-soft); margin-right: 4px; }
+.ac-today { height: 32px; padding: 0 12px; border-radius: 99px; background: var(--paper-2); font-weight: 700; font-size: 14px; color: var(--brand-text); }
+.ac-nav { width: 32px; height: 32px; border-radius: 99px; display: grid; place-items: center; color: var(--brand-text); }
+.ac-wd { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 12px; font-weight: 700; color: var(--ink-soft); padding: 6px 0 2px; border-bottom: 1px solid var(--line); }
+.ac-wd .is-we { opacity: .6; }
+.ac-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; padding-top: 6px; touch-action: pan-y; }
+.ac-day { position: relative; aspect-ratio: 1 / 1.05; border-radius: 12px; display: grid; place-items: center; isolation: isolate; overflow: visible; transition: transform 160ms var(--ease-out); }
+.ac-n { position: relative; z-index: 2; width: 30px; height: 30px; display: grid; place-items: center; border-radius: 99px; font-size: 16px; font-weight: 500; }
+.ac-day.is-past:not(.has-ev) .ac-n { color: var(--ink-soft); opacity: .5; }
+.ac-day.is-today:not(.has-ev) .ac-n { background: var(--lime); color: var(--ink-fixed); font-weight: 800; }
+.ac-day.is-sel:not(.has-ev) .ac-n { background: var(--ink); color: var(--paper); font-weight: 700; }
+/* Día con plan: la foto del evento llena la celda. */
+.ac-ph { position: absolute; inset: 0; z-index: 0; border-radius: inherit; background: center / cover no-repeat var(--paper-2); }
+.ac-ph::after { content: ''; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(180deg, #13133d40, #13133da6); }
+.ac-day.has-ev .ac-n { color: #fff; font-weight: 800; text-shadow: 0 1px 3px #0006; }
+.ac-day.has-ev.is-past .ac-ph { filter: grayscale(1); opacity: .5; }
+.ac-bar { position: absolute; z-index: 2; left: 7px; right: 7px; bottom: 5px; height: 3px; border-radius: 3px; background: var(--c); }
+.ac-t { display: none; }
+.ac-tick { position: absolute; z-index: 3; top: -4px; right: -4px; width: 17px; height: 17px; border-radius: 99px; display: grid; place-items: center; background: var(--lime); color: var(--ink-fixed); box-shadow: 0 0 0 2px var(--surface); }
+.ac-day.is-sel { transform: scale(1.06); z-index: 4; }
+.ac-day.is-sel.has-ev { box-shadow: 0 0 0 2.5px var(--surface), 0 0 0 5px var(--brand-text), 0 8px 18px #13133d40; }
+.ac-day.is-today.has-ev::after { content: 'hoy'; position: absolute; z-index: 3; top: 3px; left: 50%; translate: -50% 0; font-size: 9px; font-weight: 800; color: var(--lime); }
+/* Eventos de varios días: las fotos se juntan en una sola franja. */
+.ac-day.join-l { border-top-left-radius: 0; border-bottom-left-radius: 0; margin-left: -4px; }
+.ac-day.join-r { border-top-right-radius: 0; border-bottom-right-radius: 0; margin-right: -4px; }
+.ac-grid > .ac-day.has-ev:not(.is-past) .ac-ph { animation: ac-in 360ms var(--ease-out) both; }
+@keyframes ac-in { from { opacity: 0; transform: scale(.85); } }
+@media (hover: hover) and (pointer: fine) { .ac-day:hover:not(.is-sel) { transform: scale(1.04); } .ac-day:not(.has-ev):hover .ac-n { background: var(--paper-2); } }
+
+/* Agenda del día elegido */
+.ac-agenda { margin: 6px -14px 0; padding: 14px 14px 12px; border-top: 1px solid var(--line); background: color-mix(in srgb, var(--paper-2) 55%, var(--surface)); display: flex; flex-direction: column; gap: 10px; }
+.ac-agenda-h { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.ac-agenda-h b { font-size: 16px; }
+.ac-agenda-h .t-soft { font-size: 13px; }
+.ac-empty { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 4px 0 6px; font-size: 15px; }
+.ac-empty .link-btn { display: inline-flex; align-items: center; gap: 2px; }
+.ac-list { display: flex; flex-direction: column; gap: 8px; }
+.ac-item { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line); position: relative; animation: pd-fade 200ms ease both; }
+.ac-item::before { content: ''; position: absolute; left: 0; top: 12px; bottom: 12px; width: 4px; border-radius: 0 4px 4px 0; background: var(--c); }
+.ac-time { width: 42px; flex: none; font-size: 13px; font-weight: 700; text-align: center; line-height: 1.2; color: var(--ink); }
+.ac-thumb { width: 52px; height: 52px; flex: none; border-radius: 12px; background: center / cover var(--paper-2); }
+.ac-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.ac-ititle { font-weight: 700; font-size: 15px; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.ac-where { font-size: 12.5px; display: flex; align-items: center; gap: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ac-meta { display: flex; align-items: center; gap: 6px; font-size: 12.5px; margin-top: 2px; }
+.ac-meta .stack .avatar { --s: 20px; font-size: 7px; }
+.ac-cta .btn { min-height: 36px; padding: 0 14px; border-radius: 999px; font-size: 14px; gap: 5px; }
+@media (prefers-reduced-motion: reduce) { .ac-ph, .ac-item { animation: none !important; } .ac-day { transition: none; } }
+
+/* En el ordenador las celdas crecen y el título del evento se lee dentro. */
+@media (min-width: 1024px) {
+  .ac { padding: 22px 20px 8px; }
+  .ac-title { font-size: 32px; }
+  .ac-grid { gap: 6px; }
+  .ac-day { aspect-ratio: auto; height: 92px; place-items: start; padding: 8px; border-radius: 14px; }
+  .ac-day:not(.has-ev) { background: var(--paper); }
+  .ac-n { width: 28px; height: 28px; font-size: 15px; }
+  .ac-t { display: -webkit-box; position: absolute; z-index: 2; left: 9px; right: 9px; bottom: 12px; color: #fff; font-size: 12.5px; font-weight: 700; line-height: 1.2; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-shadow: 0 1px 3px #0008; text-align: left; }
+  .ac-day.join-l { margin-left: -6px; } .ac-day.join-r { margin-right: -6px; }
+  .ac-agenda { margin: 8px -20px 0; padding: 16px 20px 14px; }
+}
+/* Las celdas nunca ensanchan la columna (el aspect-ratio les daba un mínimo). */
+.ac-grid { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.ac-day { min-width: 0; }
+.ac-title { white-space: nowrap; font-size: 24px; }
+@media (max-width: 479.98px) { .ac-count { display: none; } }
+.ac-meta { white-space: nowrap; }
+.ac-cta .btn { padding: 0 12px; }
+
+/* La barra inferior flotante es translúcida (backdrop-filter): si entra en la View Transition,
+   el navegador la fotografía sin el fondo y en el cambio de pestaña asoma un cuadrado.
+   No necesita animarse (el indicador ya se desliza solo): se queda fuera de la transición. */
+.pd-tabbar { view-transition-name: none !important; }
+.pd-top { view-transition-name: none !important; }

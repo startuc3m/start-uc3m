@@ -46,118 +46,110 @@ export function Eventos({ path }) {
   );
 }
 
-// Calendario: cada día con plan lleva el sello del evento (su color y su nombre), los
-// eventos de varios días se unen con una franja, y al pasar el ratón o tocar un día se
-// abre una ventanita con el evento y lo que puedes hacer (ir, ver tu entrada).
+// Calendario al estilo Apple: cada día con plan lleva la foto del evento (como el calendario de
+// Fotos), el día elegido se marca con un círculo y debajo aparece su agenda, entera y con lo que
+// puedes hacer (ir, ver tu entrada). Los meses se pasan deslizando o con las flechas.
+const WD_LONG = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
 function Calendar({ all, onChange }) {
-  const { api, openQr, celebrate, toast, wide } = useApp();
-  const [y0, m0] = TODAY.split('-').map(Number);
+  const { api, openQr, celebrate, toast, photos } = useApp();
+  const [y0, m0, d0] = TODAY.split('-').map(Number);
   const [month, setMonth] = useState({ y: y0, m: m0 - 1 });
   const [dir, setDir] = useState('');
-  const [pop, setPop] = useState(null); // { e, x, y, up }
-  const box = useRef(null);
-  const hoverT = useRef(0);
   const byDay = useMemo(() => {
     const map = {};
     for (const e of all) {
       const start = new Date(`${e.date}T12:00:00`), end = new Date(`${e.end ?? e.date}T12:00:00`);
       for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-        const k = iso(d.getFullYear(), d.getMonth(), d.getDate());
-        (map[k] ??= []).push({ e, first: +d === +start, last: +d === +end });
+        (map[iso(d.getFullYear(), d.getMonth(), d.getDate())] ??= []).push({ e, first: +d === +start, last: +d === +end });
       }
     }
     return map;
   }, [all]);
-  useEffect(() => {
-    if (!pop) return;
-    const out = (ev) => { if (!ev.target.closest?.('.cal-pop, .cal-day')) setPop(null); };
-    const key = (ev) => ev.key === 'Escape' && setPop(null);
-    addEventListener('pointerdown', out); addEventListener('keydown', key);
-    return () => { removeEventListener('pointerdown', out); removeEventListener('keydown', key); };
-  }, [pop]);
+  // Día elegido: hoy, o el próximo día con plan si hoy no hay nada.
+  const firstPick = useMemo(() => Object.keys(byDay).sort().find((k) => k >= TODAY) ?? TODAY, [byDay]);
+  const [sel, setSel] = useState(firstPick);
+  const move = (n) => { setDir(n > 0 ? 'next' : 'prev'); setMonth(({ y, m }) => ({ y: m + n > 11 ? y + 1 : m + n < 0 ? y - 1 : y, m: (m + n + 12) % 12 })); };
+  const goToday = () => { setDir(month.y * 12 + month.m > y0 * 12 + m0 - 1 ? 'prev' : 'next'); setMonth({ y: y0, m: m0 - 1 }); setSel(TODAY); };
+  // Deslizar el mes con el dedo (como en iOS).
+  const touch = useRef(null);
+  const onDown = (e) => { if (e.pointerType !== 'mouse') touch.current = { x: e.clientX, y: e.clientY }; };
+  const onUp = (e) => { const t = touch.current; touch.current = null; if (!t) return; const dx = e.clientX - t.x; if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(e.clientY - t.y)) move(dx < 0 ? 1 : -1); };
   const first = new Date(month.y, month.m, 1);
-  const offset = (first.getDay() + 6) % 7; // semana que empieza en lunes
+  const offset = (first.getDay() + 6) % 7;
   const days = new Date(month.y, month.m + 1, 0).getDate();
-  const move = (n) => { setPop(null); setDir(n > 0 ? 'next' : 'prev'); setMonth(({ y, m }) => ({ y: m + n > 11 ? y + 1 : m + n < 0 ? y - 1 : y, m: (m + n + 12) % 12 })); };
   const prefix = iso(month.y, month.m, 1).slice(0, 7);
   const inMonth = all.filter((e) => e.date.startsWith(prefix) || (e.end ?? '').startsWith(prefix));
-  const open = (e, el) => {
-    const c = box.current.getBoundingClientRect(), r = el.getBoundingClientRect();
-    const up = r.top - c.top > c.height * 0.55;
-    setPop({ e, x: r.left - c.left + r.width / 2, y: up ? c.bottom - r.top + 6 : r.bottom - c.top + 6, up, w: c.width });
-  };
   const going = async (e) => {
     const on = !e.isGoing;
     onChange(e.id, { isGoing: on, goingCount: e.goingCount + (on ? 1 : -1) });
-    setPop((p) => p && { ...p, e: { ...p.e, isGoing: on, goingCount: e.goingCount + (on ? 1 : -1) } });
     if (on) celebrate({ kind: 'going', title: '¡Te esperamos!', text: `Nos vemos en ${e.title}. En la puerta, enseña tu QR y el sello ${e.stamp.label} será tuyo.`, stamp: { ...e.stamp, pending: true } });
     try { await api('event.going', { id: e.id, on }); } catch (err) { onChange(e.id, { isGoing: e.isGoing, goingCount: e.goingCount }); toast(err.message); }
   };
-  const W = 272;
+  const selDate = new Date(`${sel}T12:00:00`);
+  const selEvents = (byDay[sel] ?? []).map((h) => h.e);
+  const nextAfter = Object.keys(byDay).sort().find((k) => k > sel);
+  const rel = (k) => { const n = Math.round((new Date(`${k}T12:00:00`) - new Date(`${TODAY}T12:00:00`)) / 864e5); return n === 0 ? 'Hoy' : n === 1 ? 'Mañana' : n === -1 ? 'Ayer' : n > 0 ? `En ${n} días` : `Hace ${-n} días`; };
   return (
-    <section className="cal card" aria-label="Calendario de eventos" ref={box}>
-      <div className="cal-h">
-        <div className="grow">
-          <h2 className="cal-title"><span key={`${month.y}${month.m}`} className={`cal-month cal-month--${dir}`}>{MONTHS[month.m]} <span className="t-soft">{month.y}</span></span></h2>
-          <p className="t-soft cal-count">{inMonth.length ? `${inMonth.length} ${inMonth.length === 1 ? 'plan' : 'planes'}${inMonth.some((e) => e.isGoing) ? ` · ${inMonth.filter((e) => e.isGoing).length} con entrada` : ''}` : 'Sin planes este mes'}</p>
-        </div>
-        <button className="cal-nav press" onClick={() => move(-1)} aria-label="Mes anterior"><Icon name="chevron-left" size={20} /></button>
-        <button className="cal-nav press" onClick={() => move(1)} aria-label="Mes siguiente"><Icon name="chevron-right" size={20} /></button>
-      </div>
-      <div className={`cal-grid cal-grid--${dir}`} key={`${month.y}${month.m}`}>
-        {['L', 'M', 'X', 'J', 'V', 'S', 'D'].map((w) => <span key={w} className="cal-wd" aria-hidden="true">{w}</span>)}
+    <section className="ac card" aria-label="Calendario de eventos">
+      <header className="ac-h">
+        <h2 className="ac-title"><span key={`${month.y}${month.m}`} className={`cal-month cal-month--${dir}`}>{MONTHS[month.m]}<span className="ac-year"> {month.y}</span></span></h2>
+        <span className="ac-count">{inMonth.length ? `${inMonth.length} planes` : 'Sin planes'}</span>
+        <button className="ac-today press" onClick={goToday}>Hoy</button>
+        <button className="ac-nav press" onClick={() => move(-1)} aria-label="Mes anterior"><Icon name="chevron-left" size={20} /></button>
+        <button className="ac-nav press" onClick={() => move(1)} aria-label="Mes siguiente"><Icon name="chevron-right" size={20} /></button>
+      </header>
+      <div className="ac-wd" aria-hidden="true">{['L', 'M', 'X', 'J', 'V', 'S', 'D'].map((w, i) => <span key={i} className={i > 4 ? 'is-we' : ''}>{w}</span>)}</div>
+      <div className={`ac-grid cal-grid--${dir}`} key={`${month.y}${month.m}`} onPointerDown={onDown} onPointerUp={onUp} onPointerCancel={() => { touch.current = null; }}>
         {Array.from({ length: offset }, (_, i) => <span key={`x${i}`} />)}
         {Array.from({ length: days }, (_, i) => {
           const key = iso(month.y, month.m, i + 1);
           const hit = byDay[key]?.[0];
-          const past = key < TODAY;
-          const cls = `${past ? 'is-past' : ''} ${key === TODAY ? 'is-today' : ''}`;
-          if (!hit) return <span key={key} className={`cal-day ${cls}`}><span className="cal-n num">{i + 1}</span></span>;
-          const { e } = hit;
+          const e = hit?.e;
           const col = (i + offset) % 7;
-          const bandL = !hit.first && col !== 0, bandR = !hit.last && col !== 6;
+          const cls = ['ac-day', key < TODAY && 'is-past', key === TODAY && 'is-today', key === sel && 'is-sel', e && 'has-ev', e?.isGoing && 'is-going',
+            e && !hit.first && col !== 0 && 'join-l', e && !hit.last && col !== 6 && 'join-r'].filter(Boolean).join(' ');
           return (
-            <button key={key} className={`cal-day has-ev ${cls} ${e.isGoing ? 'is-going' : ''} ${pop?.e.id === e.id ? 'is-open' : ''} ${bandL ? 'band-l' : ''} ${bandR ? 'band-r' : ''}`}
-              style={{ '--c': `var(--${e.stamp.color})` }}
-              aria-label={`${i + 1} de ${MONTHS[month.m].toLowerCase()}: ${e.title}${e.isGoing ? ', tienes entrada' : ''}`} aria-haspopup="dialog" aria-expanded={pop?.e.id === e.id}
-              onClick={(ev) => (pop?.e.id === e.id ? setPop(null) : open(e, ev.currentTarget))}
-              onPointerEnter={(ev) => { if (ev.pointerType === 'mouse') { clearTimeout(hoverT.current); const el = ev.currentTarget; hoverT.current = setTimeout(() => open(e, el), 90); } }}
-              onPointerLeave={(ev) => { if (ev.pointerType === 'mouse') { clearTimeout(hoverT.current); hoverT.current = setTimeout(() => setPop((p) => (p?.hover === false ? p : null)), 160); } }}>
-              <span className="cal-stamp"><span className="num">{i + 1}</span></span>
-              {hit.first && <span className="cal-lbl">{e.stamp.label}</span>}
-              {e.isGoing && hit.first && <span className="cal-tick" aria-hidden="true"><Icon name="check" size={10} stroke={3.5} /></span>}
+            <button key={key} className={cls} onClick={() => setSel(key)} aria-pressed={key === sel}
+              aria-label={`${WD_LONG[new Date(`${key}T12:00:00`).getDay()]} ${i + 1}${e ? `: ${e.title}${e.isGoing ? ', tienes entrada' : ''}` : ''}`}
+              style={e ? { '--c': `var(--${e.stamp.color})` } : undefined}>
+              {e && <span className="ac-ph" style={{ backgroundImage: `url(${photos[e.cover]})` }} aria-hidden="true" />}
+              <span className="ac-n num">{i + 1}</span>
+              {e && hit.first && <span className="ac-t">{e.title}</span>}
+              {e && <i className="ac-bar" aria-hidden="true" />}
+              {e?.isGoing && hit.first && <span className="ac-tick" aria-hidden="true"><Icon name="check" size={10} stroke={3.5} /></span>}
             </button>
           );
         })}
       </div>
-      {pop && (
-        <div className={`cal-pop ${pop.up ? 'is-up' : ''}`} role="dialog" aria-label={pop.e.title}
-          style={{ left: Math.min(Math.max(pop.x - W / 2, 8), pop.w - W - 8), [pop.up ? 'bottom' : 'top']: pop.y, width: W, '--ax': `${pop.x - Math.min(Math.max(pop.x - W / 2, 8), pop.w - W - 8)}px` }}
-          onPointerEnter={() => { clearTimeout(hoverT.current); }} onPointerLeave={(ev) => { if (ev.pointerType === 'mouse') hoverT.current = setTimeout(() => setPop(null), 200); }}>
-          <PopBody e={pop.e} onGo={() => going(pop.e)} onQr={() => { setPop(null); openQr(); }} wide={wide} />
-        </div>
-      )}
-    </section>
-  );
-}
-
-function PopBody({ e, onGo, onQr }) {
-  const { photos } = useApp();
-  return (
-    <>
-      <a className="pop-cover" href={`#/evento/${e.id}`}><Img src={photos[e.cover]} alt="" /><Sello stamp={e.stamp} size={46} rotate={-10} empty={e.past && !e.attended} className="pop-sello" /></a>
-      <div className="pop-body">
-        <p className="t-mono pop-when">{e.when}</p>
-        <a href={`#/evento/${e.id}`} className="pop-title">{e.title}</a>
-        <p className="t-soft pop-where"><Icon name="map-pin" size={13} /> {e.where}</p>
-        <div className="feed-row" style={{ gap: 8 }}><Stack people={e.goingPeople} /><span className="t-soft num" style={{ fontSize: 13 }}>{e.past ? `Fueron ${e.goingCount}` : `${e.goingCount} van`}</span>{!e.past && <span className="pop-rel">{e.relative}</span>}</div>
-        <div className="pop-cta">
-          {e.past ? <a className="btn btn--soft btn--block press" href={`#/evento/${e.id}`}>{e.attended ? 'Fuiste · ver evento' : 'Ver evento'}</a>
-            : e.isGoing ? <><button className="btn btn--lime press" onClick={onQr}><Icon name="qr-code" size={16} /> Mi entrada</button><a className="btn btn--soft press" href={`#/evento/${e.id}`}>Ver evento</a></>
-              : <><button className="btn btn--lime press" onClick={onGo}>Voy · {e.price.replace(' para socios', '')}</button><a className="btn btn--soft press" href={`#/evento/${e.id}`}>Ver</a></>}
-        </div>
+      <div className="ac-agenda" aria-live="polite">
+        <div className="ac-agenda-h"><b>{WD_LONG[selDate.getDay()][0].toUpperCase() + WD_LONG[selDate.getDay()].slice(1)}, {selDate.getDate()} de {MONTHS[selDate.getMonth()].toLowerCase()}</b><span className="t-soft">{rel(sel)}</span></div>
+        {selEvents.length === 0 ? (
+          <div className="ac-empty">
+            <span className="t-soft">Nada este día.</span>
+            {nextAfter && <button className="link-btn press" onClick={() => { const d = new Date(`${nextAfter}T12:00:00`); if (d.getMonth() !== month.m) { setDir('next'); setMonth({ y: d.getFullYear(), m: d.getMonth() }); } setSel(nextAfter); }}>Siguiente plan: {byDay[nextAfter][0].e.title} <Icon name="chevron-right" size={14} /></button>}
+          </div>
+        ) : (
+          <ul className="ac-list">
+            {selEvents.map((e) => (
+              <li key={e.id} className="ac-item" style={{ '--c': `var(--${e.stamp.color})` }}>
+                <span className="ac-time num">{e.end ? <>Varios<br />días</> : e.time}</span>
+                <a className="ac-thumb press" href={`#/evento/${e.id}`} style={{ backgroundImage: `url(${photos[e.cover]})` }} aria-hidden="true" tabIndex={-1} />
+                <span className="ac-info">
+                  <a href={`#/evento/${e.id}`} className="ac-ititle">{e.title}</a>
+                  <span className="t-soft ac-where"><Icon name="map-pin" size={12} /> {e.where}</span>
+                  <span className="ac-meta"><Stack people={e.goingPeople} /><span className="t-soft num">{e.past ? `Fueron ${e.goingCount}` : `${e.goingCount} van`}</span></span>
+                </span>
+                <span className="ac-cta">
+                  {e.past ? <a className="btn btn--soft press" href={`#/evento/${e.id}`}>{e.attended ? 'Fuiste' : 'Ver'}</a>
+                    : e.isGoing ? <button className="btn btn--lime press" onClick={openQr}><Icon name="qr-code" size={15} /> Mi QR</button>
+                      : <button className="btn btn--primary press" onClick={() => going(e)}>Voy</button>}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
-    </>
+    </section>
   );
 }
 
