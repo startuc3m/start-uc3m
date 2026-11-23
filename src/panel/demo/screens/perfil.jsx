@@ -37,6 +37,9 @@ export function Perfil() {
               <span className="grow"><span className="t-mono" style={{ display: 'block' }}>{me.family.name}</span><b style={{ fontSize: 18 }}>{me.type} · {TYPE_NAMES[me.type]}</b></span>
               <span style={{ fontWeight: 600 }}>Ver en el mapa</span><Icon name="chevron-right" />
             </a>
+            <p className="t-soft" style={{ fontSize: 14, marginTop: 8 }}>
+              <a href="#/perfil/editar" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>Cambiar personalidad</a> · ¿No la sabes? <a href="https://www.16personalities.com/es/test-de-personalidad" target="_blank" rel="noreferrer" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>Haz el test de 16personalities</a>
+            </p>
           </section>
           <section aria-label="Ofertas que te interesan">
             <div className="section-h" style={{ marginBottom: 10 }}><h2 className="t-h">Te interesan{offers.data ? ` · ${offers.data.offers.length}` : ''}</h2><a className="link" href="#/ofertas/interesan">Ver todas</a></div>
@@ -109,11 +112,18 @@ export function Editar() {
           <div className="field"><label htmlFor="p-w">Web</label><input id="p-w" className="input" value={f.web} onChange={set('web')} placeholder="tuweb.com" inputMode="url" autoCapitalize="off" /></div>
         </div>
         <div className="field"><label htmlFor="p-b">Una frase sobre ti</label><input id="p-b" className="input" value={f.bio} onChange={set('bio')} maxLength={90} /></div>
-        <div className="field">
-          <label htmlFor="p-t">Personalidad</label>
-          <select id="p-t" className="input" value={f.type} onChange={set('type')}>{FAMILIES.map((fam) => <optgroup key={fam.id} label={fam.name}>{fam.codes.map((c) => <option key={c} value={c}>{c} · {TYPE_NAMES[c]}</option>)}</optgroup>)}</select>
-          <p className="t-soft" style={{ fontSize: 14 }}>¿No lo sabes? <a href="https://www.16personalities.com/es/test-de-personalidad" target="_blank" rel="noreferrer" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>Haz el test (10 min)</a> · Familia: {familyOf(f.type).name}</p>
-        </div>
+        <fieldset className="field" style={{ border: 0, padding: 0, margin: 0 }}>
+          <legend style={{ fontWeight: 600, marginBottom: 6 }}>Personalidad</legend>
+          <p className="t-soft" style={{ fontSize: 14 }}>Toca tu tipo. ¿No lo sabes? <a href="https://www.16personalities.com/es/test-de-personalidad" target="_blank" rel="noreferrer" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>Haz el test de 16personalities (10 min)</a>{f.type && <> · Familia: {familyOf(f.type).name}</>}</p>
+          <div className="type-picker">
+            {FAMILIES.map((fam) => (
+              <div key={fam.id} className={`family bg-${fam.color}`} style={{ padding: 12 }}>
+                <p className="t-mono">{fam.name}</p>
+                <div className="types">{fam.codes.map((c) => <button key={c} type="button" className="type press" aria-pressed={f.type === c} aria-current={f.type === c ? 'true' : undefined} onClick={() => setF({ ...f, type: c })} title={TYPE_NAMES[c]}>{c}</button>)}</div>
+              </div>
+            ))}
+          </div>
+        </fieldset>
         {err && !['name', 'linkedin'].includes(err.field) && <p className="err" role="alert">{err.message}</p>}
         <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
           <button type="button" className="btn btn--ghost press" onClick={() => back('/perfil')}>Cancelar</button>
