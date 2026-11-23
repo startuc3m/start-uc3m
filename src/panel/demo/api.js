@@ -37,6 +37,11 @@ function fresh() {
 
 export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
   let state = load();
+  // ?como=socio|starter|responsable|it|junta abre la demo con esa jerarquía (enlaces para enseñarla).
+  try {
+    const como = new URLSearchParams(globalThis.location?.search ?? '').get('como');
+    if (como && VIEW_AS[como]) state = { ...state, settings: { ...state.settings, viewAs: como } };
+  } catch {}
 
   function load() {
     try {
