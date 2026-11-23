@@ -111,7 +111,7 @@ export function Alta({ params }) {
     await api('onboarding.done');
     await refreshMe();
     go('/inicio', { replace: true });
-    celebrate({ kind: 'welcome', title: '¡Bienvenido a Start!', text: 'Tu carné ya está activo. En cada evento, escanea su QR para conseguir tu primer sello.' });
+    celebrate({ kind: 'welcome', title: '¡Bienvenido a Start!', text: 'Tu carné ya está activo. Ve a un evento y te llegará tu primer sello.' });
   };
   return (
     <div className="alta">
@@ -161,7 +161,7 @@ export function Alta({ params }) {
         <>
           <h1 className="t-display" style={{ fontSize: 40 }}>Tu carné está listo_</h1>
           <Carne person={{ ...me, career: f.career, course: f.course }} own />
-          <p className="t-soft">En cada evento, escanea su QR: te llevas el sello y subes de nivel.</p>
+          <p className="t-soft">Ve a los eventos: el equipo de Eventos confirma que fuiste y te llevas el sello (y subes de nivel).</p>
         </>
       )}
       </div>

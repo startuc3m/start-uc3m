@@ -4,7 +4,7 @@ import { Avatar, Empty, FakeQr, Load, Rolling, Sello, Skeleton, roleLine, useApp
 import { go, useApi } from '../router.js';
 import { ComunidadHead, PageTitle } from './comunidad.jsx';
 
-// Puntos y Starter del mes. Se suman los puntos de cada evento al escanear su QR (si vale algo) y los QR de puntos:
+// Puntos y Starter del mes. Se suman los puntos de cada evento al que asistes (Eventos lo confirma; llegan 24 h después) y los QR de puntos:
 // solo la Junta los crea y cada persona puede escanear cada uno una vez. Ranking: solo Starters.
 export function Ranking() {
   const { api, me } = useApp();
@@ -12,7 +12,7 @@ export function Ranking() {
   return (
     <>
       <ComunidadHead current="ranking" />
-      <p className="t-soft" style={{ fontSize: 14 }}>Puntos: los que valga cada evento al escanear su QR (si vale algo), más los QR de puntos de la Junta. Cada QR se escanea una vez.</p>
+      <p className="t-soft" style={{ fontSize: 14 }}>Puntos: los de cada evento al que asistes (el equipo de Eventos lo confirma y llegan 24 h después), más los QR de puntos de la Junta. Cada QR se escanea una vez.</p>
       <Load q={q} skeleton={<><div className="skel" style={{ height: 170 }} /><Skeleton h={60} n={6} /></>}>
         {(d) => (
           <div className="two-col">
@@ -21,7 +21,7 @@ export function Ranking() {
               {d.canCreateQr && <a className="card give-hint press" href="#/puntos/crear"><Icon name="qr-code" size={18} /> Crear un QR de puntos para un evento o una tarea</a>}
               <section className="home-sec" aria-label={`Ranking de ${d.month}`}>
                 <div className="section-h"><h2 className="t-h home-h">Ranking de {d.month}</h2>{d.myRank && <span className="t-soft num">Vas {d.myRank}.º</span>}</div>
-                {d.ranking.length === 0 ? <Empty icon="sparkles" title="Aún no hay puntos este mes">Se suman al escanear el QR de cada evento.</Empty> : (
+                {d.ranking.length === 0 ? <Empty icon="sparkles" title="Aún no hay puntos este mes">Llegan 24 h después de cada evento al que asistes.</Empty> : (
                   <ol className="card rank">
                     {d.ranking.map((x, i) => (
                       <li key={x.id} className={`rank-row ${x.id === me.id ? 'is-me' : ''}`}>
@@ -145,8 +145,7 @@ export function PuntosCrear() {
   );
 }
 
-// Lo que se abre al escanear un QR: el de un evento (sello y, si vale algo, puntos) o uno de
-// puntos de la Junta. Suma una sola vez y lo dice; un sello nuevo se celebra.
+// Lo que se abre al escanear un QR de puntos de la Junta: suma los puntos una sola vez y lo dice.
 export function PuntosEscanear({ params }) {
   const { api, refreshMe, celebrate } = useApp();
   const [res, setRes] = useState(null);

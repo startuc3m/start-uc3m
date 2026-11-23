@@ -96,7 +96,7 @@ function MiniEvent({ e }) {
   const { photos } = useApp();
   return (
     <a className="card mini-ev press" href={`#/evento/${e.id}`}>
-      <span className="mini-cover"><Img src={photos[e.cover]} alt="" /><span className="date"><b>{e.day}</b><span>{e.month}</span></span></span>
+      <span className="mini-cover"><Img src={photos[e.cover] ?? e.cover} alt="" /><span className="date"><b>{e.day}</b><span>{e.month}</span></span></span>
       <span className="mini-body"><b>{e.title}</b><span className="t-soft">{e.relative} · {e.where.split(',')[0]}</span></span>
     </a>
   );

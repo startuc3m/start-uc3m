@@ -3,7 +3,7 @@
 // que exista el backend se cambia este archivo y las pantallas no se tocan.
 // El estado de la demo vive en localStorage para que «Me interesa», los sellos o
 // el perfil sobrevivan a una recarga; «Reiniciar demo» lo borra.
-import { AUTHORIZED, DEMO_CODE, POINTS_BASE, REFERRAL_POINTS, STARTER_OF_MONTH, VIEW_AS, canCreatePointsQr, canSetEventPoints, canManage, canPublish, positionLabel, LOOKING, STARTUPS, TODAY, CVS, EVENTS, FEED, ME, NOTIFICATIONS, OFFERS, PEOPLE, STAMPS, COMPANIES, TYPE_COUNTS, FAMILIES, TYPE_NAMES, familyOf, levelFor } from './data.js';
+import { AUTHORIZED, DEMO_CODE, POINTS_BASE, REFERRAL_POINTS, STARTER_OF_MONTH, VIEW_AS, canCreatePointsQr, canSetEventPoints, canManageAttendance, ATTENDANCE_SEED, NOW, canManage, canPublish, positionLabel, LOOKING, STARTUPS, TODAY, CVS, EVENTS, FEED, ME, NOTIFICATIONS, OFFERS, PEOPLE, STAMPS, COMPANIES, TYPE_COUNTS, FAMILIES, TYPE_NAMES, familyOf, levelFor } from './data.js';
 
 const KEY = 'start-panel-demo';
 
@@ -29,7 +29,9 @@ function fresh() {
     // QR de puntos que crea la Junta. scans: quién lo ha escaneado (cada persona, una vez).
     eventPoints: {}, // puntos de evento cambiados por la Junta: { [id]: n }
     eventLinks: {}, // enlace de entradas cambiado por la Junta: { [id]: url | null }
-    eventScans: {}, // { [evento]: [personas] } quién ha escaneado el QR de cada evento (una vez cada uno)
+    eventPhotos: {}, // foto (una sola) del evento cambiada por la Junta: { [id]: clave de foto o URL }
+    eventAlbums: {}, // enlace a la carpeta de fotos (después del evento): { [id]: url | null }
+    attendance: { ...ATTENDANCE_SEED }, // { [evento]: [personas] } asistencia confirmada por el equipo de Eventos
     pointQrs: [{ code: 'CAFE24', points: 10, reason: 'Café con founders', by: 'lidia', at: '20 nov', scans: ['lucia', 'hugo', 'gema'] }],
     referrals: [], // socios nuevos que entraron con el QR de invitación de alguien
     applications: [],
@@ -60,14 +62,19 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
   }
 
   // Tú, con el cargo que se esté probando en «Ver como» (botón DEMO).
-  const meNow = () => ({ ...state.me, ...(VIEW_AS[state.settings.viewAs]?.patch ?? {}) });
+  const meNow = () => {
+    const me = { ...state.me, ...(VIEW_AS[state.settings.viewAs]?.patch ?? {}) };
+    const extra = awardedFor(me.id).map((e) => e.stamp).filter((st) => !me.stamps.includes(st));
+    return extra.length ? { ...me, stamps: [...me.stamps, ...extra] } : me;
+  };
   const person = (id) => {
     if (id === state.me.id) return meNow();
     const x = PEOPLE.find((y) => y.id === id);
     return x && state.changes[id] ? { ...x, ...state.changes[id] } : x;
   };
   const people = () => PEOPLE.map((x) => person(x.id));
-  const pointsOf = (id) => (POINTS_BASE[id] ?? 0) + state.points.filter((x) => x.person === id).reduce((n, x) => n + x.points, 0);
+  const pointsOf = (id) => (POINTS_BASE[id] ?? 0) + state.points.filter((x) => x.person === id).reduce((n, x) => n + x.points, 0)
+    + awardedFor(id).reduce((n, e) => n + eventPointsOf(e), 0);
   const allOffers = () => [...state.offers, ...OFFERS];
   // «Lo nuevo en Start»: solo lo publicado la última semana en Oportunidades y Eventos.
   const DAY = 86400000;
@@ -100,8 +107,14 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
   };
 
   const eventPointsOf = (e) => state.eventPoints[e.id] ?? e.points ?? 0;
-  // Cada evento tiene su QR (lo enseña la Junta en la puerta): escanearlo da el sello y, si vale, los puntos.
-  const eventQrCode = (e) => `EV${e.id.replace(/[^a-z0-9]/gi, '').toUpperCase()}`;
+  // Asistencia: Eventos confirma quién vino; 24 h después del evento llegan sus puntos y su sello.
+  const startOf = (e) => new Date(`${e.date}T${e.time}:00`);
+  const awardAt = (e) => new Date(new Date(`${e.end ?? e.date}T${e.time}:00`).getTime() + 864e5);
+  const pointsGiven = (e) => awardAt(e) <= new Date(NOW);
+  const attendeesOf = (id) => state.attendance[id] ?? [];
+  const dateLabel = (d) => `${WEEKDAYS[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()].slice(0, 3)} · ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+  // Eventos cuyos puntos y sello ya se dieron a una persona (asistencia confirmada y pasadas las 24 h).
+  const awardedFor = (pid) => EVENTS.filter((e) => pointsGiven(e) && attendeesOf(e.id).includes(pid));
   const decorateEvent = (e) => {
     const d = new Date(`${e.date}T12:00:00`);
     const days = Math.round((d - new Date(`${TODAY}T12:00:00`)) / 864e5);
@@ -109,11 +122,15 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
       ...e,
       points: eventPointsOf(e), canSetPoints: canSetEventPoints(meNow()),
       ticketUrl: e.id in state.eventLinks ? state.eventLinks[e.id] : (e.ticketUrl ?? null), // dónde se compran o reservan las entradas (fuera de la app)
-      qrPath: canSetEventPoints(meNow()) ? `/puntos/${eventQrCode(e)}` : null, scanCount: (state.eventScans[e.id] ?? []).length,
+      cover: state.eventPhotos[e.id] ?? e.cover, // una sola foto: clave de `photos` o una URL
+      photosUrl: e.id in state.eventAlbums ? state.eventAlbums[e.id] : (e.photosUrl ?? null), // carpeta de fotos, después del evento
+      canSeeAttendees: canManageAttendance(meNow()), signupCount: (e.going ?? []).length,
+      started: startOf(e) <= new Date(NOW), pointsGiven: pointsGiven(e), pointsAt: dateLabel(awardAt(e)),
+      attended: attendeesOf(e.id).includes(state.me.id),
       day: String(d.getDate()), month: MONTHS[d.getMonth()].slice(0, 3).toUpperCase(),
       when: `${WEEKDAYS[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()].slice(0, 3)} · ${e.time}`,
       inDays: days, relative: e.past ? 'Ya pasó' : days === 0 ? 'Hoy' : days === 1 ? 'Mañana' : `En ${days} días`,
-      hasStamp: state.me.stamps.includes(e.stamp), stamp: STAMPS[e.stamp],
+      hasStamp: meNow().stamps.includes(e.stamp), stamp: STAMPS[e.stamp],
     };
   };
 
@@ -298,21 +315,6 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
     },
     'pointsqr.claim': ({ code = '' } = {}) => {
       const me = meNow();
-      const ev = EVENTS.find((e) => eventQrCode(e) === String(code).toUpperCase());
-      if (ev) {
-        // QR de un evento: el sello del evento y, si vale algo, sus puntos. Una vez por persona.
-        const scans = state.eventScans[ev.id] ?? [];
-        if (scans.includes(me.id)) throw new Error('Ya has escaneado este QR: cada persona solo puede usarlo una vez.');
-        state.eventScans = { ...state.eventScans, [ev.id]: [...scans, me.id] };
-        const pts = eventPointsOf(ev);
-        if (pts > 0) state.points = [...state.points, { person: me.id, points: pts, reason: ev.title, by: `evento:${ev.id}`, at: 'ahora' }];
-        const before = levelFor(state.me.stamps.length);
-        const isNew = !state.me.stamps.includes(ev.stamp);
-        if (isNew) state.me = { ...state.me, stamps: [...state.me.stamps, ev.stamp] };
-        save();
-        const after = levelFor(state.me.stamps.length);
-        return { kind: 'event', points: pts, reason: ev.title, stamp: STAMPS[ev.stamp], isNew, level: after, levelUp: after.n > before.n, total: pointsOf(me.id) };
-      }
       const qr = state.pointQrs.find((q) => q.code === String(code).toUpperCase());
       if (!qr) throw new Error('Este QR de puntos no existe o ya no vale.');
       if (qr.scans.includes(me.id)) throw new Error('Ya has escaneado este QR: cada persona solo puede usarlo una vez.');
@@ -370,6 +372,48 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
       return { host: { id: host.id, name: host.name, points: REFERRAL_POINTS } };
     },
 
+    // Apuntados de un evento (vienen de la plataforma de entradas) y quién asistió. Solo Eventos y Junta.
+    'event.attendees': ({ id }) => {
+      if (!canManageAttendance(meNow())) throw new Error('Solo el equipo de Eventos y la Junta ven a los apuntados.');
+      const e = EVENTS.find((x) => x.id === id);
+      if (!e) throw new Error('Ese evento no existe.');
+      const confirmed = attendeesOf(id);
+      return { people: (e.going ?? []).map(person).filter(Boolean).map((x) => ({ ...decoratePerson(x), confirmed: confirmed.includes(x.id) })) };
+    },
+    // Marcar (o desmarcar) que alguien asistió. Se puede desde que empieza el evento hasta que se dan los puntos (24 h después).
+    'event.attendance': ({ id, person: pid, on }) => {
+      if (!canManageAttendance(meNow())) throw new Error('Solo el equipo de Eventos y la Junta confirman la asistencia.');
+      const e = EVENTS.find((x) => x.id === id);
+      if (!e) throw new Error('Ese evento no existe.');
+      if (startOf(e) > new Date(NOW)) throw new Error('Podrás confirmar la asistencia el día del evento.');
+      if (pointsGiven(e)) throw new Error('Ya se dieron los puntos: la asistencia está cerrada.');
+      if (!(e.going ?? []).includes(pid)) throw new Error('Esa persona no está apuntada.');
+      const cur = attendeesOf(id);
+      state.attendance = { ...state.attendance, [id]: on ? [...new Set([...cur, pid])] : cur.filter((x) => x !== pid) };
+      save();
+      return { event: decorateEvent(e), ...actions['event.attendees']({ id }) };
+    },
+    // La foto del evento (una sola, la de la miniatura y la ficha). Solo la Junta la cambia.
+    'event.photo': ({ id, cover }) => {
+      if (!canSetEventPoints(meNow())) throw new Error('Solo la Junta cambia la foto del evento.');
+      const e = EVENTS.find((x) => x.id === id);
+      if (!e) throw new Error('Ese evento no existe.');
+      if (!cover || typeof cover !== 'string') throw new Error('Elige una foto.');
+      state.eventPhotos = { ...state.eventPhotos, [id]: cover };
+      save();
+      return { event: decorateEvent(e) };
+    },
+    // Enlace a la carpeta de fotos (Drive, etc.), para después del evento. Solo la Junta; vacío lo quita.
+    'event.album': ({ id, url = '' } = {}) => {
+      if (!canSetEventPoints(meNow())) throw new Error('Solo la Junta pone el enlace de las fotos.');
+      const e = EVENTS.find((x) => x.id === id);
+      if (!e) throw new Error('Ese evento no existe.');
+      const u = String(url ?? '').trim();
+      if (u && !/^https:\/\/\S+\.\S+$/.test(u)) throw new Error('Enlace: pega la dirección completa, empezando por https://');
+      state.eventAlbums = { ...state.eventAlbums, [id]: u || null };
+      save();
+      return { event: decorateEvent(e) };
+    },
     // La Junta pone (o quita) el enlace de las entradas de un evento. La app no vende ni apunta: solo enlaza.
     'event.link': ({ id, url = '' } = {}) => {
       if (!canSetEventPoints(meNow())) throw new Error('Solo la Junta cambia el enlace de las entradas.');
@@ -381,7 +425,7 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
       save();
       return { event: decorateEvent(e) };
     },
-    // La Junta decide cuántos puntos da el QR de un evento (0 = solo el sello).
+    // La Junta decide cuántos puntos da asistir a un evento (0 = solo el sello).
     'event.points': ({ id, points }) => {
       if (!canSetEventPoints(meNow())) throw new Error('Solo la Junta decide los puntos de un evento.');
       const e = EVENTS.find((x) => x.id === id);

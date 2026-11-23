@@ -148,7 +148,7 @@ function Gestion({ me }) {
   );
 }
 
-// Tus enlaces: salen en tu perfil y viajan con tu QR (quien lo escanea se guarda tu contacto).
+// Tus enlaces: salen en tu perfil.
 export const LINKS = [
   ['linkedin', 'LinkedIn', 'linkedin', (v) => `https://www.linkedin.com/in/${v}`, (v) => `in/${v}`],
   ['instagram', 'Instagram', 'instagram', (v) => `https://instagram.com/${v}`, (v) => `@${v}`],
@@ -160,10 +160,9 @@ function Enlaces({ me }) {
   return (
     <section aria-labelledby="links-t">
       <div className="section-h" style={{ marginBottom: 4 }}><h2 id="links-t" className="t-h">Tus enlaces</h2><a className="link" href="#/perfil/editar">Editar</a></div>
-      <p className="t-soft" style={{ fontSize: 14, marginBottom: 10 }}>Van también en tu QR: quien lo escanea se guarda tu contacto.</p>
       <ul className="card links">
         {set.map(([k, label, icon, href, show]) => (
-          <li key={k}><a className="link-row press" href={href(me.links[k])} target="_blank" rel="noreferrer"><Icon name={icon} className="set-ico" /><span className="grow"><span className="t-soft" style={{ display: 'block', fontSize: 13 }}>{label}</span><span className="link-val">{show(me.links[k])}</span></span><Icon name="external-link" size={16} className="t-soft" /></a></li>
+          <li key={k}><a className="link-row press" href={href(me.links[k])} target="_blank" rel="noreferrer"><Icon name={icon} className="set-ico" /><span className="grow"><span className="t-soft" style={{ display: 'block', fontSize: 13 }}>{label}</span><span className="link-val">{show(me.links[k])}</span></span></a></li>
         ))}
         {set.length < LINKS.length && <li><a className="link-row link-row--add press" href="#/perfil/editar"><Icon name="plus" className="set-ico" /><span className="grow">Añadir {LINKS.filter(([k]) => !me.links?.[k]).map(([, l]) => l.toLowerCase()).join(' o ')}</span></a></li>}
       </ul>

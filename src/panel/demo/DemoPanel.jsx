@@ -33,7 +33,7 @@ export default function DemoPanel() {
           <div className="row"><span>Sin conexión</span><span className="opts"><Opt k="error" v={false} label="No" /><Opt k="error" v={true} label="Sí" /></span></div>
           <p className="t-mono t-soft" style={{ marginTop: 8 }}>Lanzar</p>
           <div className="opts" style={{ flexWrap: 'wrap', display: 'flex', gap: 6 }}>
-            <button className="pill press" onClick={() => { setOpen(false); go('/puntos/EVINVEST'); }}>Escanear QR de evento</button>
+            <button className="pill press" onClick={async () => { await update({ viewAs: 'eventos' }); setOpen(false); go('/evento/taller-ventas'); }}>Confirmar asistencia (Eventos)</button>
             <button className="pill press" onClick={() => { setOpen(false); go('/acceso'); }}>Acceso y alta</button>
             <button className="pill press" onClick={() => { setOpen(false); go('/perfil/editar'); }}>Editar perfil</button>
           </div>

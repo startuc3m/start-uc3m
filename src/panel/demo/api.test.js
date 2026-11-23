@@ -36,13 +36,21 @@ describe('api de la demo', () => {
     expect((await api('people', { q: 'lucia' })).people[0].name).toBe('Lucía Martín');
   });
 
-  it('escanear el QR de un evento da su sello una sola vez', async () => {
+  it('Eventos confirma la asistencia y a las 24 h llegan los puntos y el sello', async () => {
     const { api } = make();
-    const first = await api('pointsqr.claim', { code: 'EVINVEST' });
-    expect(first.isNew).toBe(true);
-    expect(first.stamp.id).toBe('invest');
-    await expect(api('pointsqr.claim', { code: 'EVINVEST' })).rejects.toThrow('una vez');
-    expect((await api('me')).me.stamps).toContain('invest');
+    await expect(api('event.attendees', { id: 'taller-ventas' })).rejects.toThrow('Solo el equipo de Eventos');
+    await api('demo.settings', { viewAs: 'eventos' });
+    const { people } = await api('event.attendees', { id: 'taller-ventas' });
+    expect(people.map((x) => x.id)).toContain('lucia');
+    await expect(api('event.attendance', { id: 'cena', person: 'gema', on: true })).rejects.toThrow('día del evento');
+    await expect(api('event.attendance', { id: 'camp', person: 'lucia', on: false })).rejects.toThrow('cerrada');
+    const r = await api('event.attendance', { id: 'taller-ventas', person: 'lucia', on: true });
+    expect(r.people.find((x) => x.id === 'lucia').confirmed).toBe(true);
+    expect(r.event.pointsGiven).toBe(false);
+    expect(r.event.pointsAt).toBe('sáb 21 nov · 18:00');
+    // Camp: asistencia confirmada y pasadas las 24 h → Álvaro tiene sus puntos y su sello.
+    const camp = (await api('event', { id: 'camp' })).event;
+    expect([camp.pointsGiven, camp.attended, camp.hasStamp]).toEqual([true, true, true]);
   });
 
   it('valida el perfil antes de guardar', async () => {
@@ -119,7 +127,17 @@ describe('roles y puntos (modelo de la PR #87)', () => {
     expect((await api('event.link', { id: 'cena', url: '' })).event.ticketUrl).toBeNull();
   });
 
-  it('el QR de cada evento da los puntos que decida la Junta, una vez por persona', async () => {
+  it('la Junta cambia la foto del evento y pone el enlace a la carpeta de fotos', async () => {
+    const { api } = make();
+    expect((await api('event', { id: 'camp' })).event.photosUrl).toMatch(/^https:/);
+    await expect(api('event.album', { id: 'feria', url: 'https://drive.google.com/x' })).rejects.toThrow('Solo la Junta');
+    await api('demo.settings', { viewAs: 'junta' });
+    expect((await api('event.photo', { id: 'feria', cover: 'pitch' })).event.cover).toBe('pitch');
+    await expect(api('event.album', { id: 'feria', url: 'drive.google.com' })).rejects.toThrow('https://');
+    expect((await api('event.album', { id: 'feria', url: 'https://drive.google.com/fotos' })).event.photosUrl).toBe('https://drive.google.com/fotos');
+  });
+
+  it('la Junta decide cuántos puntos da asistir a cada evento', async () => {
     const { api } = make();
     await expect(api('event.points', { id: 'invest', points: 5 })).rejects.toThrow('Solo la Junta');
     await api('demo.settings', { viewAs: 'junta' });
@@ -127,11 +145,8 @@ describe('roles y puntos (modelo de la PR #87)', () => {
     expect((await api('event.points', { id: 'invest', points: 30 })).event.points).toBe(30);
     expect((await api('event.points', { id: 'cena', points: 0 })).event.points).toBe(0);
     const before = (await api('ranking')).ranking.find((x) => x.id === 'alvaro').points;
-    expect((await api('event', { id: 'invest' })).event.qrPath).toBe('/puntos/EVINVEST');
-    expect((await api('pointsqr.claim', { code: 'EVINVEST' })).points).toBe(30);
-    await expect(api('pointsqr.claim', { code: 'EVINVEST' })).rejects.toThrow('una vez');
-    expect((await api('pointsqr.claim', { code: 'EVCENA' })).points).toBe(0);
-    expect((await api('ranking')).ranking.find((x) => x.id === 'alvaro').points).toBe(before + 30);
+    await api('event.points', { id: 'camp', points: 50 });
+    expect((await api('ranking')).ranking.find((x) => x.id === 'alvaro').points).toBe(before + 20);
   });
 
   it('solo la Junta crea QR de puntos y cada persona lo escanea una vez', async () => {

@@ -27,7 +27,7 @@ export default function Celebracion({ party, onClose }) {
     <div className="party" role="dialog" aria-modal="true" aria-labelledby="party-t" onClick={(e) => e.target === e.currentTarget && onClose()}>
       <div className="party-card" ref={box}>
         {party.stamp && (party.stamp.pending
-          ? <span className="party-pending"><Sello stamp={party.stamp} size={130} rotate={-6} /><span className="t-mono">Al fichar</span></span>
+          ? <span className="party-pending"><Sello stamp={party.stamp} size={130} rotate={-6} /><span className="t-mono">Al asistir</span></span>
           : <Sello stamp={party.stamp} size={150} rotate={-10} className="party-stamp" />)}
         {party.people && <div className="party-people"><Stack people={party.people} /><span className="num">{party.count} de Start</span></div>}
         <h2 id="party-t" className="t-marker">{party.title}</h2>

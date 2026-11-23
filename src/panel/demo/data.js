@@ -26,8 +26,9 @@ export const TYPE_COUNTS = {
   ISTP: 1, ISFP: 2, ESTP: 4, ESFP: 3,
 };
 
-// Sellos: uno por evento. Se consigue escaneando el QR del evento (lo enseña la Junta en la puerta).
+// Sellos: uno por evento. Llega 24 h después del evento si el equipo de Eventos confirma que asististe.
 export const STAMPS = {
+  ventas: { id: 'ventas', label: 'VENTAS', name: 'Taller de ventas', date: 'NOV 26', color: 'cyan' },
   camp: { id: 'camp', label: 'CAMP', name: 'Start Camp', date: 'NOV 26', color: 'lime' },
   build: { id: 'build', label: 'BUILD', name: 'Buildathon', date: 'SEP 26', color: 'cyan' },
   skills: { id: 'skills', label: 'SKILLS', name: 'Start Skills', date: 'OCT 26', color: 'lavender' },
@@ -196,9 +197,12 @@ export const OFFERS = [
 export const OFFER_KINDS = ['Prácticas', 'Proyecto', 'Voluntariado', 'Hackathon', 'Beca'];
 
 // Eventos con fecha real (la demo vive en noviembre de 2026). `stamp` es el sello que se
-// consigue escaneando el QR del evento en la puerta. La app no apunta a nadie: solo informa
-// y enlaza a las entradas (`ticketUrl`).
+// da 24 h después del evento a quien el equipo de Eventos confirme como asistente (junto con
+// los puntos del evento). La app no apunta a nadie: solo informa y enlaza a las entradas (`ticketUrl`).
+// `going` son los apuntados (vienen de la plataforma de entradas).
 export const TODAY = '2026-11-21';
+// «Ahora» en la demo: para saber si ya han pasado las 24 h de un evento.
+export const NOW = '2026-11-21T12:00:00';
 export const EVENTS = [
   { id: 'canas-nov', points: 10, posted: '2026-11-17', title: 'Cañas de noviembre', date: '2026-11-27', time: '19:30', where: 'La Oficina, Getafe', kind: 'Social', price: 'Gratis', stamp: 'canasNov', cover: 'equipo', going: ['jorge', 'pablo', 'lucia', 'diego'], goingCount: 35,
     desc: 'Las cañas de cada mes: llega quien quiera, se presenta la gente nueva y se cuenta en qué anda cada uno. Ficha con tu QR en la puerta.' },
@@ -218,9 +222,11 @@ export const EVENTS = [
     desc: 'Cinco proyectos de socios presentan en tres minutos y el público vota. Al final, cervezas.' },
   { id: 'after', posted: '2026-11-11', title: 'Afterwork de diciembre', date: '2026-12-12', time: '20:00', where: 'Madrid centro', kind: 'Social', price: 'Gratis', stamp: 'after', cover: 'equipo', going: ['gema', 'andres'], goingCount: 33,
     desc: 'Para cerrar la semana con la gente de Start antes de los exámenes.' },
+  { id: 'taller-ventas', points: 10, posted: '2026-11-12', title: 'Taller de ventas para founders', date: '2026-11-20', time: '18:00', where: 'Campus de Getafe', kind: 'Formación', price: 'Gratis', stamp: 'ventas', cover: 'sala', going: ['lucia', 'diego', 'sara', 'nora', 'ivan', 'alvaro'], goingCount: 31, past: true,
+    desc: 'Cómo vender tu idea en cinco minutos: estructura, objeciones y práctica por parejas.' },
   { id: 'feria', posted: '2026-10-15', title: 'Feria de empleo UC3M', date: '2026-11-06', time: '10:00', where: 'Campus de Leganés', kind: 'Empleo', price: 'Gratis', stamp: 'feria', cover: 'oficina', going: ['marta', 'lucia'], goingCount: 52, past: true,
     desc: 'Stand de Start en la feria de empleo de la universidad.' },
-  { id: 'camp', points: 30, posted: '2026-10-01', title: 'Start Camp', date: '2026-11-13', end: '2026-11-15', time: '09:00', where: 'Campus de Leganés', kind: 'Hackathon', price: 'Gratis', stamp: 'camp', cover: 'pitch', going: ['lucia', 'hugo', 'carla'], goingCount: 60, past: true,
+  { id: 'camp', photosUrl: 'https://drive.google.com/drive/folders/start-camp-2026-ejemplo', points: 30, posted: '2026-10-01', title: 'Start Camp', date: '2026-11-13', end: '2026-11-15', time: '09:00', where: 'Campus de Leganés', kind: 'Hackathon', price: 'Gratis', stamp: 'camp', cover: 'pitch', going: ['lucia', 'hugo', 'carla'], goingCount: 60, past: true,
     desc: 'Tres días para pasar de una idea a una demo. 14 proyectos presentados.' },
   { id: 'canas-oct', posted: '2026-09-25', title: 'Cañas de bienvenida', date: '2026-10-08', time: '19:30', where: 'La Oficina, Getafe', kind: 'Social', price: 'Gratis', stamp: 'canas', cover: 'equipo', going: ['diego', 'gema'], goingCount: 71, past: true,
     desc: 'Las primeras cañas del curso.' },
@@ -243,7 +249,7 @@ export const NOTIFICATIONS = [
   { id: 'n1', kind: 'stamp', stamp: 'pitch', text: 'Has conseguido el sello <b>PITCH</b> en la Noche de pitch.', when: 'hace 2 días', at: 'hoy', unread: true, href: '#/perfil' },
   { id: 'n2', kind: 'offer', offer: 'growth', text: '<b>Lumen Labs</b> ha publicado <b>Prácticas de growth</b>. 12 de Start ya se han apuntado.', when: 'hace 3 días', at: 'semana', unread: true, href: '#/oferta/growth' },
   { id: 'n3', kind: 'interested', offer: 'astro', people: ['ines', 'jorge'], text: '<b>Inés</b> y <b>Jorge</b> se han apuntado a tu oferta <b>Desarrollo web con Astro</b>.', when: 'hace 4 días', at: 'semana', unread: false, href: '#/oferta/astro/interesados' },
-  { id: 'n4', kind: 'event', event: 'invest', text: '<b>Start to Invest</b> es el 30 nov. Escanea su QR en la puerta para llevarte el sello.', when: 'hace 5 días', at: 'semana', unread: false, href: '#/evento/invest' },
+  { id: 'n4', kind: 'event', event: 'invest', text: '<b>Start to Invest</b> es el 30 nov. Entradas en su enlace; si vas, te llevas el sello.', when: 'hace 5 días', at: 'semana', unread: false, href: '#/evento/invest' },
   { id: 'n5', kind: 'joined', person: 'nora', text: '<b>Nora Prieto</b> ha entrado en Start. Es ENFP, como 9 más.', when: 'hace 6 días', at: 'antes', unread: false, href: '#/persona/nora' },
 ];
 
@@ -269,9 +275,13 @@ export const canManage = (m) => m?.position === 'junta' || (m?.department === 'I
 export const canPublish = (m) => ['junta', 'responsable'].includes(m?.position);
 // Puntos por QR: solo la Junta crea QR de puntos; cada persona escanea cada QR una sola vez.
 export const canCreatePointsQr = (m) => m?.position === 'junta';
-// Cuántos puntos da el QR de un evento (0 = solo el sello): solo la Junta lo decide.
+// Cuántos puntos da asistir a un evento (0 = solo el sello): solo la Junta lo decide.
 export const canSetEventPoints = (m) => m?.position === 'junta';
 export const EVENT_POINT_OPTIONS = [0, 5, 10, 20, 30];
+// Ven a los apuntados y confirman la asistencia: el departamento de Eventos y la Junta.
+export const canManageAttendance = (m) => m?.department === 'Eventos' || m?.position === 'junta';
+// Asistencia ya confirmada en la demo (eventos cuyos puntos ya se dieron).
+export const ATTENDANCE_SEED = { camp: ['lucia', 'hugo', 'carla', 'alvaro'] };
 export const positionLabel = (x) => (x.kind !== 'starter' ? 'Socio'
   : x.position === 'junta' ? 'Junta'
     : x.position === 'responsable' ? `Responsable de ${x.department}`
@@ -285,11 +295,12 @@ export const VIEW_AS = {
   socio: { label: 'Socio', patch: { role: 'socio', kind: 'socio', dept: null, department: null, position: 'miembro', manage_users: false, permissions: [] } },
   starter: { label: 'Starter', patch: { manage_users: false, permissions: [] } },
   responsable: { label: 'Responsable RRHH', patch: { dept: 'RRHH', department: 'RRHH', position: 'responsable', manage_users: false, permissions: ['startskills'] } },
+  eventos: { label: 'Eventos', patch: { dept: 'Eventos', department: 'Eventos', position: 'miembro', manage_users: false, permissions: [] } },
   junta: { label: 'Junta', patch: { dept: 'Junta', department: 'Junta', position: 'junta', manage_users: false, permissions: ['startskills', 'eventos', 'blog'] } },
 };
 
-// Puntos del mes: los del QR de cada evento (si vale algo; lo decide la Junta),
-// más los QR de puntos que crea la Junta.
+// Puntos del mes: los de cada evento al que asistes (si vale algo; lo decide la Junta, y llegan
+// 24 h después), más los QR de puntos que crea la Junta.
 // Puntos para quien trae a un socio nuevo con su QR de invitación.
 export const REFERRAL_POINTS = 25;
 export const POINTS_BASE = { hugo: 85, lucia: 70, lidia: 55, gema: 60, alvaro: 50, carla: 45, andres: 40, marta: 30, jorge: 20 };

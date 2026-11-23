@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Icon from '../ui/Icon.jsx';
-import { Empty, FakeQr, Img, Load, Sello, Skeleton, useApp } from '../ui/pieces.jsx';
+import { Avatar, Empty, Img, Load, Sello, Skeleton, useApp } from '../ui/pieces.jsx';
 import { useApi } from '../router.js';
 import { TODAY, EVENT_POINT_OPTIONS } from '../data.js';
 import { PageTitle } from './comunidad.jsx';
 
 const TABS = [['proximos', '/eventos', 'Próximos'], ['pasados', '/eventos/pasados', 'Pasados']];
 const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+// La foto del evento: una clave de `photos` o una URL (la que suba la Junta).
+const coverSrc = (photos, e) => photos[e.cover] ?? e.cover;
 const iso = (y, m, d) => `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
 
 export function Eventos({ path }) {
@@ -15,7 +17,7 @@ export function Eventos({ path }) {
   const q = useApi(api, 'events', { tab }, [tab]);
   return (
     <>
-      <PageTitle sub="Lo que se viene en Start. En cada evento, escanea su QR para llevarte el sello (y puntos, si vale).">Eventos</PageTitle>
+      <PageTitle sub="Lo que se viene en Start. Las entradas, en el enlace de cada evento.">Eventos</PageTitle>
       <Load q={q} skeleton={<><div className="skel" style={{ height: 300 }} /><Skeleton h={220} n={2} /></>}>
         {(d) => (
           <div className="two-col two-col--events">
@@ -36,6 +38,12 @@ export function Eventos({ path }) {
                         <a className="btn btn--lime press" href={e.ticketUrl} target="_blank" rel="noreferrer" aria-label={`Entradas de ${e.title} (se abre fuera de la app)`}
                           style={{ position: 'absolute', top: 12, right: 12, minHeight: 36, padding: '0 12px', fontSize: 13, borderRadius: 999, gap: 6 }}>
                           Entradas <Icon name="external-link" size={14} />
+                        </a>
+                      )}
+                      {e.photosUrl && e.past && (
+                        <a className="btn btn--soft press" href={e.photosUrl} target="_blank" rel="noreferrer" aria-label={`Fotos de ${e.title} (se abre fuera de la app)`}
+                          style={{ position: 'absolute', top: 12, right: 12, minHeight: 36, padding: '0 12px', fontSize: 13, borderRadius: 999, gap: 6 }}>
+                          <Icon name="camera" size={14} /> Fotos
                         </a>
                       )}
                     </li>
@@ -140,7 +148,7 @@ function PopBody({ e }) {
   const { photos } = useApp();
   return (
     <>
-      <a className="pop-cover" href={`#/evento/${e.id}`}><Img src={photos[e.cover]} alt="" /><Sello stamp={e.stamp} size={46} rotate={-10} empty={!e.hasStamp} className="pop-sello" /></a>
+      <a className="pop-cover" href={`#/evento/${e.id}`}><Img src={coverSrc(photos, e)} alt="" /><Sello stamp={e.stamp} size={46} rotate={-10} empty={!e.hasStamp} className="pop-sello" /></a>
       <div className="pop-body">
         <p className="t-mono pop-when">{e.when}</p>
         <a href={`#/evento/${e.id}`} className="pop-title">{e.title}</a>
@@ -148,6 +156,7 @@ function PopBody({ e }) {
         {!e.past && <div className="feed-row" style={{ gap: 8 }}><span className="pop-rel">{e.relative}</span></div>}
         <div className="pop-cta">
           {e.ticketUrl && !e.past && <a className="btn btn--lime press" href={e.ticketUrl} target="_blank" rel="noreferrer">Entradas <Icon name="external-link" size={14} /></a>}
+          {e.photosUrl && e.past && <a className="btn btn--soft press" href={e.photosUrl} target="_blank" rel="noreferrer"><Icon name="camera" size={14} /> Fotos</a>}
           <a className="btn btn--soft btn--block press" href={`#/evento/${e.id}`}>Ver evento</a>
         </div>
       </div>
@@ -159,7 +168,7 @@ function EventCard({ e }) {
   const { photos } = useApp();
   return (
     <a className="card ev-card press" href={`#/evento/${e.id}`}>
-      <span className="cover"><Img src={photos[e.cover]} alt="" />
+      <span className="cover"><Img src={coverSrc(photos, e)} alt="" />
         <span className="date"><b>{e.day}</b><span>{e.month}</span></span>
       </span>
       <span className="body">
@@ -172,52 +181,150 @@ function EventCard({ e }) {
   );
 }
 
-// Lo que da el QR del evento. Todos ven cuántos puntos vale; la Junta lo cambia aquí
-// y tiene el QR para proyectarlo en la puerta.
+// Lo que da asistir: el sello del evento y, si la Junta lo decide, puntos. El equipo de
+// Eventos confirma quién vino y 24 h después se reparten solos. La Junta fija los puntos aquí.
 function EventPoints({ e, onChange }) {
   const { api, toast } = useApp();
   const set = async (n) => {
     try { const r = await api('event.points', { id: e.id, points: n }); onChange(r.event); toast(n ? `Este evento vale ${n} puntos` : 'Este evento no vale puntos'); }
     catch (err) { toast(err.message); }
   };
+  const soft = e.pointsGiven
+    ? (e.attended ? 'Asististe: ya los tienes.' : `Se dieron el ${e.pointsAt} a quien asistió.`)
+    : `El equipo de Eventos confirma quién asiste y se dan 24 h después (${e.pointsAt}).`;
   return (
-    <div className="card form" style={{ gap: 10 }}>
-      <span className="feed-row"><Icon name="sparkles" size={18} /><span className="grow"><b>{e.points > 0 ? `El QR de este evento da ${e.points} puntos` : 'El QR de este evento da solo el sello'}</b><span className="t-soft" style={{ display: 'block', fontSize: 13 }}>{e.points > 0 ? 'Escanéalo en la puerta: te llevas el sello y los puntos, una vez.' : 'No suma puntos al ranking.'}</span></span></span>
+    <div className="card form" style={{ gap: 12 }}>
+      <div className="feed-row" style={{ gap: 14 }}>
+        <Sello stamp={e.stamp} size={64} rotate={-8} empty={!e.hasStamp} />
+        <span className="grow">
+          <b>{e.points > 0 ? `Asistir da ${e.points} puntos y el sello ${e.stamp.label}` : `Asistir da el sello ${e.stamp.label}`}</b>
+          <span className="t-soft" style={{ display: 'block', fontSize: 14 }}>{soft}</span>
+        </span>
+      </div>
       {e.canSetPoints && (
-        <>
-          <div className="pills" role="radiogroup" aria-label="Puntos del evento (Junta)">
-            {EVENT_POINT_OPTIONS.map((v) => <button key={v} type="button" role="radio" aria-checked={e.points === v} aria-pressed={e.points === v} className="pill press" onClick={() => set(v)}>{v ? `+${v}` : 'Sin puntos'}</button>)}
-          </div>
-          <div style={{ width: 200, maxWidth: '70%', margin: '0 auto', padding: 12, background: '#fff', color: '#13133d', borderRadius: 16 }}><FakeQr seed={[...e.id].reduce((a, c) => a + c.charCodeAt(0), 7)} label={`QR del evento ${e.title}`} /></div>
-          <p className="t-soft num" style={{ textAlign: 'center', fontSize: 13, margin: 0 }}>Proyéctalo en la puerta · {e.scanCount} {e.scanCount === 1 ? 'escaneo' : 'escaneos'}</p>
-          {e.qrPath && <a className="btn btn--lime btn--block press" href={`#${e.qrPath}`}>Probar escaneo (demo)</a>}
-        </>
+        <div className="pills" role="radiogroup" aria-label="Puntos por asistir (Junta)">
+          {EVENT_POINT_OPTIONS.map((v) => <button key={v} type="button" role="radio" aria-checked={e.points === v} aria-pressed={e.points === v} className="pill press" onClick={() => set(v)}>{v ? `+${v}` : 'Sin puntos'}</button>)}
+        </div>
       )}
     </div>
   );
 }
 
-// La Junta pega aquí la página externa donde se compran o reservan las entradas.
-function TicketLink({ e, onChange }) {
+// Los apuntados (entran por el enlace de entradas, fuera de la app). Solo los ven el
+// equipo de Eventos y la Junta, que marcan quién vino: a esos les llegan el sello y los
+// puntos 24 h después del evento.
+function Attendees({ e, onChange }) {
   const { api, toast } = useApp();
-  const [url, setUrl] = useState(e.ticketUrl ?? '');
+  const q = useApi(api, 'event.attendees', { id: e.id }, [e.id]);
+  const [busy, setBusy] = useState(null);
+  const locked = !e.started || e.pointsGiven;
+  const toggle = async (p) => {
+    if (locked || busy) return;
+    setBusy(p.id);
+    try {
+      const r = await api('event.attendance', { id: e.id, person: p.id, on: !p.confirmed });
+      q.setData((d) => ({ ...d, people: r.people }));
+      onChange(r.event);
+    } catch (err) { toast(err.message); }
+    finally { setBusy(null); }
+  };
+  const confirmed = q.data?.people.filter((p) => p.confirmed).length ?? 0;
+  return (
+    <section className="form" style={{ gap: 10 }} aria-labelledby={`ap-${e.id}`}>
+      <div className="feed-row">
+        <h2 id={`ap-${e.id}`} className="t-h grow num" style={{ margin: 0 }}>Apuntados · {e.signupCount}</h2>
+        <span className="chip bg-lavender">Solo lo ves tú (Eventos)</span>
+      </div>
+      <p className="t-soft" style={{ fontSize: 14, margin: 0 }} aria-live="polite">
+        {!e.started ? 'Podrás confirmar la asistencia el día del evento.'
+          : e.pointsGiven ? `Asistencia cerrada: los puntos se dieron el ${e.pointsAt}.`
+          : <>Marca quién ha venido. Los puntos y el sello se dan el {e.pointsAt}. <b className="num">{confirmed} {confirmed === 1 ? 'confirmado' : 'confirmados'}</b></>}
+      </p>
+      <Load q={q} skeleton={<Skeleton h={72} n={3} />}>
+        {(d) => d.people.length === 0 ? <Empty icon="users" title="Aún no se ha apuntado nadie">Se apuntan con el enlace de entradas.</Empty> : (
+          <ul style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {d.people.map((p) => (
+              <li key={p.id} className="card feed-row" style={{ padding: 12, gap: 12 }}>
+                <Avatar person={p} size={44} />
+                <span className="grow" style={{ minWidth: 0 }}>
+                  <a href={`#/persona/${p.id}`} style={{ fontWeight: 700, display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}</a>
+                  <span className="t-soft" style={{ display: 'block', fontSize: 14 }}>{p.career} · {p.course}</span>
+                </span>
+                <button type="button" className={`btn press ${p.confirmed ? 'btn--lime' : 'btn--soft'}`} style={{ minHeight: 38, padding: '0 14px', fontSize: 14, gap: 6, borderRadius: 999 }}
+                  aria-pressed={p.confirmed} aria-label={`Asistió: ${p.name}`} disabled={locked || busy === p.id} onClick={() => toggle(p)}>
+                  {p.confirmed && <Icon name="check" size={15} stroke={3} />}Asistió
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Load>
+    </section>
+  );
+}
+
+// La Junta pega aquí un enlace externo: la página de las entradas o la carpeta de fotos.
+function LinkForm({ e, action, field, label, done = 'Enlace guardado', onChange }) {
+  const { api, toast } = useApp();
+  const [url, setUrl] = useState(e[field] ?? '');
   const [busy, setBusy] = useState(false);
   const save = async (ev) => {
     ev.preventDefault();
     if (busy) return;
     setBusy(true);
-    try { const r = await api('event.link', { id: e.id, url: url.trim() }); onChange(r.event); toast('Enlace guardado'); }
+    try { const r = await api(action, { id: e.id, url: url.trim() }); onChange(r.event); toast(done); }
     catch (err) { toast(err.message); }
     finally { setBusy(false); }
   };
+  const id = `${field}-${e.id}`;
   return (
     <form className="card form" style={{ gap: 10 }} onSubmit={save}>
       <div className="field">
-        <label htmlFor={`tk-${e.id}`}>Enlace de las entradas</label>
-        <input id={`tk-${e.id}`} className="input" type="url" inputMode="url" placeholder="https://…" value={url} onChange={(ev) => setUrl(ev.target.value)} />
+        <label htmlFor={id}>{label}</label>
+        <input id={id} className="input" type="url" inputMode="url" placeholder="https://…" value={url} onChange={(ev) => setUrl(ev.target.value)} />
       </div>
       <button type="submit" className="btn btn--soft btn--block press" disabled={busy}>Guardar</button>
     </form>
+  );
+}
+
+// La Junta elige la única foto del evento: una de las de Start o una que sube.
+function EventPhoto({ e, onChange }) {
+  const { api, photos, toast } = useApp();
+  const [busy, setBusy] = useState(false);
+  const pick = async (cover) => {
+    if (busy || cover === e.cover) return;
+    setBusy(true);
+    try { const r = await api('event.photo', { id: e.id, cover }); onChange(r.event); toast('Foto cambiada'); }
+    catch (err) { toast(err.message); }
+    finally { setBusy(false); }
+  };
+  const upload = (ev) => {
+    const file = ev.target.files?.[0];
+    ev.target.value = '';
+    if (file) pick(URL.createObjectURL(file));
+  };
+  const custom = Boolean(e.cover) && !(e.cover in photos);
+  const thumb = { position: 'relative', width: 76, aspectRatio: '4 / 3', borderRadius: 12, overflow: 'hidden', background: 'var(--paper-2)', flex: 'none', padding: 0 };
+  const on = { outline: '3px solid var(--brand-text)', outlineOffset: 2 };
+  const tick = <span style={{ position: 'absolute', right: 4, top: 4, width: 22, height: 22, borderRadius: 999, background: 'var(--lime)', color: 'var(--ink-fixed)', display: 'grid', placeItems: 'center' }}><Icon name="check" size={14} stroke={3} /></span>;
+  return (
+    <div className="card form" style={{ gap: 10 }}>
+      <b id={`ph-${e.id}`}>Foto del evento (una sola)</b>
+      <div role="radiogroup" aria-labelledby={`ph-${e.id}`} style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
+        {Object.entries(photos).map(([k, src]) => (
+          <button key={k} type="button" role="radio" aria-checked={e.cover === k} aria-label={`Foto ${k}`} className="press" disabled={busy}
+            style={{ ...thumb, ...(e.cover === k ? on : null) }} onClick={() => pick(k)}>
+            <Img src={src} alt="" />{e.cover === k && tick}
+          </button>
+        ))}
+        {custom && <span style={{ ...thumb, ...on }} role="img" aria-label="Foto subida (elegida)"><Img src={e.cover} alt="" />{tick}</span>}
+        <label className="btn btn--soft press" style={{ minHeight: 44, gap: 6, cursor: 'pointer' }}>
+          <Icon name="upload" size={16} /> Subir otra
+          <input type="file" accept="image/*" className="sr-only" onChange={upload} disabled={busy} />
+        </label>
+      </div>
+    </div>
   );
 }
 
@@ -228,7 +335,7 @@ export function Evento({ params }) {
     <Load q={q} skeleton={<><div className="skel" style={{ aspectRatio: '16/9' }} /><Skeleton h={48} n={4} /></>}>
       {({ event: e }) => (
         <div className="evento">
-          <div className="ev-hero"><Img src={photos[e.cover]} alt={`Foto de ${e.title}`} /><span className="date"><b>{e.day}</b><span>{e.month}</span></span></div>
+          <div className="ev-hero"><Img src={coverSrc(photos, e)} alt={`Foto de ${e.title}`} /><span className="date"><b>{e.day}</b><span>{e.month}</span></span></div>
           <div className="ev-tags">{e.membersOnly && <span className="chip bg-lavender">Solo socios</span>}{e.few && <span className="chip bg-yellow">{e.few}</span>}{e.points > 0 && <span className="chip bg-lime num">+{e.points} pts</span>}<span className="t-mono t-soft">{e.kind}</span></div>
           <h1 className="t-display ev-title">{e.title}_</h1>
           <div className="facts">
@@ -244,12 +351,16 @@ export function Evento({ params }) {
               <span className="t-soft" style={{ fontSize: 13, textAlign: 'center' }}>Las entradas se compran o reservan fuera de la app.</span>
             </div>
           ) : <p className="t-soft" style={{ fontSize: 14, margin: 0 }}>Aún no hay enlace de entradas.</p>)}
-          {e.canSetPoints && <TicketLink e={e} onChange={(ev) => q.setData({ event: ev })} />}
+          {e.photosUrl && <a className="btn btn--soft btn--block press" href={e.photosUrl} target="_blank" rel="noreferrer"><Icon name="camera" size={18} /> Ver las fotos</a>}
+          {e.canSetPoints && (
+            <>
+              <EventPhoto e={e} onChange={(ev) => q.setData({ event: ev })} />
+              <LinkForm key={`tk${e.id}`} e={e} action="event.link" field="ticketUrl" label="Enlace de las entradas" onChange={(ev) => q.setData({ event: ev })} />
+              <LinkForm key={`al${e.id}`} e={e} action="event.album" field="photosUrl" label="Enlace a la carpeta de fotos" onChange={(ev) => q.setData({ event: ev })} />
+            </>
+          )}
           <EventPoints e={e} onChange={(ev) => q.setData({ event: ev })} />
-          <div className="card ev-stamp">
-            <Sello stamp={e.stamp} size={64} rotate={-8} empty={!e.hasStamp} />
-            <span><b>{e.hasStamp ? `Ya tienes el sello ${e.stamp.label}` : `Sello ${e.stamp.label}`}</b><span className="t-soft" style={{ display: 'block', fontSize: 14 }}>{e.hasStamp ? 'Está en tu perfil.' : 'Se consigue escaneando el QR del evento en la puerta.'}</span></span>
-          </div>
+          {e.canSeeAttendees && <Attendees e={e} onChange={(ev) => q.setData({ event: ev })} />}
         </div>
       )}
     </Load>

@@ -10,11 +10,12 @@ import { PageTitle } from './comunidad.jsx';
 
 // Quién puede hacer qué dentro de la app. Columnas: socio, starter, responsable, IT autorizado, junta.
 const MATRIX = [
-  ['Usar la app, tener perfil y CV, escanear el QR de los eventos', ['✓', '✓', '✓', '✓', '✓']],
+  ['Usar la app y tener perfil y CV', ['✓', '✓', '✓', '✓', '✓']],
   ['Publicar oportunidades y ver a sus interesados', ['', '', '✓', '', '✓']],
   ['Crear QR de puntos', ['', '', '', '', '✓']],
   ['Decidir cuántos puntos vale cada evento', ['', '', '', '', '✓']],
   ['Sumar puntos escaneando un QR de puntos (una vez cada QR)', ['✓', '✓', '✓', '✓', '✓']],
+  ['Ver apuntados y confirmar la asistencia a eventos', ['', 'Si es de Eventos', 'Si es de Eventos', '', '✓']],
   ['Invitar a socios nuevos con tu QR (Comunidad) y sumar puntos', ['✓', '✓', '✓', '✓', '✓']],
 ];
 const COLS = ['Socio', 'Starter', 'Responsable', 'IT autorizado', 'Junta'];
