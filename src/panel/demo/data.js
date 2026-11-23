@@ -265,8 +265,6 @@ export const LOOKING = {
 // Mismas reglas que src/panel/model.js de la PR #87. Si cambian allí, se cambian aquí.
 export const canManage = (m) => m?.position === 'junta' || (m?.department === 'IT' && m?.manage_users === true);
 export const canPublish = (m) => ['junta', 'responsable'].includes(m?.position);
-// Puntos por QR: solo la Junta crea QR de puntos; cada persona escanea cada QR una sola vez.
-export const canCreatePointsQr = (m) => m?.position === 'junta';
 // Cuántos puntos da asistir a un evento (0 = solo el sello): solo la Junta lo decide.
 export const canSetEventPoints = (m) => m?.position === 'junta';
 export const EVENT_POINT_OPTIONS = [0, 5, 10, 20, 30];
@@ -293,7 +291,7 @@ export const VIEW_AS = {
 };
 
 // Puntos del mes: los de cada evento al que asistes (si vale algo; lo decide la Junta, y llegan
-// 24 h después), más los QR de puntos que crea la Junta.
+// 24 h después), y los de traer socios nuevos con tu QR de invitación.
 // Puntos para quien trae a un socio nuevo con su QR de invitación.
 export const REFERRAL_POINTS = 25;
 export const POINTS_BASE = { hugo: 85, lucia: 70, lidia: 55, gema: 60, alvaro: 50, carla: 45, andres: 40, marta: 30, jorge: 20 };

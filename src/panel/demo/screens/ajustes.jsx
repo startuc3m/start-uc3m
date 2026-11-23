@@ -43,7 +43,6 @@ export function Ajustes() {
               <div className="card set-card">
                 <a className="set-row press" href="#/gestion"><Icon name="shield-check" className="set-ico" /><span className="grow"><span className="set-label">Tu cargo y permisos</span><span className="set-hint">{me.positionLabel} · qué puedes hacer y quién puede hacer qué</span></span><Icon name="chevron-right" className="t-soft" /></a>
                 {me.canPublish && <a className="set-row press" href="#/ofertas/publicar"><Icon name="plus" className="set-ico" /><span className="grow"><span className="set-label">Publicar oportunidad</span><span className="set-hint">Y ver a los interesados de las tuyas</span></span><Icon name="chevron-right" className="t-soft" /></a>}
-                {me.position === 'junta' && <a className="set-row press" href="#/puntos/crear"><Icon name="qr-code" className="set-ico" /><span className="grow"><span className="set-label">QR de puntos</span><span className="set-hint">Crear un QR: cada persona lo escanea una vez y suma los puntos</span></span><Icon name="chevron-right" className="t-soft" /></a>}
               </div>
             </section>
             <section className="set-group" aria-labelledby="s-priv">

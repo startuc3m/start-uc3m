@@ -12,9 +12,7 @@ import { PageTitle } from './comunidad.jsx';
 const MATRIX = [
   ['Usar la app y tener perfil y CV', ['✓', '✓', '✓', '✓', '✓']],
   ['Publicar oportunidades y ver a sus interesados', ['', '', '✓', '', '✓']],
-  ['Crear QR de puntos', ['', '', '', '', '✓']],
   ['Decidir cuántos puntos vale cada evento', ['', '', '', '', '✓']],
-  ['Sumar puntos escaneando un QR de puntos (una vez cada QR)', ['✓', '✓', '✓', '✓', '✓']],
   ['Ver apuntados y confirmar la asistencia a eventos', ['', 'Eventos o RRHH', 'Eventos o RRHH', '', '✓']],
   ['Invitar a socios nuevos con tu QR (Comunidad) y sumar puntos', ['✓', '✓', '✓', '✓', '✓']],
 ];
@@ -33,14 +31,14 @@ export function Gestion() {
   const actions = [
     me.canPublish && ['plus', 'Publicar una oportunidad', 'Prácticas, proyectos, becas… Te llegan los interesados con su CV.', '#/ofertas/publicar'],
     me.canPublish && ['briefcase', 'Tus oportunidades publicadas', 'Ver interesados, filtrar y contactar.', '#/ofertas/mias'],
-    me.position === 'junta' && ['qr-code', 'Crear QR de puntos', 'Pon los puntos y el motivo. Cada persona puede escanearlo una vez.', '#/puntos/crear'],
+    (['Eventos', 'RRHH'].includes(me.department) || me.position === 'junta') && ['users', 'Asistencia a eventos', 'Abre un evento, mira los apuntados y marca quién vino. A las 24 h les llegan los puntos y el sello.', '#/eventos/pasados'],
   ].filter(Boolean);
   const { api } = useApp();
   const sum = useApi(api, 'gestion.summary', {}, []);
   const st = sum.data;
   const stats = st ? [
     st.offers && ['briefcase', st.offers.published, st.offers.published === 1 ? 'oportunidad publicada' : 'oportunidades publicadas', `${st.offers.interested} interesados · ${st.offers.fresh} nuevos`, '#/ofertas/mias'],
-    st.pointQrs && ['qr-code', st.pointQrs.created, st.pointQrs.created === 1 ? 'QR de puntos creado' : 'QR de puntos creados', `${st.pointQrs.scans} escaneos`, '#/puntos/crear'],
+    st.attendance && ['users', st.attendance.open, st.attendance.open === 1 ? 'evento con asistencia abierta' : 'eventos con asistencia abierta', 'Se cierra 24 h después del evento', '#/eventos/pasados'],
   ].filter(Boolean) : [];
   return (
     <>
