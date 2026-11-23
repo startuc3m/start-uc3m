@@ -110,7 +110,7 @@ export function Carne({ person, own = false, animateRing = false, className = ''
         <LevelRing progress={lvl.progress} animate={animateRing}><Avatar person={person} size={64} /></LevelRing>
         <div style={{ minWidth: 0 }}>
           <p className="name">{person.name}</p>
-          <p className="sub">{[!own && person.career, !own && person.course, roleLine(person), own && person.type].filter(Boolean).join(' · ')}</p>
+          <p className="sub">{[!own && person.university, !own && person.career, !own && person.course, roleLine(person), own && person.type].filter(Boolean).join(' · ')}</p>
           {own ? <p className="big num">Nº {String(person.number).padStart(4, '0')}</p> : <p className="big">NIVEL {lvl.n}<small>{lvl.name}</small></p>}
         </div>
         {own && (

@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import Icon from '../ui/Icon.jsx';
 import { Avatar, Carne, Logo, Sheet, useApp } from '../ui/pieces.jsx';
 import { go } from '../router.js';
-import { FAMILIES, TYPE_NAMES } from '../data.js';
+import { FAMILIES, TYPE_NAMES, UNIVERSIDADES } from '../data.js';
 import { PageTitle } from './comunidad.jsx';
 
 // Acceso: solo entran los correos que IT o la Junta han autorizado. Con el correo te llega
@@ -97,16 +97,16 @@ const STEPS = ['Tu foto', 'Qué estudias', 'Tu personalidad', 'Listo'];
 export function Alta({ params }) {
   const { api, me, refreshMe, celebrate } = useApp();
   const step = Math.min(Math.max(Number(params.paso) || 1, 1), 4);
-  const [f, setF] = useState({ career: '', course: '', type: '', photo: false }); // alguien nuevo: todo por rellenar
+  const [f, setF] = useState({ university: '', career: '', course: '', type: '', photo: false }); // alguien nuevo: todo por rellenar
   // Obligatorios (decisión del 17/11 en #87): foto, carrera y curso. Personalidad: un tipo o «No lo sé».
-  const missing = step === 1 && !f.photo ? 'tu foto' : step === 2 && !f.career.trim() ? 'tu carrera' : step === 2 && !f.course ? 'tu curso' : step === 3 && !f.type ? 'tu personalidad (o «No lo sé»)' : null;
+  const missing = step === 1 && !f.photo ? 'tu foto' : step === 2 && !f.university ? 'tu universidad' : step === 2 && !f.career.trim() ? 'tu carrera' : step === 2 && !f.course ? 'tu curso' : step === 3 && !f.type ? 'tu personalidad (o «No lo sé»)' : null;
   // Dirección del último cambio de paso: avanzar entra por la derecha, volver por la izquierda.
   const prev = useRef(step);
   const dir = step >= prev.current ? 'fwd' : 'back';
   prev.current = step;
   const nextStep = async () => {
     if (missing) return;
-    if (step === 3) await api('profile.update', { career: f.career, course: f.course, name: me.name, ...(f.type !== 'NS' ? { type: f.type } : {}) });
+    if (step === 3) await api('profile.update', { university: f.university, career: f.career, course: f.course, name: me.name, ...(f.type !== 'NS' ? { type: f.type } : {}) });
     if (step < 4) return go(`/alta/${step + 1}`, { replace: true });
     await api('onboarding.done');
     await refreshMe();
@@ -137,6 +137,7 @@ export function Alta({ params }) {
       {step === 2 && (
         <>
           <h1 className="t-display" style={{ fontSize: 40 }}>¿Qué estudias?_</h1>
+          <div className="field"><label htmlFor="a-u">Universidad</label><select id="a-u" className="input" value={f.university} onChange={(e) => setF({ ...f, university: e.target.value })}><option value="" disabled>Elige tu universidad</option>{UNIVERSIDADES.map((g) => <optgroup key={g.grupo} label={g.grupo}>{g.nombres.map((n) => <option key={n} value={n}>{n}</option>)}</optgroup>)}</select></div>
           <div className="field"><label htmlFor="a-c">Carrera</label><input id="a-c" className="input" value={f.career} onChange={(e) => setF({ ...f, career: e.target.value })} /></div>
           <div className="field"><label htmlFor="a-cu">Curso</label><div className="pills" role="radiogroup" id="a-cu">{['1.º', '2.º', '3.º', '4.º', 'Máster'].map((c) => <button key={c} type="button" role="radio" aria-checked={f.course === c} aria-pressed={f.course === c} className="pill press" onClick={() => setF({ ...f, course: c })}>{c}</button>)}</div></div>
         </>

@@ -3,7 +3,7 @@ import Icon from '../ui/Icon.jsx';
 import { Avatar, Carne, Load, OfferLogo, Sellos, Skeleton, useApp } from '../ui/pieces.jsx';
 import { back, useApi } from '../router.js';
 import { PageTitle } from './comunidad.jsx';
-import { FAMILIES, TYPE_NAMES, familyOf } from '../data.js';
+import { FAMILIES, TYPE_NAMES, UNIVERSIDADES, familyOf } from '../data.js';
 
 export function Perfil() {
   const { api, me, toast, wide } = useApp();
@@ -72,7 +72,7 @@ function ProfileActions({ me, toast }) {
 
 export function Editar() {
   const { api, me, toast, refreshMe } = useApp();
-  const [f, setF] = useState({ name: me.name, career: me.career, course: me.course, linkedin: me.linkedin, bio: me.bio, type: me.type, instagram: me.links?.instagram ?? '', web: me.links?.web ?? '' });
+  const [f, setF] = useState({ name: me.name, university: me.university ?? '', career: me.career, course: me.course, linkedin: me.linkedin, bio: me.bio, type: me.type, instagram: me.links?.instagram ?? '', web: me.links?.web ?? '' });
   const [err, setErr] = useState(null);
   const [busy, setBusy] = useState(false);
   const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
@@ -102,6 +102,7 @@ export function Editar() {
           <button type="button" className="btn btn--soft press" onClick={() => toast('En la demo no se suben fotos')}><Icon name="camera" size={18} /> Cambiar</button>
         </div>
         <div className="field"><label htmlFor="p-n">Nombre</label><input id="p-n" className="input" value={f.name} onChange={set('name')} autoComplete="name" {...fieldErr('name')} />{err?.field === 'name' && <p id="e-name" className="err">{err.message}</p>}</div>
+        <div className="field"><label htmlFor="p-u">Universidad</label><select id="p-u" className="input" value={f.university} onChange={set('university')}><option value="" disabled>Elige tu universidad</option>{UNIVERSIDADES.map((g) => <optgroup key={g.grupo} label={g.grupo}>{g.nombres.map((n) => <option key={n} value={n}>{n}</option>)}</optgroup>)}</select></div>
         <div className="form-row">
           <div className="field"><label htmlFor="p-c">Carrera</label><input id="p-c" className="input" value={f.career} onChange={set('career')} /></div>
           <div className="field"><label htmlFor="p-cu">Curso</label><select id="p-cu" className="input" value={f.course} onChange={set('course')}>{['1.º', '2.º', '3.º', '4.º', '5.º', 'Máster'].map((c) => <option key={c}>{c}</option>)}</select></div>

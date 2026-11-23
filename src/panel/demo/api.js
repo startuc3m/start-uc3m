@@ -41,7 +41,8 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
   function load() {
     try {
       const raw = storage?.getItem(KEY);
-      if (raw) return { ...fresh(), ...JSON.parse(raw) };
+      // Los campos nuevos del perfil (p. ej. la universidad) se rellenan aunque la demo guardada sea anterior.
+      if (raw) { const saved = JSON.parse(raw); const base = fresh(); return { ...base, ...saved, me: { ...base.me, ...saved.me } }; }
     } catch {}
     return fresh();
   }

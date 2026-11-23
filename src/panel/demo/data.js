@@ -65,9 +65,38 @@ export const levelFor = (count) => {
 // Cada persona sigue el modelo de roles de la PR #87 (docs/panel-roles.md):
 // kind (socio | starter), department (solo starters), position (miembro | responsable | junta)
 // y manage_users. `role` y `dept` son alias de kind y department para las pantallas.
+// Universidades de la Comunidad de Madrid (opciones del campo «Universidad»).
+export const UNIVERSIDADES = [
+  { grupo: 'Públicas', nombres: [
+    'Universidad Autónoma de Madrid',
+    'Universidad Carlos III de Madrid',
+    'Universidad Complutense de Madrid',
+    'Universidad de Alcalá',
+    'Universidad Nacional de Educación a Distancia (UNED)',
+    'Universidad Politécnica de Madrid',
+    'Universidad Rey Juan Carlos',
+  ] },
+  { grupo: 'Privadas', nombres: [
+    'CUNEF Universidad',
+    'ESIC Universidad',
+    'Universidad a Distancia de Madrid (UDIMA)',
+    'Universidad Alfonso X el Sabio',
+    'Universidad Antonio de Nebrija',
+    'Universidad Camilo José Cela',
+    'Universidad CEU San Pablo',
+    'Universidad Europea de Madrid',
+    'Universidad Francisco de Vitoria',
+    'Universidad Pontificia Comillas',
+    'Universidad Villanueva',
+    'UNIE Universidad',
+  ] },
+  { grupo: 'Otra', nombres: ['Otra universidad'] },
+];
+export const UNIVERSIDAD_POR_DEFECTO = 'Universidad Carlos III de Madrid';
+
 const p = (id, name, career, course, role, dept, type, stamps, bio, extra = {}) => ({
   id, name, initials: name.split(' ').map((w) => w[0]).slice(0, 2).join(''),
-  career, course, role, dept, type, stamps, bio, linkedin: `https://www.linkedin.com/in/${id}-ejemplo`,
+  university: UNIVERSIDAD_POR_DEFECTO, career, course, role, dept, type, stamps, bio, linkedin: `https://www.linkedin.com/in/${id}-ejemplo`,
   kind: role, department: dept, position: 'miembro', manage_users: false, permissions: [], ...extra,
 });
 
@@ -76,10 +105,10 @@ export const PEOPLE = [
   p('pablo', 'Pablo Herrera', 'Ing. Informática', '2.º', 'socio', null, 'INTP', ['camp', 'build'], 'Backend, bots y cualquier cosa con datos.'),
   p('marta', 'Marta Gil', 'Derecho', '4.º', 'starter', 'Legal', 'ISTJ', ['camp', 'canas', 'skills'], 'Contratos de startups y propiedad intelectual.', { position: 'responsable' }),
   p('diego', 'Diego Romero', 'Economía', '3.º', 'socio', null, 'ESTP', ['camp', 'canas', 'pitch', 'invest'], 'Inversión early stage. Siempre en las cañas.'),
-  p('sara', 'Sara Núñez', 'Diseño', '1.º', 'socio', null, 'INFP', ['camp'], 'Ilustración, branding y tipografía.', { isNew: true }),
+  p('sara', 'Sara Núñez', 'Diseño', '1.º', 'socio', null, 'INFP', ['camp'], 'Ilustración, branding y tipografía.', { isNew: true, university: 'Universidad Complutense de Madrid' }),
   p('hugo', 'Hugo Blanco', 'Ing. Industrial', '4.º', 'starter', 'Eventos', 'ENTJ', ['camp', 'build', 'canas', 'pitch', 'rural'], 'Montando el Start Camp desde el primer día.', { position: 'responsable' }),
   p('nora', 'Nora Prieto', 'Periodismo', '2.º', 'socio', null, 'ENFP', [], 'Recién llegada. Quiero aprender a contar startups.', { isNew: true }),
-  p('ivan', 'Iván Soler', 'Matemáticas', '1.º', 'socio', null, 'INTJ', [], 'Modelos, finanzas y ajedrez.', { isNew: true }),
+  p('ivan', 'Iván Soler', 'Matemáticas', '1.º', 'socio', null, 'INTJ', [], 'Modelos, finanzas y ajedrez.', { isNew: true, university: 'Universidad Autónoma de Madrid' }),
   p('elena', 'Elena Vidal', 'ADE + Derecho', '2.º', 'socio', null, 'ESFJ', ['canas'], 'Me encanta organizar cosas con gente.', { isNew: true }),
   p('mario', 'Mario Ortega', 'Ing. Telemática', '3.º', 'socio', null, 'ISTP', [], 'Hardware y prototipos rápidos.', { isNew: true }),
   p('paula', 'Paula Torres', 'Marketing', '1.º', 'socio', null, 'ENFP', [], 'Contenido y redes.', { isNew: true }),
@@ -92,7 +121,7 @@ export const PEOPLE = [
 ];
 
 export const ME = {
-  id: 'alvaro', name: 'Álvaro Carpintero', initials: 'AC', career: 'Ing. Informática', course: '3.º',
+  id: 'alvaro', name: 'Álvaro Carpintero', initials: 'AC', university: UNIVERSIDAD_POR_DEFECTO, career: 'Ing. Informática', course: '3.º',
   role: 'starter', dept: 'IT', kind: 'starter', department: 'IT', position: 'miembro', manage_users: true, permissions: ['startskills'], public_consent: true, photo: true,
   type: 'ENTP', number: 42, stamps: ['camp', 'build', 'canas', 'skills', 'pitch'],
   bio: 'Construyo la web y el área de socios de Start.', linkedin: 'https://www.linkedin.com/in/ejemplo',
