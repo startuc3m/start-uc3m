@@ -263,14 +263,16 @@ export const LOOKING = {
 };
 
 // Mismas reglas que src/panel/model.js de la PR #87. Si cambian allí, se cambian aquí.
-export const canManage = (m) => m?.position === 'junta' || (m?.department === 'IT' && m?.manage_users === true);
-export const canPublish = (m) => ['junta', 'responsable'].includes(m?.position);
-// Cuántos puntos da asistir a un evento (0 = solo el sello): solo la Junta lo decide.
-export const canSetEventPoints = (m) => m?.position === 'junta';
+// Junta y responsables tienen los mismos permisos; starters y socios, también entre ellos.
+export const isLead = (m) => ['junta', 'responsable'].includes(m?.position);
+export const canManage = (m) => isLead(m) || (m?.department === 'IT' && m?.manage_users === true);
+export const canPublish = (m) => isLead(m);
+// Cuántos puntos da asistir a un evento (0 = solo el sello): la Junta y los responsables lo deciden.
+export const canSetEventPoints = (m) => isLead(m);
 export const EVENT_POINT_OPTIONS = [0, 5, 10, 20, 30];
 // Ven a los apuntados y marcan «Asistió»: los departamentos de Eventos y RRHH, y la Junta.
 export const ATTENDANCE_DEPTS = ['Eventos', 'RRHH'];
-export const canManageAttendance = (m) => ATTENDANCE_DEPTS.includes(m?.department) || m?.position === 'junta';
+export const canManageAttendance = (m) => ATTENDANCE_DEPTS.includes(m?.department) || isLead(m);
 // Asistencia ya confirmada en la demo (eventos cuyos puntos ya se dieron).
 export const ATTENDANCE_SEED = { camp: ['lucia', 'hugo', 'carla', 'alvaro'] };
 export const positionLabel = (x) => (x.kind !== 'starter' ? 'Socio'

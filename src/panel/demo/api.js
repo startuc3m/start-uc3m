@@ -322,7 +322,7 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
 
     // Apuntados de un evento (vienen de la plataforma de entradas) y quién asistió. Solo Eventos y Junta.
     'event.attendees': ({ id }) => {
-      if (!canManageAttendance(meNow())) throw new Error('Solo Eventos, RRHH y la Junta ven a los apuntados.');
+      if (!canManageAttendance(meNow())) throw new Error('Solo la Junta, los responsables, Eventos y RRHH ven a los apuntados.');
       const e = EVENTS.find((x) => x.id === id);
       if (!e) throw new Error('Ese evento no existe.');
       const confirmed = attendeesOf(id);
@@ -330,7 +330,7 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
     },
     // Marcar (o desmarcar) que alguien asistió. Se puede desde que empieza el evento hasta que se dan los puntos (24 h después).
     'event.attendance': ({ id, person: pid, on }) => {
-      if (!canManageAttendance(meNow())) throw new Error('Solo Eventos, RRHH y la Junta confirman la asistencia.');
+      if (!canManageAttendance(meNow())) throw new Error('Solo la Junta, los responsables, Eventos y RRHH confirman la asistencia.');
       const e = EVENTS.find((x) => x.id === id);
       if (!e) throw new Error('Ese evento no existe.');
       if (startOf(e) > new Date(NOW)) throw new Error('Podrás confirmar la asistencia el día del evento.');
@@ -341,9 +341,9 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
       save();
       return { event: decorateEvent(e), ...actions['event.attendees']({ id }) };
     },
-    // La foto del evento (una sola, la de la miniatura y la ficha). Solo la Junta la cambia.
+    // La foto del evento (una sola, la de la miniatura y la ficha). Solo la Junta y los responsables.
     'event.photo': ({ id, cover }) => {
-      if (!canSetEventPoints(meNow())) throw new Error('Solo la Junta cambia la foto del evento.');
+      if (!canSetEventPoints(meNow())) throw new Error('Solo la Junta y los responsables cambian la miniatura del evento.');
       const e = EVENTS.find((x) => x.id === id);
       if (!e) throw new Error('Ese evento no existe.');
       if (!cover || typeof cover !== 'string') throw new Error('Elige una foto.');
@@ -351,9 +351,9 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
       save();
       return { event: decorateEvent(e) };
     },
-    // Enlace a la carpeta de fotos (Drive, etc.), para después del evento. Solo la Junta; vacío lo quita.
+    // Enlace a la carpeta de fotos (Drive, etc.), para después del evento. Junta y responsables; vacío lo quita.
     'event.album': ({ id, url = '' } = {}) => {
-      if (!canSetEventPoints(meNow())) throw new Error('Solo la Junta pone el enlace de las fotos.');
+      if (!canSetEventPoints(meNow())) throw new Error('Solo la Junta y los responsables ponen el enlace de las fotos.');
       const e = EVENTS.find((x) => x.id === id);
       if (!e) throw new Error('Ese evento no existe.');
       const u = String(url ?? '').trim();
@@ -364,7 +364,7 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
     },
     // La Junta pone (o quita) el enlace de las entradas de un evento. La app no vende ni apunta: solo enlaza.
     'event.link': ({ id, url = '' } = {}) => {
-      if (!canSetEventPoints(meNow())) throw new Error('Solo la Junta cambia el enlace de las entradas.');
+      if (!canSetEventPoints(meNow())) throw new Error('Solo la Junta y los responsables cambian el enlace de las entradas.');
       const e = EVENTS.find((x) => x.id === id);
       if (!e) throw new Error('Ese evento no existe.');
       const u = String(url ?? '').trim();
@@ -375,7 +375,7 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
     },
     // La Junta decide cuántos puntos da asistir a un evento (0 = solo el sello).
     'event.points': ({ id, points }) => {
-      if (!canSetEventPoints(meNow())) throw new Error('Solo la Junta decide los puntos de un evento.');
+      if (!canSetEventPoints(meNow())) throw new Error('Solo la Junta y los responsables deciden los puntos de un evento.');
       const e = EVENTS.find((x) => x.id === id);
       if (!e) throw new Error('Ese evento no existe.');
       const n = Number(points);

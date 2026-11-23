@@ -134,7 +134,7 @@ export function Editar() {
 
 // Entrada a Gestión: solo si tu cargo te deja gestionar algo dentro de la app.
 function Gestion({ me }) {
-  const asistencia = ['Eventos', 'RRHH'].includes(me.department) || me.position === 'junta';
+  const asistencia = ['Eventos', 'RRHH'].includes(me.department) || ['junta', 'responsable'].includes(me.position);
   const n = [me.canPublish, asistencia].filter(Boolean).length;
   if (!n) return null;
   return (

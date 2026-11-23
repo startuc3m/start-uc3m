@@ -12,8 +12,9 @@ import { PageTitle } from './comunidad.jsx';
 const MATRIX = [
   ['Usar la app y tener perfil y CV', ['✓', '✓', '✓', '✓', '✓']],
   ['Publicar oportunidades y ver a sus interesados', ['', '', '✓', '', '✓']],
-  ['Decidir cuántos puntos vale cada evento', ['', '', '', '', '✓']],
-  ['Ver apuntados y confirmar la asistencia a eventos', ['', 'Eventos o RRHH', 'Eventos o RRHH', '', '✓']],
+  ['Decidir cuántos puntos vale cada evento', ['', '', '✓', '', '✓']],
+  ['Poner entradas, miniatura y fotos de los eventos', ['', '', '✓', '', '✓']],
+  ['Ver apuntados y confirmar la asistencia a eventos', ['', 'Eventos o RRHH', '✓', '', '✓']],
 ];
 const COLS = ['Socio', 'Starter', 'Responsable', 'IT autorizado', 'Junta'];
 export const colOf = (me) => (me.kind !== 'starter' ? 0 : me.position === 'junta' ? 4 : me.manage_users && me.department === 'IT' ? 3 : me.position === 'responsable' ? 2 : 1);
@@ -30,7 +31,7 @@ export function Gestion() {
   const actions = [
     me.canPublish && ['plus', 'Publicar una oportunidad', 'Prácticas, proyectos, becas… Te llegan los interesados con su CV.', '#/ofertas/publicar'],
     me.canPublish && ['briefcase', 'Tus oportunidades publicadas', 'Ver interesados, filtrar y contactar.', '#/ofertas/mias'],
-    (['Eventos', 'RRHH'].includes(me.department) || me.position === 'junta') && ['users', 'Asistencia a eventos', 'Abre un evento, mira los apuntados y marca quién vino. A las 24 h les llegan los puntos y el sello.', '#/eventos/pasados'],
+    (['Eventos', 'RRHH'].includes(me.department) || ['junta', 'responsable'].includes(me.position)) && ['users', 'Asistencia a eventos', 'Abre un evento, mira los apuntados y marca quién vino. A las 24 h les llegan los puntos y el sello.', '#/eventos/pasados'],
   ].filter(Boolean);
   const { api } = useApp();
   const sum = useApi(api, 'gestion.summary', {}, []);

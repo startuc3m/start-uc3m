@@ -38,11 +38,11 @@ describe('api de la demo', () => {
 
   it('Eventos confirma la asistencia y a las 24 h llegan los puntos y el sello', async () => {
     const { api } = make();
-    await expect(api('event.attendees', { id: 'taller-ventas' })).rejects.toThrow('Solo Eventos, RRHH y la Junta');
+    await expect(api('event.attendees', { id: 'taller-ventas' })).rejects.toThrow('Solo la Junta, los responsables, Eventos y RRHH');
     await api('demo.settings', { viewAs: 'responsable' }); // Responsable de RRHH
     expect((await api('event.attendees', { id: 'taller-ventas' })).people.length).toBeGreaterThan(0);
     await api('demo.settings', { viewAs: 'socio' });
-    await expect(api('event.attendance', { id: 'taller-ventas', person: 'lucia', on: true })).rejects.toThrow('Solo Eventos, RRHH y la Junta');
+    await expect(api('event.attendance', { id: 'taller-ventas', person: 'lucia', on: true })).rejects.toThrow('Solo la Junta, los responsables, Eventos y RRHH');
     await api('demo.settings', { viewAs: 'eventos' });
     const { people } = await api('event.attendees', { id: 'taller-ventas' });
     expect(people.map((x) => x.id)).toContain('lucia');
@@ -132,6 +132,15 @@ describe('roles y puntos (modelo de la PR #87)', () => {
     expect((await api('event.photo', { id: 'feria', cover: 'pitch' })).event.cover).toBe('pitch');
     await expect(api('event.album', { id: 'feria', url: 'drive.google.com' })).rejects.toThrow('https://');
     expect((await api('event.album', { id: 'feria', url: 'https://drive.google.com/fotos' })).event.photosUrl).toBe('https://drive.google.com/fotos');
+  });
+
+  it('los responsables tienen los mismos permisos que la Junta', async () => {
+    const { api } = make();
+    await api('demo.settings', { viewAs: 'responsable' });
+    expect((await api('event.points', { id: 'cena', points: 10 })).event.points).toBe(10);
+    expect((await api('event.link', { id: 'cena', url: 'https://entradas.ejemplo.es/c' })).event.ticketUrl).toBe('https://entradas.ejemplo.es/c');
+    expect((await api('event.album', { id: 'camp', url: 'https://drive.google.com/f' })).event.photosUrl).toBe('https://drive.google.com/f');
+    expect((await api('me')).me.canPublish).toBe(true);
   });
 
   it('la Junta decide cuántos puntos da asistir a cada evento', async () => {

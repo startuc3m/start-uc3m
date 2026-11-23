@@ -233,7 +233,7 @@ function Attendees({ e, onChange }) {
     <section className="form" style={{ gap: 10 }} aria-labelledby={`ap-${e.id}`}>
       <div className="feed-row">
         <h2 id={`ap-${e.id}`} className="t-h grow num" style={{ margin: 0 }}>Apuntados · {e.signupCount}</h2>
-        <span className="chip bg-lavender">Solo Eventos, RRHH y Junta</span>
+        <span className="chip bg-lavender">Solo Junta, responsables, Eventos y RRHH</span>
       </div>
       <p className="t-soft" style={{ fontSize: 14, margin: 0 }} aria-live="polite">
         {!e.started ? 'Podrás confirmar la asistencia el día del evento.'
