@@ -198,41 +198,8 @@ export const EVENTS = [
     desc: 'Un día construyendo con IA.' },
 ];
 
-// Canales: lo que hoy está en la comunidad de WhatsApp, dentro de la app.
-export const CHANNELS = [
-  { id: 'anuncios', name: 'Anuncios', icon: 'megaphone', readOnly: true, desc: 'Solo escribe la Junta. Lo importante, sin ruido.' },
-  { id: 'socios', name: 'Socios 26/27', icon: 'users', desc: 'El grupo de todos los socios de este curso.' },
-  { id: 'empleo', name: 'Prácticas y empleo', icon: 'briefcase', desc: 'Ofertas, consejos y quién busca a quién.' },
-  { id: 'redes', name: 'Apoyo en redes', icon: 'heart', desc: 'Cuando Start publica algo, aquí se pide un empujón.' },
-  { id: 'startups', name: 'Startups de socios', icon: 'rocket', desc: 'Proyectos de la gente de Start: betas, equipo, feedback.' },
-  { id: 'podcast', name: 'Podcast', icon: 'mic', desc: 'Episodios nuevos e invitados.' },
-];
-
-// Mensajes de ejemplo de cada canal (del más antiguo al más nuevo).
-export const MESSAGES = {
-  anuncios: [
-    { id: 'a1', from: 'lidia', at: 'ayer', text: 'Mañana abrimos las inscripciones del Start to Invest. Hay 40 plazas.' },
-    { id: 'a2', from: 'hugo', at: '3 h', text: '¡Gracias a las 60 personas que vinisteis al Start Camp! 14 proyectos en tres días. Las fotos ya están en el Drive y el sello en vuestro carné 🙌', reactions: { '🔥': 24, '❤️': 12 } },
-  ],
-  socios: [
-    { id: 's1', from: 'elena', at: '1 h', text: '¿Alguien va el jueves a las cañas desde Leganés? Podemos ir juntos.' },
-    { id: 's2', from: 'mario', at: '45 min', text: 'Yo voy, salgo a las 18:45 del campus.' },
-    { id: 's3', from: 'diego', at: '25 min', text: '¿Os apuntáis a un torneo de pádel en diciembre? Si somos 16 lo monto.', reactions: { '🙋': 9 } },
-  ],
-  empleo: [
-    { id: 'e1', from: 'hugo', at: '2 h', text: 'Lumen Labs (ejemplo) busca a alguien para growth, 20 h a la semana. Está en Oportunidades.' },
-    { id: 'e2', from: 'lucia', at: '1 h', text: 'Yo me apunté la semana pasada, si tenéis dudas preguntadme.' },
-  ],
-  redes: [
-    { id: 'r1', from: 'gema', at: '30 min', text: 'Reel del Start Camp en Instagram. Un like y compartir en stories ayuda muchísimo 🔥', reactions: { '❤️': 31 } },
-  ],
-  startups: [
-    { id: 'st1', from: 'jorge', at: '2 h', text: 'Abrimos la beta de nuestra app de apuntes la semana que viene. Si queréis probarla, decídmelo.' },
-  ],
-  podcast: [
-    { id: 'p1', from: 'gema', at: '2 d', text: 'Nuevo episodio: cómo se monta una startup desde la uni. Ya en Spotify.' },
-  ],
-};
+// Último anuncio de la Junta (sale en Inicio, en «Lo nuevo en Start»).
+export const ANNOUNCEMENT = { id: 'a2', from: 'hugo', at: '3 h', text: '¡Gracias a las 60 personas que vinisteis al Start Camp! 14 proyectos en tres días. Las fotos ya están en el Drive y el sello en vuestro carné 🙌' };
 
 // El feed «Para ti» se genera solo: eventos, ofertas nuevas, sellos y altas. Nadie
 // tiene que escribirlo, así que nunca se queda viejo.
@@ -249,7 +216,6 @@ export const NOTIFICATIONS = [
   { id: 'n2', kind: 'offer', offer: 'growth', text: '<b>Lumen Labs</b> ha publicado <b>Prácticas de growth</b>. 12 de Start ya se han apuntado.', when: 'hace 3 días', at: 'semana', unread: true, href: '#/oferta/growth' },
   { id: 'n3', kind: 'interested', offer: 'astro', people: ['ines', 'jorge'], text: '<b>Inés</b> y <b>Jorge</b> se han apuntado a tu oferta <b>Desarrollo web con Astro</b>.', when: 'hace 4 días', at: 'semana', unread: false, href: '#/oferta/astro/interesados' },
   { id: 'n4', kind: 'event', event: 'invest', text: '<b>Start to Invest</b> es el 30 nov. Lleva tu carné para fichar.', when: 'hace 5 días', at: 'semana', unread: false, href: '#/evento/invest' },
-  { id: 'n6', kind: 'channel', channel: 'anuncios', text: 'Nuevo anuncio en <b>Anuncios</b>: gracias por el Start Camp.', when: 'hace 3 h', at: 'hoy', unread: true, href: '#/canal/anuncios' },
   { id: 'n5', kind: 'joined', person: 'nora', text: '<b>Nora Prieto</b> ha entrado en Start. Es ENFP, como 9 más.', when: 'hace 6 días', at: 'antes', unread: false, href: '#/persona/nora' },
 ];
 

@@ -25,7 +25,7 @@ export function Inicio() {
             <div className="col-main home">
               <nav className="quick" aria-label="Resumen">
                 <a className="quick-tile is-brand press" href="#/eventos"><b className="num"><Rolling value={d.counts.planes} /></b><span>planes próximos</span></a>
-                <a className="quick-tile press" href="#/comunidad"><b className="num"><Rolling value={d.counts.mensajes} /></b><span>mensajes nuevos</span></a>
+                <a className="quick-tile press" href="#/comunidad"><b className="num"><Rolling value={d.counts.gente} /></b><span>personas en Start</span></a>
                 <a className="quick-tile press" href="#/ofertas"><b className="num"><Rolling value={d.counts.oportunidades} /></b><span>oportunidades abiertas</span></a>
               </nav>
               {d.nextEvent && <NextTicket e={d.nextEvent} />}
@@ -70,7 +70,7 @@ function Section({ title, href, sub, children }) {
   );
 }
 
-// Lo nuevo de la Junta: el último anuncio, la petición de apoyo y los canales sin leer.
+// Lo nuevo de la Junta: el último anuncio y la petición de apoyo.
 function Novedades({ d, onChange }) {
   const { api, toast } = useApp();
   const btn = useRef(null);
@@ -86,15 +86,14 @@ function Novedades({ d, onChange }) {
     <Section title="Lo nuevo en Start">
       <ul className="card news">
         <li>
-          <a className="news-row press" href="#/canal/anuncios">
+          <div className="news-row">
             <span className="news-ico is-brand"><Icon name="megaphone" size={19} /></span>
             <span className="grow">
               <span className="news-kicker">Anuncio de la Junta · {d.announcement.at}</span>
               <span className="news-text">{d.announcement.text}</span>
               <span className="t-soft news-by">{d.announcement.person.name}</span>
             </span>
-            <Icon name="chevron-right" className="t-soft" />
-          </a>
+          </div>
         </li>
         <li className="news-row">
           <span className="news-ico"><Icon name="heart" size={19} /></span>
@@ -108,15 +107,6 @@ function Novedades({ d, onChange }) {
             <span key={String(s.supported)} className="btn-label">{s.supported ? <><Icon name="check" size={16} className="check-draw" /> Apoyado</> : 'Apoyar'}</span>
           </button>
         </li>
-        {d.unread > 0 && (
-          <li>
-            <a className="news-row press" href="#/comunidad">
-              <span className="news-ico"><Icon name="message-circle" size={19} /></span>
-              <span className="grow"><span className="news-text"><b className="num">{d.unread}</b> mensajes nuevos en tus canales</span><span className="t-soft news-by">Las conversaciones están en Comunidad</span></span>
-              <span className="unread num">{d.unread}</span>
-            </a>
-          </li>
-        )}
         {d.stamp && (
           <li>
             <a className="news-row press" href="#/perfil">

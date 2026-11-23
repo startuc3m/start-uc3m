@@ -3,7 +3,7 @@
 // que exista el backend se cambia este archivo y las pantallas no se tocan.
 // El estado de la demo vive en localStorage para que «Me interesa», los sellos o
 // el perfil sobrevivan a una recarga; «Reiniciar demo» lo borra.
-import { AUTHORIZED, DEMO_CODE, POINTS_BASE, STARTER_OF_MONTH, VIEW_AS, canGivePoints, canManage, canPublish, positionLabel, CHANNELS, LOOKING, MESSAGES, STARTUPS, SUPPORT, TODAY, CVS, EVENTS, FEED, ME, NOTIFICATIONS, OFFERS, PEOPLE, STAMPS, COMPANIES, TYPE_COUNTS, FAMILIES, TYPE_NAMES, familyOf, levelFor } from './data.js';
+import { AUTHORIZED, DEMO_CODE, POINTS_BASE, STARTER_OF_MONTH, VIEW_AS, canGivePoints, canManage, canPublish, positionLabel, ANNOUNCEMENT, LOOKING, STARTUPS, SUPPORT, TODAY, CVS, EVENTS, FEED, ME, NOTIFICATIONS, OFFERS, PEOPLE, STAMPS, COMPANIES, TYPE_COUNTS, FAMILIES, TYPE_NAMES, familyOf, levelFor } from './data.js';
 
 const KEY = 'start-panel-demo';
 
@@ -26,15 +26,12 @@ function fresh() {
     offers: [],
     status: {},
     going: ['canas-nov'],
-    channelRead: {},
-    sent: {},
-    reactions: {},
     following: [],
     supported: false,
     points: [],
     applications: [],
     changes: {}, // cambios de cargo hechos desde Gestión › Personas
-    prefs: { notif: { anuncios: true, eventos: true, ofertas: true, canales: false }, privacy: { gente: true, email: true, cv: true } },
+    prefs: { notif: { anuncios: true, eventos: true, ofertas: true }, privacy: { gente: true, email: true, cv: true } },
     settings: { ...DEMO_DEFAULTS },
   };
 }
@@ -99,12 +96,9 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
       goingPeople: e.going.slice(0, 3).map(person), stamp: STAMPS[e.stamp],
     };
   };
-  const messagesOf = (id) => [...(MESSAGES[id] ?? []), ...(state.sent[id] ?? [])].map((m) => ({ ...m, person: person(m.from), mine: m.from === state.me.id, reactions: m.reactions ?? {}, myReactions: state.reactions[m.id] ?? {} }));
-  const unreadOf = (id) => Math.max(0, (MESSAGES[id]?.length ?? 0) - (state.channelRead[id] ?? (id === 'podcast' || id === 'startups' ? 99 : 0)));
-  const badges = () => ({ comunidad: state.settings.empty ? 0 : CHANNELS.reduce((n, c) => n + unreadOf(c.id), 0) });
 
   const actions = {
-    me: () => ({ me: { ...decoratePerson(meNow()), badges: badges(), viewAs: state.settings.viewAs } }),
+    me: () => ({ me: { ...decoratePerson(meNow()), viewAs: state.settings.viewAs } }),
 
     feed: () => {
       if (state.settings.empty) return { items: [], newcomers: [] };
@@ -209,17 +203,15 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
       const empty = state.settings.empty;
       const events = EVENTS.map(decorateEvent).filter((e) => !e.past).sort((a, b) => a.date.localeCompare(b.date));
       const offers = allOffers().map(decorateOffer);
-      const ann = messagesOf('anuncios').at(-1);
       const newcomers = PEOPLE.filter((x) => x.isNew);
       const same = PEOPLE.filter((x) => x.career === state.me.career && !x.isNew);
       const people = [...newcomers.slice(0, 3), ...same.slice(0, 2)].map((x) => ({ ...decoratePerson(x), looking: LOOKING[x.id] ?? x.bio, reason: x.isNew ? 'Nuevo en Start' : 'Estudia lo mismo que tú', isFollowing: state.following.includes(x.id) }));
-      if (empty) return { counts: { planes: 0, mensajes: 0, oportunidades: 0 }, nextEvent: null, announcement: null, support: null, unread: 0, events: [], offers: [], people: [], startups: [], stamp: null };
+      if (empty) return { counts: { planes: 0, gente: 0, oportunidades: 0 }, nextEvent: null, announcement: null, support: null, events: [], offers: [], people: [], startups: [], stamp: null };
       return {
-        counts: { planes: events.length, mensajes: badges().comunidad, oportunidades: offers.filter((o) => !o.isInterested && (o.daysLeft ?? 99) >= 0).length },
+        counts: { planes: events.length, gente: PEOPLE.filter((x) => x.active !== false).length + 1, oportunidades: offers.filter((o) => !o.isInterested && (o.daysLeft ?? 99) >= 0).length },
         nextEvent: events.find((e) => e.isGoing) ?? null,
-        announcement: { ...ann, channel: 'anuncios' },
+        announcement: { ...ANNOUNCEMENT, person: person(ANNOUNCEMENT.from) },
         support: { ...SUPPORT, count: SUPPORT.count + (state.supported ? 1 : 0), supported: state.supported },
-        unread: badges().comunidad,
         events: events.slice(0, 5),
         offers: offers.filter((o) => !o.isInterested && !o.isMine).sort((a, b) => b.interestedCount - a.interestedCount).slice(0, 4),
         people,
@@ -331,24 +323,6 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
       return { event: decorateEvent(EVENTS.find((x) => x.id === id)) };
     },
 
-    channels: () => {
-      if (state.settings.empty) return { channels: [] };
-      const channels = CHANNELS.map((c) => { const m = messagesOf(c.id).at(-1); return { ...c, last: m, unread: unreadOf(c.id), muted: false }; });
-      return { channels };
-    },
-    channel: ({ id }) => {
-      const c = CHANNELS.find((x) => x.id === id);
-      if (!c) throw new Error('Este canal ya no existe.');
-      const messages = messagesOf(id);
-      state.channelRead = { ...state.channelRead, [id]: MESSAGES[id]?.length ?? 0 };
-      save();
-      return { channel: { ...c, members: c.id === 'anuncios' ? 212 : 140 + c.name.length }, messages };
-    },
-    'message.react': ({ id, emoji, on }) => {
-      state.reactions = { ...state.reactions, [id]: { ...(state.reactions[id] ?? {}), [emoji]: on } };
-      save();
-      return { ok: true };
-    },
 
     prefs: () => ({ prefs: state.prefs }),
     'prefs.update': ({ group, key, value }) => {

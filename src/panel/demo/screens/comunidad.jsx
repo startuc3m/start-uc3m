@@ -3,12 +3,12 @@ import Icon from '../ui/Icon.jsx';
 import { Avatar, Carne, Empty, FakeQr, Load, OfferLogo, Sello, Sellos, Skeleton, Stack, TypeTag, roleLine, useApp } from '../ui/pieces.jsx';
 import { go, useApi } from '../router.js';
 
-const COM_TABS = [['canales', '/comunidad', 'Canales'], ['gente', '/comunidad/gente', 'Gente'], ['mapa', '/comunidad/mapa', 'Mapa']];
-// Cabecera común de Comunidad: título grande y las tres pestañas.
+const COM_TABS = [['gente', '/comunidad', 'Gente'], ['mapa', '/comunidad/mapa', 'Mapa']];
+// Cabecera común de Comunidad: título grande y las pestañas.
 export function ComunidadHead({ current, badges = {} }) {
   return (
     <>
-      <PageTitle sub="Los canales de Start y la gente.">Comunidad</PageTitle>
+      <PageTitle sub="La gente de Start.">Comunidad</PageTitle>
       <div className="tabs" role="tablist" aria-label="Comunidad">
         {COM_TABS.map(([k, href, label]) => (
           <a key={k} href={`#${href}`} role="tab" aria-selected={current === k}>{label}{badges[k] > 0 && <span className="tab-badge num">{badges[k]}</span>}{current === k && <span className="tab-line" />}</a>
@@ -200,7 +200,6 @@ function AvisoVisual({ n }) {
   if (n.kind === 'stamp') return <Sello stamp={n.stamp} size={48} rotate={-8} />;
   if (n.kind === 'offer') return <OfferLogo company={n.company} size={48} />;
   if (n.kind === 'interested') return <span className="aviso-stack"><Avatar person={n.people[0]} size={36} /><Avatar person={n.people[1]} size={36} /></span>;
-  if (n.kind === 'channel') return <span className="aviso-ico"><Icon name="megaphone" size={22} /></span>;
   if (n.kind === 'event') return <span className="aviso-date"><b>{n.event.day}</b><span>{n.event.month}</span></span>;
   return <Avatar person={n.person} size={48} />;
 }

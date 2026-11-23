@@ -13,7 +13,7 @@ function Toggle({ on, onChange, label, hint }) {
   );
 }
 
-const NOTIF = [['anuncios', 'Anuncios de Start'], ['eventos', 'Eventos y entradas'], ['ofertas', 'Oportunidades nuevas'], ['canales', 'Mensajes en canales']];
+const NOTIF = [['anuncios', 'Anuncios de Start'], ['eventos', 'Eventos y entradas'], ['ofertas', 'Oportunidades nuevas']];
 
 export function Ajustes() {
   const { api, me, themePref, setTheme, toast } = useApp();
@@ -85,7 +85,7 @@ export function Ajustes() {
   );
 }
 
-const PERKS = [['ticket', 'Venta anticipada de entradas'], ['users', 'Cañas cada mes y cena de Navidad'], ['briefcase', 'Canal de prácticas y empleo'], ['rocket', 'Descuento en Start Camp'], ['message-circle', 'Todos los canales de la comunidad'], ['badge-check', 'Tu carné con sellos y nivel']];
+const PERKS = [['ticket', 'Venta anticipada de entradas'], ['users', 'Cañas cada mes y cena de Navidad'], ['briefcase', 'Tablón de prácticas y empleo'], ['rocket', 'Descuento en Start Camp'], ['message-circle', 'Todos los canales de la comunidad'], ['badge-check', 'Tu carné con sellos y nivel']];
 
 // Membresía (dentro de la app, para quien ya es socio).
 export function Socio() {

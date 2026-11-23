@@ -15,7 +15,6 @@ import DemoPanel from './DemoPanel.jsx';
 import { Avisos, Gente, Persona } from './screens/comunidad.jsx';
 import { Inicio } from './screens/inicio.jsx';
 import { Ranking } from './screens/ranking.jsx';
-import { Canal, Canales } from './screens/canales.jsx';
 import { Evento, Eventos } from './screens/eventos.jsx';
 import { Ajustes, HazteSocio, Socio } from './screens/ajustes.jsx';
 import { Mapa } from './screens/mapa.jsx';
@@ -24,9 +23,9 @@ import { Editar, Perfil } from './screens/perfil.jsx';
 import { Acceso, Alta } from './screens/acceso.jsx';
 import { Admin, Gestion } from './screens/gestion.jsx';
 
-const SCREENS = { inicio: Inicio, canales: Canales, canal: Canal, gente: Gente, persona: Persona, mapa: Mapa, eventos: Eventos, evento: Evento, ofertas: Ofertas, oferta: Oferta, interesados: Interesados, publicar: Publicar, perfil: Perfil, editar: Editar, ajustes: Ajustes, socio: Socio, avisos: Avisos, admin: Admin, ranking: Ranking, gestion: Gestion };
+const SCREENS = { inicio: Inicio, gente: Gente, persona: Persona, mapa: Mapa, eventos: Eventos, evento: Evento, ofertas: Ofertas, oferta: Oferta, interesados: Interesados, publicar: Publicar, perfil: Perfil, editar: Editar, ajustes: Ajustes, socio: Socio, avisos: Avisos, admin: Admin, ranking: Ranking, gestion: Gestion };
 // Título pequeño de la barra de arriba (aparece al bajar, cuando el título grande ya no se ve).
-const TITLE = { inicio: 'Inicio', canales: 'Comunidad', gente: 'Comunidad', mapa: 'Comunidad', canal: 'Canal', eventos: 'Eventos', evento: 'Evento', ofertas: 'Oportunidades', oferta: 'Oportunidad', interesados: 'Interesados', publicar: 'Publicar', perfil: 'Mi perfil', editar: 'Editar perfil', ajustes: 'Ajustes', socio: 'Membresía', avisos: 'Avisos', admin: 'Personas', persona: 'Perfil', ranking: 'Starter del mes', gestion: 'Gestión' };
+const TITLE = { inicio: 'Inicio', gente: 'Comunidad', mapa: 'Comunidad', eventos: 'Eventos', evento: 'Evento', ofertas: 'Oportunidades', oferta: 'Oportunidad', interesados: 'Interesados', publicar: 'Publicar', perfil: 'Mi perfil', editar: 'Editar perfil', ajustes: 'Ajustes', socio: 'Membresía', avisos: 'Avisos', admin: 'Personas', persona: 'Perfil', ranking: 'Starter del mes', gestion: 'Gestión' };
 const NAV = [['inicio', '#/inicio', 'home', 'Inicio'], ['comunidad', '#/comunidad', 'users', 'Comunidad'], ['eventos', '#/eventos', 'calendar', 'Eventos'], ['ofertas', '#/ofertas', 'target', 'Oportunidades']];
 const GESTION_ROUTES = ['gestion', 'admin', 'publicar'];
 const TABS = ['inicio', 'comunidad', 'eventos', 'ofertas', 'perfil'];
@@ -167,7 +166,6 @@ export default function PanelDemo({ photos }) {
   const section = SECTION[route.name];
   const deep = Boolean(DEPTH[route.name]);
   const tab = TABS.indexOf(section);
-  const badge = me.badges?.comunidad ?? 0;
   // Bloque «Gestión» del menú lateral: solo lo que tu cargo te deja hacer.
   const gestion = [
     (me.canPublish || me.canManage || ['responsable', 'junta'].includes(me.position)) && ['gestion', '#/gestion', 'shield-check', 'Resumen'],
@@ -187,7 +185,7 @@ export default function PanelDemo({ photos }) {
             <aside className="pd-side" aria-label="Menú">
               <div><Logo className="logo" /><p className="sub">ÁREA DE SOCIOS_</p></div>
               <nav aria-label="Secciones">
-                {NAV.map(([k, href, icon, label]) => <a key={k} href={href} aria-current={section === k && !GESTION_ROUTES.includes(route.name) ? 'page' : undefined}><Icon name={icon} />{label}{k === 'comunidad' && badge > 0 && <span className="badge num">{badge}</span>}</a>)}
+                {NAV.map(([k, href, icon, label]) => <a key={k} href={href} aria-current={section === k && !GESTION_ROUTES.includes(route.name) ? 'page' : undefined}><Icon name={icon} />{label}</a>)}
               </nav>
               {gestion.length > 0 && (
                 <nav className="side-gest" aria-label="Gestión">
@@ -218,7 +216,7 @@ export default function PanelDemo({ photos }) {
             </div>
             <nav className="pd-tabbar" aria-label="Secciones">
               <span className="ind" aria-hidden="true" style={{ transform: `translateX(${Math.max(0, tab) * 100}%)`, opacity: tab < 0 ? 0 : 1 }} />
-              {NAV.map(([k, href, icon, label]) => <a key={k} className="press" href={href} aria-current={section === k ? 'page' : undefined} onClick={(e) => scrollTopIfHere(e, href)}><span className="tb-ico"><Icon name={icon} size={22} />{k === 'comunidad' && badge > 0 && <span key={badge} className="tb-badge num">{badge}</span>}</span>{label}</a>)}
+              {NAV.map(([k, href, icon, label]) => <a key={k} className="press" href={href} aria-current={section === k ? 'page' : undefined} onClick={(e) => scrollTopIfHere(e, href)}><span className="tb-ico"><Icon name={icon} size={22} /></span>{label}</a>)}
               <a className="press" href="#/perfil" aria-current={section === 'perfil' ? 'page' : undefined} onClick={(e) => scrollTopIfHere(e, '#/perfil')}><span className="tb-ico"><Avatar person={me} size={24} lime className={section === 'perfil' ? 'is-on' : ''} /></span>Yo</a>
             </nav>
           </div>
