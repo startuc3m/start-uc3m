@@ -3,7 +3,7 @@
 // que exista el backend se cambia este archivo y las pantallas no se tocan.
 // El estado de la demo vive en localStorage para que «Me interesa», los sellos o
 // el perfil sobrevivan a una recarga; «Reiniciar demo» lo borra.
-import { AUTHORIZED, DEMO_CODE, POINTS_BASE, STARTER_OF_MONTH, VIEW_AS, canSetEventPoints, canManageAttendance, ATTENDANCE_SEED, NOW, canManage, canPublish, positionLabel, LOOKING, STARTUPS, TODAY, CVS, EVENTS, FEED, ME, OFFERS, PEOPLE, STAMPS, COMPANIES, TYPE_COUNTS, FAMILIES, TYPE_NAMES, familyOf, levelFor } from './data.js';
+import { AUTHORIZED, DEMO_CODE, POINTS_BASE, STARTER_OF_MONTH, VIEW_AS, canSetEventPoints, canManageAttendance, ATTENDANCE_SEED, NOW, NO_SHOW_PENALTY, CANCEL_NOTICE_H, CANCELLATIONS, canManage, canPublish, positionLabel, LOOKING, STARTUPS, TODAY, CVS, EVENTS, FEED, ME, OFFERS, PEOPLE, STAMPS, COMPANIES, TYPE_COUNTS, FAMILIES, TYPE_NAMES, familyOf, levelFor } from './data.js';
 
 const KEY = 'start-panel-demo';
 
@@ -69,8 +69,8 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
     return x && state.changes[id] ? { ...x, ...state.changes[id] } : x;
   };
   const people = () => PEOPLE.map((x) => person(x.id));
-  const pointsOf = (id) => (POINTS_BASE[id] ?? 0) + state.points.filter((x) => x.person === id).reduce((n, x) => n + x.points, 0)
-    + awardedFor(id).reduce((n, e) => n + eventPointsOf(e), 0);
+  const pointsOf = (id) => Math.max(0, (POINTS_BASE[id] ?? 0) + state.points.filter((x) => x.person === id).reduce((n, x) => n + x.points, 0)
+    + awardedFor(id).reduce((n, e) => n + eventPointsOf(e), 0) - penalizedFor(id).length * NO_SHOW_PENALTY);
   const allOffers = () => [...state.offers, ...OFFERS];
   // «Lo nuevo en Start»: solo lo publicado la última semana en Oportunidades y Eventos.
   const DAY = 86400000;
@@ -111,6 +111,13 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
   const pointsGiven = (e) => awardAt(e) <= nowDate();
   const attendeesOf = (id) => state.attendance[id] ?? [];
   const dateLabel = (d) => `${WEEKDAYS[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()].slice(0, 3)} · ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+  // Cancelación: 'a-tiempo' (24 h o más antes: deja de estar apuntado), 'tarde' (cuenta como no ir) o null.
+  const cancelOf = (id, pid) => { const h = CANCELLATIONS[id]?.[pid]; return h == null ? null : h >= CANCEL_NOTICE_H ? 'a-tiempo' : 'tarde'; };
+  const signedUp = (e) => (e.going ?? []).filter((pid) => cancelOf(e.id, pid) !== 'a-tiempo');
+  // No vino sin cancelar a tiempo → pierde NO_SHOW_PENALTY. Solo si alguien pasó lista en ese evento,
+  // para no penalizar a todos cuando nadie marcó la asistencia.
+  const noShow = (e, pid) => attendeesOf(e.id).length > 0 && signedUp(e).includes(pid) && !attendeesOf(e.id).includes(pid);
+  const penalizedFor = (pid) => EVENTS.filter((e) => pointsGiven(e) && noShow(e, pid));
   // Eventos cuyos puntos y sello ya se dieron a una persona (asistencia confirmada y pasadas las 24 h).
   const awardedFor = (pid) => EVENTS.filter((e) => pointsGiven(e) && attendeesOf(e.id).includes(pid));
   const decorateEvent = (e) => {
@@ -122,7 +129,7 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
       ticketUrl: e.id in state.eventLinks ? state.eventLinks[e.id] : (e.ticketUrl ?? null), // dónde se compran o reservan las entradas (fuera de la app)
       cover: state.eventPhotos[e.id] ?? e.cover, // una sola foto: clave de `photos` o una URL
       photosUrl: e.id in state.eventAlbums ? state.eventAlbums[e.id] : (e.photosUrl ?? null), // carpeta de fotos, después del evento
-      canSeeAttendees: canManageAttendance(meNow()), signupCount: (e.going ?? []).length,
+      canSeeAttendees: canManageAttendance(meNow()), signupCount: signedUp(e).length, penalty: NO_SHOW_PENALTY, penalized: pointsGiven(e) && noShow(e, state.me.id),
       started: startOf(e) <= nowDate(), pointsGiven: pointsGiven(e), pointsAt: dateLabel(awardAt(e)),
       attended: attendeesOf(e.id).includes(state.me.id),
       day: String(d.getDate()), month: MONTHS[d.getMonth()].slice(0, 3).toUpperCase(),
@@ -328,7 +335,11 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
       const e = EVENTS.find((x) => x.id === id);
       if (!e) throw new Error('Ese evento no existe.');
       const confirmed = attendeesOf(id);
-      return { people: (e.going ?? []).map(person).filter(Boolean).map((x) => ({ ...decoratePerson(x), confirmed: confirmed.includes(x.id) })) };
+      const given = pointsGiven(e);
+      return { people: (e.going ?? []).map(person).filter(Boolean).map((x) => {
+        const cancel = cancelOf(id, x.id);
+        return { ...decoratePerson(x), confirmed: confirmed.includes(x.id), cancel, penalized: given && noShow(e, x.id) };
+      }) };
     },
     // Marcar (o desmarcar) que alguien asistió. Se puede desde que empieza el evento hasta que se dan los puntos (24 h después).
     'event.attendance': ({ id, person: pid, on }) => {
@@ -337,7 +348,7 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
       if (!e) throw new Error('Ese evento no existe.');
       if (startOf(e) > nowDate()) throw new Error('Podrás confirmar la asistencia el día del evento.');
       if (pointsGiven(e)) throw new Error('Ya se dieron los puntos: la asistencia está cerrada.');
-      if (!(e.going ?? []).includes(pid)) throw new Error('Esa persona no está apuntada.');
+      if (!signedUp(e).includes(pid)) throw new Error('Esa persona no está apuntada (o canceló a tiempo).');
       const cur = attendeesOf(id);
       state.attendance = { ...state.attendance, [id]: on ? [...new Set([...cur, pid])] : cur.filter((x) => x !== pid) };
       save();

@@ -190,7 +190,7 @@ function EventPoints({ e, onChange }) {
     catch (err) { toast(err.message); }
   };
   const soft = e.pointsGiven
-    ? (e.attended ? 'Asististe: ya los tienes.' : `Se dieron el ${e.pointsAt} a quien asistió.`)
+    ? (e.attended ? 'Asististe: ya los tienes.' : e.penalized ? `No viniste sin cancelar a tiempo: -${e.penalty} puntos.` : `Se dieron el ${e.pointsAt} a quien asistió.`)
     : `Se confirma quién asiste y se dan 24 h después (${e.pointsAt}).`;
   return (
     <div className="card form" style={{ gap: 12 }}>
@@ -199,6 +199,7 @@ function EventPoints({ e, onChange }) {
         <span className="grow">
           <b>{e.points > 0 ? `Asistir da ${e.points} puntos y el sello ${e.stamp.label}` : `Asistir da el sello ${e.stamp.label}`}</b>
           <span className="t-soft" style={{ display: 'block', fontSize: 14 }}>{soft}</span>
+          <span className="t-soft" style={{ display: 'block', fontSize: 13, marginTop: 4 }}>Si te apuntas y no vas sin cancelar con 24 h de antelación, pierdes {e.penalty} puntos.</span>
         </span>
       </div>
       {e.canSetPoints && (
@@ -238,7 +239,7 @@ function Attendees({ e, onChange }) {
       <p className="t-soft" style={{ fontSize: 14, margin: 0 }} aria-live="polite">
         {!e.started ? 'Podrás confirmar la asistencia el día del evento.'
           : e.pointsGiven ? `Asistencia cerrada: los puntos se dieron el ${e.pointsAt}.`
-          : <>Marca quién ha venido. Los puntos y el sello se dan el {e.pointsAt}. <b className="num">{confirmed} {confirmed === 1 ? 'confirmado' : 'confirmados'}</b></>}
+          : <>Marca quién ha venido. Los puntos y el sello se dan el {e.pointsAt}; quien no venga sin haber cancelado con 24 h pierde {e.penalty}. <b className="num">{confirmed} {confirmed === 1 ? 'confirmado' : 'confirmados'}</b></>}
       </p>
       <Load q={q} skeleton={<Skeleton h={72} n={3} />}>
         {(d) => d.people.length === 0 ? <Empty icon="users" title="Aún no se ha apuntado nadie">Se apuntan con el enlace de entradas.</Empty> : (
@@ -249,11 +250,14 @@ function Attendees({ e, onChange }) {
                 <span className="grow" style={{ minWidth: 0 }}>
                   <a href={`#/persona/${p.id}`} style={{ fontWeight: 700, display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}</a>
                   <span className="t-soft" style={{ display: 'block', fontSize: 14 }}>{p.career} · {p.course}</span>
+                  {p.cancel === 'a-tiempo' && <span className="chip bg-cyan" style={{ marginTop: 4 }}>Canceló a tiempo</span>}
+                  {p.cancel === 'tarde' && <span className="chip bg-yellow" style={{ marginTop: 4 }}>Canceló con menos de 24 h</span>}
+                  {p.penalized && <span className="chip num" style={{ marginTop: 4, marginLeft: 4, background: 'var(--danger)', color: '#fff' }}>-{e.penalty} puntos</span>}
                 </span>
-                <button type="button" className={`btn press ${p.confirmed ? 'btn--lime' : 'btn--soft'}`} style={{ minHeight: 38, padding: '0 14px', fontSize: 14, gap: 6, borderRadius: 999 }}
+                {p.cancel === 'a-tiempo' ? null : <button type="button" className={`btn press ${p.confirmed ? 'btn--lime' : 'btn--soft'}`} style={{ minHeight: 38, padding: '0 14px', fontSize: 14, gap: 6, borderRadius: 999 }}
                   aria-pressed={p.confirmed} aria-label={`Asistió: ${p.name}`} disabled={locked || busy === p.id} onClick={() => toggle(p)}>
                   {p.confirmed && <Icon name="check" size={15} stroke={3} />}Asistió
-                </button>
+                </button>}
               </li>
             ))}
           </ul>

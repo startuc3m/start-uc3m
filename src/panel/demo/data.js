@@ -273,6 +273,12 @@ export const EVENT_POINT_OPTIONS = [0, 5, 10, 20, 30];
 // Ven a los apuntados y marcan «Asistió»: los departamentos de Eventos y RRHH, y la Junta.
 export const ATTENDANCE_DEPTS = ['Eventos', 'RRHH'];
 export const canManageAttendance = (m) => ATTENDANCE_DEPTS.includes(m?.department) || isLead(m);
+// Penalización: si estás apuntado, no cancelas con al menos 24 h de antelación y no vas, pierdes
+// estos puntos (se aplica cuando se reparten los del evento, y solo si ese evento tiene lista pasada).
+export const NO_SHOW_PENALTY = 10;
+export const CANCEL_NOTICE_H = 24;
+// Cancelaciones que llegan de la plataforma de entradas: horas de antelación con las que canceló cada persona.
+export const CANCELLATIONS = { 'taller-ventas': { nora: 30, ivan: 5 } };
 // Asistencia ya confirmada en la demo (eventos cuyos puntos ya se dieron).
 export const ATTENDANCE_SEED = { camp: ['lucia', 'hugo', 'carla', 'alvaro'] };
 export const positionLabel = (x) => (x.kind !== 'starter' ? 'Socio'

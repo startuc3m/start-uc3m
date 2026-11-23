@@ -155,6 +155,33 @@ describe('roles y puntos (modelo de la PR #87)', () => {
     await expect(api('event.attendance', { id: 'taller-ventas', person: 'diego', on: true })).rejects.toThrow('cerrada');
   });
 
+  it('quien no va sin cancelar con 24 h pierde 10 puntos; cancelar a tiempo no penaliza', async () => {
+    const { api } = make();
+    const pts = async (id) => (await api('ranking')).ranking.find((x) => x.id === id)?.points;
+    await api('demo.settings', { viewAs: 'junta' });
+    const before = { lucia: await pts('lucia'), alvaro: await pts('alvaro') };
+    const { people } = await api('event.attendees', { id: 'taller-ventas' });
+    expect(people.find((x) => x.id === 'nora').cancel).toBe('a-tiempo');
+    expect(people.find((x) => x.id === 'ivan').cancel).toBe('tarde');
+    await expect(api('event.attendance', { id: 'taller-ventas', person: 'nora', on: true })).rejects.toThrow('canceló a tiempo');
+    await api('event.attendance', { id: 'taller-ventas', person: 'lucia', on: true });
+    await api('demo.settings', { later: true });
+    expect(await pts('lucia')).toBe(before.lucia + 10); // vino
+    expect(await pts('alvaro')).toBe(before.alvaro - 10); // apuntado, no vino, no canceló
+    const after = (await api('event.attendees', { id: 'taller-ventas' })).people;
+    expect(after.find((x) => x.id === 'ivan').penalized).toBe(true); // canceló tarde
+    expect(after.find((x) => x.id === 'nora').penalized).toBe(false); // canceló a tiempo
+    expect((await api('event', { id: 'taller-ventas' })).event.penalized).toBe(true);
+  });
+
+  it('si nadie pasa lista no se penaliza a nadie', async () => {
+    const { api } = make();
+    const pts = async (id) => (await api('ranking')).ranking.find((x) => x.id === id)?.points;
+    const before = await pts('alvaro');
+    await api('demo.settings', { later: true });
+    expect(await pts('alvaro')).toBe(before);
+  });
+
   it('los responsables tienen los mismos permisos que la Junta', async () => {
     const { api } = make();
     await api('demo.settings', { viewAs: 'responsable' });
