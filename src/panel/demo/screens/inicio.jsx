@@ -179,7 +179,7 @@ function AlDia({ empty }) {
       <span className="aldia-check"><Icon name="check" size={26} stroke={3} /></span>
       <p className="t-display aldia-t">Estás al día_</p>
       <p className="t-soft">{empty ? 'Cuando haya novedades, aparecerán aquí.' : 'Ya has visto todo lo nuevo de hoy en Start.'}</p>
-      <a className="link" href="#/comunidad">Habla con la comunidad</a>
+      <a className="link" href="#/comunidad">Descubre tu comunidad</a>
     </div>
   );
 }
