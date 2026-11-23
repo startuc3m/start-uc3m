@@ -26,7 +26,6 @@ function fresh() {
     offers: [],
     status: {},
     going: ['canas-nov'],
-    following: [],
     supported: false,
     points: [],
     applications: [],
@@ -205,7 +204,7 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
       const offers = allOffers().map(decorateOffer);
       const newcomers = PEOPLE.filter((x) => x.isNew);
       const same = PEOPLE.filter((x) => x.career === state.me.career && !x.isNew);
-      const people = [...newcomers.slice(0, 3), ...same.slice(0, 2)].map((x) => ({ ...decoratePerson(x), looking: LOOKING[x.id] ?? x.bio, reason: x.isNew ? 'Nuevo en Start' : 'Estudia lo mismo que tú', isFollowing: state.following.includes(x.id) }));
+      const people = [...newcomers.slice(0, 3), ...same.slice(0, 2)].map((x) => ({ ...decoratePerson(x), looking: LOOKING[x.id] ?? x.bio, reason: x.isNew ? 'Nuevo en Start' : 'Estudia lo mismo que tú' }));
       if (empty) return { counts: { planes: 0, gente: 0, oportunidades: 0 }, nextEvent: null, announcement: null, support: null, events: [], offers: [], people: [], startups: [], stamp: null };
       return {
         counts: { planes: events.length, gente: PEOPLE.filter((x) => x.active !== false).length + 1, oportunidades: offers.filter((o) => !o.isInterested && (o.daysLeft ?? 99) >= 0).length },
@@ -304,7 +303,6 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
     },
 
     'support.toggle': ({ on }) => { state.supported = on; save(); return { count: SUPPORT.count + (on ? 1 : 0), supported: on }; },
-    follow: ({ id, on }) => { state.following = on ? [...new Set([...state.following, id])] : state.following.filter((x) => x !== id); save(); return { on }; },
 
     events: ({ tab = 'proximos' } = {}) => {
       if (state.settings.empty) return { events: [], all: [] };

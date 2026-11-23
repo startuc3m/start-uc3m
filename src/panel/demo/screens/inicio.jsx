@@ -152,23 +152,12 @@ function MiniStartup({ s }) {
 }
 
 function GenteParaTi({ people }) {
-  const { api } = useApp();
-  const [on, setOn] = useState(() => Object.fromEntries(people.map((x) => [x.id, x.isFollowing])));
-  const follow = (x, e) => {
-    const v = !on[x.id];
-    setOn((m) => ({ ...m, [x.id]: v }));
-    if (v) { burst(e.currentTarget); navigator.vibrate?.(8); }
-    api('follow', { id: x.id, on: v }).catch(() => setOn((m) => ({ ...m, [x.id]: !v })));
-  };
   return (
     <Section title="Gente para ti" href="#/comunidad/gente">
       <ul className="card people-ti">
         {people.slice(0, 4).map((x) => (
           <li key={x.id} className="pti">
-            <a href={`#/persona/${x.id}`} className="pti-who press"><Avatar person={x} size={44} /><span className="grow"><b>{x.name}</b><span className="pti-reason">{x.reason}</span><span className="t-soft pti-look">{x.looking}</span></span></a>
-            <button className={`btn btn-morph pti-btn ${on[x.id] ? 'btn--soft' : 'btn--primary'} press`} onClick={(e) => follow(x, e)} aria-pressed={on[x.id]}>
-              <span key={String(on[x.id])} className="btn-label">{on[x.id] ? 'Siguiendo' : 'Seguir'}</span>
-            </button>
+            <a href={`#/persona/${x.id}`} className="pti-who press"><Avatar person={x} size={44} /><span className="grow"><b>{x.name}</b><span className="pti-reason">{x.reason}</span><span className="t-soft pti-look">{x.looking}</span></span><Icon name="chevron-right" className="t-soft" /></a>
           </li>
         ))}
       </ul>

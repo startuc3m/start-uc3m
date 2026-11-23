@@ -359,7 +359,6 @@
 .pti-who b { font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .pti-reason { font-size: 12px; font-weight: 700; color: var(--brand-text); }
 .pti-look { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.pti-btn { min-height: 34px; padding: 0 14px; border-radius: 999px; font-size: 14px; flex: none; min-width: 92px; }
 .aldia { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; padding: 18px 0 8px; }
 .aldia-check { width: 56px; height: 56px; border-radius: 99px; display: grid; place-items: center; background: var(--lime); color: var(--ink-fixed); transform: scale(.6); opacity: 0; transition: transform 420ms cubic-bezier(.34,1.56,.64,1), opacity 200ms ease; }
 .aldia.is-seen .aldia-check { transform: none; opacity: 1; }
