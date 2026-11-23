@@ -30,6 +30,7 @@ export default function DemoPanel() {
           <div className="row"><span>Red</span><span className="opts"><Opt k="latency" v="none" label="Instantánea" /><Opt k="latency" v="normal" label="Normal" /><Opt k="latency" v="slow" label="Lenta" /></span></div>
           <div className="row"><span>Sin datos</span><span className="opts"><Opt k="empty" v={false} label="No" /><Opt k="empty" v={true} label="Sí" /></span></div>
           <div className="row"><span>Datos extremos</span><span className="opts"><Opt k="extreme" v={false} label="No" /><Opt k="extreme" v={true} label="Sí" /></span></div>
+          <div className="row"><span>Reloj</span><span className="opts"><Opt k="later" v={false} label="Ahora" /><Opt k="later" v={true} label="+24 h" /></span></div>
           <div className="row"><span>Sin conexión</span><span className="opts"><Opt k="error" v={false} label="No" /><Opt k="error" v={true} label="Sí" /></span></div>
           <p className="t-mono t-soft" style={{ marginTop: 8 }}>Lanzar</p>
           <div className="opts" style={{ flexWrap: 'wrap', display: 'flex', gap: 6 }}>

@@ -134,6 +134,27 @@ describe('roles y puntos (modelo de la PR #87)', () => {
     expect((await api('event.album', { id: 'feria', url: 'https://drive.google.com/fotos' })).event.photosUrl).toBe('https://drive.google.com/fotos');
   });
 
+  it('si Junta o un responsable marcan «Asistió», a las 24 h se suman los puntos', async () => {
+    const { api } = make();
+    const pts = async (id) => (await api('ranking')).ranking.find((x) => x.id === id)?.points;
+    const before = { lucia: await pts('lucia'), alvaro: await pts('alvaro'), hugo: await pts('hugo') };
+    await api('demo.settings', { viewAs: 'responsable' });
+    await api('event.attendance', { id: 'taller-ventas', person: 'lucia', on: true });
+    await api('demo.settings', { viewAs: 'junta' });
+    await api('event.attendance', { id: 'taller-ventas', person: 'alvaro', on: true });
+    // Antes de las 24 h: confirmados, pero sin puntos todavía.
+    expect(await pts('lucia')).toBe(before.lucia);
+    expect((await api('event', { id: 'taller-ventas' })).event.pointsGiven).toBe(false);
+    // Pasadas las 24 h: +10 a cada confirmado (y su sello); a los demás, nada.
+    await api('demo.settings', { later: true });
+    expect((await api('event', { id: 'taller-ventas' })).event.pointsGiven).toBe(true);
+    expect(await pts('lucia')).toBe(before.lucia + 10);
+    expect(await pts('alvaro')).toBe(before.alvaro + 10);
+    expect(await pts('hugo')).toBe(before.hugo);
+    expect((await api('me')).me.stamps).toContain('ventas');
+    await expect(api('event.attendance', { id: 'taller-ventas', person: 'diego', on: true })).rejects.toThrow('cerrada');
+  });
+
   it('los responsables tienen los mismos permisos que la Junta', async () => {
     const { api } = make();
     await api('demo.settings', { viewAs: 'responsable' });

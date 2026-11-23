@@ -7,7 +7,7 @@ import { AUTHORIZED, DEMO_CODE, POINTS_BASE, STARTER_OF_MONTH, VIEW_AS, canSetEv
 
 const KEY = 'start-panel-demo';
 
-export const DEMO_DEFAULTS = { latency: 'normal', empty: false, error: false, extreme: false, viewAs: 'it' };
+export const DEMO_DEFAULTS = { latency: 'normal', empty: false, error: false, extreme: false, viewAs: 'it', later: false };
 
 // «Datos extremos»: para ver dónde se rompe la interfaz con contenido real feo.
 const extremePerson = (x) => ({
@@ -106,7 +106,9 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
   // Asistencia: Eventos confirma quién vino; 24 h después del evento llegan sus puntos y su sello.
   const startOf = (e) => new Date(`${e.date}T${e.time}:00`);
   const awardAt = (e) => new Date(new Date(`${e.end ?? e.date}T${e.time}:00`).getTime() + 864e5);
-  const pointsGiven = (e) => awardAt(e) <= new Date(NOW);
+  // «Ahora» de la demo; con «+24 h» en el panel DEMO se adelanta un día para ver cómo llegan los puntos.
+  const nowDate = () => new Date(new Date(NOW).getTime() + (state.settings.later ? 864e5 : 0));
+  const pointsGiven = (e) => awardAt(e) <= nowDate();
   const attendeesOf = (id) => state.attendance[id] ?? [];
   const dateLabel = (d) => `${WEEKDAYS[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()].slice(0, 3)} · ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
   // Eventos cuyos puntos y sello ya se dieron a una persona (asistencia confirmada y pasadas las 24 h).
@@ -121,7 +123,7 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
       cover: state.eventPhotos[e.id] ?? e.cover, // una sola foto: clave de `photos` o una URL
       photosUrl: e.id in state.eventAlbums ? state.eventAlbums[e.id] : (e.photosUrl ?? null), // carpeta de fotos, después del evento
       canSeeAttendees: canManageAttendance(meNow()), signupCount: (e.going ?? []).length,
-      started: startOf(e) <= new Date(NOW), pointsGiven: pointsGiven(e), pointsAt: dateLabel(awardAt(e)),
+      started: startOf(e) <= nowDate(), pointsGiven: pointsGiven(e), pointsAt: dateLabel(awardAt(e)),
       attended: attendeesOf(e.id).includes(state.me.id),
       day: String(d.getDate()), month: MONTHS[d.getMonth()].slice(0, 3).toUpperCase(),
       when: `${WEEKDAYS[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()].slice(0, 3)} · ${e.time}`,
@@ -272,7 +274,7 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
       const mine = allOffers().map(decorateOffer).filter((o) => o.isMine);
       return {
         offers: canPublish(me) ? { published: mine.length, interested: mine.reduce((n, o) => n + o.interestedCount, 0), fresh: 2 } : null,
-        attendance: canManageAttendance(me) ? { open: EVENTS.filter((e) => startOf(e) <= new Date(NOW) && !pointsGiven(e)).length } : null,
+        attendance: canManageAttendance(me) ? { open: EVENTS.filter((e) => startOf(e) <= nowDate() && !pointsGiven(e)).length } : null,
       };
     },
 
@@ -333,7 +335,7 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
       if (!canManageAttendance(meNow())) throw new Error('Solo la Junta, los responsables, Eventos y RRHH confirman la asistencia.');
       const e = EVENTS.find((x) => x.id === id);
       if (!e) throw new Error('Ese evento no existe.');
-      if (startOf(e) > new Date(NOW)) throw new Error('Podrás confirmar la asistencia el día del evento.');
+      if (startOf(e) > nowDate()) throw new Error('Podrás confirmar la asistencia el día del evento.');
       if (pointsGiven(e)) throw new Error('Ya se dieron los puntos: la asistencia está cerrada.');
       if (!(e.going ?? []).includes(pid)) throw new Error('Esa persona no está apuntada.');
       const cur = attendeesOf(id);
