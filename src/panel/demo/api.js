@@ -31,7 +31,7 @@ function fresh() {
     eventLinks: {}, // enlace de entradas cambiado por la Junta: { [id]: url | null }
     eventPhotos: {}, // foto (una sola) del evento cambiada por la Junta: { [id]: clave de foto o URL }
     eventAlbums: {}, // enlace a la carpeta de fotos (después del evento): { [id]: url | null }
-    attendance: { ...ATTENDANCE_SEED }, // { [evento]: [personas] } asistencia confirmada por el equipo de Eventos
+    attendance: { ...ATTENDANCE_SEED }, // { [evento]: [personas] } asistencia confirmada por Eventos, RRHH o la Junta
     pointQrs: [{ code: 'CAFE24', points: 10, reason: 'Café con founders', by: 'lidia', at: '20 nov', scans: ['lucia', 'hugo', 'gema'] }],
     referrals: [], // socios nuevos que entraron con el QR de invitación de alguien
     applications: [],
@@ -374,7 +374,7 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
 
     // Apuntados de un evento (vienen de la plataforma de entradas) y quién asistió. Solo Eventos y Junta.
     'event.attendees': ({ id }) => {
-      if (!canManageAttendance(meNow())) throw new Error('Solo el equipo de Eventos y la Junta ven a los apuntados.');
+      if (!canManageAttendance(meNow())) throw new Error('Solo Eventos, RRHH y la Junta ven a los apuntados.');
       const e = EVENTS.find((x) => x.id === id);
       if (!e) throw new Error('Ese evento no existe.');
       const confirmed = attendeesOf(id);
@@ -382,7 +382,7 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
     },
     // Marcar (o desmarcar) que alguien asistió. Se puede desde que empieza el evento hasta que se dan los puntos (24 h después).
     'event.attendance': ({ id, person: pid, on }) => {
-      if (!canManageAttendance(meNow())) throw new Error('Solo el equipo de Eventos y la Junta confirman la asistencia.');
+      if (!canManageAttendance(meNow())) throw new Error('Solo Eventos, RRHH y la Junta confirman la asistencia.');
       const e = EVENTS.find((x) => x.id === id);
       if (!e) throw new Error('Ese evento no existe.');
       if (startOf(e) > new Date(NOW)) throw new Error('Podrás confirmar la asistencia el día del evento.');

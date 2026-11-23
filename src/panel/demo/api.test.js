@@ -38,7 +38,11 @@ describe('api de la demo', () => {
 
   it('Eventos confirma la asistencia y a las 24 h llegan los puntos y el sello', async () => {
     const { api } = make();
-    await expect(api('event.attendees', { id: 'taller-ventas' })).rejects.toThrow('Solo el equipo de Eventos');
+    await expect(api('event.attendees', { id: 'taller-ventas' })).rejects.toThrow('Solo Eventos, RRHH y la Junta');
+    await api('demo.settings', { viewAs: 'responsable' }); // Responsable de RRHH
+    expect((await api('event.attendees', { id: 'taller-ventas' })).people.length).toBeGreaterThan(0);
+    await api('demo.settings', { viewAs: 'socio' });
+    await expect(api('event.attendance', { id: 'taller-ventas', person: 'lucia', on: true })).rejects.toThrow('Solo Eventos, RRHH y la Junta');
     await api('demo.settings', { viewAs: 'eventos' });
     const { people } = await api('event.attendees', { id: 'taller-ventas' });
     expect(people.map((x) => x.id)).toContain('lucia');

@@ -191,7 +191,7 @@ function EventPoints({ e, onChange }) {
   };
   const soft = e.pointsGiven
     ? (e.attended ? 'Asististe: ya los tienes.' : `Se dieron el ${e.pointsAt} a quien asistió.`)
-    : `El equipo de Eventos confirma quién asiste y se dan 24 h después (${e.pointsAt}).`;
+    : `Se confirma quién asiste y se dan 24 h después (${e.pointsAt}).`;
   return (
     <div className="card form" style={{ gap: 12 }}>
       <div className="feed-row" style={{ gap: 14 }}>
@@ -211,7 +211,7 @@ function EventPoints({ e, onChange }) {
 }
 
 // Los apuntados (entran por el enlace de entradas, fuera de la app). Solo los ven el
-// equipo de Eventos y la Junta, que marcan quién vino: a esos les llegan el sello y los
+// Eventos, RRHH y la Junta, que marcan quién vino: a esos les llegan el sello y los
 // puntos 24 h después del evento.
 function Attendees({ e, onChange }) {
   const { api, toast } = useApp();
@@ -233,7 +233,7 @@ function Attendees({ e, onChange }) {
     <section className="form" style={{ gap: 10 }} aria-labelledby={`ap-${e.id}`}>
       <div className="feed-row">
         <h2 id={`ap-${e.id}`} className="t-h grow num" style={{ margin: 0 }}>Apuntados · {e.signupCount}</h2>
-        <span className="chip bg-lavender">Solo lo ves tú (Eventos)</span>
+        <span className="chip bg-lavender">Solo Eventos, RRHH y Junta</span>
       </div>
       <p className="t-soft" style={{ fontSize: 14, margin: 0 }} aria-live="polite">
         {!e.started ? 'Podrás confirmar la asistencia el día del evento.'

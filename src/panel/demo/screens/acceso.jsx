@@ -161,7 +161,7 @@ export function Alta({ params }) {
         <>
           <h1 className="t-display" style={{ fontSize: 40 }}>Tu carné está listo_</h1>
           <Carne person={{ ...me, career: f.career, course: f.course }} own />
-          <p className="t-soft">Ve a los eventos: el equipo de Eventos confirma que fuiste y te llevas el sello (y subes de nivel).</p>
+          <p className="t-soft">Ve a los eventos: se confirma que fuiste y te llevas el sello (y subes de nivel).</p>
         </>
       )}
       </div>

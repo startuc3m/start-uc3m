@@ -26,7 +26,7 @@ export const TYPE_COUNTS = {
   ISTP: 1, ISFP: 2, ESTP: 4, ESFP: 3,
 };
 
-// Sellos: uno por evento. Llega 24 h después del evento si el equipo de Eventos confirma que asististe.
+// Sellos: uno por evento. Llega 24 h después del evento si Eventos, RRHH o la Junta confirman que asististe.
 export const STAMPS = {
   ventas: { id: 'ventas', label: 'VENTAS', name: 'Taller de ventas', date: 'NOV 26', color: 'cyan' },
   camp: { id: 'camp', label: 'CAMP', name: 'Start Camp', date: 'NOV 26', color: 'lime' },
@@ -197,7 +197,7 @@ export const OFFERS = [
 export const OFFER_KINDS = ['Prácticas', 'Proyecto', 'Voluntariado', 'Hackathon', 'Beca'];
 
 // Eventos con fecha real (la demo vive en noviembre de 2026). `stamp` es el sello que se
-// da 24 h después del evento a quien el equipo de Eventos confirme como asistente (junto con
+// da 24 h después del evento a quien Eventos, RRHH o la Junta confirmen como asistente (junto con
 // los puntos del evento). La app no apunta a nadie: solo informa y enlaza a las entradas (`ticketUrl`).
 // `going` son los apuntados (vienen de la plataforma de entradas).
 export const TODAY = '2026-11-21';
@@ -278,8 +278,9 @@ export const canCreatePointsQr = (m) => m?.position === 'junta';
 // Cuántos puntos da asistir a un evento (0 = solo el sello): solo la Junta lo decide.
 export const canSetEventPoints = (m) => m?.position === 'junta';
 export const EVENT_POINT_OPTIONS = [0, 5, 10, 20, 30];
-// Ven a los apuntados y confirman la asistencia: el departamento de Eventos y la Junta.
-export const canManageAttendance = (m) => m?.department === 'Eventos' || m?.position === 'junta';
+// Ven a los apuntados y marcan «Asistió»: los departamentos de Eventos y RRHH, y la Junta.
+export const ATTENDANCE_DEPTS = ['Eventos', 'RRHH'];
+export const canManageAttendance = (m) => ATTENDANCE_DEPTS.includes(m?.department) || m?.position === 'junta';
 // Asistencia ya confirmada en la demo (eventos cuyos puntos ya se dieron).
 export const ATTENDANCE_SEED = { camp: ['lucia', 'hugo', 'carla', 'alvaro'] };
 export const positionLabel = (x) => (x.kind !== 'starter' ? 'Socio'

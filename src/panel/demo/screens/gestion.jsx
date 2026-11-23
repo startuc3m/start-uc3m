@@ -15,7 +15,7 @@ const MATRIX = [
   ['Crear QR de puntos', ['', '', '', '', '✓']],
   ['Decidir cuántos puntos vale cada evento', ['', '', '', '', '✓']],
   ['Sumar puntos escaneando un QR de puntos (una vez cada QR)', ['✓', '✓', '✓', '✓', '✓']],
-  ['Ver apuntados y confirmar la asistencia a eventos', ['', 'Si es de Eventos', 'Si es de Eventos', '', '✓']],
+  ['Ver apuntados y confirmar la asistencia a eventos', ['', 'Eventos o RRHH', 'Eventos o RRHH', '', '✓']],
   ['Invitar a socios nuevos con tu QR (Comunidad) y sumar puntos', ['✓', '✓', '✓', '✓', '✓']],
 ];
 const COLS = ['Socio', 'Starter', 'Responsable', 'IT autorizado', 'Junta'];
