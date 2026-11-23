@@ -36,11 +36,12 @@ describe('api de la demo', () => {
     expect((await api('people', { q: 'lucia' })).people[0].name).toBe('Lucía Martín');
   });
 
-  it('fichar da el sello una sola vez', async () => {
+  it('escanear el QR de un evento da su sello una sola vez', async () => {
     const { api } = make();
-    const first = await api('checkin', { event: 'invest' });
+    const first = await api('pointsqr.claim', { code: 'EVINVEST' });
     expect(first.isNew).toBe(true);
-    expect((await api('checkin', { event: 'invest' })).isNew).toBe(false);
+    expect(first.stamp.id).toBe('invest');
+    await expect(api('pointsqr.claim', { code: 'EVINVEST' })).rejects.toThrow('una vez');
     expect((await api('me')).me.stamps).toContain('invest');
   });
 
@@ -108,7 +109,17 @@ describe('roles y puntos (modelo de la PR #87)', () => {
     expect((await api('me')).me.positionLabel).toBe('Responsable de RRHH');
   });
 
-  it('los eventos valen los puntos que decida la Junta y se suman una vez al fichar', async () => {
+  it('la Junta pone el enlace de las entradas de un evento', async () => {
+    const { api } = make();
+    expect((await api('event', { id: 'invest' })).event.ticketUrl).toMatch(/^https:/);
+    await expect(api('event.link', { id: 'cena', url: 'https://x.es/e' })).rejects.toThrow('Solo la Junta');
+    await api('demo.settings', { viewAs: 'junta' });
+    await expect(api('event.link', { id: 'cena', url: 'entradas.com' })).rejects.toThrow('https://');
+    expect((await api('event.link', { id: 'cena', url: 'https://entradas.ejemplo.es/cena' })).event.ticketUrl).toBe('https://entradas.ejemplo.es/cena');
+    expect((await api('event.link', { id: 'cena', url: '' })).event.ticketUrl).toBeNull();
+  });
+
+  it('el QR de cada evento da los puntos que decida la Junta, una vez por persona', async () => {
     const { api } = make();
     await expect(api('event.points', { id: 'invest', points: 5 })).rejects.toThrow('Solo la Junta');
     await api('demo.settings', { viewAs: 'junta' });
@@ -116,8 +127,10 @@ describe('roles y puntos (modelo de la PR #87)', () => {
     expect((await api('event.points', { id: 'invest', points: 30 })).event.points).toBe(30);
     expect((await api('event.points', { id: 'cena', points: 0 })).event.points).toBe(0);
     const before = (await api('ranking')).ranking.find((x) => x.id === 'alvaro').points;
-    expect((await api('checkin', { event: 'invest' })).points).toBe(30);
-    expect((await api('checkin', { event: 'invest' })).points).toBe(0);
+    expect((await api('event', { id: 'invest' })).event.qrPath).toBe('/puntos/EVINVEST');
+    expect((await api('pointsqr.claim', { code: 'EVINVEST' })).points).toBe(30);
+    await expect(api('pointsqr.claim', { code: 'EVINVEST' })).rejects.toThrow('una vez');
+    expect((await api('pointsqr.claim', { code: 'EVCENA' })).points).toBe(0);
     expect((await api('ranking')).ranking.find((x) => x.id === 'alvaro').points).toBe(before + 30);
   });
 

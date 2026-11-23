@@ -3,7 +3,7 @@ import Icon from '../ui/Icon.jsx';
 import { Avatar, Carne, Img, Load, OfferLogo, Rolling, Skeleton, Stack, useApp } from '../ui/pieces.jsx';
 import { useApi } from '../router.js';
 import { PullIndicator, usePull } from '../ui/Pull.jsx';
-import { NextTicket, PageTitle } from './comunidad.jsx';
+import { PageTitle } from './comunidad.jsx';
 import { StarterMes } from './ranking.jsx';
 
 // Inicio: lo tuyo y lo nuevo en Start. La estructura viene de la demo de Ángel, recortada:
@@ -28,7 +28,6 @@ export function Inicio() {
                 <a className="quick-tile press" href="#/comunidad"><b className="num"><Rolling value={d.counts.gente} /></b><span>personas en Start</span></a>
                 <a className="quick-tile press" href="#/ofertas"><b className="num"><Rolling value={d.counts.oportunidades} /></b><span>oportunidades abiertas</span></a>
               </nav>
-              {d.nextEvent && <NextTicket e={d.nextEvent} />}
               {d.news?.length > 0 && <Novedades news={d.news} />}
               {d.starterOfMonth && <StarterMes s={d.starterOfMonth} compact />}
               {d.events.length > 0 && (
@@ -97,7 +96,7 @@ function MiniEvent({ e }) {
   const { photos } = useApp();
   return (
     <a className="card mini-ev press" href={`#/evento/${e.id}`}>
-      <span className="mini-cover"><Img src={photos[e.cover]} alt="" /><span className="date"><b>{e.day}</b><span>{e.month}</span></span>{e.isGoing && <span className="mini-flag"><Icon name="check" size={12} /> Vas</span>}</span>
+      <span className="mini-cover"><Img src={photos[e.cover]} alt="" /><span className="date"><b>{e.day}</b><span>{e.month}</span></span></span>
       <span className="mini-body"><b>{e.title}</b><span className="t-soft">{e.relative} · {e.where.split(',')[0]}</span></span>
     </a>
   );

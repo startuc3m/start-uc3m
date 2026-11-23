@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import Icon from '../ui/Icon.jsx';
-import { Avatar, Empty, FakeQr, Load, Rolling, Skeleton, roleLine, useApp } from '../ui/pieces.jsx';
-import { useApi } from '../router.js';
+import { Avatar, Empty, FakeQr, Load, Rolling, Sello, Skeleton, roleLine, useApp } from '../ui/pieces.jsx';
+import { go, useApi } from '../router.js';
 import { ComunidadHead, PageTitle } from './comunidad.jsx';
 
-// Puntos y Starter del mes. Se suman los puntos de cada evento al fichar (si vale algo) y los QR de puntos:
+// Puntos y Starter del mes. Se suman los puntos de cada evento al escanear su QR (si vale algo) y los QR de puntos:
 // solo la Junta los crea y cada persona puede escanear cada uno una vez. Ranking: solo Starters.
 export function Ranking() {
   const { api, me } = useApp();
@@ -12,7 +12,7 @@ export function Ranking() {
   return (
     <>
       <ComunidadHead current="ranking" />
-      <p className="t-soft" style={{ fontSize: 14 }}>Puntos: los que valga cada evento al fichar (si vale algo), más los QR de puntos de la Junta (cada uno se escanea una vez).</p>
+      <p className="t-soft" style={{ fontSize: 14 }}>Puntos: los que valga cada evento al escanear su QR (si vale algo), más los QR de puntos de la Junta. Cada QR se escanea una vez.</p>
       <Load q={q} skeleton={<><div className="skel" style={{ height: 170 }} /><Skeleton h={60} n={6} /></>}>
         {(d) => (
           <div className="two-col">
@@ -21,7 +21,7 @@ export function Ranking() {
               {d.canCreateQr && <a className="card give-hint press" href="#/puntos/crear"><Icon name="qr-code" size={18} /> Crear un QR de puntos para un evento o una tarea</a>}
               <section className="home-sec" aria-label={`Ranking de ${d.month}`}>
                 <div className="section-h"><h2 className="t-h home-h">Ranking de {d.month}</h2>{d.myRank && <span className="t-soft num">Vas {d.myRank}.º</span>}</div>
-                {d.ranking.length === 0 ? <Empty icon="sparkles" title="Aún no hay puntos este mes">Se suman al fichar en los eventos.</Empty> : (
+                {d.ranking.length === 0 ? <Empty icon="sparkles" title="Aún no hay puntos este mes">Se suman al escanear el QR de cada evento.</Empty> : (
                   <ol className="card rank">
                     {d.ranking.map((x, i) => (
                       <li key={x.id} className={`rank-row ${x.id === me.id ? 'is-me' : ''}`}>
@@ -145,16 +145,20 @@ export function PuntosCrear() {
   );
 }
 
-// Lo que se abre al escanear un QR de puntos: suma los puntos una vez y lo dice.
+// Lo que se abre al escanear un QR: el de un evento (sello y, si vale algo, puntos) o uno de
+// puntos de la Junta. Suma una sola vez y lo dice; un sello nuevo se celebra.
 export function PuntosEscanear({ params }) {
-  const { api, refreshMe } = useApp();
+  const { api, refreshMe, celebrate } = useApp();
   const [res, setRes] = useState(null);
   const done = useRef(null);
   useEffect(() => {
     if (done.current === params.code) return; // una sola petición por QR, aunque React monte dos veces
     done.current = params.code;
     api('pointsqr.claim', { code: params.code })
-      .then((r) => { setRes({ ok: true, ...r }); refreshMe(); navigator.vibrate?.([12, 40, 12]); })
+      .then((r) => {
+        setRes({ ok: true, ...r }); refreshMe(); navigator.vibrate?.([12, 40, 12]);
+        if (r.stamp && r.isNew) celebrate({ kind: 'stamp', title: '¡Sello nuevo!', text: `${r.reason}: ya tienes el sello ${r.stamp.label}.${r.points ? ` +${r.points} puntos.` : ''}`, stamp: r.stamp, level: r.level, levelUp: r.levelUp, cta: 'Ver mis sellos', onDone: () => go('/perfil') });
+      })
       .catch((e) => setRes({ ok: false, message: e.message }));
   }, [params.code]); // eslint-disable-line react-hooks/exhaustive-deps
   if (!res) return <p role="status">Leyendo el QR…</p>;
@@ -162,9 +166,9 @@ export function PuntosEscanear({ params }) {
     <div className="card form" role="status" style={{ alignItems: 'center', textAlign: 'center', padding: 28 }}>
       {res.ok ? (
         <>
-          <span className="aldia-check" style={{ transform: 'none', opacity: 1 }}><Icon name="check" size={30} stroke={3} /></span>
-          <h1 className="t-display" style={{ fontSize: 48 }}>+{res.points} puntos_</h1>
-          <p className="t-soft">{res.reason}. Ya llevas <b className="num">{res.total}</b> puntos este mes.</p>
+          {res.stamp ? <Sello stamp={res.stamp} size={110} rotate={-6} /> : <span className="aldia-check" style={{ transform: 'none', opacity: 1 }}><Icon name="check" size={30} stroke={3} /></span>}
+          <h1 className="t-display" style={{ fontSize: 48 }}>{res.points > 0 ? `+${res.points} puntos` : `Sello ${res.stamp?.label}`}_</h1>
+          <p className="t-soft">{res.reason}.{res.points > 0 ? <> Ya llevas <b className="num">{res.total}</b> puntos este mes.</> : res.isNew ? ' Ya está en tu perfil.' : ' Ya lo tenías en tu perfil.'}</p>
         </>
       ) : (
         <>
@@ -173,7 +177,7 @@ export function PuntosEscanear({ params }) {
           <p className="t-soft">{res.message}</p>
         </>
       )}
-      <a className="btn btn--primary press" href="#/comunidad/ranking">Ver ranking</a>
+      {res.ok && res.stamp && !res.points ? <a className="btn btn--primary press" href="#/perfil">Ver mis sellos</a> : <a className="btn btn--primary press" href="#/comunidad/ranking">Ver ranking</a>}
     </div>
   );
 }

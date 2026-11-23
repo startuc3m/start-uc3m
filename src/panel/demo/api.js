@@ -25,11 +25,11 @@ function fresh() {
     read: [],
     offers: [],
     status: {},
-    going: ['canas-nov'],
     points: [],
     // QR de puntos que crea la Junta. scans: quién lo ha escaneado (cada persona, una vez).
     eventPoints: {}, // puntos de evento cambiados por la Junta: { [id]: n }
-    checkins: [], // eventos en los que has fichado (los puntos de cada evento, una vez)
+    eventLinks: {}, // enlace de entradas cambiado por la Junta: { [id]: url | null }
+    eventScans: {}, // { [evento]: [personas] } quién ha escaneado el QR de cada evento (una vez cada uno)
     pointQrs: [{ code: 'CAFE24', points: 10, reason: 'Café con founders', by: 'lidia', at: '20 nov', scans: ['lucia', 'hugo', 'gema'] }],
     referrals: [], // socios nuevos que entraron con el QR de invitación de alguien
     applications: [],
@@ -100,19 +100,20 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
   };
 
   const eventPointsOf = (e) => state.eventPoints[e.id] ?? e.points ?? 0;
+  // Cada evento tiene su QR (lo enseña la Junta en la puerta): escanearlo da el sello y, si vale, los puntos.
+  const eventQrCode = (e) => `EV${e.id.replace(/[^a-z0-9]/gi, '').toUpperCase()}`;
   const decorateEvent = (e) => {
-    const going = state.going.includes(e.id);
     const d = new Date(`${e.date}T12:00:00`);
     const days = Math.round((d - new Date(`${TODAY}T12:00:00`)) / 864e5);
     return {
       ...e,
       points: eventPointsOf(e), canSetPoints: canSetEventPoints(meNow()),
+      ticketUrl: e.id in state.eventLinks ? state.eventLinks[e.id] : (e.ticketUrl ?? null), // dónde se compran o reservan las entradas (fuera de la app)
+      qrPath: canSetEventPoints(meNow()) ? `/puntos/${eventQrCode(e)}` : null, scanCount: (state.eventScans[e.id] ?? []).length,
       day: String(d.getDate()), month: MONTHS[d.getMonth()].slice(0, 3).toUpperCase(),
       when: `${WEEKDAYS[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()].slice(0, 3)} · ${e.time}`,
       inDays: days, relative: e.past ? 'Ya pasó' : days === 0 ? 'Hoy' : days === 1 ? 'Mañana' : `En ${days} días`,
-      isGoing: going, attended: e.past && state.me.stamps.includes(e.stamp),
-      goingCount: (state.settings.extreme ? 999 : e.goingCount) + (going ? 1 : 0),
-      goingPeople: e.going.slice(0, 3).map(person), stamp: STAMPS[e.stamp],
+      hasStamp: state.me.stamps.includes(e.stamp), stamp: STAMPS[e.stamp],
     };
   };
 
@@ -131,9 +132,8 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
         return f;
       }).filter((f) => f.kind !== 'joined');
       const newcomers = PEOPLE.filter((x) => x.isNew).map(decoratePerson);
-      const nextEvent = EVENTS.map(decorateEvent).filter((e) => e.isGoing && !e.past).sort((a, b) => a.inDays - b.inDays)[0] ?? null;
       const sameCareer = PEOPLE.filter((x) => x.career === state.me.career && x.id !== state.me.id).slice(0, 3).map(decoratePerson);
-      return { items, newcomers, sameCareer, nextEvent };
+      return { items, newcomers, sameCareer };
     },
 
     people: ({ q = '', filter = 'todos', type = null } = {}) => {
@@ -225,10 +225,9 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
       const newcomers = PEOPLE.filter((x) => x.isNew);
       const same = PEOPLE.filter((x) => x.career === state.me.career && !x.isNew);
       const people = [...newcomers.slice(0, 3), ...same.slice(0, 2)].map((x) => ({ ...decoratePerson(x), looking: LOOKING[x.id] ?? x.bio, reason: x.isNew ? 'Nuevo en Start' : 'Estudia lo mismo que tú' }));
-      if (empty) return { counts: { planes: 0, gente: 0, oportunidades: 0 }, nextEvent: null, news: [], events: [], offers: [], people: [], startups: [] };
+      if (empty) return { counts: { planes: 0, gente: 0, oportunidades: 0 }, news: [], events: [], offers: [], people: [], startups: [] };
       return {
         counts: { planes: events.length, gente: PEOPLE.filter((x) => x.active !== false).length + 1, oportunidades: offers.filter((o) => !o.isInterested && (o.daysLeft ?? 99) >= 0).length },
-        nextEvent: events.find((e) => e.isGoing) ?? null,
         news: news(events, offers),
         events: events.slice(0, 5),
         offers: offers.filter((o) => !o.isInterested && !o.isMine).sort((a, b) => b.interestedCount - a.interestedCount).slice(0, 4),
@@ -299,6 +298,21 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
     },
     'pointsqr.claim': ({ code = '' } = {}) => {
       const me = meNow();
+      const ev = EVENTS.find((e) => eventQrCode(e) === String(code).toUpperCase());
+      if (ev) {
+        // QR de un evento: el sello del evento y, si vale algo, sus puntos. Una vez por persona.
+        const scans = state.eventScans[ev.id] ?? [];
+        if (scans.includes(me.id)) throw new Error('Ya has escaneado este QR: cada persona solo puede usarlo una vez.');
+        state.eventScans = { ...state.eventScans, [ev.id]: [...scans, me.id] };
+        const pts = eventPointsOf(ev);
+        if (pts > 0) state.points = [...state.points, { person: me.id, points: pts, reason: ev.title, by: `evento:${ev.id}`, at: 'ahora' }];
+        const before = levelFor(state.me.stamps.length);
+        const isNew = !state.me.stamps.includes(ev.stamp);
+        if (isNew) state.me = { ...state.me, stamps: [...state.me.stamps, ev.stamp] };
+        save();
+        const after = levelFor(state.me.stamps.length);
+        return { kind: 'event', points: pts, reason: ev.title, stamp: STAMPS[ev.stamp], isNew, level: after, levelUp: after.n > before.n, total: pointsOf(me.id) };
+      }
       const qr = state.pointQrs.find((q) => q.code === String(code).toUpperCase());
       if (!qr) throw new Error('Este QR de puntos no existe o ya no vale.');
       if (qr.scans.includes(me.id)) throw new Error('Ya has escaneado este QR: cada persona solo puede usarlo una vez.');
@@ -313,18 +327,13 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
     events: ({ tab = 'proximos' } = {}) => {
       if (state.settings.empty) return { events: [], all: [] };
       const all = EVENTS.map(decorateEvent).sort((a, b) => a.date.localeCompare(b.date));
-      const list = tab === 'pasados' ? all.filter((e) => e.past).reverse() : tab === 'mias' ? all.filter((e) => e.isGoing && !e.past) : all.filter((e) => !e.past);
+      const list = tab === 'pasados' ? all.filter((e) => e.past).reverse() : all.filter((e) => !e.past);
       return { events: list, all };
     },
     event: ({ id }) => {
       const e = EVENTS.find((x) => x.id === id);
       if (!e) throw new Error('Este evento ya no está publicado.');
       return { event: decorateEvent(e) };
-    },
-    'event.going': ({ id, on }) => {
-      state.going = on ? [...new Set([id, ...state.going])] : state.going.filter((x) => x !== id);
-      save();
-      return { event: decorateEvent(EVENTS.find((x) => x.id === id)) };
     },
 
 
@@ -361,24 +370,18 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
       return { host: { id: host.id, name: host.name, points: REFERRAL_POINTS } };
     },
 
-    // Fichar en un evento con el QR del carné (en la demo, el Start to Invest): da su sello
-    // y, si el evento vale puntos, los suma una vez.
-    checkin: ({ event: id = 'invest' } = {}) => {
+    // La Junta pone (o quita) el enlace de las entradas de un evento. La app no vende ni apunta: solo enlaza.
+    'event.link': ({ id, url = '' } = {}) => {
+      if (!canSetEventPoints(meNow())) throw new Error('Solo la Junta cambia el enlace de las entradas.');
       const e = EVENTS.find((x) => x.id === id);
       if (!e) throw new Error('Ese evento no existe.');
-      const stamp = e.stamp;
-      const firstTime = !state.checkins.includes(id);
-      const pts = firstTime ? eventPointsOf(e) : 0;
-      if (firstTime) state.checkins = [...state.checkins, id];
-      if (pts > 0) state.points = [...state.points, { person: state.me.id, points: pts, reason: `Fichar en ${e.title}`, by: `evento:${id}`, at: 'ahora' }];
-      const before = levelFor(state.me.stamps.length);
-      const isNew = !state.me.stamps.includes(stamp);
-      if (isNew) state.me = { ...state.me, stamps: [...state.me.stamps, stamp] };
+      const u = String(url ?? '').trim();
+      if (u && !/^https:\/\/[^\s.]+\.[^\s]+$/.test(u)) throw new Error('Enlace: pega la dirección completa, empezando por https://');
+      state.eventLinks = { ...state.eventLinks, [id]: u || null };
       save();
-      const after = levelFor(state.me.stamps.length);
-      return { stamp: STAMPS[stamp], isNew, points: pts, level: after, levelUp: after.n > before.n };
+      return { event: decorateEvent(e) };
     },
-    // La Junta decide cuántos puntos vale fichar en un evento (0 = no vale puntos).
+    // La Junta decide cuántos puntos da el QR de un evento (0 = solo el sello).
     'event.points': ({ id, points }) => {
       if (!canSetEventPoints(meNow())) throw new Error('Solo la Junta decide los puntos de un evento.');
       const e = EVENTS.find((x) => x.id === id);

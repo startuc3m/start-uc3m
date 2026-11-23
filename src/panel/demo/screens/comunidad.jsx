@@ -31,25 +31,6 @@ export function PageTitle({ eyebrow, sub, children, action }) {
   );
 }
 
-// Tu próxima entrada: el plan más cercano al que vas, con el QR a mano para la puerta.
-export function NextTicket({ e }) {
-  const { openQr, me } = useApp();
-  return (
-    <section className="ticket" aria-label="Tu próxima entrada">
-      <a className="ticket-main press" href={`#/evento/${e.id}`}>
-        <span className="t-mono ticket-eyebrow"><Icon name="ticket" size={14} /> Tu próxima entrada</span>
-        <b className="ticket-when">{e.relative}</b>
-        <span className="ticket-title">{e.title}</span>
-        <span className="ticket-meta">{e.when} · {e.where}</span>
-      </a>
-      <button className="ticket-qr press" onClick={openQr} aria-label="Abrir tu QR para entrar">
-        <span className="qr-mini"><FakeQr seed={me.number} /></span>
-        <span className="t-mono">Tu QR</span>
-      </button>
-    </section>
-  );
-}
-
 // Generador del QR de invitación: quien lo escanea va al alta de socio con tu
 // referencia y, cuando se hace socio, tú sumas puntos.
 export function InvitaQr() {

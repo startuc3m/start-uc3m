@@ -9,8 +9,6 @@ import Icon from './ui/Icon.jsx';
 import { Avatar, Ctx, Logo } from './ui/pieces.jsx';
 import Celebracion from './ui/Celebracion.jsx';
 import Toast from './ui/Toast.jsx';
-import QrModal from './ui/QrModal.jsx';
-import { flushSync } from 'react-dom';
 import DemoPanel from './DemoPanel.jsx';
 import { Avisos, Gente, Persona } from './screens/comunidad.jsx';
 import { Inicio } from './screens/inicio.jsx';
@@ -38,7 +36,6 @@ function Actions({ name, me, unread }) {
       <a className="glass-btn press pd-bell" href="#/avisos" aria-label={unread ? `Avisos, ${unread} sin leer` : 'Avisos'}><Icon name="bell" size={21} />{unread > 0 && <span key={unread} className="dot" />}</a>
     </>
   );
-  if (name === 'eventos') return <a className="glass-btn press" href="#/eventos/mias" aria-label="Mis entradas"><Icon name="ticket" size={21} /></a>;
   if (name === 'ofertas' && me.canPublish) return <a className="glass-btn glass-btn--brand press" href="#/ofertas/publicar" aria-label="Publicar oportunidad"><Icon name="plus" size={22} /></a>;
   if (name === 'perfil') return <a className="glass-btn press" href="#/ajustes" aria-label="Ajustes"><Icon name="settings" size={21} /></a>;
   return null;
@@ -100,7 +97,6 @@ export default function PanelDemo({ photos }) {
   const [toastMsg, setToastMsg] = useState(null); // { id, text }
   const [party, setParty] = useState(null);
   const [nonce, setNonce] = useState(0);
-  const [qrOpen, setQrOpen] = useState(false);
   const toastTimer = useRef(0);
   const scrolled = useScrolled();
 
@@ -147,20 +143,11 @@ export default function PanelDemo({ photos }) {
     }
   }, [route.path]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // El QR pequeño del carné crece hasta la ventana (y vuelve) con una transición de elemento compartido.
-  const morphQr = useCallback((open) => {
-    const run = () => flushSync(() => setQrOpen(open));
-    if (!document.startViewTransition || matchMedia('(prefers-reduced-motion: reduce)').matches) return run();
-    document.documentElement.dataset.nav = 'qr';
-    document.startViewTransition(run).finished.finally(() => { if (document.documentElement.dataset.nav === 'qr') delete document.documentElement.dataset.nav; });
-  }, []);
-  const openQr = useCallback(() => morphQr(true), [morphQr]);
-  const closeQr = useCallback(() => morphQr(false), [morphQr]);
   const closeParty = useCallback(() => setParty(null), []);
 
   if (!me) return <div className="pd" data-theme={theme}><div className="pd-boot" aria-busy="true"><Logo className="logo" /></div></div>;
 
-  const ctx = { qrOpen, openQr, api, demo, photos, me, refreshMe, toast, celebrate: setParty, reloadScreen: () => setNonce((n) => n + 1), wide, theme, themePref, setTheme };
+  const ctx = { api, demo, photos, me, refreshMe, toast, celebrate: setParty, reloadScreen: () => setNonce((n) => n + 1), wide, theme, themePref, setTheme };
   const bare = route.name === 'acceso' || route.name === 'alta' || route.name === 'hazteSocio';
   const Screen = SCREENS[route.name] ?? Inicio;
   const section = SECTION[route.name];
@@ -192,8 +179,7 @@ export default function PanelDemo({ photos }) {
                   {gestion.map(([k, href, icon, label]) => <a key={k} href={href} aria-current={route.name === k ? 'page' : undefined}><Icon name={icon} />{label}</a>)}
                 </nav>
               )}
-              <button className="btn btn--lime btn--block press side-pass" onClick={openQr}><Icon name="qr-code" size={18} /> Mi QR de Start</button>
-              <div className={`me ${section === 'perfil' && !GESTION_ROUTES.includes(route.name) && route.name !== 'ajustes' ? 'is-on' : ''}`}>
+              <div className={`me ${section === 'perfil' && !GESTION_ROUTES.includes(route.name) && route.name !== 'ajustes' ? 'is-on' : ''}`} style={{ marginTop: 'auto' }}>
                 <a className="me-link press" href="#/perfil" aria-label="Mi perfil">
                   <Avatar person={me} size={36} lime />
                   <span style={{ flex: 1, minWidth: 0 }}><b style={{ display: 'block' }}>{me.name.split(' ')[0]} {me.name.split(' ')[1]?.[0]}.</b><span className="t-soft" style={{ fontSize: 13 }}>{me.positionLabel}</span></span>
@@ -203,9 +189,7 @@ export default function PanelDemo({ photos }) {
             </aside>
             <div className="pd-main">
               <header className={`pd-top ${scrolled ? 'is-scrolled' : ''}`}>
-                {deep
-                  ? <button className="glass-btn press" onClick={goBack} aria-label="Volver"><Icon name="chevron-left" size={24} /></button>
-                  : <button className="glass-btn press only-mobile" onClick={openQr} aria-label="Mi QR de Start" style={{ viewTransitionName: qrOpen ? 'none' : undefined }}><Icon name="qr-code" size={21} /></button>}
+                {deep && <button className="glass-btn press" onClick={goBack} aria-label="Volver"><Icon name="chevron-left" size={24} /></button>}
                 <span className="pd-top-title" aria-hidden={!scrolled}>{TITLE[route.name]}</span>
                 <span className="pd-top-acts"><Actions name={route.name} me={me} unread={unread} /></span>
               </header>
@@ -221,7 +205,6 @@ export default function PanelDemo({ photos }) {
           </div>
         )}
         <Toast msg={toastMsg} onAction={dismissToast} />
-        {qrOpen && <QrModal onClose={closeQr} />}
         {party && <Celebracion party={party} onClose={closeParty} />}
         <DemoPanel />
       </div>

@@ -7,7 +7,7 @@ import { VIEW_AS } from './data.js';
 // Botón «Demo»: solo existe en el prototipo. Sirve para probar estados y
 // animaciones sin tener que provocarlos de verdad.
 export default function DemoPanel() {
-  const { api, demo, themePref, setTheme, celebrate, refreshMe, toast, reloadScreen } = useApp();
+  const { api, demo, themePref, setTheme, refreshMe, toast, reloadScreen } = useApp();
   const [open, setOpen] = useState(false);
   const [s, setS] = useState(demo.getSettings);
   const update = async (patch) => {
@@ -33,13 +33,7 @@ export default function DemoPanel() {
           <div className="row"><span>Sin conexión</span><span className="opts"><Opt k="error" v={false} label="No" /><Opt k="error" v={true} label="Sí" /></span></div>
           <p className="t-mono t-soft" style={{ marginTop: 8 }}>Lanzar</p>
           <div className="opts" style={{ flexWrap: 'wrap', display: 'flex', gap: 6 }}>
-            <button className="pill press" onClick={async () => {
-              setOpen(false);
-              const r = await api('checkin', { event: 'invest' });
-              await refreshMe();
-              if (!r.isNew) return toast('Ya tienes el sello INVEST. Reinicia la demo para verlo otra vez.');
-              celebrate({ kind: 'stamp', title: '¡Sello nuevo!', text: `Has fichado en ${r.stamp.name}. Ya llevas ${r.level.count} sellos.`, stamp: r.stamp, level: r.level, levelUp: r.levelUp, cta: 'Ver mis sellos', onDone: () => go('/perfil') });
-            }}>Fichar (sello nuevo)</button>
+            <button className="pill press" onClick={() => { setOpen(false); go('/puntos/EVINVEST'); }}>Escanear QR de evento</button>
             <button className="pill press" onClick={() => { setOpen(false); go('/acceso'); }}>Acceso y alta</button>
             <button className="pill press" onClick={() => { setOpen(false); go('/perfil/editar'); }}>Editar perfil</button>
           </div>

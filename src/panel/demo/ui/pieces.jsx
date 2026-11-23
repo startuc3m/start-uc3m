@@ -78,7 +78,7 @@ export function LevelRing({ progress = 0, size = 84, children, animate = false }
 }
 
 // QR de mentira pero estable: mismo número, mismo dibujo.
-export function FakeQr({ seed = 42, label = 'Código QR para fichar' }) {
+export function FakeQr({ seed = 42, label = 'Código QR' }) {
   const n = 21;
   let x = seed * 9301 + 49297;
   const cells = [];
@@ -96,10 +96,9 @@ export function FakeQr({ seed = 42, label = 'Código QR para fichar' }) {
   );
 }
 
-// Carné Start. `own` = el tuyo (con QR y número); si no, el de otra persona (con su frase).
+// Carné Start. `own` = el tuyo (con número, nivel y sellos); si no, el de otra persona (con su frase).
 export function Carne({ person, own = false, animateRing = false, className = '' }) {
   const lvl = person.level;
-  const app = useApp();
   return (
     <article className={`carne ${className}`} aria-label={own ? 'Tu carné de Start' : `Carné de ${person.name}`}>
       <div className="top">
@@ -113,14 +112,9 @@ export function Carne({ person, own = false, animateRing = false, className = ''
           <p className="sub">{[!own && person.university, !own && person.career, !own && person.course, roleLine(person), own && person.type].filter(Boolean).join(' · ')}</p>
           {own ? <p className="big num">Nº {String(person.number).padStart(4, '0')}</p> : <p className="big">NIVEL {lvl.n}<small>{lvl.name}</small></p>}
         </div>
-        {own && (
-          <button className="qr press" onClick={() => app?.openQr()} aria-label="Ampliar el QR para fichar" style={{ viewTransitionName: app?.qrOpen ? 'none' : 'my-qr' }}>
-            <FakeQr seed={person.number} />
-          </button>
-        )}
       </div>
       {own ? (
-        <div className="bottom"><span>TOCA EL QR PARA FICHAR</span><button className="press" onClick={() => app?.openQr()} style={{ display: 'inline-flex', gap: 6, alignItems: 'center', color: '#fff' }}><Icon name="maximize" size={14} /> AMPLIAR</button></div>
+        <div className="bottom"><span>NIVEL {lvl.n} · {lvl.name.toUpperCase()}</span><span className="num">{lvl.count} {lvl.count === 1 ? 'SELLO' : 'SELLOS'}</span></div>
       ) : person.bio && <p className="bio">{person.bio}</p>}
     </article>
   );
