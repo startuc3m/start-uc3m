@@ -13,7 +13,6 @@ function Toggle({ on, onChange, label, hint }) {
   );
 }
 
-const NOTIF = [['anuncios', 'Anuncios de Start'], ['eventos', 'Eventos y entradas'], ['ofertas', 'Oportunidades nuevas']];
 
 export function Ajustes() {
   const { api, me, themePref, setTheme, toast } = useApp();
@@ -46,11 +45,6 @@ export function Ajustes() {
                 {me.canPublish && <a className="set-row press" href="#/ofertas/publicar"><Icon name="plus" className="set-ico" /><span className="grow"><span className="set-label">Publicar oportunidad</span><span className="set-hint">Y ver a los interesados de las tuyas</span></span><Icon name="chevron-right" className="t-soft" /></a>}
                 {me.position === 'junta' && <a className="set-row press" href="#/puntos/crear"><Icon name="qr-code" className="set-ico" /><span className="grow"><span className="set-label">QR de puntos</span><span className="set-hint">Crear un QR: cada persona lo escanea una vez y suma los puntos</span></span><Icon name="chevron-right" className="t-soft" /></a>}
               </div>
-            </section>
-            <section className="set-group" aria-labelledby="s-avisos">
-              <h2 id="s-avisos" className="set-h">Notificaciones</h2>
-              <div className="card set-card">{NOTIF.map(([k, l]) => <Toggle key={k} label={l} on={prefs.notif[k]} onChange={set('notif', k)} />)}</div>
-              <p className="set-foot">Los anuncios importantes de la Junta te llegan siempre también por correo.</p>
             </section>
             <section className="set-group" aria-labelledby="s-priv">
               <h2 id="s-priv" className="set-h">Privacidad</h2>

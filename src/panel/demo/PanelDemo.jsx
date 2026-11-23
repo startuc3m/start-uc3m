@@ -10,7 +10,7 @@ import { Avatar, Ctx, Logo } from './ui/pieces.jsx';
 import Celebracion from './ui/Celebracion.jsx';
 import Toast from './ui/Toast.jsx';
 import DemoPanel from './DemoPanel.jsx';
-import { Avisos, Gente, Persona } from './screens/comunidad.jsx';
+import { Gente, Persona } from './screens/comunidad.jsx';
 import { Inicio } from './screens/inicio.jsx';
 import { PuntosCrear, PuntosEscanear, Ranking } from './screens/ranking.jsx';
 import { Evento, Eventos } from './screens/eventos.jsx';
@@ -21,21 +21,15 @@ import { Editar, Perfil } from './screens/perfil.jsx';
 import { Acceso, Alta } from './screens/acceso.jsx';
 import { Gestion } from './screens/gestion.jsx';
 
-const SCREENS = { inicio: Inicio, gente: Gente, persona: Persona, mapa: Mapa, eventos: Eventos, evento: Evento, ofertas: Ofertas, oferta: Oferta, interesados: Interesados, publicar: Publicar, perfil: Perfil, editar: Editar, ajustes: Ajustes, socio: Socio, avisos: Avisos, ranking: Ranking, puntosCrear: PuntosCrear, puntosEscanear: PuntosEscanear, gestion: Gestion };
+const SCREENS = { inicio: Inicio, gente: Gente, persona: Persona, mapa: Mapa, eventos: Eventos, evento: Evento, ofertas: Ofertas, oferta: Oferta, interesados: Interesados, publicar: Publicar, perfil: Perfil, editar: Editar, ajustes: Ajustes, socio: Socio, ranking: Ranking, puntosCrear: PuntosCrear, puntosEscanear: PuntosEscanear, gestion: Gestion };
 // Título pequeño de la barra de arriba (aparece al bajar, cuando el título grande ya no se ve).
-const TITLE = { inicio: 'Inicio', gente: 'Comunidad', mapa: 'Comunidad', eventos: 'Eventos', evento: 'Evento', ofertas: 'Oportunidades', oferta: 'Oportunidad', interesados: 'Interesados', publicar: 'Publicar', perfil: 'Mi perfil', editar: 'Editar perfil', ajustes: 'Ajustes', socio: 'Membresía', avisos: 'Avisos', persona: 'Perfil', ranking: 'Comunidad', puntosCrear: 'QR de puntos', puntosEscanear: 'Puntos', gestion: 'Gestión' };
+const TITLE = { inicio: 'Inicio', gente: 'Comunidad', mapa: 'Comunidad', eventos: 'Eventos', evento: 'Evento', ofertas: 'Oportunidades', oferta: 'Oportunidad', interesados: 'Interesados', publicar: 'Publicar', perfil: 'Mi perfil', editar: 'Editar perfil', ajustes: 'Ajustes', socio: 'Membresía', persona: 'Perfil', ranking: 'Comunidad', puntosCrear: 'QR de puntos', puntosEscanear: 'Puntos', gestion: 'Gestión' };
 const NAV = [['inicio', '#/inicio', 'home', 'Inicio'], ['comunidad', '#/comunidad', 'users', 'Comunidad'], ['eventos', '#/eventos', 'calendar', 'Eventos'], ['ofertas', '#/ofertas', 'target', 'Oportunidades']];
 const GESTION_ROUTES = ['gestion', 'publicar', 'puntosCrear'];
 const TABS = ['inicio', 'comunidad', 'eventos', 'ofertas', 'perfil'];
 
 // La barra de arriba solo enseña lo que sirve en cada pantalla.
-function Actions({ name, me, unread }) {
-  if (name === 'inicio') return (
-    <>
-      <a className="glass-btn press" href="#/comunidad/gente" aria-label="Buscar personas"><Icon name="search" size={21} /></a>
-      <a className="glass-btn press pd-bell" href="#/avisos" aria-label={unread ? `Avisos, ${unread} sin leer` : 'Avisos'}><Icon name="bell" size={21} />{unread > 0 && <span key={unread} className="dot" />}</a>
-    </>
-  );
+function Actions({ name, me }) {
   if (name === 'ofertas' && me.canPublish) return <a className="glass-btn glass-btn--brand press" href="#/ofertas/publicar" aria-label="Publicar oportunidad"><Icon name="plus" size={22} /></a>;
   if (name === 'perfil') return <a className="glass-btn press" href="#/ajustes" aria-label="Ajustes"><Icon name="settings" size={21} /></a>;
   return null;
@@ -93,7 +87,6 @@ export default function PanelDemo({ photos }) {
   const [themePref, setThemePref] = useState(readTheme);
   const theme = themePref === 'system' ? (systemDark ? 'dark' : 'light') : themePref;
   const [me, setMe] = useState(null);
-  const [unread, setUnread] = useState(0);
   const [toastMsg, setToastMsg] = useState(null); // { id, text }
   const [party, setParty] = useState(null);
   const [nonce, setNonce] = useState(0);
@@ -101,9 +94,8 @@ export default function PanelDemo({ photos }) {
   const scrolled = useScrolled();
 
   const refreshMe = useCallback(async () => {
-    const [{ me: m }, n] = await Promise.all([api('me'), api('notifications').catch(() => ({ items: [] }))]);
+    const { me: m } = await api('me');
     setMe(m);
-    setUnread(n.items.filter((x) => x.unread).length);
   }, [api]);
   useEffect(() => { refreshMe(); }, [refreshMe]);
 
@@ -159,7 +151,7 @@ export default function PanelDemo({ photos }) {
     me.canPublish && ['publicar', '#/ofertas/publicar', 'plus', 'Publicar oportunidad'],
     me.position === 'junta' && ['puntosCrear', '#/puntos/crear', 'qr-code', 'QR de puntos'],
   ].filter(Boolean);
-  const goBack = () => back(route.name === 'avisos' ? '/inicio' : route.name === 'ajustes' ? '/perfil' : route.name === 'socio' ? '/ajustes' : route.name === 'gestion' ? '/perfil' : `/${section === 'perfil' ? 'perfil' : section}`);
+  const goBack = () => back(route.name === 'ajustes' ? '/perfil' : route.name === 'socio' ? '/ajustes' : route.name === 'gestion' ? '/perfil' : `/${section === 'perfil' ? 'perfil' : section}`);
 
   return (
     <Ctx.Provider value={ctx}>
@@ -191,7 +183,7 @@ export default function PanelDemo({ photos }) {
               <header className={`pd-top ${scrolled ? 'is-scrolled' : ''}`}>
                 {deep && <button className="glass-btn press" onClick={goBack} aria-label="Volver"><Icon name="chevron-left" size={24} /></button>}
                 <span className="pd-top-title" aria-hidden={!scrolled}>{TITLE[route.name]}</span>
-                <span className="pd-top-acts"><Actions name={route.name} me={me} unread={unread} /></span>
+                <span className="pd-top-acts"><Actions name={route.name} me={me} /></span>
               </header>
               <main className={`pd-screen pd-screen--${route.name}`} key={`${route.name === 'mapa' ? 'mapa' : route.path}#${nonce}`}>
                 <Screen params={route.params} path={route.path} />

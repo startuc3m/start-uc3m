@@ -94,13 +94,6 @@ describe('api de la demo', () => {
     expect((await api('cv.upload', { name: 'cv.pdf', size: '90 KB' })).me.cv.name).toBe('cv.pdf');
   });
 
-  it('abrir un aviso lo marca como leído', async () => {
-    const { api } = make();
-    const before = (await api('notifications')).items.filter((n) => n.unread).length;
-    await api('notifications.open', { id: 'n1' });
-    expect((await api('notifications')).items.filter((n) => n.unread).length).toBe(before - 1);
-  });
-
   it('con datos extremos los textos se alargan pero la forma no cambia', async () => {
     const { api } = make();
     await api('demo.settings', { extreme: true });

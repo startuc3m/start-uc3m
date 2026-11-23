@@ -245,14 +245,6 @@ export const FEED = [
   { kind: 'offer', id: 'f5', offer: 'analista' },
 ];
 
-export const NOTIFICATIONS = [
-  { id: 'n1', kind: 'stamp', stamp: 'pitch', text: 'Has conseguido el sello <b>PITCH</b> en la Noche de pitch.', when: 'hace 2 días', at: 'hoy', unread: true, href: '#/perfil' },
-  { id: 'n2', kind: 'offer', offer: 'growth', text: '<b>Lumen Labs</b> ha publicado <b>Prácticas de growth</b>. 12 de Start ya se han apuntado.', when: 'hace 3 días', at: 'semana', unread: true, href: '#/oferta/growth' },
-  { id: 'n3', kind: 'interested', offer: 'astro', people: ['ines', 'jorge'], text: '<b>Inés</b> y <b>Jorge</b> se han apuntado a tu oferta <b>Desarrollo web con Astro</b>.', when: 'hace 4 días', at: 'semana', unread: false, href: '#/oferta/astro/interesados' },
-  { id: 'n4', kind: 'event', event: 'invest', text: '<b>Start to Invest</b> es el 30 nov. Entradas en su enlace; si vas, te llevas el sello.', when: 'hace 5 días', at: 'semana', unread: false, href: '#/evento/invest' },
-  { id: 'n5', kind: 'joined', person: 'nora', text: '<b>Nora Prieto</b> ha entrado en Start. Es ENFP, como 9 más.', when: 'hace 6 días', at: 'antes', unread: false, href: '#/persona/nora' },
-];
-
 // Startups de socios (inventadas): las enseña Inicio para que la gente se conozca por lo que hace.
 export const STARTUPS = [
   { id: 'repaso', name: 'Repaso', pitch: 'Tus apuntes convertidos en tests para el examen, por asignatura.', founder: 'jorge', tag: 'Busca gente', sector: 'Edtech', color: '#333399' },
