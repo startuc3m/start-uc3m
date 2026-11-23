@@ -4,19 +4,16 @@ import Icon from '../ui/Icon.jsx';
 import { Avatar, Empty, Img, Load, OfferLogo, Rolling, Sheet, Skeleton, Stack, burst, roleLine, useApp } from '../ui/pieces.jsx';
 import { back, go, useApi } from '../router.js';
 import { PageTitle } from './comunidad.jsx';
-import { MiniOffer } from './inicio.jsx';
 
-const TABS = [['todas', '/ofertas', 'Todas'], ['interesan', '/ofertas/interesan', 'Me interesan'], ['mias', '/ofertas/mias', 'Publicadas']];
-
-export function Ofertas({ path }) {
+// Un único tablón: todas las oportunidades en una lista, con buscador y filtro por tipo.
+// Lo tuyo y lo que te interesa se marca en cada fila (antes eran pestañas aparte).
+export function Ofertas() {
   const { api, me, wide } = useApp();
-  const tab = path.endsWith('/interesan') ? 'interesan' : path.endsWith('/mias') ? 'mias' : 'todas';
   const [text, setText] = useState('');
   const [kind, setKind] = useState(null);
   const qText = useDeferredValue(text);
-  const q = useApi(api, 'offers', { tab, kind, q: qText }, [tab, kind, qText]);
+  const q = useApi(api, 'offers', { kind, q: qText }, [kind, qText]);
   const [selected, setSelected] = useState(null);
-  const tabs = TABS.filter(([k]) => k !== 'mias' || me.canPublish);
   return (
     <>
       <PageTitle sub="Prácticas, proyectos, becas y hackathons, en un sitio." action={me.canPublish && <a className="btn btn--primary press only-desk" href="#/ofertas/publicar"><Icon name="plus" size={18} /> Publicar</a>}>Oportunidades</PageTitle>
@@ -27,21 +24,15 @@ export function Ofertas({ path }) {
           {OFFER_KINDS.map((k) => <button key={k} className="pill press" aria-pressed={kind === k} onClick={() => setKind(kind === k ? null : k)}>{k === 'Beca' ? 'Becas' : k === 'Hackathon' ? 'Hackathons' : k === 'Proyecto' ? 'Proyectos' : k}</button>)}
         </div>
       </div>
-      <nav className="segmented" aria-label="Ofertas">
-        {tabs.map(([k, href, label]) => <a key={k} href={`#${href}`} aria-current={tab === k ? 'page' : undefined}>{tab === k && <span className="seg-bg" aria-hidden="true" />}<span className="seg-t">{label}{q.data ? <span className="num"> · {q.data.counts[k]}</span> : null}</span></a>)}
-      </nav>
       <div className="two-col two-col--detail">
         <div className="col-main">
           <Load q={q} skeleton={<Skeleton h={128} n={4} />}>
             {(d) => d.offers.length === 0 ? (
-              tab === 'interesan'
-                ? <Empty icon="heart" title="Aún no te interesa ninguna" action={<a className="btn btn--primary press" href="#/ofertas">Ver todas las ofertas</a>}>Marca «Me interesa» y quien publica la oferta verá tu perfil y tu CV.</Empty>
-                : (text || kind) ? <Empty icon="search" title="Nada con esos filtros" action={<button className="btn btn--soft press" onClick={() => { setText(''); setKind(null); }}>Quitar filtros</button>}>Prueba con otra palabra o con otro tipo.</Empty>
+              (text || kind) ? <Empty icon="search" title="Nada con esos filtros" action={<button className="btn btn--soft press" onClick={() => { setText(''); setKind(null); }}>Quitar filtros</button>}>Prueba con otra palabra o con otro tipo.</Empty>
                 : <Empty icon="briefcase" title="No hay oportunidades ahora mismo">Te avisaremos con la campana cuando se publique una.</Empty>
             ) : (
               <>
-              {tab === 'todas' && !text && !kind && <Destacadas offers={d.offers} />}
-              {tab === 'todas' && !text && !kind && <h2 className="t-h home-h">Todas las oportunidades</h2>}
+              <p className="t-soft num" aria-live="polite">{d.offers.length} {d.offers.length === 1 ? 'oportunidad' : 'oportunidades'}</p>
               <ul className="offer-list">
                 {d.offers.map((o) => {
                   const sel = wide && (selected ?? d.offers[0].id) === o.id;
@@ -50,7 +41,7 @@ export function Ofertas({ path }) {
                       <a className="card offer-row press" href={`#/oferta/${o.id}`} aria-current={sel ? 'true' : undefined} onClick={(e) => { if (wide) { e.preventDefault(); setSelected(o.id); } }}>
                         <OfferLogo company={o.company} />
                         <span className="grow">
-                          <span className="top"><span className={`chip bg-${o.kindColor}`}>{o.kind}</span><span>{o.deadline}</span>{o.isInterested && <span className="fav"><Icon name="check" size={15} /> Te interesa</span>}</span>
+                          <span className="top"><span className={`chip bg-${o.kindColor}`}>{o.kind}</span><span>{o.deadline}</span>{o.isInterested && <span className="fav"><Icon name="check" size={15} /> Te interesa</span>}{o.isMine && <span className="chip bg-lavender">Tuya</span>}</span>
                           <span className="t">{o.title}</span>
                           <span className="t-soft">{o.company.name}{o.company.isStart ? ` · ${o.company.note}` : ' (ejemplo)'}</span>
                           {o.interestedCount > 0 && <span className="proof"><Stack people={o.interestedPeople} /><span className="num">{o.interestedCount} de Start se han apuntado</span></span>}
@@ -66,33 +57,6 @@ export function Ofertas({ path }) {
         </div>
         {wide && q.data?.offers.length > 0 && <aside className="col-side col-side--panel"><OfertaDetalle key={selected ?? q.data.offers[0].id} id={selected ?? q.data.offers[0].id} onChange={q.reload} compact /></aside>}
       </div>
-    </>
-  );
-}
-
-// Arriba del todo, dos atajos: lo que más encaja contigo y lo que está a punto de cerrar.
-function Destacadas({ offers }) {
-  const paraTi = offers.filter((o) => !o.isInterested && !o.isMine).sort((a, b) => b.interestedCount - a.interestedCount).slice(0, 4);
-  const pronto = offers.filter((o) => o.daysLeft != null && o.daysLeft >= 0 && o.daysLeft <= 14).sort((a, b) => a.daysLeft - b.daysLeft).slice(0, 3);
-  return (
-    <>
-      {paraTi.length > 0 && (
-        <section className="home-sec" aria-label="Para ti">
-          <div className="section-h"><h2 className="t-h home-h">Para ti</h2></div>
-          <p className="t-soft home-sub">Lo que más se mueve entre la gente de Start</p>
-          <ul className="rail">{paraTi.map((o) => <li key={o.id}><MiniOffer o={o} /></li>)}</ul>
-        </section>
-      )}
-      {pronto.length > 0 && (
-        <section className="home-sec" aria-label="Cierran pronto">
-          <div className="section-h"><h2 className="t-h home-h">Cierran pronto</h2></div>
-          <ul className="card news">
-            {pronto.map((o) => (
-              <li key={o.id}><a className="news-row press" href={`#/oferta/${o.id}`}><OfferLogo company={o.company} size={40} /><span className="grow"><span className="news-text" style={{ fontWeight: 700 }}>{o.title}</span><span className="t-soft news-by">{o.company.name}{o.company.isStart ? '' : ' (ejemplo)'} · {o.kind}</span></span><span className="soon-pill num">{o.daysLeft === 0 ? 'Hoy' : `${o.daysLeft} d`}</span></a></li>
-            ))}
-          </ul>
-        </section>
-      )}
     </>
   );
 }
