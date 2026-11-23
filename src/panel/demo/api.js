@@ -3,7 +3,7 @@
 // que exista el backend se cambia este archivo y las pantallas no se tocan.
 // El estado de la demo vive en localStorage para que «Me interesa», los sellos o
 // el perfil sobrevivan a una recarga; «Reiniciar demo» lo borra.
-import { AUTHORIZED, DEMO_CODE, POINTS_BASE, REFERRAL_POINTS, STARTER_OF_MONTH, VIEW_AS, canSetEventPoints, canManageAttendance, ATTENDANCE_SEED, NOW, canManage, canPublish, positionLabel, LOOKING, STARTUPS, TODAY, CVS, EVENTS, FEED, ME, OFFERS, PEOPLE, STAMPS, COMPANIES, TYPE_COUNTS, FAMILIES, TYPE_NAMES, familyOf, levelFor } from './data.js';
+import { AUTHORIZED, DEMO_CODE, POINTS_BASE, STARTER_OF_MONTH, VIEW_AS, canSetEventPoints, canManageAttendance, ATTENDANCE_SEED, NOW, canManage, canPublish, positionLabel, LOOKING, STARTUPS, TODAY, CVS, EVENTS, FEED, ME, OFFERS, PEOPLE, STAMPS, COMPANIES, TYPE_COUNTS, FAMILIES, TYPE_NAMES, familyOf, levelFor } from './data.js';
 
 const KEY = 'start-panel-demo';
 
@@ -30,7 +30,6 @@ function fresh() {
     eventPhotos: {}, // miniatura (una sola) del evento cambiada por la Junta: { [id]: clave de foto o URL }
     eventAlbums: {}, // enlace a la carpeta de fotos (después del evento): { [id]: url | null }
     attendance: { ...ATTENDANCE_SEED }, // { [evento]: [personas] } asistencia confirmada por Eventos, RRHH o la Junta
-    referrals: [], // socios nuevos que entraron con el QR de invitación de alguien
     applications: [],
     changes: {},
     prefs: { privacy: { gente: true, email: true, cv: true } },
@@ -100,7 +99,7 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
   };
   const decoratePerson = (x0) => {
     const x = state.settings.extreme ? extremePerson(x0) : x0;
-    return { ...x, family: familyOf(x.type), typeName: TYPE_NAMES[x.type], level: levelFor(x.stamps.length), stampList: x.stamps.map((s) => STAMPS[s]), positionLabel: positionLabel(x), canManage: canManage(x), canPublish: canPublish(x) };
+    return { ...x, points: pointsOf(x.id), family: familyOf(x.type), typeName: TYPE_NAMES[x.type], level: levelFor(x.stamps.length), stampList: x.stamps.map((s) => STAMPS[s]), positionLabel: positionLabel(x), canManage: canManage(x), canPublish: canPublish(x) };
   };
 
   const eventPointsOf = (e) => state.eventPoints[e.id] ?? e.points ?? 0;
@@ -314,30 +313,12 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
     },
     // Hacerse socio desde la pantalla de acceso. En la demo el pago siempre sale bien.
     // Pagar no da acceso: queda pendiente hasta que IT o la Junta autoricen e inviten (regla 4.6 de #87).
-    // Con `ref` (viene del QR de invitación), quien generó el QR suma REFERRAL_POINTS.
-    'member.join': ({ plan = 'curso', email = '', ref = null } = {}) => {
-      const host = ref ? person(ref) : null;
-      state.applications = [...state.applications, { plan, email, ref: host?.id ?? null, at: 'ahora', status: 'pendiente' }];
-      if (host) {
-        state.referrals = [...state.referrals, { ref: host.id, email, plan, at: 'ahora' }];
-        state.points = [...state.points, { person: host.id, points: REFERRAL_POINTS, reason: 'Ha traído a un socio nuevo', by: 'invitacion', at: 'ahora' }];
-      }
+    'member.join': ({ plan = 'curso', email = '' } = {}) => {
+      state.applications = [...state.applications, { plan, email, at: 'ahora', status: 'pendiente' }];
       save();
-      return { status: 'pendiente', host: host ? { name: host.name, points: REFERRAL_POINTS } : null };
+      return { status: 'pendiente' };
     },
 
-    // Tu QR de invitación: lleva al alta de socio con tu referencia.
-    'invite.info': () => {
-      const me = meNow();
-      const mine = state.referrals.filter((r) => r.ref === me.id);
-      return { ref: me.id, path: `/invita/${me.id}`, count: mine.length, earned: mine.length * REFERRAL_POINTS, perInvite: REFERRAL_POINTS };
-    },
-    // Quién invita (para el alta que llega desde un QR).
-    'invite.host': ({ ref }) => {
-      const host = person(ref);
-      if (!host) throw new Error('Este QR de invitación no es válido.');
-      return { host: { id: host.id, name: host.name, points: REFERRAL_POINTS } };
-    },
 
     // Apuntados de un evento (vienen de la plataforma de entradas) y quién asistió. Solo Eventos y Junta.
     'event.attendees': ({ id }) => {

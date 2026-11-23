@@ -291,9 +291,7 @@ export const VIEW_AS = {
 };
 
 // Puntos del mes: los de cada evento al que asistes (si vale algo; lo decide la Junta, y llegan
-// 24 h después), y los de traer socios nuevos con tu QR de invitación.
-// Puntos para quien trae a un socio nuevo con su QR de invitación.
-export const REFERRAL_POINTS = 25;
+// 24 h después).
 export const POINTS_BASE = { hugo: 85, lucia: 70, lidia: 55, gema: 60, alvaro: 50, carla: 45, andres: 40, marta: 30, jorge: 20 };
 export const STARTER_OF_MONTH = { month: 'octubre', person: 'hugo', points: 120 };
 

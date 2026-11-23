@@ -98,7 +98,6 @@ export function FakeQr({ seed = 42, label = 'Código QR' }) {
 
 // Carné Start. `own` = el tuyo (con número, nivel y sellos); si no, el de otra persona (con su frase).
 export function Carne({ person, own = false, animateRing = false, className = '' }) {
-  const lvl = person.level;
   return (
     <article className={`carne ${className}`} aria-label={own ? 'Tu carné de Start' : `Carné de ${person.name}`}>
       <div className="top">
@@ -106,15 +105,15 @@ export function Carne({ person, own = false, animateRing = false, className = ''
         {own ? <span className="season">CARNÉ DE SOCIO<br />TEMPORADA 26/27</span> : <TypeTag code={person.type} family={person.family} />}
       </div>
       <div className="mid">
-        <LevelRing progress={lvl.progress} animate={animateRing}><Avatar person={person} size={64} /></LevelRing>
+        <Avatar person={person} size={64} />
         <div style={{ minWidth: 0 }}>
           <p className="name">{person.name}</p>
           <p className="sub">{[!own && person.university, !own && person.career, !own && person.course, roleLine(person), own && person.type].filter(Boolean).join(' · ')}</p>
-          {own ? <p className="big num">Nº {String(person.number).padStart(4, '0')}</p> : <p className="big">NIVEL {lvl.n}<small>{lvl.name}</small></p>}
+          {own ? <p className="big num">Nº {String(person.number).padStart(4, '0')}</p> : <p className="big num">{person.points ?? 0}<small>PUNTOS</small></p>}
         </div>
       </div>
       {own ? (
-        <div className="bottom"><span>NIVEL {lvl.n} · {lvl.name.toUpperCase()}</span><span className="num">{lvl.count} {lvl.count === 1 ? 'SELLO' : 'SELLOS'}</span></div>
+        <div className="bottom"><span className="num">{person.points ?? 0} PUNTOS</span><span className="num">{person.stampList?.length ?? 0} {person.stampList?.length === 1 ? 'SELLO' : 'SELLOS'}</span></div>
       ) : person.bio && <p className="bio">{person.bio}</p>}
     </article>
   );

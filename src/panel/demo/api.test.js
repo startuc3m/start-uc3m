@@ -161,17 +161,4 @@ describe('acceso solo con correos autorizados', () => {
     expect((await api('auth.verify', { email: 'nora.prieto@alumnos.uc3m.es', code: demoCode })).ok).toBe(true);
     await expect(api('auth.google', { email: 'nora@gmail.com' })).rejects.toThrow('no está autorizada');
   });
-  it('el QR de invitación lleva al alta y da puntos a quien lo generó', async () => {
-    const { api } = make();
-    const info = await api('invite.info');
-    expect(info).toMatchObject({ ref: 'alvaro', path: '/invita/alvaro', count: 0, earned: 0 });
-    expect((await api('invite.host', { ref: 'hugo' })).host.name).toBe('Hugo Blanco');
-    await expect(api('invite.host', { ref: 'nadie' })).rejects.toThrow('no es válido');
-    const before = (await api('ranking')).ranking.find((x) => x.id === 'hugo').points;
-    const r = await api('member.join', { plan: 'curso', email: 'nueva@alumnos.uc3m.es', ref: 'hugo' });
-    expect(r.host).toMatchObject({ name: 'Hugo Blanco', points: info.perInvite });
-    expect((await api('ranking')).ranking.find((x) => x.id === 'hugo').points).toBe(before + info.perInvite);
-    await api('member.join', { plan: 'curso', email: 'otra@alumnos.uc3m.es', ref: 'alvaro' });
-    expect(await api('invite.info')).toMatchObject({ count: 1, earned: info.perInvite });
-  });
 });

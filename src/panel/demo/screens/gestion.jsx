@@ -14,7 +14,6 @@ const MATRIX = [
   ['Publicar oportunidades y ver a sus interesados', ['', '', '✓', '', '✓']],
   ['Decidir cuántos puntos vale cada evento', ['', '', '', '', '✓']],
   ['Ver apuntados y confirmar la asistencia a eventos', ['', 'Eventos o RRHH', 'Eventos o RRHH', '', '✓']],
-  ['Invitar a socios nuevos con tu QR (Comunidad) y sumar puntos', ['✓', '✓', '✓', '✓', '✓']],
 ];
 const COLS = ['Socio', 'Starter', 'Responsable', 'IT autorizado', 'Junta'];
 export const colOf = (me) => (me.kind !== 'starter' ? 0 : me.position === 'junta' ? 4 : me.manage_users && me.department === 'IT' ? 3 : me.position === 'responsable' ? 2 : 1);

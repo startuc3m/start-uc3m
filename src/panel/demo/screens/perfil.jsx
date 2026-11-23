@@ -8,8 +8,6 @@ import { FAMILIES, TYPE_NAMES, UNIVERSIDADES, familyOf } from '../data.js';
 export function Perfil() {
   const { api, me, toast, wide } = useApp();
   const offers = useApi(api, 'offers', { tab: 'interesan' }, []);
-  const lvl = me.level;
-  const missing = lvl.next ? lvl.next.from - lvl.count : 0;
   return (
     <>
       <PageTitle eyebrow="Mi perfil" action={wide && <ProfileActions toast={toast} me={me} />}>Así te conoce Start</PageTitle>
@@ -17,11 +15,10 @@ export function Perfil() {
         <div className="col-left">
           <Carne person={me} own animateRing />
           {!wide && <ProfileActions toast={toast} me={me} />}
-          <section className="card level-card" aria-label="Tu nivel">
-            <p className="t-mono t-soft">Nivel {lvl.n}</p>
-            <div className="section-h"><h2 style={{ fontSize: 20, fontWeight: 700 }}>{lvl.name}</h2>{lvl.next && <span className="t-soft num">{lvl.count} / {lvl.next.from} sellos</span>}</div>
-            <div className="bar" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(lvl.progress * 100)} aria-label="Progreso al siguiente nivel"><i style={{ width: `${lvl.progress * 100}%` }} /></div>
-            <p className="t-soft">{lvl.next ? `${missing} ${missing === 1 ? 'sello más' : 'sellos más'} y serás ${lvl.next.name}. El próximo: Start to Invest, el 30 nov.` : 'Has llegado al nivel más alto. Leyenda.'}</p>
+          <section className="card level-card" aria-label="Tus puntos">
+            <p className="t-mono t-soft">Tus puntos</p>
+            <p className="num" style={{ fontFamily: 'var(--f-display)', fontSize: 48, lineHeight: 1, color: 'var(--brand-text)' }}>{me.points} <small style={{ fontSize: 18 }}>puntos</small></p>
+            <p className="t-soft">Se suman al asistir a eventos: llegan 24 h después.</p>
           </section>
           <CvCard />
         </div>
