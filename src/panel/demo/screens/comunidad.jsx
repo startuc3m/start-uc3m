@@ -3,7 +3,7 @@ import Icon from '../ui/Icon.jsx';
 import { Avatar, Carne, Empty, FakeQr, Load, OfferLogo, Sello, Sellos, Sheet, Skeleton, Stack, TypeTag, roleLine, useApp } from '../ui/pieces.jsx';
 import { go, useApi } from '../router.js';
 
-const COM_TABS = [['gente', '/comunidad', 'Gente'], ['mapa', '/comunidad/mapa', 'Mapa']];
+const COM_TABS = [['gente', '/comunidad', 'Gente'], ['ranking', '/comunidad/ranking', 'Ranking'], ['mapa', '/comunidad/mapa', 'Mapa']];
 // Cabecera común de Comunidad: título grande y las pestañas.
 export function ComunidadHead({ current, badges = {} }) {
   return (

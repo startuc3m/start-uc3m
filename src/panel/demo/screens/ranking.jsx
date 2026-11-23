@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import Icon from '../ui/Icon.jsx';
 import { Avatar, Empty, FakeQr, Load, Rolling, Skeleton, roleLine, useApp } from '../ui/pieces.jsx';
 import { useApi } from '../router.js';
-import { PageTitle } from './comunidad.jsx';
+import { ComunidadHead, PageTitle } from './comunidad.jsx';
 
 // Puntos y Starter del mes. Se suman 10 por fichar en un evento y los QR de puntos:
 // solo la Junta los crea y cada persona puede escanear cada uno una vez. Ranking: solo Starters.
@@ -11,7 +11,8 @@ export function Ranking() {
   const q = useApi(api, 'ranking', {}, []);
   return (
     <>
-      <PageTitle eyebrow="Puntos" sub="10 por fichar en cada evento, más los QR de puntos de la Junta (cada uno se escanea una vez).">Starter del mes</PageTitle>
+      <ComunidadHead current="ranking" />
+      <p className="t-soft" style={{ fontSize: 14 }}>Puntos: 10 por fichar en cada evento, más los QR de puntos de la Junta (cada uno se escanea una vez).</p>
       <Load q={q} skeleton={<><div className="skel" style={{ height: 170 }} /><Skeleton h={60} n={6} /></>}>
         {(d) => (
           <div className="two-col">
@@ -64,7 +65,7 @@ export function StarterMes({ s, compact = false }) {
       <div className="som-foot">
         <span className="som-pts"><b className="num">{s.points}</b> pts</span>
         <a className="som-in press" href={s.person.linkedin} target="_blank" rel="noreferrer" aria-label={`LinkedIn de ${first}`}><Icon name="linkedin" size={18} /></a>
-        {compact ? <a className="btn btn--lime press som-cta" href="#/ranking">Ver ranking <Icon name="chevron-right" size={16} /></a>
+        {compact ? <a className="btn btn--lime press som-cta" href="#/comunidad/ranking">Ver ranking <Icon name="chevron-right" size={16} /></a>
           : <a className="btn btn--lime press som-cta" href={`#/persona/${s.person.id}`}>Ver perfil <Icon name="chevron-right" size={16} /></a>}
       </div>
     </article>
@@ -172,7 +173,7 @@ export function PuntosEscanear({ params }) {
           <p className="t-soft">{res.message}</p>
         </>
       )}
-      <a className="btn btn--primary press" href="#/ranking">Ver ranking</a>
+      <a className="btn btn--primary press" href="#/comunidad/ranking">Ver ranking</a>
     </div>
   );
 }
