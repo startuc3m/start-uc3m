@@ -288,7 +288,7 @@ function LinkForm({ e, action, field, label, done = 'Enlace guardado', onChange 
   );
 }
 
-// La Junta elige la única foto del evento: una de las de Start o una que sube.
+// Miniatura del evento (una sola): la Junta sube otra y sustituye a la actual.
 function EventPhoto({ e, onChange }) {
   const { api, photos, toast } = useApp();
   const [busy, setBusy] = useState(false);
@@ -304,26 +304,20 @@ function EventPhoto({ e, onChange }) {
     ev.target.value = '';
     if (file) pick(URL.createObjectURL(file));
   };
-  const custom = Boolean(e.cover) && !(e.cover in photos);
-  const thumb = { position: 'relative', width: 76, aspectRatio: '4 / 3', borderRadius: 12, overflow: 'hidden', background: 'var(--paper-2)', flex: 'none', padding: 0 };
-  const on = { outline: '3px solid var(--brand-text)', outlineOffset: 2 };
-  const tick = <span style={{ position: 'absolute', right: 4, top: 4, width: 22, height: 22, borderRadius: 999, background: 'var(--lime)', color: 'var(--ink-fixed)', display: 'grid', placeItems: 'center' }}><Icon name="check" size={14} stroke={3} /></span>;
+  // Una sola miniatura: se ve la actual y subir otra la sustituye.
   return (
     <div className="card form" style={{ gap: 10 }}>
-      <b id={`ph-${e.id}`}>Foto del evento (una sola)</b>
-      <div role="radiogroup" aria-labelledby={`ph-${e.id}`} style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
-        {Object.entries(photos).map(([k, src]) => (
-          <button key={k} type="button" role="radio" aria-checked={e.cover === k} aria-label={`Foto ${k}`} className="press" disabled={busy}
-            style={{ ...thumb, ...(e.cover === k ? on : null) }} onClick={() => pick(k)}>
-            <Img src={src} alt="" />{e.cover === k && tick}
-          </button>
-        ))}
-        {custom && <span style={{ ...thumb, ...on }} role="img" aria-label="Foto subida (elegida)"><Img src={e.cover} alt="" />{tick}</span>}
+      <b>Miniatura del evento</b>
+      <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+        <span style={{ display: 'block', position: 'relative', width: 120, aspectRatio: '4 / 3', borderRadius: 12, overflow: 'hidden', background: 'var(--paper-2)', flex: 'none' }}>
+          <Img src={photos[e.cover] ?? e.cover} alt={`Miniatura de ${e.title}`} />
+        </span>
         <label className="btn btn--soft press" style={{ minHeight: 44, gap: 6, cursor: 'pointer' }}>
-          <Icon name="upload" size={16} /> Subir otra
+          <Icon name="upload" size={16} /> {busy ? 'Subiendo…' : 'Cambiar miniatura'}
           <input type="file" accept="image/*" className="sr-only" onChange={upload} disabled={busy} />
         </label>
       </div>
+      <p className="t-soft" style={{ fontSize: 13 }}>Solo hay una: la nueva sustituye a la actual.</p>
     </div>
   );
 }
