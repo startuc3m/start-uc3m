@@ -9,7 +9,6 @@ const ROUTES = [
   ['/alta/:paso', 'alta'],
   ['/inicio', 'inicio'],
   ['/comunidad', 'canales'],
-  ['/comunidad/mensajes', 'canales'],
   ['/comunidad/gente', 'gente'],
   ['/comunidad/mapa', 'mapa'],
   ['/mapa/:tipo', 'mapa'],

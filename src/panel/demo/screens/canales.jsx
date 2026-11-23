@@ -4,18 +4,17 @@ import { Avatar, Empty, Load, Skeleton, useApp } from '../ui/pieces.jsx';
 import { useApi } from '../router.js';
 import { ComunidadHead } from './comunidad.jsx';
 
-// Comunidad › Canales y Mensajes. Sustituye a la comunidad de WhatsApp: los mismos
+// Comunidad › Canales. Sustituye a la comunidad de WhatsApp: los mismos
 // grupos, pero dentro de la app y con la gente enlazada a su perfil.
-export function Canales({ path }) {
+export function Canales() {
   const { api } = useApp();
-  const tab = path.endsWith('/mensajes') ? 'mensajes' : 'canales';
   const q = useApi(api, 'channels', {}, []);
-  const badges = q.data ? { canales: q.data.channels.reduce((n, c) => n + c.unread, 0), mensajes: q.data.dms.reduce((n, d) => n + d.unread, 0) } : {};
+  const badges = q.data ? { canales: q.data.channels.reduce((n, c) => n + c.unread, 0) } : {};
   return (
     <>
-      <ComunidadHead current={tab} badges={badges} />
+      <ComunidadHead current="canales" badges={badges} />
       <Load q={q} skeleton={<Skeleton h={68} n={6} />}>
-        {(d) => tab === 'canales' ? (
+        {(d) => (
           d.channels.length === 0 ? <Empty icon="message-circle" title="Aún no hay canales">Cuando la Junta abra los canales del curso, aparecerán aquí.</Empty> : (
             <ul className="chan-list">
               {d.channels.map((c) => (
@@ -27,23 +26,6 @@ export function Canales({ path }) {
                       <span className="chan-last">{c.last ? <><b>{c.last.mine ? 'Tú' : c.last.person?.name.split(' ')[0]}:</b> {c.last.text}</> : c.desc}</span>
                     </span>
                     {c.unread > 0 && <span className="unread num" aria-label={`${c.unread} sin leer`}>{c.unread}</span>}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          )
-        ) : (
-          d.dms.length === 0 ? <Empty icon="message-circle" title="Sin mensajes">Escribe a alguien desde su perfil en Gente.</Empty> : (
-            <ul className="chan-list">
-              {d.dms.map((m) => (
-                <li key={m.id}>
-                  <a className={`chan press ${m.unread ? 'is-unread' : ''}`} href={`#/canal/dm:${m.id}`}>
-                    <Avatar person={m.person} size={52} />
-                    <span className="grow">
-                      <span className="chan-top"><b>{m.person.name}</b><span className="when">{m.last.at}</span></span>
-                      <span className="chan-last">{m.last.mine && <b>Tú: </b>}{m.last.text}</span>
-                    </span>
-                    {m.unread > 0 && <span className="unread unread--dot" aria-label="Sin leer" />}
                   </a>
                 </li>
               ))}
@@ -87,10 +69,10 @@ export function Canal({ params }) {
       {({ channel: c, messages }) => (
         <div className="chat">
           <header className="chat-head">
-            {c.dm ? <Avatar person={c.person} size={56} /> : <span className={`chan-ico chan-ico--lg ${c.id === 'anuncios' ? 'is-brand' : ''}`}><Icon name={c.icon} size={26} /></span>}
+            <span className={`chan-ico chan-ico--lg ${c.id === 'anuncios' ? 'is-brand' : ''}`}><Icon name={c.icon} size={26} /></span>
             <div className="grow">
               <h1 className="chat-title">{c.name}</h1>
-              <p className="t-soft">{c.dm ? <a href={`#/persona/${c.person.id}`} style={{ color: 'var(--brand-text)', fontWeight: 600 }}>Ver perfil</a> : <>{c.members} personas · {c.desc}</>}</p>
+              <p className="t-soft">{c.members} personas · {c.desc}</p>
             </div>
           </header>
           <ol className="msgs" aria-label="Mensajes">
@@ -123,7 +105,7 @@ export function Canal({ params }) {
           ) : (
             <form className="composer" onSubmit={send}>
               <label className="sr-only" htmlFor="msg">Mensaje</label>
-              <input id="msg" className="composer-input" placeholder={c.dm ? `Escribe a ${c.name.split(' ')[0]}` : `Escribe en ${c.name}`} value={text} onChange={(e) => setText(e.target.value)} autoComplete="off" enterKeyHint="send" />
+              <input id="msg" className="composer-input" placeholder={`Escribe en ${c.name}`} value={text} onChange={(e) => setText(e.target.value)} autoComplete="off" enterKeyHint="send" />
               <button className={`composer-send press ${text.trim() ? 'is-ready' : ''}`} aria-label="Enviar" disabled={!text.trim()}><Icon name="send" size={20} /></button>
             </form>
           )}

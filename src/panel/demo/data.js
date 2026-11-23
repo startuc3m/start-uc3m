@@ -234,13 +234,6 @@ export const MESSAGES = {
   ],
 };
 
-// Mensajes directos de ejemplo.
-export const DMS = [
-  { id: 'lucia', with: 'lucia', messages: [{ id: 'd1', from: 'lucia', at: '10 min', text: '¿Te vienes a las cañas del jueves?' }] },
-  { id: 'pablo', with: 'pablo', messages: [{ id: 'd2', from: 'alvaro', at: 'ayer', text: 'Te he pasado acceso al repo de la web.' }, { id: 'd3', from: 'pablo', at: 'ayer', text: '¡Gracias! Lo miro esta tarde.' }] },
-  { id: 'nora', with: 'nora', messages: [{ id: 'd4', from: 'nora', at: '2 d', text: 'Hola, soy nueva. ¿Cómo me apunto a un departamento?' }] },
-];
-
 // El feed «Para ti» se genera solo: eventos, ofertas nuevas, sellos y altas. Nadie
 // tiene que escribirlo, así que nunca se queda viejo.
 export const FEED = [

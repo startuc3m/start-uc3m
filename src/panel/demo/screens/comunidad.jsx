@@ -3,12 +3,12 @@ import Icon from '../ui/Icon.jsx';
 import { Avatar, Carne, Empty, FakeQr, Load, OfferLogo, Sello, Sellos, Skeleton, Stack, TypeTag, roleLine, useApp } from '../ui/pieces.jsx';
 import { go, useApi } from '../router.js';
 
-const COM_TABS = [['canales', '/comunidad', 'Canales'], ['mensajes', '/comunidad/mensajes', 'Mensajes'], ['gente', '/comunidad/gente', 'Gente'], ['mapa', '/comunidad/mapa', 'Mapa']];
-// Cabecera común de Comunidad: título grande y las cuatro pestañas.
+const COM_TABS = [['canales', '/comunidad', 'Canales'], ['gente', '/comunidad/gente', 'Gente'], ['mapa', '/comunidad/mapa', 'Mapa']];
+// Cabecera común de Comunidad: título grande y las tres pestañas.
 export function ComunidadHead({ current, badges = {} }) {
   return (
     <>
-      <PageTitle sub="Los canales de Start, tus mensajes y la gente.">Comunidad</PageTitle>
+      <PageTitle sub="Los canales de Start y la gente.">Comunidad</PageTitle>
       <div className="tabs" role="tablist" aria-label="Comunidad">
         {COM_TABS.map(([k, href, label]) => (
           <a key={k} href={`#${href}`} role="tab" aria-selected={current === k}>{label}{badges[k] > 0 && <span className="tab-badge num">{badges[k]}</span>}{current === k && <span className="tab-line" />}</a>

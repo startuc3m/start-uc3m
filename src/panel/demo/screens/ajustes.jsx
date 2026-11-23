@@ -13,7 +13,7 @@ function Toggle({ on, onChange, label, hint }) {
   );
 }
 
-const NOTIF = [['anuncios', 'Anuncios de Start'], ['eventos', 'Eventos y entradas'], ['ofertas', 'Oportunidades nuevas'], ['canales', 'Mensajes en canales'], ['mensajes', 'Mensajes directos']];
+const NOTIF = [['anuncios', 'Anuncios de Start'], ['eventos', 'Eventos y entradas'], ['ofertas', 'Oportunidades nuevas'], ['canales', 'Mensajes en canales']];
 
 export function Ajustes() {
   const { api, me, themePref, setTheme, toast } = useApp();

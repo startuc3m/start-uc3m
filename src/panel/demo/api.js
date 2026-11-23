@@ -3,7 +3,7 @@
 // que exista el backend se cambia este archivo y las pantallas no se tocan.
 // El estado de la demo vive en localStorage para que «Me interesa», los sellos o
 // el perfil sobrevivan a una recarga; «Reiniciar demo» lo borra.
-import { AUTHORIZED, DEMO_CODE, POINTS_BASE, STARTER_OF_MONTH, VIEW_AS, canGivePoints, canManage, canPublish, positionLabel, CHANNELS, DMS, LOOKING, MESSAGES, STARTUPS, SUPPORT, TODAY, CVS, EVENTS, FEED, ME, NOTIFICATIONS, OFFERS, PEOPLE, STAMPS, COMPANIES, TYPE_COUNTS, FAMILIES, TYPE_NAMES, familyOf, levelFor } from './data.js';
+import { AUTHORIZED, DEMO_CODE, POINTS_BASE, STARTER_OF_MONTH, VIEW_AS, canGivePoints, canManage, canPublish, positionLabel, CHANNELS, LOOKING, MESSAGES, STARTUPS, SUPPORT, TODAY, CVS, EVENTS, FEED, ME, NOTIFICATIONS, OFFERS, PEOPLE, STAMPS, COMPANIES, TYPE_COUNTS, FAMILIES, TYPE_NAMES, familyOf, levelFor } from './data.js';
 
 const KEY = 'start-panel-demo';
 
@@ -34,7 +34,7 @@ function fresh() {
     points: [],
     applications: [],
     changes: {}, // cambios de cargo hechos desde Gestión › Personas
-    prefs: { notif: { anuncios: true, eventos: true, ofertas: true, canales: false, mensajes: true }, privacy: { gente: true, email: true, cv: true } },
+    prefs: { notif: { anuncios: true, eventos: true, ofertas: true, canales: false }, privacy: { gente: true, email: true, cv: true } },
     settings: { ...DEMO_DEFAULTS },
   };
 }
@@ -101,7 +101,7 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
   };
   const messagesOf = (id) => [...(MESSAGES[id] ?? []), ...(state.sent[id] ?? [])].map((m) => ({ ...m, person: person(m.from), mine: m.from === state.me.id, reactions: m.reactions ?? {}, myReactions: state.reactions[m.id] ?? {} }));
   const unreadOf = (id) => Math.max(0, (MESSAGES[id]?.length ?? 0) - (state.channelRead[id] ?? (id === 'podcast' || id === 'startups' ? 99 : 0)));
-  const badges = () => ({ comunidad: state.settings.empty ? 0 : CHANNELS.reduce((n, c) => n + unreadOf(c.id), 0) + DMS.filter((d) => !state.channelRead[`dm:${d.id}`] && d.messages.at(-1).from !== state.me.id).length });
+  const badges = () => ({ comunidad: state.settings.empty ? 0 : CHANNELS.reduce((n, c) => n + unreadOf(c.id), 0) });
 
   const actions = {
     me: () => ({ me: { ...decoratePerson(meNow()), badges: badges(), viewAs: state.settings.viewAs } }),
@@ -332,19 +332,17 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
     },
 
     channels: () => {
-      if (state.settings.empty) return { channels: [], dms: [] };
+      if (state.settings.empty) return { channels: [] };
       const channels = CHANNELS.map((c) => { const m = messagesOf(c.id).at(-1); return { ...c, last: m, unread: unreadOf(c.id), muted: false }; });
-      const dms = DMS.map((d) => { const m = [...d.messages, ...(state.sent[`dm:${d.id}`] ?? [])].at(-1); return { id: d.id, person: decoratePerson(person(d.with)), last: { ...m, mine: m.from === state.me.id }, unread: !state.channelRead[`dm:${d.id}`] && m.from !== state.me.id ? 1 : 0 }; });
-      return { channels, dms };
+      return { channels };
     },
     channel: ({ id }) => {
-      const dm = id.startsWith('dm:') ? DMS.find((d) => `dm:${d.id}` === id) : null;
-      const c = dm ? { id, name: person(dm.with).name, person: decoratePerson(person(dm.with)), dm: true } : CHANNELS.find((x) => x.id === id);
+      const c = CHANNELS.find((x) => x.id === id);
       if (!c) throw new Error('Este canal ya no existe.');
-      const messages = dm ? [...dm.messages, ...(state.sent[id] ?? [])].map((m) => ({ ...m, person: person(m.from), mine: m.from === state.me.id, reactions: {}, myReactions: {} })) : messagesOf(id);
-      state.channelRead = { ...state.channelRead, [id]: dm ? true : MESSAGES[id]?.length ?? 0 };
+      const messages = messagesOf(id);
+      state.channelRead = { ...state.channelRead, [id]: MESSAGES[id]?.length ?? 0 };
       save();
-      return { channel: { ...c, members: dm ? 2 : c.id === 'anuncios' ? 212 : 140 + c.name.length }, messages };
+      return { channel: { ...c, members: c.id === 'anuncios' ? 212 : 140 + c.name.length }, messages };
     },
     'channel.send': ({ id, text }) => {
       const t = String(text ?? '').trim();
