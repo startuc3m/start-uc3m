@@ -1,57 +1,41 @@
-import { useDeferredValue, useRef, useState } from 'react';
-import { OFFER_KINDS } from '../data.js';
+import { useRef, useState } from 'react';
 import Icon from '../ui/Icon.jsx';
 import { Avatar, Empty, Img, Load, OfferLogo, Rolling, Sheet, Skeleton, Stack, burst, roleLine, useApp } from '../ui/pieces.jsx';
 import { back, go, useApi } from '../router.js';
 import { PageTitle } from './comunidad.jsx';
 
-// Un único tablón: todas las oportunidades en una lista, con buscador y filtro por tipo.
-// Lo tuyo y lo que te interesa se marca en cada fila (antes eran pestañas aparte).
+// Un único tablón: todas las oportunidades de una vez, una fila cada una.
+// Sin buscador ni filtros; lo tuyo y lo que te interesa se marca en la fila.
 export function Ofertas() {
   const { api, me, wide } = useApp();
-  const [text, setText] = useState('');
-  const [kind, setKind] = useState(null);
-  const qText = useDeferredValue(text);
-  const q = useApi(api, 'offers', { kind, q: qText }, [kind, qText]);
+  const q = useApi(api, 'offers', {}, []);
   const [selected, setSelected] = useState(null);
   return (
     <>
       <PageTitle sub="Prácticas, proyectos, becas y hackathons, en un sitio." action={me.canPublish && <a className="btn btn--primary press only-desk" href="#/ofertas/publicar"><Icon name="plus" size={18} /> Publicar</a>}>Oportunidades</PageTitle>
-      <div className="toolbar">
-        <label className="search"><Icon name="search" /><span className="sr-only">Buscar</span><input type="search" placeholder="Buscar prácticas, becas, hackathons…" value={text} onChange={(e) => setText(e.target.value)} enterKeyHint="search" />{text && <button className="search-clear press" onClick={() => setText('')} aria-label="Borrar búsqueda"><Icon name="x" size={16} /></button>}</label>
-        <div className="pills" role="group" aria-label="Tipo">
-          <button className="pill press" aria-pressed={!kind} onClick={() => setKind(null)}>Todo</button>
-          {OFFER_KINDS.map((k) => <button key={k} className="pill press" aria-pressed={kind === k} onClick={() => setKind(kind === k ? null : k)}>{k === 'Beca' ? 'Becas' : k === 'Hackathon' ? 'Hackathons' : k === 'Proyecto' ? 'Proyectos' : k}</button>)}
-        </div>
-      </div>
       <div className="two-col two-col--detail">
         <div className="col-main">
-          <Load q={q} skeleton={<Skeleton h={128} n={4} />}>
+          <Load q={q} skeleton={<Skeleton h={64} n={7} />}>
             {(d) => d.offers.length === 0 ? (
-              (text || kind) ? <Empty icon="search" title="Nada con esos filtros" action={<button className="btn btn--soft press" onClick={() => { setText(''); setKind(null); }}>Quitar filtros</button>}>Prueba con otra palabra o con otro tipo.</Empty>
-                : <Empty icon="briefcase" title="No hay oportunidades ahora mismo">Te avisaremos con la campana cuando se publique una.</Empty>
+              <Empty icon="briefcase" title="No hay oportunidades ahora mismo">Te avisaremos con la campana cuando se publique una.</Empty>
             ) : (
-              <>
-              <p className="t-soft num" aria-live="polite">{d.offers.length} {d.offers.length === 1 ? 'oportunidad' : 'oportunidades'}</p>
-              <ul className="offer-list">
+              <ul className="card news">
                 {d.offers.map((o) => {
                   const sel = wide && (selected ?? d.offers[0].id) === o.id;
                   return (
                     <li key={o.id}>
-                      <a className="card offer-row press" href={`#/oferta/${o.id}`} aria-current={sel ? 'true' : undefined} onClick={(e) => { if (wide) { e.preventDefault(); setSelected(o.id); } }}>
-                        <OfferLogo company={o.company} />
+                      <a className="news-row press" href={`#/oferta/${o.id}`} aria-current={sel ? 'true' : undefined} style={sel ? { background: 'var(--paper-2)' } : undefined} onClick={(e) => { if (wide) { e.preventDefault(); setSelected(o.id); } }}>
+                        <OfferLogo company={o.company} size={40} />
                         <span className="grow">
-                          <span className="top"><span className={`chip bg-${o.kindColor}`}>{o.kind}</span><span>{o.deadline}</span>{o.isInterested && <span className="fav"><Icon name="check" size={15} /> Te interesa</span>}{o.isMine && <span className="chip bg-lavender">Tuya</span>}</span>
-                          <span className="t">{o.title}</span>
-                          <span className="t-soft">{o.company.name}{o.company.isStart ? ` · ${o.company.note}` : ' (ejemplo)'}</span>
-                          {o.interestedCount > 0 && <span className="proof"><Stack people={o.interestedPeople} /><span className="num">{o.interestedCount} de Start se han apuntado</span></span>}
+                          <span className="news-text" style={{ fontWeight: 700 }}>{o.title}</span>
+                          <span className="t-soft news-by">{o.company.name} · {o.kind} · {o.deadline}</span>
                         </span>
+                        {o.isMine ? <span className="chip bg-lavender">Tuya</span> : o.isInterested && <span className="fav"><Icon name="check" size={15} /> Te interesa</span>}
                       </a>
                     </li>
                   );
                 })}
               </ul>
-              </>
             )}
           </Load>
         </div>
