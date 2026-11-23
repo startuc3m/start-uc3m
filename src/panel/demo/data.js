@@ -122,43 +122,43 @@ export const COMPANIES = {
 
 export const OFFERS = [
   {
-    id: 'growth', closes: '2026-12-05', title: 'Prácticas de growth', company: 'lumen', kind: 'Prácticas', kindColor: 'cyan', deadline: 'Hasta el 5 dic',
+    id: 'growth', posted: '2026-11-18', closes: '2026-12-05', title: 'Prácticas de growth', company: 'lumen', kind: 'Prácticas', kindColor: 'cyan', deadline: 'Hasta el 5 dic',
     place: 'Híbrida · Madrid', duration: '6 meses', hours: '20 h/semana', pay: 'Remunerada', cover: 'oficina',
     desc: 'Buscan a alguien de ADE, Marketing o Economía para el equipo de crecimiento: campañas, análisis de datos y pruebas A/B. 20 h a la semana, remunerado y compatible con clases.',
     contact: 'Hugo', interested: ['lucia', 'diego', 'sara', 'hugo', 'marta', 'pablo', 'gema', 'andres', 'carla', 'jorge', 'ines', 'lidia'], isNew: true,
   },
   {
-    id: 'astro', closes: '2026-12-10', title: 'Desarrollo web con Astro', company: 'start', kind: 'Proyecto', kindColor: 'lavender', deadline: 'Hasta el 10 dic',
+    id: 'astro', posted: '2026-11-20', closes: '2026-12-10', title: 'Desarrollo web con Astro', company: 'start', kind: 'Proyecto', kindColor: 'lavender', deadline: 'Hasta el 10 dic',
     place: 'Remoto', duration: '3 meses', hours: '5 h/semana', pay: 'Voluntario', cover: 'equipo',
     desc: 'Ayúdanos con la web de Start: páginas nuevas, rendimiento y el área de socios. Aprendes Astro, React y a trabajar con PRs revisadas.',
     contact: 'Álvaro', interested: ['pablo', 'carla', 'jorge', 'ines'], mine: true,
   },
   {
-    id: 'analista', closes: '2026-12-15', title: 'Analista de inversión junior', company: 'arrayan', kind: 'Prácticas', kindColor: 'cyan', deadline: 'Hasta el 15 dic',
+    id: 'analista', posted: '2026-11-02', closes: '2026-12-15', title: 'Analista de inversión junior', company: 'arrayan', kind: 'Prácticas', kindColor: 'cyan', deadline: 'Hasta el 15 dic',
     place: 'Presencial · Madrid', duration: '6 meses', hours: '25 h/semana', pay: 'Remunerada', cover: 'pitch',
     desc: 'Análisis de startups en fase semilla: due diligence, modelos financieros y seguimiento de cartera. Perfil de Economía, ADE o Matemáticas.',
     contact: 'Diego', interested: ['hugo', 'ines', 'jorge', 'diego', 'ivan', 'marta', 'pablo', 'lucia', 'elena'],
   },
   {
-    id: 'invest', closes: '2026-11-30', title: 'Voluntariado Start to Invest', company: 'start', kind: 'Voluntariado', kindColor: 'yellow', deadline: '30 nov',
+    id: 'invest', posted: '2026-11-16', closes: '2026-11-30', title: 'Voluntariado Start to Invest', company: 'start', kind: 'Voluntariado', kindColor: 'yellow', deadline: '30 nov',
     place: 'Campus de Getafe', duration: '1 día', hours: '6 h', pay: 'Sello INVEST', cover: 'sala',
     desc: 'Recepción, acreditaciones y apoyo en las mesas del Start to Invest. Comida incluida y sello del evento.',
     contact: 'Lidia', interested: ['gema', 'andres', 'elena', 'hugo', 'lucia', 'sara', 'paula'],
   },
   {
-    id: 'hardware', closes: '2026-12-20', title: 'Prototipado de hardware', company: 'kilo', kind: 'Prácticas', kindColor: 'cyan', deadline: 'Hasta el 20 dic',
+    id: 'hardware', posted: '2026-10-28', closes: '2026-12-20', title: 'Prototipado de hardware', company: 'kilo', kind: 'Prácticas', kindColor: 'cyan', deadline: 'Hasta el 20 dic',
     place: 'Leganés', duration: '4 meses', hours: '20 h/semana', pay: 'Remunerada', cover: 'portatiles',
     desc: 'Electrónica, impresión 3D y pruebas de campo con un equipo de cinco personas.',
     contact: 'Mario', interested: ['mario', 'pablo'],
   },
   {
-    id: 'hack-ia', closes: '2027-02-01', title: 'Hackathon de IA para el bien común', company: 'racks', kind: 'Hackathon', kindColor: 'lime', deadline: 'Hasta el 1 feb',
+    id: 'hack-ia', posted: '2026-11-19', closes: '2027-02-01', title: 'Hackathon de IA para el bien común', company: 'racks', kind: 'Hackathon', kindColor: 'lime', deadline: 'Hasta el 1 feb',
     place: 'Campus de Leganés', duration: '2 días', hours: '13–14 feb', pay: 'Premios', cover: 'portatiles',
     desc: 'Equipos de 3 a 5 personas, retos de ONG reales y mentores de la industria. No hace falta saber programar: también se buscan perfiles de negocio y diseño.',
     contact: 'Pablo', interested: ['pablo', 'carla', 'lucia'],
   },
   {
-    id: 'beca-mvp', closes: '2027-01-15', title: 'Ayuda para tu primer MVP', company: 'fundacion', kind: 'Beca', kindColor: 'yellow', deadline: 'Hasta el 15 ene',
+    id: 'beca-mvp', posted: '2026-10-20', closes: '2027-01-15', title: 'Ayuda para tu primer MVP', company: 'fundacion', kind: 'Beca', kindColor: 'yellow', deadline: 'Hasta el 15 ene',
     place: 'Remoto', duration: '3 meses', hours: 'Libre', pay: '500 € + mentoría', cover: 'oficina',
     desc: 'Para socios con una idea en marcha: 500 € para construir la primera versión y tres sesiones con un mentor.',
     contact: 'Lidia', interested: ['jorge', 'ines'],
@@ -170,36 +170,34 @@ export const OFFER_KINDS = ['Prácticas', 'Proyecto', 'Voluntariado', 'Hackathon
 // consigue al fichar con el QR; los pasados ya no se pueden apuntar.
 export const TODAY = '2026-11-21';
 export const EVENTS = [
-  { id: 'canas-nov', title: 'Cañas de noviembre', date: '2026-11-27', time: '19:30', where: 'La Oficina, Getafe', kind: 'Social', price: 'Gratis', stamp: 'canasNov', cover: 'equipo', going: ['jorge', 'pablo', 'lucia', 'diego'], goingCount: 35,
+  { id: 'canas-nov', posted: '2026-11-17', title: 'Cañas de noviembre', date: '2026-11-27', time: '19:30', where: 'La Oficina, Getafe', kind: 'Social', price: 'Gratis', stamp: 'canasNov', cover: 'equipo', going: ['jorge', 'pablo', 'lucia', 'diego'], goingCount: 35,
     desc: 'Las cañas de cada mes: llega quien quiera, se presenta la gente nueva y se cuenta en qué anda cada uno. Ficha con tu QR en la puerta.' },
-  { id: 'invest', title: 'Start to Invest', date: '2026-11-30', time: '10:00', where: 'Campus de Getafe', kind: 'Formación', price: 'Gratis para socios', stamp: 'invest', cover: 'sala', going: ['lucia', 'pablo', 'sara', 'diego', 'hugo'], goingCount: 23,
+  { id: 'invest', posted: '2026-11-05', title: 'Start to Invest', date: '2026-11-30', time: '10:00', where: 'Campus de Getafe', kind: 'Formación', price: 'Gratis para socios', stamp: 'invest', cover: 'sala', going: ['lucia', 'pablo', 'sara', 'diego', 'hugo'], goingCount: 23,
     desc: 'Una mañana con fondos y business angels: cómo se decide una inversión, qué miran en un pitch y ronda de preguntas. Plazas limitadas.' },
-  { id: 'podcast-38', title: 'Podcast en directo', date: '2026-12-03', time: '18:00', where: 'Campus Puerta de Toledo', kind: 'Podcast', price: 'Gratis', stamp: 'podcast', cover: 'pitch', going: ['gema', 'andres', 'jorge'], goingCount: 49,
+  { id: 'podcast-38', posted: '2026-11-19', title: 'Podcast en directo', date: '2026-12-03', time: '18:00', where: 'Campus Puerta de Toledo', kind: 'Podcast', price: 'Gratis', stamp: 'podcast', cover: 'pitch', going: ['gema', 'andres', 'jorge'], goingCount: 49,
     desc: 'Grabamos un episodio con público. Al final hay turno de preguntas para la invitada.' },
-  { id: 'cena', title: 'Cena de Navidad', date: '2026-12-18', time: '21:00', where: 'Madrid centro', kind: 'Social', price: '25 € socios', membersOnly: true, stamp: 'cena', cover: 'equipo', going: ['lidia', 'gema', 'jorge'], goingCount: 64,
+  { id: 'cena', posted: '2026-11-10', title: 'Cena de Navidad', date: '2026-12-18', time: '21:00', where: 'Madrid centro', kind: 'Social', price: '25 € socios', membersOnly: true, stamp: 'cena', cover: 'equipo', going: ['lidia', 'gema', 'jorge'], goingCount: 64,
     desc: 'Cerramos el cuatrimestre todos juntos. Solo socios; la entrada se paga al apuntarte.' },
-  { id: 'rural', title: 'Casa rural', date: '2027-01-22', end: '2027-01-24', time: '17:00', where: 'Sierra de Gredos', kind: 'Viaje', price: '79 € socios', membersOnly: true, few: 'Quedan 18 plazas', stamp: 'rural27', cover: 'portatiles', going: ['hugo', 'gema', 'pablo'], goingCount: 22,
+  { id: 'rural', posted: '2026-10-30', title: 'Casa rural', date: '2027-01-22', end: '2027-01-24', time: '17:00', where: 'Sierra de Gredos', kind: 'Viaje', price: '79 € socios', membersOnly: true, few: 'Quedan 18 plazas', stamp: 'rural27', cover: 'portatiles', going: ['hugo', 'gema', 'pablo'], goingCount: 22,
     desc: 'Tres días fuera con la gente de Start: talleres por la mañana, monte por la tarde y cena todos juntos.' },
-  { id: 'notion', title: 'Start Skills: Notion para equipos', date: '2026-11-25', time: '18:00', where: 'Campus de Getafe', kind: 'Formación', price: 'Gratis', stamp: 'notion', cover: 'portatiles', going: ['carla', 'pablo', 'gema'], goingCount: 28,
+  { id: 'notion', posted: '2026-11-15', title: 'Start Skills: Notion para equipos', date: '2026-11-25', time: '18:00', where: 'Campus de Getafe', kind: 'Formación', price: 'Gratis', stamp: 'notion', cover: 'portatiles', going: ['carla', 'pablo', 'gema'], goingCount: 28,
     desc: 'Dos horas para montar el Notion de tu equipo: tareas, documentos y bases de datos que se usan de verdad.' },
-  { id: 'cafe', title: 'Café con founders', date: '2026-12-01', time: '10:00', where: 'Cafetería de Leganés', kind: 'Networking', price: 'Gratis', stamp: 'cafe', cover: 'oficina', going: ['jorge', 'ines'], goingCount: 14,
+  { id: 'cafe', posted: '2026-11-12', title: 'Café con founders', date: '2026-12-01', time: '10:00', where: 'Cafetería de Leganés', kind: 'Networking', price: 'Gratis', stamp: 'cafe', cover: 'oficina', going: ['jorge', 'ines'], goingCount: 14,
     desc: 'Desayuno informal con tres founders que salieron de la UC3M. Pregunta lo que quieras.' },
-  { id: 'pitch-dic', title: 'Noche de pitch', date: '2026-12-10', time: '19:00', where: 'Campus Puerta de Toledo', kind: 'Pitch', price: 'Gratis', stamp: 'pitchDic', cover: 'pitch', going: ['diego', 'lucia', 'hugo'], goingCount: 41,
+  { id: 'pitch-dic', posted: '2026-11-20', title: 'Noche de pitch', date: '2026-12-10', time: '19:00', where: 'Campus Puerta de Toledo', kind: 'Pitch', price: 'Gratis', stamp: 'pitchDic', cover: 'pitch', going: ['diego', 'lucia', 'hugo'], goingCount: 41,
     desc: 'Cinco proyectos de socios presentan en tres minutos y el público vota. Al final, cervezas.' },
-  { id: 'after', title: 'Afterwork de diciembre', date: '2026-12-12', time: '20:00', where: 'Madrid centro', kind: 'Social', price: 'Gratis', stamp: 'after', cover: 'equipo', going: ['gema', 'andres'], goingCount: 33,
+  { id: 'after', posted: '2026-11-11', title: 'Afterwork de diciembre', date: '2026-12-12', time: '20:00', where: 'Madrid centro', kind: 'Social', price: 'Gratis', stamp: 'after', cover: 'equipo', going: ['gema', 'andres'], goingCount: 33,
     desc: 'Para cerrar la semana con la gente de Start antes de los exámenes.' },
-  { id: 'feria', title: 'Feria de empleo UC3M', date: '2026-11-06', time: '10:00', where: 'Campus de Leganés', kind: 'Empleo', price: 'Gratis', stamp: 'feria', cover: 'oficina', going: ['marta', 'lucia'], goingCount: 52, past: true,
+  { id: 'feria', posted: '2026-10-15', title: 'Feria de empleo UC3M', date: '2026-11-06', time: '10:00', where: 'Campus de Leganés', kind: 'Empleo', price: 'Gratis', stamp: 'feria', cover: 'oficina', going: ['marta', 'lucia'], goingCount: 52, past: true,
     desc: 'Stand de Start en la feria de empleo de la universidad.' },
-  { id: 'camp', title: 'Start Camp', date: '2026-11-13', end: '2026-11-15', time: '09:00', where: 'Campus de Leganés', kind: 'Hackathon', price: 'Gratis', stamp: 'camp', cover: 'pitch', going: ['lucia', 'hugo', 'carla'], goingCount: 60, past: true,
+  { id: 'camp', posted: '2026-10-01', title: 'Start Camp', date: '2026-11-13', end: '2026-11-15', time: '09:00', where: 'Campus de Leganés', kind: 'Hackathon', price: 'Gratis', stamp: 'camp', cover: 'pitch', going: ['lucia', 'hugo', 'carla'], goingCount: 60, past: true,
     desc: 'Tres días para pasar de una idea a una demo. 14 proyectos presentados.' },
-  { id: 'canas-oct', title: 'Cañas de bienvenida', date: '2026-10-08', time: '19:30', where: 'La Oficina, Getafe', kind: 'Social', price: 'Gratis', stamp: 'canas', cover: 'equipo', going: ['diego', 'gema'], goingCount: 71, past: true,
+  { id: 'canas-oct', posted: '2026-09-25', title: 'Cañas de bienvenida', date: '2026-10-08', time: '19:30', where: 'La Oficina, Getafe', kind: 'Social', price: 'Gratis', stamp: 'canas', cover: 'equipo', going: ['diego', 'gema'], goingCount: 71, past: true,
     desc: 'Las primeras cañas del curso.' },
-  { id: 'build', title: 'Buildathon', date: '2026-09-26', time: '10:00', where: 'Campus de Leganés', kind: 'Hackathon', price: 'Gratis', stamp: 'build', cover: 'sala', going: ['pablo', 'carla', 'jorge'], goingCount: 40, past: true,
+  { id: 'build', posted: '2026-09-10', title: 'Buildathon', date: '2026-09-26', time: '10:00', where: 'Campus de Leganés', kind: 'Hackathon', price: 'Gratis', stamp: 'build', cover: 'sala', going: ['pablo', 'carla', 'jorge'], goingCount: 40, past: true,
     desc: 'Un día construyendo con IA.' },
 ];
 
-// Último anuncio de la Junta (sale en Inicio, en «Lo nuevo en Start»).
-export const ANNOUNCEMENT = { id: 'a2', from: 'hugo', at: '3 h', text: '¡Gracias a las 60 personas que vinisteis al Start Camp! 14 proyectos en tres días. Las fotos ya están en el Drive y el sello en vuestro carné 🙌' };
 
 // El feed «Para ti» se genera solo: eventos, ofertas nuevas, sellos y altas. Nadie
 // tiene que escribirlo, así que nunca se queda viejo.
@@ -228,7 +226,6 @@ export const STARTUPS = [
 ];
 
 // Petición de apoyo en redes que la Junta destaca en Inicio.
-export const SUPPORT = { id: 'reel-camp', title: 'Reel del Start Camp', where: 'Instagram', goal: 200, count: 143, text: 'Un like y compartir en stories ayuda a que llegue a más gente.' };
 
 // Qué busca u ofrece cada persona (lo enseña «Gente para ti»).
 export const LOOKING = {

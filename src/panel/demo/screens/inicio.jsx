@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import Icon from '../ui/Icon.jsx';
-import { Avatar, Carne, Img, Load, OfferLogo, Rolling, Sello, Skeleton, Stack, burst, useApp } from '../ui/pieces.jsx';
+import { Avatar, Carne, Img, Load, OfferLogo, Rolling, Skeleton, Stack, useApp } from '../ui/pieces.jsx';
 import { useApi } from '../router.js';
 import { PullIndicator, usePull } from '../ui/Pull.jsx';
 import { NextTicket, PageTitle } from './comunidad.jsx';
@@ -29,7 +29,7 @@ export function Inicio() {
                 <a className="quick-tile press" href="#/ofertas"><b className="num"><Rolling value={d.counts.oportunidades} /></b><span>oportunidades abiertas</span></a>
               </nav>
               {d.nextEvent && <NextTicket e={d.nextEvent} />}
-              {d.announcement && <Novedades d={d} onChange={q.setData} />}
+              {d.news?.length > 0 && <Novedades news={d.news} />}
               {d.starterOfMonth && <StarterMes s={d.starterOfMonth} compact />}
               {d.events.length > 0 && (
                 <Section title="Próximos eventos" href="#/eventos">
@@ -47,7 +47,7 @@ export function Inicio() {
                   <ul className="rail">{d.startups.map((s) => <li key={s.id}><MiniStartup s={s} /></li>)}</ul>
                 </Section>
               )}
-              <AlDia empty={!d.announcement} />
+              <AlDia empty={!d.news?.length} />
             </div>
             <aside className="col-side">
               <Carne person={me} own />
@@ -70,51 +70,24 @@ function Section({ title, href, sub, children }) {
   );
 }
 
-// Lo nuevo de la Junta: el último anuncio y la petición de apoyo.
-function Novedades({ d, onChange }) {
-  const { api, toast } = useApp();
-  const btn = useRef(null);
-  const s = d.support;
-  const toggle = async () => {
-    const on = !s.supported;
-    onChange((x) => ({ ...x, support: { ...x.support, supported: on, count: x.support.count + (on ? 1 : -1) } }));
-    if (on) { burst(btn.current); navigator.vibrate?.(12); }
-    try { await api('support.toggle', { on }); } catch (e) { onChange((x) => ({ ...x, support: s })); toast(e.message); }
-  };
-  const left = Math.max(0, s.goal - s.count);
+// Lo nuevo en Start: solo lo publicado la última semana en Oportunidades y Eventos.
+function Novedades({ news }) {
   return (
-    <Section title="Lo nuevo en Start">
+    <Section title="Lo nuevo en Start" sub="Lo publicado esta semana en Oportunidades y Eventos">
       <ul className="card news">
-        <li>
-          <div className="news-row">
-            <span className="news-ico is-brand"><Icon name="megaphone" size={19} /></span>
-            <span className="grow">
-              <span className="news-kicker">Anuncio de la Junta · {d.announcement.at}</span>
-              <span className="news-text">{d.announcement.text}</span>
-              <span className="t-soft news-by">{d.announcement.person.name}</span>
-            </span>
-          </div>
-        </li>
-        <li className="news-row">
-          <span className="news-ico"><Icon name="heart" size={19} /></span>
-          <span className="grow">
-            <span className="news-kicker">Start necesita tu apoyo</span>
-            <span className="news-text">{s.title} · {s.where}</span>
-            <span className="support-bar" role="progressbar" aria-valuemin={0} aria-valuemax={s.goal} aria-valuenow={s.count} aria-label="Apoyos"><i style={{ transform: `scaleX(${s.count / s.goal})` }} /></span>
-            <span className="t-soft news-by num">{left ? `Faltan ${left} de ${s.goal} apoyos` : '¡Objetivo conseguido!'}</span>
-          </span>
-          <button ref={btn} className={`btn btn-morph news-btn ${s.supported ? 'btn--soft' : 'btn--lime'} press`} onClick={toggle} aria-pressed={s.supported}>
-            <span key={String(s.supported)} className="btn-label">{s.supported ? <><Icon name="check" size={16} className="check-draw" /> Apoyado</> : 'Apoyar'}</span>
-          </button>
-        </li>
-        {d.stamp && (
-          <li>
-            <a className="news-row press" href="#/perfil">
-              <Sello stamp={d.stamp.stamp} size={44} rotate={-8} />
-              <span className="grow"><span className="news-text">{d.stamp.count} personas consiguieron el sello {d.stamp.stamp.name}</span>{d.stamp.mine && <span className="t-marker news-mark">Tú también. Ya llevas {d.stamp.myCount}.</span>}</span>
+        {news.map((n) => (
+          <li key={`${n.kind}-${n.id}`}>
+            <a className="news-row press" href={n.href}>
+              {n.kind === 'offer' ? <OfferLogo company={n.company} size={40} /> : <span className="news-ico is-brand"><Icon name="calendar" size={19} /></span>}
+              <span className="grow">
+                <span className="news-kicker">{n.kind === 'offer' ? 'Oportunidad nueva' : 'Evento nuevo'} · {n.ago}</span>
+                <span className="news-text" style={{ fontWeight: 700 }}>{n.title}</span>
+                <span className="t-soft news-by">{n.by}</span>
+              </span>
+              <Icon name="chevron-right" className="t-soft" />
             </a>
           </li>
-        )}
+        ))}
       </ul>
     </Section>
   );

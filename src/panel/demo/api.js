@@ -3,7 +3,7 @@
 // que exista el backend se cambia este archivo y las pantallas no se tocan.
 // El estado de la demo vive en localStorage para que «Me interesa», los sellos o
 // el perfil sobrevivan a una recarga; «Reiniciar demo» lo borra.
-import { AUTHORIZED, DEMO_CODE, POINTS_BASE, STARTER_OF_MONTH, VIEW_AS, canGivePoints, canManage, canPublish, positionLabel, ANNOUNCEMENT, LOOKING, STARTUPS, SUPPORT, TODAY, CVS, EVENTS, FEED, ME, NOTIFICATIONS, OFFERS, PEOPLE, STAMPS, COMPANIES, TYPE_COUNTS, FAMILIES, TYPE_NAMES, familyOf, levelFor } from './data.js';
+import { AUTHORIZED, DEMO_CODE, POINTS_BASE, STARTER_OF_MONTH, VIEW_AS, canGivePoints, canManage, canPublish, positionLabel, LOOKING, STARTUPS, TODAY, CVS, EVENTS, FEED, ME, NOTIFICATIONS, OFFERS, PEOPLE, STAMPS, COMPANIES, TYPE_COUNTS, FAMILIES, TYPE_NAMES, familyOf, levelFor } from './data.js';
 
 const KEY = 'start-panel-demo';
 
@@ -26,7 +26,6 @@ function fresh() {
     offers: [],
     status: {},
     going: ['canas-nov'],
-    supported: false,
     points: [],
     applications: [],
     changes: {}, // cambios de cargo hechos desde Gestión › Personas
@@ -59,6 +58,14 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
   const people = () => PEOPLE.map((x) => person(x.id));
   const pointsOf = (id) => (POINTS_BASE[id] ?? 0) + state.points.filter((x) => x.person === id).reduce((n, x) => n + x.points, 0);
   const allOffers = () => [...state.offers, ...OFFERS];
+  // «Lo nuevo en Start»: solo lo publicado la última semana en Oportunidades y Eventos.
+  const DAY = 86400000;
+  const daysAgo = (iso) => Math.round((new Date(TODAY) - new Date(iso ?? '2000-01-01')) / DAY);
+  const agoLabel = (n) => (n <= 0 ? 'hoy' : n === 1 ? 'ayer' : `hace ${n} días`);
+  const news = (events, offers) => [
+    ...offers.filter((o) => daysAgo(o.posted) <= 7).map((o) => ({ kind: 'offer', id: o.id, href: `#/oferta/${o.id}`, title: o.title, by: `${o.company.name} · ${o.kind}`, company: o.company, days: daysAgo(o.posted) })),
+    ...events.filter((e) => daysAgo(e.posted) <= 7).map((e) => ({ kind: 'event', id: e.id, href: `#/evento/${e.id}`, title: e.title, by: `${e.when} · ${e.where}`, days: daysAgo(e.posted) })),
+  ].sort((a, b) => a.days - b.days).map((x) => ({ ...x, ago: agoLabel(x.days) }));
   const decorateOffer = (o) => {
     const mine = state.interests.includes(o.id);
     const interested = o.interested.filter((id) => id !== state.me.id);
@@ -191,7 +198,7 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
     'offer.create': (input) => {
       const title = String(input.title ?? '').trim();
       if (!title) throw new Error('Ponle un título a la oferta.');
-      const o = { id: `o${Date.now()}`, title, company: 'start', kind: input.kind || 'Proyecto', kindColor: 'lavender', deadline: input.deadline || 'Sin fecha', place: input.place || 'Por definir', duration: '—', hours: '—', pay: '—', cover: 'equipo', desc: input.desc || '', contact: state.me.name.split(' ')[0], interested: [], createdByMe: true };
+      const o = { id: `o${Date.now()}`, posted: TODAY, title, company: 'start', kind: input.kind || 'Proyecto', kindColor: 'lavender', deadline: input.deadline || 'Sin fecha', place: input.place || 'Por definir', duration: '—', hours: '—', pay: '—', cover: 'equipo', desc: input.desc || '', contact: state.me.name.split(' ')[0], interested: [], createdByMe: true };
       state.offers = [o, ...state.offers];
       save();
       return { offer: decorateOffer(o) };
@@ -205,18 +212,16 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
       const newcomers = PEOPLE.filter((x) => x.isNew);
       const same = PEOPLE.filter((x) => x.career === state.me.career && !x.isNew);
       const people = [...newcomers.slice(0, 3), ...same.slice(0, 2)].map((x) => ({ ...decoratePerson(x), looking: LOOKING[x.id] ?? x.bio, reason: x.isNew ? 'Nuevo en Start' : 'Estudia lo mismo que tú' }));
-      if (empty) return { counts: { planes: 0, gente: 0, oportunidades: 0 }, nextEvent: null, announcement: null, support: null, events: [], offers: [], people: [], startups: [], stamp: null };
+      if (empty) return { counts: { planes: 0, gente: 0, oportunidades: 0 }, nextEvent: null, news: [], events: [], offers: [], people: [], startups: [] };
       return {
         counts: { planes: events.length, gente: PEOPLE.filter((x) => x.active !== false).length + 1, oportunidades: offers.filter((o) => !o.isInterested && (o.daysLeft ?? 99) >= 0).length },
         nextEvent: events.find((e) => e.isGoing) ?? null,
-        announcement: { ...ANNOUNCEMENT, person: person(ANNOUNCEMENT.from) },
-        support: { ...SUPPORT, count: SUPPORT.count + (state.supported ? 1 : 0), supported: state.supported },
+        news: news(events, offers),
         events: events.slice(0, 5),
         offers: offers.filter((o) => !o.isInterested && !o.isMine).sort((a, b) => b.interestedCount - a.interestedCount).slice(0, 4),
         people,
         startups: STARTUPS.map((x) => ({ ...x, founder: decoratePerson(person(x.founder)) })),
         starterOfMonth: { ...STARTER_OF_MONTH, person: decoratePerson(person(STARTER_OF_MONTH.person)) },
-        stamp: { stamp: STAMPS.camp, count: 48, mine: state.me.stamps.includes('camp'), myCount: state.me.stamps.length },
       };
     },
     // Acceso solo para correos autorizados: pides un código y te llega al correo (6 cifras).
@@ -302,7 +307,6 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
       return { points: pointsOf(pid) };
     },
 
-    'support.toggle': ({ on }) => { state.supported = on; save(); return { count: SUPPORT.count + (on ? 1 : 0), supported: on }; },
 
     events: ({ tab = 'proximos' } = {}) => {
       if (state.settings.empty) return { events: [], all: [] };
