@@ -260,7 +260,7 @@ export const VIEW_AS = {
 
 // Puntos del mes (propuesta de #87: asistencia = 10 por evento, más los puntos manuales).
 export const POINTS_BASE = { hugo: 85, lucia: 70, lidia: 55, gema: 60, alvaro: 50, carla: 45, andres: 40, marta: 30, jorge: 20 };
-export const STARTER_OF_MONTH = { month: 'octubre', person: 'hugo', points: 120, why: 'Montó el Start Camp y fichó en todos los eventos.' };
+export const STARTER_OF_MONTH = { month: 'octubre', person: 'hugo', points: 120 };
 
 // Correos autorizados (en el backend real: panel_members, los que IT o la Junta han invitado).
 export const AUTHORIZED = ['nora.prieto@alumnos.uc3m.es', 'ivan.soler@alumnos.uc3m.es', 'alvaro.carpintero@alumnos.uc3m.es', 'elena.vidal@alumnos.uc3m.es'];

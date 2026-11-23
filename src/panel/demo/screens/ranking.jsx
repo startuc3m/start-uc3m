@@ -65,7 +65,6 @@ export function StarterMes({ s, compact = false }) {
           <p className="som-pos">{roleLine(s.person)}</p>
         </div>
       </div>
-      <p className="som-why t-marker">«{s.why}»</p>
       <div className="som-foot">
         <span className="som-pts"><b className="num">{s.points}</b> pts</span>
         <a className="som-in press" href={s.person.linkedin} target="_blank" rel="noreferrer" aria-label={`LinkedIn de ${first}`}><Icon name="linkedin" size={18} /></a>

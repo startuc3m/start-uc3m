@@ -442,7 +442,6 @@
 .som--compact { padding-top: 26px; }
 .som-name { font-size: 18px; line-height: 1.2; }
 .som-pos { font-size: 13px; font-weight: 600; opacity: .8; }
-.som-why { font-size: 14px; margin-top: 4px; }
 .som-in { width: 38px; height: 38px; border-radius: 99px; background: var(--ink-fixed); color: var(--lime); display: grid; place-items: center; flex: none; position: relative; z-index: 1; }
 .give-hint { display: flex; gap: 10px; align-items: center; padding: 12px 14px; font-size: 14px; background: color-mix(in srgb, var(--brand-text) 8%, var(--surface)); }
 .rank { padding: 0; overflow: hidden; }
@@ -574,7 +573,6 @@
 .som-text { min-width: 0; }
 .som-name { font-size: 22px; font-weight: 700; line-height: 1.15; }
 .som-pos { color: var(--lavender); font-size: 14px; margin-top: 2px; }
-.som-why { color: #fff; font-size: 17px; line-height: 1.35; }
 .som-foot { display: flex; align-items: center; gap: 10px; margin-top: 2px; }
 .som-pts { font-size: 14px; color: var(--lavender); margin-right: auto; }
 .som-pts b { font-family: var(--f-display); font-weight: 400; font-size: 30px; color: var(--lime); }
