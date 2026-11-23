@@ -4,7 +4,7 @@ import { Avatar, Empty, FakeQr, Load, Rolling, Skeleton, roleLine, useApp } from
 import { useApi } from '../router.js';
 import { ComunidadHead, PageTitle } from './comunidad.jsx';
 
-// Puntos y Starter del mes. Se suman 10 por fichar en un evento y los QR de puntos:
+// Puntos y Starter del mes. Se suman los puntos de cada evento al fichar (si vale algo) y los QR de puntos:
 // solo la Junta los crea y cada persona puede escanear cada uno una vez. Ranking: solo Starters.
 export function Ranking() {
   const { api, me } = useApp();
@@ -12,7 +12,7 @@ export function Ranking() {
   return (
     <>
       <ComunidadHead current="ranking" />
-      <p className="t-soft" style={{ fontSize: 14 }}>Puntos: 10 por fichar en cada evento, más los QR de puntos de la Junta (cada uno se escanea una vez).</p>
+      <p className="t-soft" style={{ fontSize: 14 }}>Puntos: los que valga cada evento al fichar (si vale algo), más los QR de puntos de la Junta (cada uno se escanea una vez).</p>
       <Load q={q} skeleton={<><div className="skel" style={{ height: 170 }} /><Skeleton h={60} n={6} /></>}>
         {(d) => (
           <div className="two-col">

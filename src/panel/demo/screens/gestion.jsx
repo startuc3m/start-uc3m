@@ -13,6 +13,7 @@ const MATRIX = [
   ['Usar la app, tener perfil y CV, fichar en eventos', ['✓', '✓', '✓', '✓', '✓']],
   ['Publicar oportunidades y ver a sus interesados', ['', '', '✓', '', '✓']],
   ['Crear QR de puntos', ['', '', '', '', '✓']],
+  ['Decidir cuántos puntos vale cada evento', ['', '', '', '', '✓']],
   ['Sumar puntos escaneando un QR de puntos (una vez cada QR)', ['✓', '✓', '✓', '✓', '✓']],
   ['Invitar a socios nuevos con tu QR (Comunidad) y sumar puntos', ['✓', '✓', '✓', '✓', '✓']],
 ];

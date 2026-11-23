@@ -35,7 +35,7 @@ export default function DemoPanel() {
           <div className="opts" style={{ flexWrap: 'wrap', display: 'flex', gap: 6 }}>
             <button className="pill press" onClick={async () => {
               setOpen(false);
-              const r = await api('checkin', { stamp: 'invest' });
+              const r = await api('checkin', { event: 'invest' });
               await refreshMe();
               if (!r.isNew) return toast('Ya tienes el sello INVEST. Reinicia la demo para verlo otra vez.');
               celebrate({ kind: 'stamp', title: '¡Sello nuevo!', text: `Has fichado en ${r.stamp.name}. Ya llevas ${r.level.count} sellos.`, stamp: r.stamp, level: r.level, levelUp: r.levelUp, cta: 'Ver mis sellos', onDone: () => go('/perfil') });

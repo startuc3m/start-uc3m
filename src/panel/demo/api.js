@@ -3,7 +3,7 @@
 // que exista el backend se cambia este archivo y las pantallas no se tocan.
 // El estado de la demo vive en localStorage para que «Me interesa», los sellos o
 // el perfil sobrevivan a una recarga; «Reiniciar demo» lo borra.
-import { AUTHORIZED, DEMO_CODE, POINTS_BASE, REFERRAL_POINTS, STARTER_OF_MONTH, VIEW_AS, canCreatePointsQr, canManage, canPublish, positionLabel, LOOKING, STARTUPS, TODAY, CVS, EVENTS, FEED, ME, NOTIFICATIONS, OFFERS, PEOPLE, STAMPS, COMPANIES, TYPE_COUNTS, FAMILIES, TYPE_NAMES, familyOf, levelFor } from './data.js';
+import { AUTHORIZED, DEMO_CODE, POINTS_BASE, REFERRAL_POINTS, STARTER_OF_MONTH, VIEW_AS, canCreatePointsQr, canSetEventPoints, canManage, canPublish, positionLabel, LOOKING, STARTUPS, TODAY, CVS, EVENTS, FEED, ME, NOTIFICATIONS, OFFERS, PEOPLE, STAMPS, COMPANIES, TYPE_COUNTS, FAMILIES, TYPE_NAMES, familyOf, levelFor } from './data.js';
 
 const KEY = 'start-panel-demo';
 
@@ -28,6 +28,8 @@ function fresh() {
     going: ['canas-nov'],
     points: [],
     // QR de puntos que crea la Junta. scans: quién lo ha escaneado (cada persona, una vez).
+    eventPoints: {}, // puntos de evento cambiados por la Junta: { [id]: n }
+    checkins: [], // eventos en los que has fichado (los puntos de cada evento, una vez)
     pointQrs: [{ code: 'CAFE24', points: 10, reason: 'Café con founders', by: 'lidia', at: '20 nov', scans: ['lucia', 'hugo', 'gema'] }],
     referrals: [], // socios nuevos que entraron con el QR de invitación de alguien
     applications: [],
@@ -97,12 +99,14 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
     return { ...x, family: familyOf(x.type), typeName: TYPE_NAMES[x.type], level: levelFor(x.stamps.length), stampList: x.stamps.map((s) => STAMPS[s]), positionLabel: positionLabel(x), canManage: canManage(x), canPublish: canPublish(x) };
   };
 
+  const eventPointsOf = (e) => state.eventPoints[e.id] ?? e.points ?? 0;
   const decorateEvent = (e) => {
     const going = state.going.includes(e.id);
     const d = new Date(`${e.date}T12:00:00`);
     const days = Math.round((d - new Date(`${TODAY}T12:00:00`)) / 864e5);
     return {
       ...e,
+      points: eventPointsOf(e), canSetPoints: canSetEventPoints(meNow()),
       day: String(d.getDate()), month: MONTHS[d.getMonth()].slice(0, 3).toUpperCase(),
       when: `${WEEKDAYS[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()].slice(0, 3)} · ${e.time}`,
       inDays: days, relative: e.past ? 'Ya pasó' : days === 0 ? 'Hoy' : days === 1 ? 'Mañana' : `En ${days} días`,
@@ -357,14 +361,33 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
       return { host: { id: host.id, name: host.name, points: REFERRAL_POINTS } };
     },
 
-    // Fichar en un evento con el QR del carné. En la demo siempre da el sello INVEST.
-    checkin: ({ stamp = 'invest' } = {}) => {
-      if (state.me.stamps.includes(stamp)) return { stamp: STAMPS[stamp], isNew: false, level: levelFor(state.me.stamps.length) };
+    // Fichar en un evento con el QR del carné (en la demo, el Start to Invest): da su sello
+    // y, si el evento vale puntos, los suma una vez.
+    checkin: ({ event: id = 'invest' } = {}) => {
+      const e = EVENTS.find((x) => x.id === id);
+      if (!e) throw new Error('Ese evento no existe.');
+      const stamp = e.stamp;
+      const firstTime = !state.checkins.includes(id);
+      const pts = firstTime ? eventPointsOf(e) : 0;
+      if (firstTime) state.checkins = [...state.checkins, id];
+      if (pts > 0) state.points = [...state.points, { person: state.me.id, points: pts, reason: `Fichar en ${e.title}`, by: `evento:${id}`, at: 'ahora' }];
       const before = levelFor(state.me.stamps.length);
-      state.me = { ...state.me, stamps: [...state.me.stamps, stamp] };
+      const isNew = !state.me.stamps.includes(stamp);
+      if (isNew) state.me = { ...state.me, stamps: [...state.me.stamps, stamp] };
       save();
       const after = levelFor(state.me.stamps.length);
-      return { stamp: STAMPS[stamp], isNew: true, level: after, levelUp: after.n > before.n };
+      return { stamp: STAMPS[stamp], isNew, points: pts, level: after, levelUp: after.n > before.n };
+    },
+    // La Junta decide cuántos puntos vale fichar en un evento (0 = no vale puntos).
+    'event.points': ({ id, points }) => {
+      if (!canSetEventPoints(meNow())) throw new Error('Solo la Junta decide los puntos de un evento.');
+      const e = EVENTS.find((x) => x.id === id);
+      if (!e) throw new Error('Ese evento no existe.');
+      const n = Number(points);
+      if (!Number.isInteger(n) || n < 0 || n > 50) throw new Error('Puntos: entre 0 y 50.');
+      state.eventPoints = { ...state.eventPoints, [id]: n };
+      save();
+      return { event: decorateEvent(e) };
     },
 
     notifications: () => ({

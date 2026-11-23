@@ -199,31 +199,31 @@ export const OFFER_KINDS = ['Prácticas', 'Proyecto', 'Voluntariado', 'Hackathon
 // consigue al fichar con el QR; los pasados ya no se pueden apuntar.
 export const TODAY = '2026-11-21';
 export const EVENTS = [
-  { id: 'canas-nov', posted: '2026-11-17', title: 'Cañas de noviembre', date: '2026-11-27', time: '19:30', where: 'La Oficina, Getafe', kind: 'Social', price: 'Gratis', stamp: 'canasNov', cover: 'equipo', going: ['jorge', 'pablo', 'lucia', 'diego'], goingCount: 35,
+  { id: 'canas-nov', points: 10, posted: '2026-11-17', title: 'Cañas de noviembre', date: '2026-11-27', time: '19:30', where: 'La Oficina, Getafe', kind: 'Social', price: 'Gratis', stamp: 'canasNov', cover: 'equipo', going: ['jorge', 'pablo', 'lucia', 'diego'], goingCount: 35,
     desc: 'Las cañas de cada mes: llega quien quiera, se presenta la gente nueva y se cuenta en qué anda cada uno. Ficha con tu QR en la puerta.' },
-  { id: 'invest', posted: '2026-11-05', title: 'Start to Invest', date: '2026-11-30', time: '10:00', where: 'Campus de Getafe', kind: 'Formación', price: 'Gratis para socios', stamp: 'invest', cover: 'sala', going: ['lucia', 'pablo', 'sara', 'diego', 'hugo'], goingCount: 23,
+  { id: 'invest', points: 20, posted: '2026-11-05', title: 'Start to Invest', date: '2026-11-30', time: '10:00', where: 'Campus de Getafe', kind: 'Formación', price: 'Gratis para socios', stamp: 'invest', cover: 'sala', going: ['lucia', 'pablo', 'sara', 'diego', 'hugo'], goingCount: 23,
     desc: 'Una mañana con fondos y business angels: cómo se decide una inversión, qué miran en un pitch y ronda de preguntas. Plazas limitadas.' },
   { id: 'podcast-38', posted: '2026-11-19', title: 'Podcast en directo', date: '2026-12-03', time: '18:00', where: 'Campus Puerta de Toledo', kind: 'Podcast', price: 'Gratis', stamp: 'podcast', cover: 'pitch', going: ['gema', 'andres', 'jorge'], goingCount: 49,
     desc: 'Grabamos un episodio con público. Al final hay turno de preguntas para la invitada.' },
   { id: 'cena', posted: '2026-11-10', title: 'Cena de Navidad', date: '2026-12-18', time: '21:00', where: 'Madrid centro', kind: 'Social', price: '25 € socios', membersOnly: true, stamp: 'cena', cover: 'equipo', going: ['lidia', 'gema', 'jorge'], goingCount: 64,
     desc: 'Cerramos el cuatrimestre todos juntos. Solo socios; la entrada se paga al apuntarte.' },
-  { id: 'rural', posted: '2026-10-30', title: 'Casa rural', date: '2027-01-22', end: '2027-01-24', time: '17:00', where: 'Sierra de Gredos', kind: 'Viaje', price: '79 € socios', membersOnly: true, few: 'Quedan 18 plazas', stamp: 'rural27', cover: 'portatiles', going: ['hugo', 'gema', 'pablo'], goingCount: 22,
+  { id: 'rural', points: 30, posted: '2026-10-30', title: 'Casa rural', date: '2027-01-22', end: '2027-01-24', time: '17:00', where: 'Sierra de Gredos', kind: 'Viaje', price: '79 € socios', membersOnly: true, few: 'Quedan 18 plazas', stamp: 'rural27', cover: 'portatiles', going: ['hugo', 'gema', 'pablo'], goingCount: 22,
     desc: 'Tres días fuera con la gente de Start: talleres por la mañana, monte por la tarde y cena todos juntos.' },
-  { id: 'notion', posted: '2026-11-15', title: 'Start Skills: Notion para equipos', date: '2026-11-25', time: '18:00', where: 'Campus de Getafe', kind: 'Formación', price: 'Gratis', stamp: 'notion', cover: 'portatiles', going: ['carla', 'pablo', 'gema'], goingCount: 28,
+  { id: 'notion', points: 10, posted: '2026-11-15', title: 'Start Skills: Notion para equipos', date: '2026-11-25', time: '18:00', where: 'Campus de Getafe', kind: 'Formación', price: 'Gratis', stamp: 'notion', cover: 'portatiles', going: ['carla', 'pablo', 'gema'], goingCount: 28,
     desc: 'Dos horas para montar el Notion de tu equipo: tareas, documentos y bases de datos que se usan de verdad.' },
-  { id: 'cafe', posted: '2026-11-12', title: 'Café con founders', date: '2026-12-01', time: '10:00', where: 'Cafetería de Leganés', kind: 'Networking', price: 'Gratis', stamp: 'cafe', cover: 'oficina', going: ['jorge', 'ines'], goingCount: 14,
+  { id: 'cafe', points: 10, posted: '2026-11-12', title: 'Café con founders', date: '2026-12-01', time: '10:00', where: 'Cafetería de Leganés', kind: 'Networking', price: 'Gratis', stamp: 'cafe', cover: 'oficina', going: ['jorge', 'ines'], goingCount: 14,
     desc: 'Desayuno informal con tres founders que salieron de la UC3M. Pregunta lo que quieras.' },
-  { id: 'pitch-dic', posted: '2026-11-20', title: 'Noche de pitch', date: '2026-12-10', time: '19:00', where: 'Campus Puerta de Toledo', kind: 'Pitch', price: 'Gratis', stamp: 'pitchDic', cover: 'pitch', going: ['diego', 'lucia', 'hugo'], goingCount: 41,
+  { id: 'pitch-dic', points: 20, posted: '2026-11-20', title: 'Noche de pitch', date: '2026-12-10', time: '19:00', where: 'Campus Puerta de Toledo', kind: 'Pitch', price: 'Gratis', stamp: 'pitchDic', cover: 'pitch', going: ['diego', 'lucia', 'hugo'], goingCount: 41,
     desc: 'Cinco proyectos de socios presentan en tres minutos y el público vota. Al final, cervezas.' },
   { id: 'after', posted: '2026-11-11', title: 'Afterwork de diciembre', date: '2026-12-12', time: '20:00', where: 'Madrid centro', kind: 'Social', price: 'Gratis', stamp: 'after', cover: 'equipo', going: ['gema', 'andres'], goingCount: 33,
     desc: 'Para cerrar la semana con la gente de Start antes de los exámenes.' },
   { id: 'feria', posted: '2026-10-15', title: 'Feria de empleo UC3M', date: '2026-11-06', time: '10:00', where: 'Campus de Leganés', kind: 'Empleo', price: 'Gratis', stamp: 'feria', cover: 'oficina', going: ['marta', 'lucia'], goingCount: 52, past: true,
     desc: 'Stand de Start en la feria de empleo de la universidad.' },
-  { id: 'camp', posted: '2026-10-01', title: 'Start Camp', date: '2026-11-13', end: '2026-11-15', time: '09:00', where: 'Campus de Leganés', kind: 'Hackathon', price: 'Gratis', stamp: 'camp', cover: 'pitch', going: ['lucia', 'hugo', 'carla'], goingCount: 60, past: true,
+  { id: 'camp', points: 30, posted: '2026-10-01', title: 'Start Camp', date: '2026-11-13', end: '2026-11-15', time: '09:00', where: 'Campus de Leganés', kind: 'Hackathon', price: 'Gratis', stamp: 'camp', cover: 'pitch', going: ['lucia', 'hugo', 'carla'], goingCount: 60, past: true,
     desc: 'Tres días para pasar de una idea a una demo. 14 proyectos presentados.' },
   { id: 'canas-oct', posted: '2026-09-25', title: 'Cañas de bienvenida', date: '2026-10-08', time: '19:30', where: 'La Oficina, Getafe', kind: 'Social', price: 'Gratis', stamp: 'canas', cover: 'equipo', going: ['diego', 'gema'], goingCount: 71, past: true,
     desc: 'Las primeras cañas del curso.' },
-  { id: 'build', posted: '2026-09-10', title: 'Buildathon', date: '2026-09-26', time: '10:00', where: 'Campus de Leganés', kind: 'Hackathon', price: 'Gratis', stamp: 'build', cover: 'sala', going: ['pablo', 'carla', 'jorge'], goingCount: 40, past: true,
+  { id: 'build', points: 20, posted: '2026-09-10', title: 'Buildathon', date: '2026-09-26', time: '10:00', where: 'Campus de Leganés', kind: 'Hackathon', price: 'Gratis', stamp: 'build', cover: 'sala', going: ['pablo', 'carla', 'jorge'], goingCount: 40, past: true,
     desc: 'Un día construyendo con IA.' },
 ];
 
@@ -268,6 +268,9 @@ export const canManage = (m) => m?.position === 'junta' || (m?.department === 'I
 export const canPublish = (m) => ['junta', 'responsable'].includes(m?.position);
 // Puntos por QR: solo la Junta crea QR de puntos; cada persona escanea cada QR una sola vez.
 export const canCreatePointsQr = (m) => m?.position === 'junta';
+// Cuántos puntos vale fichar en un evento (0 = no vale puntos): solo la Junta lo decide.
+export const canSetEventPoints = (m) => m?.position === 'junta';
+export const EVENT_POINT_OPTIONS = [0, 5, 10, 20, 30];
 export const positionLabel = (x) => (x.kind !== 'starter' ? 'Socio'
   : x.position === 'junta' ? 'Junta'
     : x.position === 'responsable' ? `Responsable de ${x.department}`
@@ -284,7 +287,8 @@ export const VIEW_AS = {
   junta: { label: 'Junta', patch: { dept: 'Junta', department: 'Junta', position: 'junta', manage_users: false, permissions: ['startskills', 'eventos', 'blog'] } },
 };
 
-// Puntos del mes: 10 por fichar en cada evento, más los QR de puntos que crea la Junta.
+// Puntos del mes: los que valga cada evento al fichar (si vale algo; lo decide la Junta),
+// más los QR de puntos que crea la Junta.
 // Puntos para quien trae a un socio nuevo con su QR de invitación.
 export const REFERRAL_POINTS = 25;
 export const POINTS_BASE = { hugo: 85, lucia: 70, lidia: 55, gema: 60, alvaro: 50, carla: 45, andres: 40, marta: 30, jorge: 20 };

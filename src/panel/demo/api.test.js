@@ -38,9 +38,9 @@ describe('api de la demo', () => {
 
   it('fichar da el sello una sola vez', async () => {
     const { api } = make();
-    const first = await api('checkin', { stamp: 'invest' });
+    const first = await api('checkin', { event: 'invest' });
     expect(first.isNew).toBe(true);
-    expect((await api('checkin', { stamp: 'invest' })).isNew).toBe(false);
+    expect((await api('checkin', { event: 'invest' })).isNew).toBe(false);
     expect((await api('me')).me.stamps).toContain('invest');
   });
 
@@ -106,6 +106,19 @@ describe('roles y puntos (modelo de la PR #87)', () => {
     expect([me.canManage, me.canPublish, me.positionLabel]).toEqual([false, false, 'Socio']);
     await api('demo.settings', { viewAs: 'responsable' });
     expect((await api('me')).me.positionLabel).toBe('Responsable de RRHH');
+  });
+
+  it('los eventos valen los puntos que decida la Junta y se suman una vez al fichar', async () => {
+    const { api } = make();
+    await expect(api('event.points', { id: 'invest', points: 5 })).rejects.toThrow('Solo la Junta');
+    await api('demo.settings', { viewAs: 'junta' });
+    expect((await api('event', { id: 'invest' })).event.points).toBe(20);
+    expect((await api('event.points', { id: 'invest', points: 30 })).event.points).toBe(30);
+    expect((await api('event.points', { id: 'cena', points: 0 })).event.points).toBe(0);
+    const before = (await api('ranking')).ranking.find((x) => x.id === 'alvaro').points;
+    expect((await api('checkin', { event: 'invest' })).points).toBe(30);
+    expect((await api('checkin', { event: 'invest' })).points).toBe(0);
+    expect((await api('ranking')).ranking.find((x) => x.id === 'alvaro').points).toBe(before + 30);
   });
 
   it('solo la Junta crea QR de puntos y cada persona lo escanea una vez', async () => {

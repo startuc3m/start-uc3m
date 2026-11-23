@@ -35,14 +35,14 @@ export default function QrModal({ onClose }) {
     if (phase !== 'idle') return;
     setPhase('scanning');
     let r;
-    try { [r] = await Promise.all([api('checkin', { stamp: 'invest' }), new Promise((ok) => setTimeout(ok, 900))]); }
+    try { [r] = await Promise.all([api('checkin', { event: 'invest' }), new Promise((ok) => setTimeout(ok, 900))]); }
     catch (e) { setPhase('idle'); toast(e.message); return; }
     setPhase('ok');
     navigator.vibrate?.(20);
     await new Promise((ok) => setTimeout(ok, 650));
     await refreshMe();
     onClose();
-    if (r.isNew) celebrate({ kind: 'stamp', title: '¡Sello nuevo!', text: `Has fichado en ${r.stamp.name}. Ya llevas ${r.level.count} sellos.`, stamp: r.stamp, level: r.level, levelUp: r.levelUp, cta: 'Ver mis sellos', onDone: () => go('/perfil') });
+    if (r.isNew) celebrate({ kind: 'stamp', title: '¡Sello nuevo!', text: `Has fichado en ${r.stamp.name}. Ya llevas ${r.level.count} sellos.${r.points ? ` +${r.points} puntos.` : ''}`, stamp: r.stamp, level: r.level, levelUp: r.levelUp, cta: 'Ver mis sellos', onDone: () => go('/perfil') });
     else toast('Ya habías fichado en este evento');
   };
 

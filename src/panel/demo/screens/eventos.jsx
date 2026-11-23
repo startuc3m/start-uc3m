@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import Icon from '../ui/Icon.jsx';
 import { Empty, Img, Load, Rolling, Sello, Skeleton, Stack, useApp } from '../ui/pieces.jsx';
 import { useApi } from '../router.js';
-import { TODAY } from '../data.js';
+import { TODAY, EVENT_POINT_OPTIONS } from '../data.js';
 import { NextTicket, PageTitle } from './comunidad.jsx';
 
 const TABS = [['proximos', '/eventos', 'Próximos'], ['mias', '/eventos/mias', 'Mis entradas'], ['pasados', '/eventos/pasados', 'Pasados']];
@@ -171,12 +171,31 @@ function EventCard({ e }) {
         {e.attended && <span className="chip bg-lime ev-flag"><Icon name="check" size={13} /> Fuiste</span>}
       </span>
       <span className="body">
-        <span className="ev-tags">{e.membersOnly && <span className="chip bg-lavender">Solo socios</span>}{e.few && <span className="chip bg-yellow">{e.few}</span>}<span className="t-mono t-soft">{e.kind}</span></span>
+        <span className="ev-tags">{e.membersOnly && <span className="chip bg-lavender">Solo socios</span>}{e.few && <span className="chip bg-yellow">{e.few}</span>}{e.points > 0 && <span className="chip bg-lime num">+{e.points} pts</span>}<span className="t-mono t-soft">{e.kind}</span></span>
         <b className="title">{e.title}</b>
         <span className="t-soft">{e.when} · {e.where}</span>
         <span className="feed-row"><Stack people={e.goingPeople} /><span className="grow t-soft num">{e.past ? `Fueron ${e.goingCount}` : `${e.isGoing ? 'Tú y ' : ''}${e.goingCount - (e.isGoing ? 1 : 0)} más`}</span><b className="ev-price">{e.price}</b></span>
       </span>
     </a>
+  );
+}
+
+// Puntos por fichar en el evento. Todos ven cuántos vale; la Junta lo cambia aquí.
+function EventPoints({ e, onChange }) {
+  const { api, toast } = useApp();
+  const set = async (n) => {
+    try { const r = await api('event.points', { id: e.id, points: n }); onChange(r.event); toast(n ? `Este evento vale ${n} puntos` : 'Este evento no vale puntos'); }
+    catch (err) { toast(err.message); }
+  };
+  return (
+    <div className="card form" style={{ gap: 10 }}>
+      <span className="feed-row"><Icon name="sparkles" size={18} /><span className="grow"><b>{e.points > 0 ? `Fichar vale ${e.points} puntos` : 'Este evento no vale puntos'}</b><span className="t-soft" style={{ display: 'block', fontSize: 13 }}>{e.points > 0 ? 'Se suman una vez al enseñar tu QR en la puerta.' : 'Fichar da el sello, pero no suma al ranking.'}</span></span></span>
+      {e.canSetPoints && (
+        <div className="pills" role="radiogroup" aria-label="Puntos del evento (Junta)">
+          {EVENT_POINT_OPTIONS.map((v) => <button key={v} type="button" role="radio" aria-checked={e.points === v} aria-pressed={e.points === v} className="pill press" onClick={() => set(v)}>{v ? `+${v}` : 'Sin puntos'}</button>)}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -198,7 +217,7 @@ export function Evento({ params }) {
         return (
           <div className="evento">
             <div className="ev-hero"><Img src={photos[e.cover]} alt={`Foto de ${e.title}`} /><span className="date"><b>{e.day}</b><span>{e.month}</span></span></div>
-            <div className="ev-tags">{e.membersOnly && <span className="chip bg-lavender">Solo socios</span>}{e.few && <span className="chip bg-yellow">{e.few}</span>}<span className="t-mono t-soft">{e.kind}</span></div>
+            <div className="ev-tags">{e.membersOnly && <span className="chip bg-lavender">Solo socios</span>}{e.few && <span className="chip bg-yellow">{e.few}</span>}{e.points > 0 && <span className="chip bg-lime num">+{e.points} pts</span>}<span className="t-mono t-soft">{e.kind}</span></div>
             <h1 className="t-display ev-title">{e.title}_</h1>
             <div className="facts">
               <span className="fact"><Icon name="calendar" className="ico" />{e.when.split(' · ')[0]}</span>
@@ -207,6 +226,7 @@ export function Evento({ params }) {
               <span className="fact"><Icon name="euro" className="ico" />{e.price}</span>
             </div>
             <p className="ev-desc">{e.desc}</p>
+            {(e.points > 0 || e.canSetPoints) && <EventPoints e={e} onChange={(ev) => q.setData({ event: ev })} />}
             <div className="card ev-stamp">
               <Sello stamp={e.stamp} size={64} rotate={-8} empty={!e.attended} />
               <span><b>{e.attended ? `Conseguiste el sello ${e.stamp.label}` : `Sello ${e.stamp.label}`}</b><span className="t-soft" style={{ display: 'block', fontSize: 14 }}>{e.attended ? 'Está en tu perfil.' : e.past ? 'Se daba al fichar en la puerta.' : 'Lo consigues al fichar con tu QR en la puerta.'}</span></span>
