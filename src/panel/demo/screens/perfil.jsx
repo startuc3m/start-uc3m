@@ -137,12 +137,12 @@ export function Editar() {
 
 // Entrada a Gestión: solo si tu cargo te deja gestionar algo dentro de la app.
 function Gestion({ me }) {
-  const n = [me.canPublish, me.position === 'responsable' || me.position === 'junta'].filter(Boolean).length;
+  const n = [me.canPublish, me.position === 'junta'].filter(Boolean).length;
   if (!n) return null;
   return (
     <a className="card gest-entry press" href="#/gestion">
       <span className="gest-ico"><Icon name="shield-check" size={20} /></span>
-      <span className="grow"><b>Gestión</b><span className="t-soft">{me.positionLabel} · {[me.canPublish && 'oportunidades', (me.position === 'responsable' || me.position === 'junta') && 'puntos'].filter(Boolean).join(', ')}</span></span>
+      <span className="grow"><b>Gestión</b><span className="t-soft">{me.positionLabel} · {[me.canPublish && 'oportunidades', me.position === 'junta' && 'QR de puntos'].filter(Boolean).join(', ')}</span></span>
       <Icon name="chevron-right" className="t-soft" />
     </a>
   );

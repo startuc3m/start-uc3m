@@ -3,7 +3,7 @@
 // que exista el backend se cambia este archivo y las pantallas no se tocan.
 // El estado de la demo vive en localStorage para que «Me interesa», los sellos o
 // el perfil sobrevivan a una recarga; «Reiniciar demo» lo borra.
-import { AUTHORIZED, DEMO_CODE, POINTS_BASE, REFERRAL_POINTS, STARTER_OF_MONTH, VIEW_AS, canGivePoints, canManage, canPublish, positionLabel, LOOKING, STARTUPS, TODAY, CVS, EVENTS, FEED, ME, NOTIFICATIONS, OFFERS, PEOPLE, STAMPS, COMPANIES, TYPE_COUNTS, FAMILIES, TYPE_NAMES, familyOf, levelFor } from './data.js';
+import { AUTHORIZED, DEMO_CODE, POINTS_BASE, REFERRAL_POINTS, STARTER_OF_MONTH, VIEW_AS, canCreatePointsQr, canManage, canPublish, positionLabel, LOOKING, STARTUPS, TODAY, CVS, EVENTS, FEED, ME, NOTIFICATIONS, OFFERS, PEOPLE, STAMPS, COMPANIES, TYPE_COUNTS, FAMILIES, TYPE_NAMES, familyOf, levelFor } from './data.js';
 
 const KEY = 'start-panel-demo';
 
@@ -27,6 +27,8 @@ function fresh() {
     status: {},
     going: ['canas-nov'],
     points: [],
+    // QR de puntos que crea la Junta. scans: quién lo ha escaneado (cada persona, una vez).
+    pointQrs: [{ code: 'CAFE24', points: 10, reason: 'Café con founders', by: 'lidia', at: '20 nov', scans: ['lucia', 'hugo', 'gema'] }],
     referrals: [], // socios nuevos que entraron con el QR de invitación de alguien
     applications: [],
     changes: {},
@@ -252,10 +254,9 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
     'gestion.summary': () => {
       const me = meNow();
       const mine = allOffers().map(decorateOffer).filter((o) => o.isMine);
-      const team = people().filter((x) => x.kind === 'starter' && (me.position === 'junta' || x.department === me.department));
       return {
         offers: canPublish(me) ? { published: mine.length, interested: mine.reduce((n, o) => n + o.interestedCount, 0), fresh: 2 } : null,
-        points: ['responsable', 'junta'].includes(me.position) ? { team: team.length, given: state.points.filter((x) => x.by === me.id).reduce((n, x) => n + x.points, 0), scope: me.position === 'junta' ? 'todo el equipo' : me.department } : null,
+        pointQrs: canCreatePointsQr(me) ? { created: state.pointQrs.length, scans: state.pointQrs.reduce((n, q) => n + q.scans.length, 0) } : null,
       };
     },
 
@@ -264,26 +265,44 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
     ranking: () => {
       const me = meNow();
       const starters = [...people().filter((x) => x.kind === 'starter'), ...(me.kind === 'starter' ? [me] : [])]
-        .map((x) => ({ ...decoratePerson(x), points: pointsOf(x.id), canGive: canGivePoints(me, x) && x.id !== me.id }))
+        .map((x) => ({ ...decoratePerson(x), points: pointsOf(x.id) }))
         .sort((a, b) => b.points - a.points);
       const som = person(STARTER_OF_MONTH.person);
       return {
         month: 'noviembre', ranking: starters, myRank: starters.findIndex((x) => x.id === me.id) + 1 || null,
         starterOfMonth: { ...STARTER_OF_MONTH, person: decoratePerson(som) },
-        canGive: me.position === 'junta' || me.position === 'responsable', scope: me.position === 'junta' ? 'todo el equipo' : me.department,
+        canCreateQr: canCreatePointsQr(me),
         log: state.points.slice(-5).reverse().map((x) => ({ ...x, person: person(x.person) })),
       };
     },
-    'points.add': ({ person: pid, points, reason }) => {
-      const me = meNow(), target = person(pid);
+    // QR de puntos: la Junta lo crea con los puntos y el motivo; quien lo escanea los suma una vez.
+    'pointsqr.create': ({ points, reason } = {}) => {
+      const me = meNow();
+      if (!canCreatePointsQr(me)) throw new Error('Solo la Junta crea QR de puntos.');
       const n = Number(points);
-      if (!target || target.kind !== 'starter') throw new Error('Solo los Starters suman puntos.');
-      if (!canGivePoints(me, target) || target.id === me.id) throw new Error('Solo la Junta, o el Responsable de su departamento, puede sumarle puntos.');
       if (!Number.isInteger(n) || n < 1 || n > 50) throw new Error('Puntos: entre 1 y 50.');
-      if (!String(reason ?? '').trim()) throw new Error('Motivo: di qué ha hecho.');
-      state.points = [...state.points, { person: pid, points: n, reason: String(reason).trim(), by: me.id, at: 'ahora' }];
+      const why = String(reason ?? '').trim();
+      if (!why) throw new Error('Motivo: di para qué es el QR.');
+      const code = Math.random().toString(36).slice(2, 8).toUpperCase();
+      const qr = { code, points: n, reason: why, by: me.id, at: 'ahora', scans: [] };
+      state.pointQrs = [qr, ...state.pointQrs];
       save();
-      return { points: pointsOf(pid) };
+      return { qr: { ...qr, path: `/puntos/${code}`, scanCount: 0 } };
+    },
+    'pointsqr.list': () => {
+      if (!canCreatePointsQr(meNow())) throw new Error('Solo la Junta crea QR de puntos.');
+      return { qrs: state.pointQrs.map((q) => ({ ...q, path: `/puntos/${q.code}`, scanCount: q.scans.length })) };
+    },
+    'pointsqr.claim': ({ code = '' } = {}) => {
+      const me = meNow();
+      const qr = state.pointQrs.find((q) => q.code === String(code).toUpperCase());
+      if (!qr) throw new Error('Este QR de puntos no existe o ya no vale.');
+      if (qr.scans.includes(me.id)) throw new Error('Ya has escaneado este QR: cada persona solo puede usarlo una vez.');
+      qr.scans = [...qr.scans, me.id];
+      state.pointQrs = [...state.pointQrs];
+      state.points = [...state.points, { person: me.id, points: qr.points, reason: qr.reason, by: `qr:${qr.code}`, at: 'ahora' }];
+      save();
+      return { points: qr.points, reason: qr.reason, total: pointsOf(me.id) };
     },
 
 

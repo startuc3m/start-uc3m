@@ -1,6 +1,6 @@
 import { useDeferredValue, useEffect, useRef, useState } from 'react';
 import Icon from '../ui/Icon.jsx';
-import { Avatar, Empty, Load, Sheet, Skeleton, useApp } from '../ui/pieces.jsx';
+import { Avatar, Empty, Load, Skeleton, useApp } from '../ui/pieces.jsx';
 import { useApi } from '../router.js';
 import { PageTitle } from './comunidad.jsx';
 
@@ -12,7 +12,8 @@ import { PageTitle } from './comunidad.jsx';
 const MATRIX = [
   ['Usar la app, tener perfil y CV, fichar en eventos', ['✓', '✓', '✓', '✓', '✓']],
   ['Publicar oportunidades y ver a sus interesados', ['', '', '✓', '', '✓']],
-  ['Sumar puntos', ['', '', 'Su departamento', '', 'A cualquiera']],
+  ['Crear QR de puntos', ['', '', '', '', '✓']],
+  ['Sumar puntos escaneando un QR de puntos (una vez cada QR)', ['✓', '✓', '✓', '✓', '✓']],
   ['Invitar a socios nuevos con tu QR (Comunidad) y sumar puntos', ['✓', '✓', '✓', '✓', '✓']],
 ];
 const COLS = ['Socio', 'Starter', 'Responsable', 'IT autorizado', 'Junta'];
@@ -30,14 +31,14 @@ export function Gestion() {
   const actions = [
     me.canPublish && ['plus', 'Publicar una oportunidad', 'Prácticas, proyectos, becas… Te llegan los interesados con su CV.', '#/ofertas/publicar'],
     me.canPublish && ['briefcase', 'Tus oportunidades publicadas', 'Ver interesados, filtrar y contactar.', '#/ofertas/mias'],
-    (me.position === 'responsable' || me.position === 'junta') && ['sparkles', 'Sumar puntos', me.position === 'junta' ? 'A cualquier Starter, para el Starter del mes.' : `A la gente de ${me.department}, para el Starter del mes.`, '#/ranking'],
+    me.position === 'junta' && ['qr-code', 'Crear QR de puntos', 'Pon los puntos y el motivo. Cada persona puede escanearlo una vez.', '#/puntos/crear'],
   ].filter(Boolean);
   const { api } = useApp();
   const sum = useApi(api, 'gestion.summary', {}, []);
   const st = sum.data;
   const stats = st ? [
     st.offers && ['briefcase', st.offers.published, st.offers.published === 1 ? 'oportunidad publicada' : 'oportunidades publicadas', `${st.offers.interested} interesados · ${st.offers.fresh} nuevos`, '#/ofertas/mias'],
-    st.points && ['sparkles', st.points.team, 'Starters a los que puedes dar puntos', st.points.given ? `Has dado ${st.points.given} puntos este mes` : `De ${st.points.scope}`, '#/ranking'],
+    st.pointQrs && ['qr-code', st.pointQrs.created, st.pointQrs.created === 1 ? 'QR de puntos creado' : 'QR de puntos creados', `${st.pointQrs.scans} escaneos`, '#/puntos/crear'],
   ].filter(Boolean) : [];
   return (
     <>

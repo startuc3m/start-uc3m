@@ -266,8 +266,8 @@ export const LOOKING = {
 // Mismas reglas que src/panel/model.js de la PR #87. Si cambian allí, se cambian aquí.
 export const canManage = (m) => m?.position === 'junta' || (m?.department === 'IT' && m?.manage_users === true);
 export const canPublish = (m) => ['junta', 'responsable'].includes(m?.position);
-// Sumar puntos manuales: un Responsable, solo a su departamento; la Junta, a cualquiera.
-export const canGivePoints = (m, target) => m?.position === 'junta' || (m?.position === 'responsable' && target?.department === m.department);
+// Puntos por QR: solo la Junta crea QR de puntos; cada persona escanea cada QR una sola vez.
+export const canCreatePointsQr = (m) => m?.position === 'junta';
 export const positionLabel = (x) => (x.kind !== 'starter' ? 'Socio'
   : x.position === 'junta' ? 'Junta'
     : x.position === 'responsable' ? `Responsable de ${x.department}`
@@ -284,7 +284,7 @@ export const VIEW_AS = {
   junta: { label: 'Junta', patch: { dept: 'Junta', department: 'Junta', position: 'junta', manage_users: false, permissions: ['startskills', 'eventos', 'blog'] } },
 };
 
-// Puntos del mes (propuesta de #87: asistencia = 10 por evento, más los puntos manuales).
+// Puntos del mes: 10 por fichar en cada evento, más los QR de puntos que crea la Junta.
 // Puntos para quien trae a un socio nuevo con su QR de invitación.
 export const REFERRAL_POINTS = 25;
 export const POINTS_BASE = { hugo: 85, lucia: 70, lidia: 55, gema: 60, alvaro: 50, carla: 45, andres: 40, marta: 30, jorge: 20 };

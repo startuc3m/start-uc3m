@@ -108,14 +108,19 @@ describe('roles y puntos (modelo de la PR #87)', () => {
     expect((await api('me')).me.positionLabel).toBe('Responsable de RRHH');
   });
 
-  it('un Responsable solo suma puntos a su departamento; la Junta a cualquiera', async () => {
+  it('solo la Junta crea QR de puntos y cada persona lo escanea una vez', async () => {
     const { api } = make();
     await api('demo.settings', { viewAs: 'responsable' });
-    await expect(api('points.add', { person: 'hugo', points: 10, reason: 'Ayuda' })).rejects.toThrow('Responsable de su departamento');
+    await expect(api('pointsqr.create', { points: 10, reason: 'Montaje' })).rejects.toThrow('Solo la Junta');
     await api('demo.settings', { viewAs: 'junta' });
-    const before = (await api('ranking')).ranking.find((x) => x.id === 'hugo').points;
-    await api('points.add', { person: 'hugo', points: 10, reason: 'Ayuda en el Camp' });
-    expect((await api('ranking')).ranking.find((x) => x.id === 'hugo').points).toBe(before + 10);
+    const { qr } = await api('pointsqr.create', { points: 20, reason: 'Montaje del Start to Invest' });
+    await api('demo.settings', { viewAs: 'starter' });
+    const before = (await api('ranking')).ranking.find((x) => x.id === 'alvaro').points;
+    const r = await api('pointsqr.claim', { code: qr.code });
+    expect(r.points).toBe(20);
+    expect((await api('ranking')).ranking.find((x) => x.id === 'alvaro').points).toBe(before + 20);
+    await expect(api('pointsqr.claim', { code: qr.code })).rejects.toThrow('una vez');
+    await expect(api('pointsqr.claim', { code: 'NOEXISTE' })).rejects.toThrow('no existe');
   });
 
   it('pagar la cuota no da acceso: queda pendiente', async () => {

@@ -14,7 +14,7 @@ import { flushSync } from 'react-dom';
 import DemoPanel from './DemoPanel.jsx';
 import { Avisos, Gente, Persona } from './screens/comunidad.jsx';
 import { Inicio } from './screens/inicio.jsx';
-import { Ranking } from './screens/ranking.jsx';
+import { PuntosCrear, PuntosEscanear, Ranking } from './screens/ranking.jsx';
 import { Evento, Eventos } from './screens/eventos.jsx';
 import { Ajustes, HazteSocio, Socio } from './screens/ajustes.jsx';
 import { Mapa } from './screens/mapa.jsx';
@@ -23,11 +23,11 @@ import { Editar, Perfil } from './screens/perfil.jsx';
 import { Acceso, Alta } from './screens/acceso.jsx';
 import { Gestion } from './screens/gestion.jsx';
 
-const SCREENS = { inicio: Inicio, gente: Gente, persona: Persona, mapa: Mapa, eventos: Eventos, evento: Evento, ofertas: Ofertas, oferta: Oferta, interesados: Interesados, publicar: Publicar, perfil: Perfil, editar: Editar, ajustes: Ajustes, socio: Socio, avisos: Avisos, ranking: Ranking, gestion: Gestion };
+const SCREENS = { inicio: Inicio, gente: Gente, persona: Persona, mapa: Mapa, eventos: Eventos, evento: Evento, ofertas: Ofertas, oferta: Oferta, interesados: Interesados, publicar: Publicar, perfil: Perfil, editar: Editar, ajustes: Ajustes, socio: Socio, avisos: Avisos, ranking: Ranking, puntosCrear: PuntosCrear, puntosEscanear: PuntosEscanear, gestion: Gestion };
 // Título pequeño de la barra de arriba (aparece al bajar, cuando el título grande ya no se ve).
-const TITLE = { inicio: 'Inicio', gente: 'Comunidad', mapa: 'Comunidad', eventos: 'Eventos', evento: 'Evento', ofertas: 'Oportunidades', oferta: 'Oportunidad', interesados: 'Interesados', publicar: 'Publicar', perfil: 'Mi perfil', editar: 'Editar perfil', ajustes: 'Ajustes', socio: 'Membresía', avisos: 'Avisos', persona: 'Perfil', ranking: 'Starter del mes', gestion: 'Gestión' };
+const TITLE = { inicio: 'Inicio', gente: 'Comunidad', mapa: 'Comunidad', eventos: 'Eventos', evento: 'Evento', ofertas: 'Oportunidades', oferta: 'Oportunidad', interesados: 'Interesados', publicar: 'Publicar', perfil: 'Mi perfil', editar: 'Editar perfil', ajustes: 'Ajustes', socio: 'Membresía', avisos: 'Avisos', persona: 'Perfil', ranking: 'Starter del mes', puntosCrear: 'QR de puntos', puntosEscanear: 'Puntos', gestion: 'Gestión' };
 const NAV = [['inicio', '#/inicio', 'home', 'Inicio'], ['comunidad', '#/comunidad', 'users', 'Comunidad'], ['eventos', '#/eventos', 'calendar', 'Eventos'], ['ofertas', '#/ofertas', 'target', 'Oportunidades']];
-const GESTION_ROUTES = ['gestion', 'publicar'];
+const GESTION_ROUTES = ['gestion', 'publicar', 'puntosCrear'];
 const TABS = ['inicio', 'comunidad', 'eventos', 'ofertas', 'perfil'];
 
 // La barra de arriba solo enseña lo que sirve en cada pantalla.
@@ -170,7 +170,7 @@ export default function PanelDemo({ photos }) {
   const gestion = [
     (me.canPublish || me.canManage || ['responsable', 'junta'].includes(me.position)) && ['gestion', '#/gestion', 'shield-check', 'Resumen'],
     me.canPublish && ['publicar', '#/ofertas/publicar', 'plus', 'Publicar oportunidad'],
-    ['responsable', 'junta'].includes(me.position) && ['ranking', '#/ranking', 'sparkles', 'Puntos del mes'],
+    me.position === 'junta' && ['puntosCrear', '#/puntos/crear', 'qr-code', 'QR de puntos'],
   ].filter(Boolean);
   const goBack = () => back(route.name === 'avisos' ? '/inicio' : route.name === 'ajustes' ? '/perfil' : route.name === 'socio' ? '/ajustes' : route.name === 'gestion' ? '/perfil' : `/${section === 'perfil' ? 'perfil' : section}`);
 

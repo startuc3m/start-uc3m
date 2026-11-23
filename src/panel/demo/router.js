@@ -30,6 +30,8 @@ const ROUTES = [
   ['/socio', 'socio'],
   ['/avisos', 'avisos'],
   ['/ranking', 'ranking'],
+  ['/puntos/crear', 'puntosCrear'],
+  ['/puntos/:code', 'puntosEscanear'], // lo que abre el móvil al escanear un QR de puntos
   ['/gestion', 'gestion'],
 ];
 
@@ -44,9 +46,9 @@ export function match(path) {
 }
 
 // Pestaña de la barra inferior a la que pertenece cada pantalla.
-export const SECTION = { inicio: 'inicio', avisos: 'inicio', ranking: 'inicio', gente: 'comunidad', mapa: 'comunidad', persona: 'comunidad', eventos: 'eventos', evento: 'eventos', ofertas: 'ofertas', oferta: 'ofertas', interesados: 'ofertas', publicar: 'ofertas', perfil: 'perfil', editar: 'perfil', ajustes: 'perfil', socio: 'perfil', gestion: 'perfil' };
+export const SECTION = { inicio: 'inicio', avisos: 'inicio', ranking: 'inicio', puntosCrear: 'inicio', puntosEscanear: 'inicio', gente: 'comunidad', mapa: 'comunidad', persona: 'comunidad', eventos: 'eventos', evento: 'eventos', ofertas: 'ofertas', oferta: 'ofertas', interesados: 'ofertas', publicar: 'ofertas', perfil: 'perfil', editar: 'perfil', ajustes: 'perfil', socio: 'perfil', gestion: 'perfil' };
 // Profundidad: decide si la transición entra desde la derecha (push) o vuelve (pop).
-export const DEPTH = { persona: 1, evento: 1, oferta: 1, interesados: 2, publicar: 1, editar: 1, avisos: 1, ranking: 1, ajustes: 1, socio: 2, gestion: 1 };
+export const DEPTH = { puntosCrear: 1, puntosEscanear: 1, persona: 1, evento: 1, oferta: 1, interesados: 2, publicar: 1, editar: 1, avisos: 1, ranking: 1, ajustes: 1, socio: 2, gestion: 1 };
 
 const read = () => (typeof location === 'undefined' ? '/inicio' : location.hash.replace(/^#/, '') || '/inicio');
 
