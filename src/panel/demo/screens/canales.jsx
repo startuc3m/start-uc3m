@@ -4,7 +4,7 @@ import { Avatar, Empty, Load, Skeleton, useApp } from '../ui/pieces.jsx';
 import { useApi } from '../router.js';
 import { ComunidadHead } from './comunidad.jsx';
 
-// Comunidad › Canales. Sustituye a la comunidad de WhatsApp: los mismos
+// Comunidad › Canales: tablones de solo lectura donde publica Start (nadie se escribe). Sustituye a la comunidad de WhatsApp: los mismos
 // grupos, pero dentro de la app y con la gente enlazada a su perfil.
 export function Canales() {
   const { api } = useApp();
@@ -40,24 +40,13 @@ export function Canales() {
 const QUICK = ['🔥', '❤️', '🙌', '😂'];
 
 export function Canal({ params }) {
-  const { api, me, refreshMe, toast } = useApp();
+  const { api, refreshMe } = useApp();
   const q = useApi(api, 'channel', { id: params.id }, [params.id]);
-  const [text, setText] = useState('');
-  const [sent, setSent] = useState([]);
   const [mine, setMine] = useState({}); // reacciones tuyas tocadas en esta visita
   const end = useRef(null);
   useEffect(() => { if (q.data) refreshMe(); }, [q.data != null]); // eslint-disable-line react-hooks/exhaustive-deps
-  // Al entrar, el chat empieza abajo (lo último), como cualquier app de mensajes.
-  useLayoutEffect(() => { if (q.data) end.current?.scrollIntoView({ block: 'end' }); }, [q.data != null, sent.length]); // eslint-disable-line react-hooks/exhaustive-deps
-  const send = async (e) => {
-    e.preventDefault();
-    const t = text.trim();
-    if (!t) return;
-    const tmp = { id: `tmp${Date.now()}`, text: t, at: 'ahora', mine: true, person: me, reactions: {}, myReactions: {}, sending: true };
-    setSent((s) => [...s, tmp]); setText('');
-    try { const r = await api('channel.send', { id: params.id, text: t }); setSent((s) => s.map((m) => (m.id === tmp.id ? r.message : m))); }
-    catch (err) { setSent((s) => s.filter((m) => m.id !== tmp.id)); setText(t); toast(err.message); }
-  };
+  // Al entrar, el canal empieza abajo (lo último).
+  useLayoutEffect(() => { if (q.data) end.current?.scrollIntoView({ block: 'end' }); }, [q.data != null]); // eslint-disable-line react-hooks/exhaustive-deps
   const react = (m, emoji) => {
     const on = !(mine[`${m.id}${emoji}`] ?? m.myReactions?.[emoji]);
     setMine((x) => ({ ...x, [`${m.id}${emoji}`]: on }));
@@ -76,7 +65,7 @@ export function Canal({ params }) {
             </div>
           </header>
           <ol className="msgs" aria-label="Mensajes">
-            {[...messages, ...sent].map((m, i, all) => {
+            {messages.map((m, i, all) => {
               const first = i === 0 || all[i - 1].person?.id !== m.person?.id;
               const counts = Object.entries(m.reactions ?? {});
               QUICK.forEach((e) => { if (!counts.some(([k]) => k === e) && (mine[`${m.id}${e}`] ?? m.myReactions?.[e])) counts.push([e, 0]); });
@@ -100,15 +89,8 @@ export function Canal({ params }) {
             })}
           </ol>
           <div ref={end} />
-          {c.readOnly ? (
-            <p className="chat-ro t-soft"><Icon name="megaphone" size={16} /> Solo la Junta escribe aquí. Reacciona con doble toque.</p>
-          ) : (
-            <form className="composer" onSubmit={send}>
-              <label className="sr-only" htmlFor="msg">Mensaje</label>
-              <input id="msg" className="composer-input" placeholder={`Escribe en ${c.name}`} value={text} onChange={(e) => setText(e.target.value)} autoComplete="off" enterKeyHint="send" />
-              <button className={`composer-send press ${text.trim() ? 'is-ready' : ''}`} aria-label="Enviar" disabled={!text.trim()}><Icon name="send" size={20} /></button>
-            </form>
-          )}
+          {/* Nadie escribe en la plataforma: los canales son tablones donde publica Start. */}
+          <p className="chat-ro t-soft"><Icon name="megaphone" size={16} /> Aquí publica Start. Reacciona con doble toque.</p>
         </div>
       )}
     </Load>

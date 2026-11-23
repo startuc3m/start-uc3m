@@ -344,14 +344,6 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
       save();
       return { channel: { ...c, members: c.id === 'anuncios' ? 212 : 140 + c.name.length }, messages };
     },
-    'channel.send': ({ id, text }) => {
-      const t = String(text ?? '').trim();
-      if (!t) throw new Error('Escribe algo antes de enviar.');
-      const m = { id: `m${Date.now()}`, from: state.me.id, at: 'ahora', text: t };
-      state.sent = { ...state.sent, [id]: [...(state.sent[id] ?? []), m] };
-      save();
-      return { message: { ...m, person: state.me, mine: true, reactions: {}, myReactions: {} } };
-    },
     'message.react': ({ id, emoji, on }) => {
       state.reactions = { ...state.reactions, [id]: { ...(state.reactions[id] ?? {}), [emoji]: on } };
       save();
