@@ -6,6 +6,7 @@ import { flushSync } from 'react-dom';
 const ROUTES = [
   ['/acceso', 'acceso'],
   ['/hazte-socio', 'hazteSocio'],
+  ['/invita/:ref', 'hazteSocio'], // QR de invitación de un socio
   ['/alta/:paso', 'alta'],
   ['/inicio', 'inicio'],
   ['/comunidad', 'gente'],

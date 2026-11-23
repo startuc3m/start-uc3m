@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Icon from '../ui/Icon.jsx';
 import { Avatar, Load, Logo, Skeleton, useApp } from '../ui/pieces.jsx';
 import { back, go, useApi } from '../router.js';
@@ -112,8 +112,13 @@ export function Socio() {
 }
 
 // Hazte socio: desde la pantalla de acceso, para quien aún no lo es. Pago simulado.
-export function HazteSocio() {
+export function HazteSocio({ params = {} }) {
   const { api, photos } = useApp();
+  // Si se llega desde el QR de invitación de un socio, ese socio suma puntos al pagar.
+  const ref = params.ref ?? null;
+  const [host, setHost] = useState(null);
+  const [joined, setJoined] = useState(null);
+  useEffect(() => { if (ref) api('invite.host', { ref }).then((r) => setHost(r.host)).catch(() => setHost(null)); }, [ref]); // eslint-disable-line react-hooks/exhaustive-deps
   const [plan, setPlan] = useState('curso');
   const [email, setEmail] = useState('');
   const [err, setErr] = useState('');
@@ -123,7 +128,8 @@ export function HazteSocio() {
   const pay = async () => {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) { setErr('Escribe tu correo: ahí te llegará la invitación.'); return; }
     setErr(''); setStep('paying');
-    await Promise.all([api('member.join', { plan, email }), new Promise((r) => setTimeout(r, 1100))]);
+    const [r] = await Promise.all([api('member.join', { plan, email, ref: host?.id ?? null }), new Promise((ok) => setTimeout(ok, 1100))]);
+    setJoined(r);
     setStep('done');
     navigator.vibrate?.([12, 40, 12]);
   };
@@ -133,6 +139,7 @@ export function HazteSocio() {
         <span className="aldia-check" style={{ transform: 'none', opacity: 1 }}><Icon name="check" size={30} stroke={3} /></span>
         <h1 className="t-display">Pago recibido_</h1>
         <p>Ya eres socio de Start para la temporada 26/27.</p>
+        {joined?.host && <p className="t-marker" style={{ color: 'var(--lime)' }}>{joined.host.name.split(' ')[0]} suma {joined.host.points} puntos por invitarte.</p>}
         <ol className="hazte-steps">
           <li className="is-done"><b>Pago hecho</b><span>Te hemos mandado el recibo a {email}.</span></li>
           <li className="is-now"><b>IT o la Junta activan tu cuenta</b><span>Suele tardar uno o dos días.</span></li>
@@ -153,6 +160,7 @@ export function HazteSocio() {
         </div>
       </div>
       <div className="hazte-body">
+        {host && <p className="card" role="status" style={{ padding: 14, display: 'flex', gap: 10, alignItems: 'center' }}><Icon name="qr-code" size={20} /><span><b>Te invita {host.name}.</b> Al hacerte socio, {host.name.split(' ')[0]} suma {host.points} puntos.</span></p>}
         <div className="plans" role="radiogroup" aria-label="Elige tu cuota">
           {[['curso', 'Curso 26/27', '15 €', 'Hasta el 31 ago 2027'], ['carrera', 'Toda la carrera', '40 €', 'Hasta que acabes']].map(([k, t, p, n]) => (
             <button key={k} role="radio" aria-checked={plan === k} className={`plan press ${plan === k ? 'is-on' : ''}`} onClick={() => setPlan(k)}>

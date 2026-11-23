@@ -179,7 +179,7 @@ export default function PanelDemo({ photos }) {
     <Ctx.Provider value={ctx}>
       <div className="pd" data-theme={theme} data-route={route.name} onClick={interceptLinks}>
         {bare ? (
-          route.name === 'acceso' ? <Acceso /> : route.name === 'hazteSocio' ? <HazteSocio /> : <Alta params={route.params} />
+          route.name === 'acceso' ? <Acceso /> : route.name === 'hazteSocio' ? <HazteSocio params={route.params} /> : <Alta params={route.params} />
         ) : (
           <div className={`pd-app ${deep ? 'is-deep' : ''}`}>
             <aside className="pd-side" aria-label="Menú">

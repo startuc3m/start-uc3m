@@ -256,6 +256,8 @@ export const VIEW_AS = {
 };
 
 // Puntos del mes (propuesta de #87: asistencia = 10 por evento, más los puntos manuales).
+// Puntos para quien trae a un socio nuevo con su QR de invitación.
+export const REFERRAL_POINTS = 25;
 export const POINTS_BASE = { hugo: 85, lucia: 70, lidia: 55, gema: 60, alvaro: 50, carla: 45, andres: 40, marta: 30, jorge: 20 };
 export const STARTER_OF_MONTH = { month: 'octubre', person: 'hugo', points: 120 };
 

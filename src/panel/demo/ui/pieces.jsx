@@ -78,7 +78,7 @@ export function LevelRing({ progress = 0, size = 84, children, animate = false }
 }
 
 // QR de mentira pero estable: mismo número, mismo dibujo.
-export function FakeQr({ seed = 42 }) {
+export function FakeQr({ seed = 42, label = 'Código QR para fichar' }) {
   const n = 21;
   let x = seed * 9301 + 49297;
   const cells = [];
@@ -90,7 +90,7 @@ export function FakeQr({ seed = 42 }) {
   }
   const F = ({ r, c }) => <g><rect x={c} y={r} width="7" height="7" /><rect x={c + 1} y={r + 1} width="5" height="5" fill="#fff" /><rect x={c + 2} y={r + 2} width="3" height="3" /></g>;
   return (
-    <svg viewBox={`0 0 ${n} ${n}`} width="100%" height="100%" fill="currentColor" shapeRendering="crispEdges" role="img" aria-label="Código QR para fichar">
+    <svg viewBox={`0 0 ${n} ${n}`} width="100%" height="100%" fill="currentColor" shapeRendering="crispEdges" role="img" aria-label={label}>
       {cells}<F r={0} c={0} /><F r={0} c={n - 7} /><F r={n - 7} c={0} />
     </svg>
   );
