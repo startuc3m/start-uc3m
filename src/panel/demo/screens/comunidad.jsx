@@ -1,6 +1,6 @@
 import { useDeferredValue, useState } from 'react';
 import Icon from '../ui/Icon.jsx';
-import { Avatar, Carne, Empty, FakeQr, Load, OfferLogo, Sello, Sellos, Skeleton, Stack, TypeTag, roleLine, useApp } from '../ui/pieces.jsx';
+import { Avatar, Carne, Empty, FakeQr, Load, OfferLogo, Sello, Sellos, Sheet, Skeleton, Stack, TypeTag, roleLine, useApp } from '../ui/pieces.jsx';
 import { go, useApi } from '../router.js';
 
 const COM_TABS = [['gente', '/comunidad', 'Gente'], ['mapa', '/comunidad/mapa', 'Mapa']];
@@ -50,6 +50,43 @@ export function NextTicket({ e }) {
   );
 }
 
+// Generador del QR de invitación: quien lo escanea va al alta de socio con tu
+// referencia y, cuando se hace socio, tú sumas puntos.
+export function InvitaQr() {
+  const { api, toast } = useApp();
+  const [open, setOpen] = useState(false);
+  const [info, setInfo] = useState(null);
+  const show = async () => { setInfo(await api('invite.info')); setOpen(true); };
+  const url = info ? `https://www.startuc3m.es/panel/#${info.path}` : '';
+  const copy = async () => { try { await navigator.clipboard.writeText(url); toast('Enlace copiado'); } catch { toast(url); } };
+  const seed = [...(info?.ref ?? 'start')].reduce((n, c) => n + c.charCodeAt(0), 7);
+  return (
+    <section className="home-sec" aria-label="Invita a alguien a Start">
+      <div className="card news-row">
+        <span className="news-ico is-brand"><Icon name="qr-code" size={19} /></span>
+        <span className="grow">
+          <span className="news-text" style={{ fontWeight: 700 }}>Tu QR para hacer socios</span>
+          <span className="t-soft news-by">Quien lo escanee va directo al alta de socio. Si se hace socio, tú sumas puntos.</span>
+        </span>
+        <button className="btn btn--lime press" onClick={show}>Generar QR</button>
+      </div>
+      <Sheet open={open} onClose={() => setOpen(false)} title="Tu QR de invitación">
+        {info && (
+          <>
+            <div style={{ width: 220, maxWidth: '70%', margin: '0 auto', padding: 14, background: '#fff', color: '#13133d', borderRadius: 16 }}><FakeQr seed={seed} label="QR de invitación para hacerse socio" /></div>
+            <p className="t-soft" style={{ textAlign: 'center', fontSize: 14 }}>Enséñalo o comparte el enlace. Por cada socio nuevo que entre con él sumas <b>{info.perInvite} puntos</b>.</p>
+            <p className="num" style={{ textAlign: 'center', fontWeight: 700 }}>{info.count === 0 ? 'Aún no ha entrado nadie con tu QR' : `${info.count} ${info.count === 1 ? 'socio nuevo' : 'socios nuevos'} · +${info.earned} puntos`}</p>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button className="btn btn--soft press" onClick={copy}>Copiar enlace</button>
+              <a className="btn btn--primary btn--block press" href={`#${info.path}`} onClick={() => setOpen(false)}>Probar el QR (demo)</a>
+            </div>
+          </>
+        )}
+      </Sheet>
+    </section>
+  );
+}
+
 /* ---------- Gente ---------- */
 const FILTERS = [['todos', 'Todos'], ['socios', 'Socios'], ['starters', 'Starters']];
 export function Gente() {
@@ -62,6 +99,7 @@ export function Gente() {
   return (
     <>
       <ComunidadHead current="gente" />
+      <InvitaQr />
       <div className="toolbar">
         <label className="search"><Icon name="search" /><span className="sr-only">Buscar</span><input type="search" placeholder="Nombre o carrera" value={text} onChange={(e) => setText(e.target.value)} enterKeyHint="search" />{text && <button className="search-clear press" onClick={() => setText('')} aria-label="Borrar búsqueda"><Icon name="x" size={16} /></button>}</label>
         <div className="pills" role="group" aria-label="Filtrar">

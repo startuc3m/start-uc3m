@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import Icon from '../ui/Icon.jsx';
-import { Avatar, Carne, FakeQr, Img, Load, OfferLogo, Rolling, Sheet, Skeleton, Stack, useApp } from '../ui/pieces.jsx';
+import { Avatar, Carne, Img, Load, OfferLogo, Rolling, Skeleton, Stack, useApp } from '../ui/pieces.jsx';
 import { useApi } from '../router.js';
 import { PullIndicator, usePull } from '../ui/Pull.jsx';
 import { NextTicket, PageTitle } from './comunidad.jsx';
@@ -30,7 +30,6 @@ export function Inicio() {
               </nav>
               {d.nextEvent && <NextTicket e={d.nextEvent} />}
               {d.news?.length > 0 && <Novedades news={d.news} />}
-              <InvitaQr />
               {d.starterOfMonth && <StarterMes s={d.starterOfMonth} compact />}
               {d.events.length > 0 && (
                 <Section title="Próximos eventos" href="#/eventos">
@@ -68,43 +67,6 @@ function Section({ title, href, sub, children }) {
       {sub && <p className="t-soft home-sub">{sub}</p>}
       {children}
     </section>
-  );
-}
-
-// Generador del QR de invitación: quien lo escanea va al alta de socio con tu
-// referencia y, cuando se hace socio, tú sumas puntos.
-function InvitaQr() {
-  const { api, toast } = useApp();
-  const [open, setOpen] = useState(false);
-  const [info, setInfo] = useState(null);
-  const show = async () => { setInfo(await api('invite.info')); setOpen(true); };
-  const url = info ? `https://www.startuc3m.es/panel/#${info.path}` : '';
-  const copy = async () => { try { await navigator.clipboard.writeText(url); toast('Enlace copiado'); } catch { toast(url); } };
-  const seed = [...(info?.ref ?? 'start')].reduce((n, c) => n + c.charCodeAt(0), 7);
-  return (
-    <Section title="Invita a alguien a Start">
-      <div className="card news-row">
-        <span className="news-ico is-brand"><Icon name="qr-code" size={19} /></span>
-        <span className="grow">
-          <span className="news-text" style={{ fontWeight: 700 }}>Tu QR para hacer socios</span>
-          <span className="t-soft news-by">Quien lo escanee va directo al alta de socio. Si se hace socio, tú sumas puntos.</span>
-        </span>
-        <button className="btn btn--lime press" onClick={show}>Generar QR</button>
-      </div>
-      <Sheet open={open} onClose={() => setOpen(false)} title="Tu QR de invitación">
-        {info && (
-          <>
-            <div style={{ width: 220, maxWidth: '70%', margin: '0 auto', padding: 14, background: '#fff', color: '#13133d', borderRadius: 16 }}><FakeQr seed={seed} label="QR de invitación para hacerse socio" /></div>
-            <p className="t-soft" style={{ textAlign: 'center', fontSize: 14 }}>Enséñalo o comparte el enlace. Por cada socio nuevo que entre con él sumas <b>{info.perInvite} puntos</b>.</p>
-            <p className="num" style={{ textAlign: 'center', fontWeight: 700 }}>{info.count === 0 ? 'Aún no ha entrado nadie con tu QR' : `${info.count} ${info.count === 1 ? 'socio nuevo' : 'socios nuevos'} · +${info.earned} puntos`}</p>
-            <div style={{ display: 'flex', gap: 8 }}>
-              <button className="btn btn--soft press" onClick={copy}>Copiar enlace</button>
-              <a className="btn btn--primary btn--block press" href={`#${info.path}`} onClick={() => setOpen(false)}>Probar el QR (demo)</a>
-            </div>
-          </>
-        )}
-      </Sheet>
-    </Section>
   );
 }
 

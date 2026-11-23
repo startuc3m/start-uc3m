@@ -21,13 +21,13 @@ import { Mapa } from './screens/mapa.jsx';
 import { Interesados, Oferta, Ofertas, Publicar } from './screens/ofertas.jsx';
 import { Editar, Perfil } from './screens/perfil.jsx';
 import { Acceso, Alta } from './screens/acceso.jsx';
-import { Admin, Gestion } from './screens/gestion.jsx';
+import { Gestion } from './screens/gestion.jsx';
 
-const SCREENS = { inicio: Inicio, gente: Gente, persona: Persona, mapa: Mapa, eventos: Eventos, evento: Evento, ofertas: Ofertas, oferta: Oferta, interesados: Interesados, publicar: Publicar, perfil: Perfil, editar: Editar, ajustes: Ajustes, socio: Socio, avisos: Avisos, admin: Admin, ranking: Ranking, gestion: Gestion };
+const SCREENS = { inicio: Inicio, gente: Gente, persona: Persona, mapa: Mapa, eventos: Eventos, evento: Evento, ofertas: Ofertas, oferta: Oferta, interesados: Interesados, publicar: Publicar, perfil: Perfil, editar: Editar, ajustes: Ajustes, socio: Socio, avisos: Avisos, ranking: Ranking, gestion: Gestion };
 // Título pequeño de la barra de arriba (aparece al bajar, cuando el título grande ya no se ve).
-const TITLE = { inicio: 'Inicio', gente: 'Comunidad', mapa: 'Comunidad', eventos: 'Eventos', evento: 'Evento', ofertas: 'Oportunidades', oferta: 'Oportunidad', interesados: 'Interesados', publicar: 'Publicar', perfil: 'Mi perfil', editar: 'Editar perfil', ajustes: 'Ajustes', socio: 'Membresía', avisos: 'Avisos', admin: 'Personas', persona: 'Perfil', ranking: 'Starter del mes', gestion: 'Gestión' };
+const TITLE = { inicio: 'Inicio', gente: 'Comunidad', mapa: 'Comunidad', eventos: 'Eventos', evento: 'Evento', ofertas: 'Oportunidades', oferta: 'Oportunidad', interesados: 'Interesados', publicar: 'Publicar', perfil: 'Mi perfil', editar: 'Editar perfil', ajustes: 'Ajustes', socio: 'Membresía', avisos: 'Avisos', persona: 'Perfil', ranking: 'Starter del mes', gestion: 'Gestión' };
 const NAV = [['inicio', '#/inicio', 'home', 'Inicio'], ['comunidad', '#/comunidad', 'users', 'Comunidad'], ['eventos', '#/eventos', 'calendar', 'Eventos'], ['ofertas', '#/ofertas', 'target', 'Oportunidades']];
-const GESTION_ROUTES = ['gestion', 'admin', 'publicar'];
+const GESTION_ROUTES = ['gestion', 'publicar'];
 const TABS = ['inicio', 'comunidad', 'eventos', 'ofertas', 'perfil'];
 
 // La barra de arriba solo enseña lo que sirve en cada pantalla.
@@ -169,11 +169,10 @@ export default function PanelDemo({ photos }) {
   // Bloque «Gestión» del menú lateral: solo lo que tu cargo te deja hacer.
   const gestion = [
     (me.canPublish || me.canManage || ['responsable', 'junta'].includes(me.position)) && ['gestion', '#/gestion', 'shield-check', 'Resumen'],
-    me.canManage && ['admin', '#/admin', 'users', 'Personas e invitaciones'],
     me.canPublish && ['publicar', '#/ofertas/publicar', 'plus', 'Publicar oportunidad'],
     ['responsable', 'junta'].includes(me.position) && ['ranking', '#/ranking', 'sparkles', 'Puntos del mes'],
   ].filter(Boolean);
-  const goBack = () => back(route.name === 'avisos' ? '/inicio' : route.name === 'ajustes' ? '/perfil' : route.name === 'socio' ? '/ajustes' : route.name === 'admin' ? '/gestion' : route.name === 'gestion' ? '/perfil' : `/${section === 'perfil' ? 'perfil' : section}`);
+  const goBack = () => back(route.name === 'avisos' ? '/inicio' : route.name === 'ajustes' ? '/perfil' : route.name === 'socio' ? '/ajustes' : route.name === 'gestion' ? '/perfil' : `/${section === 'perfil' ? 'perfil' : section}`);
 
   return (
     <Ctx.Provider value={ctx}>

@@ -29,7 +29,7 @@ function fresh() {
     points: [],
     referrals: [], // socios nuevos que entraron con el QR de invitación de alguien
     applications: [],
-    changes: {}, // cambios de cargo hechos desde Gestión › Personas
+    changes: {},
     prefs: { notif: { anuncios: true, eventos: true, ofertas: true }, privacy: { gente: true, email: true, cv: true } },
     settings: { ...DEMO_DEFAULTS },
   };
@@ -248,39 +248,11 @@ export function createDemoApi({ storage = safeStorage(), wait = sleep } = {}) {
       const mine = allOffers().map(decorateOffer).filter((o) => o.isMine);
       const team = people().filter((x) => x.kind === 'starter' && (me.position === 'junta' || x.department === me.department));
       return {
-        people: canManage(me) ? { total: people().filter((x) => x.active !== false).length + 1, starters: people().filter((x) => x.kind === 'starter').length + (me.kind === 'starter' ? 1 : 0), pending: 1 } : null,
         offers: canPublish(me) ? { published: mine.length, interested: mine.reduce((n, o) => n + o.interestedCount, 0), fresh: 2 } : null,
         points: ['responsable', 'junta'].includes(me.position) ? { team: team.length, given: state.points.filter((x) => x.by === me.id).reduce((n, x) => n + x.points, 0), scope: me.position === 'junta' ? 'todo el equipo' : me.department } : null,
       };
     },
 
-    // Gestión › Personas: quién es quién y qué puedes cambiar tú (reglas de docs/panel-roles.md §4).
-    members: () => {
-      const me = meNow();
-      if (!canManage(me)) throw new Error('Solo IT autorizado y la Junta gestionan personas.');
-      const list = [me, ...people()].map((x) => ({
-        ...decoratePerson(x), active: x.active !== false,
-        editable: x.id !== me.id && (me.position === 'junta' || x.position !== 'junta'),
-        why: x.id === me.id ? 'Tus permisos los cambia otra persona' : me.position !== 'junta' && x.position === 'junta' ? 'Solo la Junta cambia cargos de Junta' : null,
-      }));
-      return { members: list, departments: ['Junta', 'IT', 'Marketing', 'Eventos', 'RRHH', 'Legal'], isJunta: me.position === 'junta' };
-    },
-    'member.change': ({ id, kind, department, position, active }) => {
-      const me = meNow(), target = person(id);
-      if (!canManage(me)) throw new Error('Solo IT autorizado y la Junta gestionan personas.');
-      if (!target) throw new Error('Esa persona ya no está.');
-      if (id === me.id) throw new Error('Nadie cambia sus propios permisos: tiene que hacerlo otra persona.');
-      if (me.position !== 'junta' && (target.position === 'junta' || position === 'junta')) throw new Error('Solo la Junta da o quita cargos de Junta.');
-      const k = kind ?? target.kind;
-      const patch = k === 'socio'
-        ? { kind: 'socio', role: 'socio', department: null, dept: null, position: 'miembro', manage_users: false }
-        : { kind: 'starter', role: 'starter', department: department ?? target.department ?? 'IT', dept: department ?? target.department ?? 'IT', position: position ?? target.position };
-      if (k === 'starter' && !patch.department) throw new Error('Un Starter necesita departamento.');
-      if (active !== undefined) patch.active = active;
-      state.changes = { ...state.changes, [id]: { ...(state.changes[id] ?? {}), ...patch } };
-      save();
-      return { member: decoratePerson(person(id)) };
-    },
 
     // Puntos del mes y Starter del mes (solo Starters; los socios no entran en el ranking).
     ranking: () => {

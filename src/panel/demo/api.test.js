@@ -124,18 +124,6 @@ describe('roles y puntos (modelo de la PR #87)', () => {
   });
 });
 
-describe('gestión de personas', () => {
-  it('IT no toca cargos de Junta ni sus propios permisos; la Junta sí da cargos', async () => {
-    const { api } = make();
-    await expect(api('member.change', { id: 'lidia', position: 'miembro' })).rejects.toThrow('Solo la Junta');
-    await expect(api('member.change', { id: 'alvaro', position: 'responsable' })).rejects.toThrow('propios permisos');
-    await api('member.change', { id: 'carla', position: 'responsable' });
-    expect((await api('person', { id: 'carla' })).person.positionLabel).toBe('Responsable de IT');
-    await api('demo.settings', { viewAs: 'socio' });
-    await expect(api('members')).rejects.toThrow('Solo IT autorizado');
-  });
-});
-
 describe('acceso solo con correos autorizados', () => {
   it('pide código solo a correos invitados y comprueba el código', async () => {
     const { api } = make();
