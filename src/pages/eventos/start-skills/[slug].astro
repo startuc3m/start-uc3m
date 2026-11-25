@@ -1,6 +1,6 @@
 ---
 import Base from '../../../layouts/Base.astro';
-import { getStartSkills, estados, fechaLarga, fechaCorta, iniciales, megas, programa } from '../../../lib/startskills';
+import { getStartSkills, estados, fechaLarga, fechaCorta, iniciales, megas, programa, tono } from '../../../lib/startskills';
 import { bloqueVacio } from '../../../lib/startskills-vacio.mjs';
 export function getStaticPaths() {
   const { bloques } = getStartSkills();
@@ -11,7 +11,9 @@ const { b, total, siguiente, celebrado } = Astro.props;
 const asociaciones = [...new Set(b.participantes.map((p) => p.asociacion).filter((a): a is string => !!a))];
 const lugarHora = [b.lugar, b.hora].filter(Boolean).join(' · ');
 const f = b.formador;
-const tonos = ['bg-cobalt text-white', 'bg-lavender text-ink', 'bg-navy text-lavender', 'bg-white text-cobalt'];
+const t = tono(b.numero);
+const claro = t.text === 'text-ink';
+const tonos = ['bg-cyan text-ink', 'bg-accent text-ink', 'bg-lavender text-ink', 'bg-lime text-ink', 'bg-cobalt text-white'];
 const nn = (i: number) => String(i + 1).padStart(2, '0');
 const descripcion = b.tema
   ? b.tema.slice(0, 155)
@@ -20,16 +22,18 @@ const descripcion = b.tema
 const vacio = bloqueVacio(b);
 ---
 <Base title={`${b.titulo} · ${programa.titulo}`} description={descripcion} tone="dark" noindex={vacio}>
-  <section class="bg-cobalt text-white">
-    <div class="container-x flex flex-col gap-8 pb-10 pt-12 md:flex-row md:items-end md:justify-between md:gap-12 md:pb-16 md:pt-16">
+  <section class={`relative overflow-hidden ${t.bg} ${t.text}`}>
+    <span aria-hidden="true" class="display pointer-events-none absolute -bottom-[0.18em] right-[-0.04em] text-[clamp(220px,34vw,460px)] leading-none opacity-15">{b.numero}</span>
+    <div class="container-x relative flex flex-col gap-8 pb-10 pt-12 md:flex-row md:items-end md:justify-between md:gap-12 md:pb-16 md:pt-16">
       <div class="min-w-0 md:flex-1">
-        <a href="/eventos/start-skills" class="mono -my-3 inline-block py-3 text-lavender hover:text-white">← Start Skills</a>
-        <h1 class="display mt-5 text-[clamp(44px,10vw,136px)]" data-split>{b.titulo}_</h1>
+        <a href="/eventos/start-skills" class="mono -my-3 inline-block py-3 opacity-70 hover:opacity-100">← Start Skills</a>
+        <p class="marker mt-5 -rotate-2 text-[clamp(18px,2vw,26px)]">Bloque {b.numero} de {total}</p>
+        <h1 class="display mt-1 text-[clamp(44px,10vw,136px)]" data-split>{b.titulo}_</h1>
       </div>
-      <div class="flex min-w-0 flex-col gap-3.5 border-lavender md:w-72 md:shrink-0 md:border-l md:pl-6" data-reveal>
-        <p class="display text-4xl">Sesión {b.numero} <span class="text-lavender">de {total}</span></p>
+      <div class={`flex min-w-0 flex-col gap-3.5 md:w-72 md:shrink-0 md:border-l-2 md:pl-6 ${claro ? 'border-ink' : 'border-white/50'}`} data-reveal>
         <p class="display text-4xl leading-[1.1] [text-wrap:balance] first-letter:uppercase">{fechaLarga(b.fecha)}</p>
-        {lugarHora && <p class="mono text-lavender">{lugarHora}</p>}
+        {lugarHora && <p class="mono">{lugarHora}</p>}
+        <span class={`mono self-start rounded-full px-3 py-1.5 ${claro ? 'bg-ink text-white' : 'bg-white text-ink'}`}>{celebrado ? 'Celebrado ✓' : 'Por llegar'}</span>
       </div>
     </div>
   </section>
@@ -48,7 +52,7 @@ const vacio = bloqueVacio(b);
             <span class="eyebrow text-cobalt">Formador</span>
             {f.foto
               ? <img src={f.foto} alt={f.nombre} width="240" height="300" loading="lazy" class="aspect-[4/5] w-40 md:w-60 max-w-full rounded-brand object-cover" />
-              : <div class="display grid aspect-[4/5] w-40 md:w-60 max-w-full place-items-center rounded-brand bg-gradient-to-br from-cobalt to-cobalt-deep text-[56px] text-lavender" aria-hidden="true">{iniciales(f.nombre)}</div>}
+              : <div class={`display grid aspect-[4/5] w-40 md:w-60 max-w-full place-items-center rounded-brand text-[72px] shadow-[6px_6px_0_var(--color-ink)] ${t.bg} ${t.text}`} aria-hidden="true">{iniciales(f.nombre)}</div>}
             <div>
               <p class="text-2xl font-bold">{f.nombre}</p>
               {f.cargo && <p class="mt-0.5">{f.cargo}</p>}
@@ -63,7 +67,7 @@ const vacio = bloqueVacio(b);
       <div class="flex flex-wrap items-end justify-between gap-5">
         <div>
           {b.fotos.length > 0 && <span class="eyebrow text-cobalt">{b.fotos.length} {b.fotos.length === 1 ? 'foto' : 'fotos'}{b.zip ? ` · ${megas(b.zip.bytes)}` : ''}</span>}
-          <h2 class="display mt-2.5 text-[clamp(40px,6vw,64px)]">Galería</h2>
+          <h2 class="display mt-2.5 text-[clamp(40px,6vw,64px)]">Galería<span class="text-cobalt">_</span></h2>
         </div>
         {b.zip && (
           <a href={b.zip.src} download class="btn btn-lime">
@@ -86,7 +90,7 @@ const vacio = bloqueVacio(b);
           ))}
         </ul>
       ) : (
-        <p class="mt-8 rounded-brand border border-dashed border-lavender bg-white p-8 text-lg">{celebrado ? 'Las fotos de esta sesión llegarán pronto.' : 'Las fotos se publican después de la sesión.'}</p>
+        <p class={`mt-8 rounded-brand p-8 text-lg ${t.soft}`}>{celebrado ? 'Las fotos de esta sesión llegarán pronto.' : 'Las fotos se publican después de la sesión.'}</p>
       )}
     </div>
   </section>
@@ -96,12 +100,12 @@ const vacio = bloqueVacio(b);
       <div class="flex flex-wrap items-end justify-between gap-5">
         <div>
           {b.participantes.length > 0 && <span class="eyebrow text-cobalt">{b.participantes.length} {b.participantes.length === 1 ? 'persona' : 'personas'}{asociaciones.length > 0 ? ` · ${asociaciones.length} ${asociaciones.length === 1 ? 'asociación' : 'asociaciones'}` : ''}</span>}
-          <h2 class="display mt-2.5 text-[clamp(40px,6vw,64px)]">Participantes</h2>
+          <h2 class="display mt-2.5 text-[clamp(40px,6vw,64px)]">Participantes<span class="text-cobalt">_</span></h2>
         </div>
         {asociaciones.length > 1 && (
           <div class="-mx-4 -my-1 flex gap-2 overflow-x-auto px-4 py-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 [&::-webkit-scrollbar]:hidden" role="group" aria-label="Filtrar por asociación">
             <span class="sr-only" aria-live="polite" data-filtro-aviso></span>
-            {['Todas', ...asociaciones].map((a, i) => <button type="button" data-filter={a} aria-pressed={String(i === 0)} class={`eyebrow min-h-11 shrink-0 whitespace-nowrap rounded-full border px-3.5 py-2 ${i === 0 ? 'border-cobalt bg-cobalt text-white' : 'border-line bg-white text-ink'}`}>{a}</button>)}
+            {['Todas', ...asociaciones].map((a, i) => <button type="button" data-filter={a} aria-pressed={String(i === 0)} class={`mono min-h-11 shrink-0 whitespace-nowrap rounded-full border px-3.5 py-2 ${i === 0 ? 'border-ink bg-ink text-white' : 'border-line bg-white text-ink'}`}>{a}</button>)}
           </div>
         )}
       </div>
@@ -109,10 +113,10 @@ const vacio = bloqueVacio(b);
         <>
           <ul class="mt-8 grid grid-cols-2 gap-3 sm:mt-10 sm:gap-4 lg:grid-cols-4">
             {b.participantes.map((p, i) => {
-              const cls = 'flex flex-col overflow-hidden rounded-brand border border-line bg-white';
+              const cls = 'flex flex-col overflow-hidden rounded-brand border border-line bg-white transition-transform duration-300';
               const inner = (
                 <>
-                  <span class="mono flex items-center justify-between bg-cobalt px-3 py-1.5 text-[10px] text-white"><span>Start Skills</span><span>B{b.numero}</span></span>
+                  <span class={`mono flex items-center justify-between px-3 py-1.5 text-[10px] ${t.bg} ${t.text}`}><span>Start Skills</span><span>B{b.numero}</span></span>
                   <span class="flex flex-col items-start gap-2.5 px-3 py-3 sm:flex-row sm:items-center sm:gap-3 sm:py-3.5">
                     {p.foto
                       ? <img src={p.foto} alt="" width="52" height="52" loading="lazy" decoding="async" class="h-11 w-11 flex-none rounded-full object-cover sm:h-[52px] sm:w-[52px]" />
@@ -128,7 +132,7 @@ const vacio = bloqueVacio(b);
               return (
                 <li data-asoc={p.asociacion ?? ''} class="min-w-0">
                   {p.linkedin
-                    ? <a href={p.linkedin} target="_blank" rel="noopener" aria-label={`${p.nombre} en LinkedIn`} class={`${cls} hover:border-cobalt`}>{inner}</a>
+                    ? <a href={p.linkedin} target="_blank" rel="noopener" aria-label={`${p.nombre} en LinkedIn`} class={`${cls} hover:-translate-y-1 hover:border-ink hover:shadow-[4px_4px_0_var(--color-ink)]`}>{inner}</a>
                     : <div class={cls}>{inner}</div>}
                 </li>
               );
@@ -137,7 +141,7 @@ const vacio = bloqueVacio(b);
           {b.participantes.some((p) => p.linkedin) && <p class="mt-6 text-sm">Pulsa en una persona para abrir su LinkedIn.</p>}
         </>
       ) : (
-        <p class="mt-8 rounded-brand border border-dashed border-lavender bg-white p-8 text-lg">{celebrado ? 'La lista de participantes llegará pronto.' : 'La lista se publica después de la sesión.'}</p>
+        <p class={`mt-8 rounded-brand p-8 text-lg ${t.soft}`}>{celebrado ? 'La lista de participantes llegará pronto.' : 'La lista se publica después de la sesión.'}</p>
       )}
     </div>
   </section>
@@ -171,7 +175,7 @@ const vacio = bloqueVacio(b);
     const sel = b.dataset.filter!;
     botones.forEach((x) => {
       const on = x === b;
-      ['bg-cobalt', 'text-white', 'border-cobalt'].forEach((c) => x.classList.toggle(c, on));
+      ['bg-ink', 'text-white', 'border-ink'].forEach((c) => x.classList.toggle(c, on));
       ['bg-white', 'text-ink', 'border-line'].forEach((c) => x.classList.toggle(c, !on));
       x.setAttribute('aria-pressed', String(on));
     });

@@ -141,3 +141,15 @@ export function asociacionesDelPrograma(bloques: Bloque[]): string[] {
 export function introPrograma(bloques: Bloque[]): string {
   return `${programa.intro} Con formadores profesionales y estudiantes de ${asociacionesDelPrograma(bloques).length} asociaciones.`;
 }
+
+// Cada bloque tiene su color del kit de marca (cian, amarillo, lavanda, lima y cobalto para el cierre).
+// `bg`/`text`: fondo y texto legible encima; `soft`: fondo suave; `ring`: borde del número.
+export type Tono = { bg: string; text: string; soft: string; border: string; hex: string };
+const TONOS: Tono[] = [
+  { bg: 'bg-cyan', text: 'text-ink', soft: 'bg-cyan/25', border: 'border-cyan', hex: '#8ee1e6' },
+  { bg: 'bg-accent', text: 'text-ink', soft: 'bg-accent/25', border: 'border-accent', hex: '#f5e443' },
+  { bg: 'bg-lavender', text: 'text-ink', soft: 'bg-lavender/30', border: 'border-lavender', hex: '#b6b8e7' },
+  { bg: 'bg-lime', text: 'text-ink', soft: 'bg-lime/30', border: 'border-lime', hex: '#d6ff4f' },
+  { bg: 'bg-cobalt', text: 'text-white', soft: 'bg-cobalt/15', border: 'border-cobalt', hex: '#333399' },
+];
+export const tono = (numero: number): Tono => TONOS[(numero - 1 + TONOS.length) % TONOS.length];
