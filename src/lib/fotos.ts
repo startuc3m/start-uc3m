@@ -15,12 +15,13 @@ export function foto(name: string): ImageMetadata {
 type EventoFotos = { card?: string; hero?: string; side?: string; poster?: string; gallery?: string[]; galleryTitle?: string };
 
 // Fotos por evento (id = nombre del .md). Sin entrada, la ficha usa el hueco de marca.
-// Start Camp 2026 todavía no se ha celebrado: usa fotos de la edición 2025.
 export const eventoFotos: Record<string, EventoFotos> = {
+  // Fotos oficiales del Start Camp 2026 (carpeta de Drive que pasó Álvaro el 25/11/2026, 305 fotos).
+  // Galería: un equipo por foto (sin repetir personas ni grupos), más Red Bull y Lovable, que patrocinaron.
+  // La foto grande de los cuatro con la pizarra de «Open2Agents» es del equipo ganador (Álvaro, 25/11).
   'start-camp': {
-    card: 'start-camp-escenario', hero: 'start-camp-grupo', side: 'start-camp-mentor',
-    galleryTitle: 'Así fueron otros Start Camp',
-    gallery: ['start-camp-principio', 'start-camp-sonrisas', 'start-camp-ponencia', 'start-camp-equipo-trabajo', 'start-camp-amigas', 'start-camp-pitch', 'start-camp-mesa', 'start-camp-publico-2', 'start-camp-staff', 'start-camp-portatiles'],
+    card: 'sc26-foto-final', hero: 'sc26-camisetas',
+    gallery: ['sc26-sala-trabajando', 'sc26-lovable', 'sc26-detalle', 'sc26-ponencia-dario', 'sc26-equipo-chicas', 'sc26-equipo-foto', 'sc26-equipo-cuatro', 'sc26-pizarra-modelo', 'sc26-equipo-mesa', 'sc26-ponencia-fernando', 'sc26-mentores-jurado', 'sc26-equipo-charla', 'sc26-pizarra-euqual', 'sc26-equipo-mesa-larga', 'sc26-organizacion'],
   },
   'start-camp-2025': { card: 'start-camp-equipos', hero: 'start-camp-escenario', side: 'start-camp-trabajo' },
   'startxperience': { card: 'startxperience-escenario', hero: 'startxperience-escenario' },

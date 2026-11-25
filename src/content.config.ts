@@ -39,7 +39,8 @@ const eventos = defineCollection({
     price: z.string().optional(),
     priceNote: z.string().optional(),
     // Premios, mentores y jurado: solo lo confirmado; `total` es lo previsto y `names` lo ya cerrado.
-    prizes: z.array(z.object({ place: z.string(), prize: z.string().optional(), note: z.string().optional(), winner: z.string().optional() })).default([]),
+    // `link`: web del proyecto ganador, para darle visibilidad (solo si existe y es suya).
+    prizes: z.array(z.object({ place: z.string(), prize: z.string().optional(), note: z.string().optional(), winner: z.string().optional(), link: z.string().url().optional() })).default([]),
     mentors: z.object({ total: z.number(), names: z.array(z.string()).default([]) }).optional(),
     jury: z.object({ total: z.number(), names: z.array(z.string()).default([]) }).optional(),
     // Ponentes con foto (ruta pública) y organización, para formaciones y charlas.
