@@ -22,7 +22,7 @@ const dateLabel = e.data.days === 1 ? fmt(e.data.date)
   : e.data.days === 2 ? `${firstDay} y ${fmt(lastDay).replace(',', '')}`
   : `del ${firstDay} al ${fmt(lastDay).replace(',', '')}`;
 const timeLabel = e.data.endTime ? (e.data.days > 1 ? `${e.data.time} (${fmtDay(e.data.date).split(' ')[0]}) – ${e.data.endTime} (${fmtDay(lastDay).split(' ')[0]})` : `${e.data.time} – ${e.data.endTime}`) : e.data.time;
-const { prizes, mentors, jury, info } = e.data;
+const { prizes, mentors, jury, info, speakers = [] } = e.data;
 const agendaDays = [...new Set(e.data.agenda.map((a) => a.day).filter(Boolean))];
 // Si se confirman más nombres que el total previsto, mandan los nombres.
 const mentorsTotal = mentors ? Math.max(mentors.total, mentors.names.length) : 0;
@@ -54,7 +54,9 @@ const eventJsonLd = {
   <script type="application/ld+json" set:html={JSON.stringify(eventJsonLd)} />
   <!-- HERO: imagen del evento a sangre fundida con cobalto -->
   <section class="relative overflow-hidden bg-cobalt text-white">
-    <Photo name={fotos?.hero} eager class="absolute inset-0 h-full w-full object-cover opacity-70 mix-blend-luminosity" />
+    {fotos?.poster && !fotos.hero
+      ? <Photo name={fotos.poster} eager class="absolute inset-0 h-full w-full scale-110 object-cover opacity-60 blur-2xl" />
+      : <Photo name={fotos?.hero} eager class="absolute inset-0 h-full w-full object-cover opacity-70 mix-blend-luminosity" />}
     <div class="absolute inset-0 bg-gradient-to-b from-cobalt/30 via-cobalt/65 to-cobalt"></div>
     <div class="container-x relative grid min-h-[80vh] gap-8 md:gap-12 pb-10 md:pb-16 pt-14 md:pt-24 md:grid-cols-[1.4fr_1fr] md:items-end">
       <div>
@@ -126,7 +128,9 @@ const eventJsonLd = {
         </ol>
       </div>
     ) : (
-      <div class="relative aspect-[4/3] overflow-hidden rounded-brand" data-reveal><Photo name={fotos?.side} sizes="(min-width: 768px) 50vw, 100vw" class="absolute inset-0 h-[120%] w-full object-cover" /></div>
+      fotos?.poster
+        ? <div class="overflow-hidden rounded-brand" data-reveal><Photo name={fotos.poster} alt={`Cartel de ${e.data.title}`} sizes="(min-width: 768px) 50vw, 100vw" class="block h-auto w-full" /></div>
+        : <div class="relative aspect-[4/3] overflow-hidden rounded-brand" data-reveal><Photo name={fotos?.side} sizes="(min-width: 768px) 50vw, 100vw" class="absolute inset-0 h-[120%] w-full object-cover" /></div>
     )}
   </section>
   <!-- PREMIOS: los que no están confirmados salen como "por anunciar" -->
@@ -179,6 +183,29 @@ const eventJsonLd = {
               <h3 class="text-2xl font-bold">{it.title}</h3>
               <p class="text-lg opacity-80">{it.text}</p>
               {it.link && <a href={it.link.href} target="_blank" rel="noopener" class="mt-auto pt-2 font-semibold text-cobalt underline underline-offset-4">{it.link.label} <span class="font-mono">↗</span></a>}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )}
+
+  <!-- PONENTES: foto, nombre y organización -->
+  {speakers.length > 0 && (
+    <section class="bg-cobalt text-white">
+      <div class="container-x py-12 md:py-20">
+        <div data-reveal>
+          <span class="eyebrow text-lavender">{past ? 'Nos lo contaron' : 'Te lo cuentan'}</span>
+          <h2 class="display mt-3 text-[clamp(32px,5vw,64px)]">{speakers.length} ponentes_</h2>
+        </div>
+        <ul class="mt-10 grid grid-cols-2 gap-8 md:grid-cols-4" data-stagger>
+          {speakers.map((s, i) => (
+            <li class="flex flex-col items-center text-center" data-reveal>
+              {s.photo
+                ? <img src={s.photo} alt={s.name} width="240" height="240" loading="lazy" decoding="async" class={`aspect-square w-full max-w-[220px] rounded-full object-cover ring-4 ${['ring-cyan', 'ring-accent', 'ring-lime', 'ring-lavender'][i % 4]}`} />
+                : <span class="display grid aspect-square w-full max-w-[220px] place-items-center rounded-full bg-white/10 text-5xl" aria-hidden="true">{initials(s.name)}</span>}
+              <span class="mt-5 text-xl font-bold leading-tight">{s.name}</span>
+              {s.org && <span class="mono mt-1.5 text-accent">{s.org}</span>}
             </li>
           ))}
         </ul>

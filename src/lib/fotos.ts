@@ -11,7 +11,8 @@ export function foto(name: string): ImageMetadata {
 }
 
 // gallery: mosaico "Así fue" de la ficha (#64); galleryTitle lo cambia (p. ej. edición anterior).
-type EventoFotos = { card: string; hero: string; side?: string; gallery?: string[]; galleryTitle?: string };
+// poster: el cartel oficial del evento; se enseña entero (sin recortar) en la home, en /eventos y en la ficha.
+type EventoFotos = { card?: string; hero?: string; side?: string; poster?: string; gallery?: string[]; galleryTitle?: string };
 
 // Fotos por evento (id = nombre del .md). Sin entrada, la ficha usa el hueco de marca.
 // Start Camp 2026 todavía no se ha celebrado: usa fotos de la edición 2025.
@@ -25,6 +26,8 @@ export const eventoFotos: Record<string, EventoFotos> = {
   'startxperience': { card: 'startxperience-escenario', hero: 'startxperience-escenario' },
   // Fotos del post de Instagram de Start sobre el Buildathon (17/09/2026).
   'buildathon-welcome-start': { card: 'buildathon-sala', hero: 'buildathon-sala', side: 'buildathon-equipo' },
+  // Cartel oficial que pasó Álvaro (25/11/2026). Sin hero: la cabecera usa el propio cartel desenfocado de fondo.
+  'start-to-invest': { poster: 'start-to-invest-cartel' },
   // Provisional, con fotos de equipos del Start Camp 2025 hasta tener las suyas.
   'lovable-hackathon': { card: 'equipo-pitch', hero: 'sala-trabajo-staff', side: 'equipo-mesa' },
 };
