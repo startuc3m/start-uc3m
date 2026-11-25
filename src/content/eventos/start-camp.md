@@ -124,6 +124,8 @@ agenda:
 prizes:
   - place: "1.er premio"
     winner: "Open2Agents"
+    # Web del proyecto (25/11): Álvaro confirma que la tienen y lo están desarrollando.
+    link: "https://open2agents.com/"
     prize: "UNEC, viaje por Europa y túnel de viento"
     note: "Pase directo a UNEC, la final nacional clasificatoria para Hult Prize, cuya competición internacional permite optar a un millón de dólares de financiación. Además, viaje por Europa con Waynabox y experiencia en el túnel de viento de Windobona."
   - place: "2.º premio"

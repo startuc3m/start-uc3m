@@ -171,6 +171,7 @@ const eventJsonLd = {
                 <div>
                   <p class={`display leading-none ${i === 0 ? 'text-[clamp(40px,5vw,72px)]' : 'text-[clamp(32px,3.4vw,48px)]'}`}>{p.winner}</p>
                   {p.prize && <p class="mt-3 text-lg font-semibold">{p.prize}</p>}
+                  {p.link && <a href={p.link} target="_blank" rel="noopener" class="btn mt-5 bg-ink !px-5 !py-3 text-white">Ver el proyecto <span class="font-mono">↗</span></a>}
                 </div>
               ) : p.prize ? (
                 <div>
