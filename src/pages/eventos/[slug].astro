@@ -99,7 +99,7 @@ const eventJsonLd = {
   <section class="container-x grid gap-10 md:gap-16 py-12 md:py-20 md:grid-cols-[1fr_1.2fr]">
     <div data-reveal>
       <span class="eyebrow text-cobalt">El evento</span>
-      <div class="prose prose-lg mt-4 max-w-none text-ink prose-headings:font-bold prose-a:text-cobalt"><Content /></div>
+      <div class="prose prose-xl mt-4 max-w-none text-ink prose-headings:font-bold prose-a:text-cobalt prose-p:leading-relaxed"><Content /></div>
       {sponsorLogos.length > 0 && (
         <div class="mt-10">
           <span class="eyebrow text-cobalt">Con el apoyo de</span>
@@ -113,6 +113,7 @@ const eventJsonLd = {
         </div>
       )}
     </div>
+    {/* Sin foto lateral, el evento en datos (solo lo que ya está en la ficha) */}
     {e.data.agenda.length > 0 && agendaDays.length === 0 ? (
       <div data-reveal>
         <span class="eyebrow text-cobalt">Agenda</span>
@@ -130,7 +131,25 @@ const eventJsonLd = {
     ) : (
       fotos?.poster
         ? <div class="overflow-hidden rounded-brand" data-reveal><Photo name={fotos.poster} alt={`Cartel de ${e.data.title}`} sizes="(min-width: 768px) 50vw, 100vw" class="block h-auto w-full" /></div>
-        : <div class="relative aspect-[4/3] overflow-hidden rounded-brand" data-reveal><Photo name={fotos?.side} sizes="(min-width: 768px) 50vw, 100vw" class="absolute inset-0 h-[120%] w-full object-cover" /></div>
+        : fotos?.side
+            ? <div class="relative aspect-[4/3] overflow-hidden rounded-brand" data-reveal><Photo name={fotos.side} sizes="(min-width: 768px) 50vw, 100vw" class="absolute inset-0 h-[120%] w-full object-cover" /></div>
+            : (
+              <dl class="grid grid-cols-2 gap-3 self-start" data-reveal>
+                {[
+                  { k: 'Duración', v: e.data.days > 1 ? `${e.data.days} días` : '1 día', c: 'bg-cobalt text-white' },
+                  { k: 'Lugar', v: e.data.place, c: 'bg-cyan text-ink' },
+                  ...(mentors ? [{ k: 'Mentores', v: String(mentorsTotal), c: 'bg-lime text-ink' }] : []),
+                  ...(jury ? [{ k: 'Jurado', v: String(juryTotal), c: 'bg-accent text-ink' }] : []),
+                  ...(prizes.length ? [{ k: 'Premios', v: String(prizes.length), c: 'bg-lavender text-ink' }] : []),
+                  ...(e.data.price ? [{ k: 'Entrada', v: e.data.price, c: 'bg-navy text-white' }] : []),
+                ].map((d) => (
+                  <div class={`flex min-h-[150px] flex-col justify-between rounded-brand p-5 ${d.c}`}>
+                    <dt class="mono text-[11px] opacity-80">{d.k}</dt>
+                    <dd class="display mt-4 text-[clamp(32px,4vw,56px)] leading-none [overflow-wrap:anywhere]">{d.v}</dd>
+                  </div>
+                ))}
+              </dl>
+            )
     )}
   </section>
   <!-- PREMIOS: los que no están confirmados salen como "por anunciar" -->
@@ -152,6 +171,7 @@ const eventJsonLd = {
                 <div>
                   <p class={`display leading-none ${i === 0 ? 'text-[clamp(40px,5vw,72px)]' : 'text-[clamp(32px,3.4vw,48px)]'}`}>{p.winner}</p>
                   {p.prize && <p class="mt-3 text-lg font-semibold">{p.prize}</p>}
+                  {p.link && <a href={p.link} target="_blank" rel="noopener" class="btn mt-5 bg-ink !px-5 !py-3 text-white">Ver el proyecto <span class="font-mono">↗</span></a>}
                 </div>
               ) : p.prize ? (
                 <div>
@@ -168,6 +188,24 @@ const eventJsonLd = {
     </section>
   )}
 
+  <!-- GALERÍA: fotos reales del evento (#64), en mosaico -->
+  {fotos?.gallery && fotos.gallery.length > 0 && (
+    <section class="bg-paper-2">
+      <div class="container-x py-12 md:py-20">
+        <div class="flex items-end justify-between gap-6" data-reveal>
+          <h2 class="display text-[clamp(32px,5vw,64px)] text-cobalt">{fotos.galleryTitle ?? 'Así fue'}_</h2>
+          <Doodle name="burst" class="hidden h-14 w-14 text-cobalt md:block" />
+        </div>
+        <ul class="mt-8 grid auto-rows-[160px] grid-cols-2 gap-3 md:auto-rows-[220px] md:grid-cols-4" data-stagger>
+          {fotos.gallery.map((g, i) => (
+            <li class={`relative overflow-hidden rounded-brand ${i % 5 === 0 ? 'col-span-2 row-span-2' : ''}`}>
+              <Photo name={g} sizes={i % 5 === 0 ? '(min-width: 768px) 50vw, 100vw' : '(min-width: 768px) 25vw, 50vw'} class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 hover:scale-105" />
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )}
   <!-- INFO PRÁCTICA: cómo llegar, horario, equipo… (solo lo confirmado) -->
   {info.length > 0 && !past && (
     <section class="border-t border-line bg-paper-2">
@@ -296,24 +334,6 @@ const eventJsonLd = {
     </section>
   )}
 
-  <!-- GALERÍA: fotos reales del evento (#64), en mosaico -->
-  {fotos?.gallery && fotos.gallery.length > 0 && (
-    <section class="bg-paper-2">
-      <div class="container-x py-12 md:py-20">
-        <div class="flex items-end justify-between gap-6" data-reveal>
-          <h2 class="display text-[clamp(32px,5vw,64px)] text-cobalt">{fotos.galleryTitle ?? 'Así fue'}_</h2>
-          <Doodle name="burst" class="hidden h-14 w-14 text-cobalt md:block" />
-        </div>
-        <ul class="mt-8 grid auto-rows-[160px] grid-cols-2 gap-3 md:auto-rows-[220px] md:grid-cols-4" data-stagger>
-          {fotos.gallery.map((g, i) => (
-            <li class={`relative overflow-hidden rounded-brand ${i % 5 === 0 ? 'col-span-2 row-span-2' : ''}`}>
-              <Photo name={g} sizes={i % 5 === 0 ? '(min-width: 768px) 50vw, 100vw' : '(min-width: 768px) 25vw, 50vw'} class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 hover:scale-105" />
-            </li>
-          ))}
-        </ul>
-      </div>
-    </section>
-  )}
   {open ? (
     <section id="inscripcion" class="bg-navy text-white">
       <div class="container-x flex flex-col gap-6 py-12 md:py-20 md:flex-row md:items-end md:justify-between" data-reveal>
