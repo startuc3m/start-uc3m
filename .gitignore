@@ -6,6 +6,7 @@
 dist/
 .astro/
 .vercel/
+supabase/.temp/
 
 # tests
 /coverage

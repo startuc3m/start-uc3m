@@ -29,6 +29,11 @@ export default function SociosGracias() {
           carpeta de spam antes de escribirnos.
         </p>
 
+        <div className="socios-gracias__acceso">
+          <a href="/panel/" className="btn btn-lime">Acceder al panel <span aria-hidden="true">→</span></a>
+          <p>Entra con el correo al que IT o Junta te hayan invitado. Si todavía no has recibido la invitación, espera a que el equipo habilite tu acceso.</p>
+        </div>
+
         <a href="/" className="socios-gracias__volver">
           Volver al inicio
         </a>

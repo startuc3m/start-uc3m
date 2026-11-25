@@ -58,6 +58,7 @@ function describeDb(url) {
 
 async function main() {
   const rutas = {
+    '/api/panel': (await import('../api/panel.mjs')).default,
     '/api/membership/availability': (await import('../api/membership/availability.mjs')).default,
     '/api/membership/premium-eligibility': (await import('../api/membership/premium-eligibility.mjs')).default,
     '/api/membership/checkout': (await import('../api/membership/checkout.mjs')).default,

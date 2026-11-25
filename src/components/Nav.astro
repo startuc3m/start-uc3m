@@ -31,6 +31,7 @@ const activo = (href: string) => limpio === href || (href !== '/eventos' && limp
       ))}
     </nav>
     <div class="flex items-center gap-3">
+      <a href="/panel/" class={`hidden rounded-brand border px-4 py-2 text-[14px] font-semibold md:inline-flex transition-colors ${dark ? 'border-white/50 hover:bg-white hover:text-cobalt' : 'border-cobalt text-cobalt hover:bg-cobalt hover:text-white'}`}>Acceder</a>
       <a href="/socios#alta" class={`hidden rounded-brand border px-4 py-2 text-[14px] font-semibold md:inline-flex ${dark ? 'border-lime bg-lime text-ink hover:bg-white hover:border-white' : 'border-cobalt bg-cobalt text-white hover:bg-cobalt-deep'} transition-colors`}>Hazte socio</a>
       <button class="md:hidden font-mono text-sm" data-menu-toggle aria-expanded="false" aria-controls="menu">menu_</button>
     </div>
@@ -43,6 +44,7 @@ const activo = (href: string) => limpio === href || (href !== '/eventos' && limp
           {n.children?.filter((c) => c.href !== n.href).map((c) => <a href={c.href} aria-current={activo(c.href) ? 'page' : undefined} class="py-2 pl-5 text-lg font-semibold opacity-80">{c.label}</a>)}
         </>
       ))}
+      <a href="/panel/" class="py-3 text-2xl font-bold">Acceder</a>
       <a href="/socios#alta" class={`btn mt-2 ${dark ? 'btn-lime' : 'btn-primary'}`}>Hazte socio →</a>
     </nav>
   </div>

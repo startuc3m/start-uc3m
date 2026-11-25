@@ -24,7 +24,7 @@ export default defineConfig({
     // de mentorías, que no se enlaza desde la web: se reparte el enlace.
     sitemap({
       filter: (page) =>
-        !/\/(socios\/(gracias|telefono)|mentorias(\/gracias)?|eventos\/start-camp\/(avatar|enlace-no-valido))\/?$/.test(page) &&
+        !/\/(panel(?:\/.*)?|socios\/(gracias|telefono)|mentorias(\/gracias)?|eventos\/start-camp\/(avatar|enlace-no-valido))\/?$/.test(page) &&
         !skillsVacios.some((s) => new RegExp(`/eventos/start-skills/${s}/?$`).test(page)),
     }),
     react(),
