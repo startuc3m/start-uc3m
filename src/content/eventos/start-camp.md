@@ -8,7 +8,7 @@ subtitle: "Tres días, un reto real y un equipo para convertir una idea de negoc
 # Mentores y jurado según Notion (06/11): todos por igual, sin destacar a nadie. Jurado: solo los confirmados
 # (Íñigo Peña y Javier Sánchez están como «posiblemente» / «se intenta» y no se publican).
 # 17/11: celebrado. Ganadores, cifras aproximadas y jurado confirmados por Álvaro (Íñigo Peña sí estuvo).
-# Pendiente: fotos de la fotógrafa y crónica de Marketing (#64).
+# Fotos oficiales en src/lib/fotos.ts (Drive, 25/11). Pendiente: crónica de Marketing (#64).
 date: 2026-11-06
 days: 3
 time: "18:00"
@@ -137,9 +137,10 @@ prizes:
 mentors:
   total: 9
   names: ["Darío Méndez Fernández", "Carmen Vázquez de Castro", "Juan José Fernández Morales", "Monique Maley Palacios", "Yago Cousiño", "Alberto Minaya", "Enrique Casado", "Óscar Longares", "Fernando Nieto"]
+# 25/11: Álvaro confirma que Yago Cousiño también fue jurado (5 en total).
 jury:
-  total: 4
-  names: ["Borja Vega", "Íñigo Peña", "Alfredo Raya Bejarano", "Raúl Marcos"]
+  total: 5
+  names: ["Borja Vega", "Íñigo Peña", "Alfredo Raya Bejarano", "Raúl Marcos", "Yago Cousiño"]
 # Comida cerrada y tarea de catering completada; no se promete gratuidad ni menús.
 info:
   - title: "Comida"
